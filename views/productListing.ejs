@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LapZone Dashboard - Products</title>
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/productlisting.css">
+</head>
+<body>
+    <div class="dashboard">
+        <%- include("../views/partials/admin/sidebar.ejs") %>
+        <main class="main-content">
+            <header class="header">
+                <h2>Products</h2>
+                <div class="user-section">
+                    <span>Admin</span>
+                    <div class="avatar"></div>
+                </div>
+            </header>
+            <div class="container">
+                <!-- Filter and Sort -->
+                <div class="filter-sort">
+                    <div class="filter">
+                        <select name="category">
+                            <option value="">Product Category</option>
+                            <% categories.forEach(category => { %>
+                                <option value="<%= category.name %>" <%= category.name === (query.category || '') ? 'selected' : '' %>><%= category.name %></option>
+                            <% }) %>
+                        </select>
+                        <select name="price">
+                            <option value="">Price</option>
+                            <option value="0-500" <%= query.price === '0-500' ? 'selected' : '' %>>₹0 - ₹500</option>
+                            <option value="500-1000" <%= query.price === '500-1000' ? 'selected' : '' %>>₹500 - ₹1000</option>
+                            <option value="1000+" <%= query.price === '1000+' ? 'selected' : '' %>>₹1000+</option>
+                        </select>
+                    </div>
+                    <div class="sort">
+                        <select name="sort">
+                            <option value="price-desc" <%= query.sort === 'price-desc' ? 'selected' : '' %>>Price High-Low</option>
+                            <option value="price-asc" <%= query.sort === 'price-asc' ? 'selected' : '' %>>Price Low-High</option>
+                            <option value="added-desc" <%= query.sort === 'added-desc' ? 'selected' : '' %>>Last added first</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Products Table -->
+                <table class="products-table">
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Product Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>List</th>
+                            <th>Action</th>
+                            <th>Offer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% products.forEach(product => { %>
+                            <tr>
+                                <td><img src="<%= product.images.find(image => image.isMain)?.url || '/images/placeholder.jpg' %>" alt="<%= product.name %>"></td>
+                                <td><%= product.name %></td>
+                                <td><%= product.category %></td>
+                                <td>₹<%= product.salePrice %></td>
+                                <td><%= product.count %></td>
+                                <td>
+                                    <form action="/admin/product-toggle/<%= product._id %>?page=<%= currentPage || 1 %>&category=<%= query.category || '' %>&price=<%= query.price || '' %>&sort=<%= query.sort || '' %>" method="post">
+                                        <input type="hidden" name="isActive" value="<%= !product.isActive %>">
+                                        <label class="switch">
+                                            <input type="checkbox" <%= product.isActive ? "checked" : "" %> onchange="this.form.submit()">
+                                            <span class="slider <%= product.isActive ? 'listed' : 'unlisted' %>">
+                                                <%= product.isActive ? "LIST" : "UNLIST" %>
+                                            </span>
+                                        </label>
+                                    </form>
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="edit" onclick="editProduct('<%= product._id %>')">
+                                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                <path d="M12.146 0.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                                            </svg>
+                                        </button>
+                                        <button class="delete" onclick="deleteProduct('<%= product._id %>')">
+                                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11a1 1 0 0 1 0 2H2.5z"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </td>
+                                <td class="offer">
+                                    <span><%= product.offer ? `${product.offer}% OFF` : '200₹ OFF' %></span>
+                                    <button onclick="addOffer('<%= product._id %>')">Add Offer</button>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+
+                <div class="pagination">
+                    <% if (currentPage > 1) { %>
+                        <a href="?page=<%= currentPage - 1 %>&category=<%= query.category || '' %>&price=<%= query.price || '' %>&sort=<%= query.sort || '' %>" class="border rounded px-3 py-2">Previous</a>
+                    <% } %>
+                    <% for (let i = 1; i <= totalPages; i++) { %>
+                        <a href="?page=<%= i %>&category=<%= query.category || '' %>&price=<%= query.price || '' %>&sort=<%= query.sort || '' %>" class="border rounded px-3 py-2 <%= currentPage === i ? 'active' : '' %>"><%= i %></a>
+                    <% } %>
+                    <% if (currentPage < totalPages) { %>
+                        <a href="?page=<%= currentPage + 1 %>&category=<%= query.category || '' %>&price=<%= query.price || '' %>&sort=<%= query.sort || '' %>" class="border rounded px-3 py-2">Next</a>
+                    <% } %>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script>
+        function editProduct(productId) {
+            console.log(`Edit product: ${productId}`);
+            window.location.href = `/admin/product/edit/${productId}`;
+        }
+
+        function deleteProduct(productId) {
+            if (confirm('Are you sure you want to delete this product?')) {
+                fetch(`/admin/product/delete/${productId}`, { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            window.location.reload();
+                        } else {
+                            alert('Failed to delete product');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error deleting product:', error);
+                        alert('An error occurred while deleting the product');
+                    });
+            }
+        }
+
+        function addOffer(productId) {
+            console.log(`Add offer for product: ${productId}`);
+            window.location.href = `/admin/product/add-offer/${productId}`;
+        }
+
+        document.querySelectorAll('.filter select, .sort select').forEach(select => {
+            select.addEventListener('change', function() {
+                const category = document.querySelector('select[name="category"]').value;
+                const price = document.querySelector('select[name="price"]').value;
+                const sort = document.querySelector('select[name="sort"]').value;
+                window.location.href = `/admin/products?page=1&category=${category}&price=${price}&sort=${sort}`;
+            });
+        });
+    </script>
+</body>
+</html>

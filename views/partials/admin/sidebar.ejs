@@ -1,0 +1,67 @@
+<!-- Sidebar -->
+<aside class="sidebar">
+    <h1 class="sidebar-logo">LapZone</h1>
+    <nav>
+        <ul>
+            <li><a href="admindashboard" class="sidebar-link" data-page="admindashboard">Dashboard</a></li>
+            <li><a href="products" class="sidebar-link" data-page="products">Products</a></li>
+            <li><a href="#" class="sidebar-link" data-page="orderlist">Order List</a></li>
+            <li><a href="customers" class="sidebar-link" data-page="customers">Customers</a></li>
+            <li><a href="#" class="sidebar-link" data-page="sales">Sales</a></li>
+            <li><a href="category" class="sidebar-link" data-page="category">Category</a></li>
+            <li><a href="#" class="sidebar-link" data-page="coupons">Coupons</a></li>
+            <li><a href="#" class="sidebar-link" data-page="banner">Banner</a></li>
+        </ul>
+    </nav>
+    <button class="account-btn">Account</button>
+    <form action="/admin/adminlogout" method="post">
+        <button type="submit" class="logout-btn">Logout</button>
+    </form>
+</aside>
+
+<script>
+    function setActiveSidebarLink() {
+        const currentPath = window.location.pathname; // e.g., "/admin/admindashboard"
+        const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+        // Normalize the current path by removing leading slashes and base path
+        const pathSegments = currentPath.split('/').filter(segment => segment); // Get non-empty segments
+        const normalizedPath = pathSegments[pathSegments.length - 1] || 'admindashboard'; // Default to 'admindashboard' if empty (e.g., on "/admin/")
+
+        console.log('Current Path:', currentPath); // Debugging
+        console.log('Path Segments:', pathSegments); // Debugging
+        console.log('Normalized Path:', normalizedPath); // Debugging
+
+        sidebarLinks.forEach(link => {
+            const href = link.getAttribute('href'); // e.g., "admindashboard"
+            const page = link.getAttribute('data-page'); // e.g., "admindashboard"
+
+            console.log('Comparing:', { normalizedPath, href, page }); // Debugging
+
+            // Check if the normalized path matches the href or data-page
+            if (normalizedPath === href || normalizedPath === page) {
+                link.classList.add('active');
+                console.log('Active class added to:', link.textContent); // Debugging
+            } else {
+                link.classList.remove('active');
+            }
+        });
+    }
+
+    // Run on page load
+    document.addEventListener('DOMContentLoaded', setActiveSidebarLink);
+
+    // Add click event listeners to toggle the active class
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+    sidebarLinks.forEach(link => {
+        link.addEventListener('click', function (e) {
+            // Remove active class from all links
+            sidebarLinks.forEach(l => l.classList.remove('active'));
+            // Add active class to the clicked link
+            this.classList.add('active');
+            console.log('Clicked link set to active:', this.textContent); // Debugging
+            // Navigate to the href (assuming full page load)
+            window.location.href = this.getAttribute('href');
+        });
+    });
+</script>

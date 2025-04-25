@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Verify OTP</title>
+    <link rel="stylesheet" href="css/mailverification.css" />
+    <link rel="stylesheet" href="sweetalert2.min.css">
+</head>
+
+<body>
+    <h2>Verify OTP</h2>
+    <p>
+        We’ve sent an email with an activation code to your mail :
+        <strong>
+            <%= data %>
+        </strong>
+    </p>
+
+    <form onsubmit="return validateOtp(event)" action="/verify-otp" method="post">
+        <div class="otp-container">
+            <input type="text" name="otp" maxlength="6" id="otp-input" />
+        </div>
+
+        <div class="resend-container">
+            <span><strong>Send code again</strong><span id="timer">00:20</span> </span><br /><br />
+            <span>I didn’t receive a code <span id="resend-btn" onclick="return resendOtp()"
+                    style="display:none"><strong>Resend</strong></span></span>
+        </div>
+
+        <button type="submit" class="verify-btn">Verify</button>
+    </form>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+
+        let timeLeft = 20;
+        const timerElement = document.getElementById("timer");
+
+        const countdown = setInterval(() => {
+            let minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+
+
+            timerElement.textContent =
+                (minutes < 10 ? "0" + minutes : minutes) + ":" +
+                (seconds < 10 ? "0" + seconds : seconds);
+
+            timeLeft--;
+
+            if (timeLeft < 0) {
+                clearInterval(countdown);
+                timerElement.textContent = "00:00";
+                document.getElementById("resend-btn").style.display = "inline";
+            }
+        }, 1000);
+
+        function validateOtp(e) {
+            e.preventDefault();
+            const inputOtp = document.getElementById('otp-input').value
+            console.log("OTP,InputOTP", inputOtp)
+            $.ajax({
+                type: "POST",
+                url: "/verify-otp",
+                data: { otp: inputOtp },
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({
+                            title: "OTP verification Successfull",
+                            icon: "success",
+                            timer: 1500
+                        }).then(() => {
+                            window.location.href = response.redirecturl
+                        })
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error occured",
+                            text: response.message
+                        })
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Invalid OTP",
+                        timer: 1500
+                    })
+                }
+            })
+            return false
+        }
+
+        function resendOtp(){
+            $.ajax({
+                type:"POST",
+                url:"/resend-otp",
+                success: function(response){
+                    if(response.success){
+                        Swal.fire({
+                            icon:"success",
+                            title:"OTP resend Successfully",
+                            timer:1500
+                        })
+                    }else{
+                        Swal.fire({
+                            icon:"error",
+                            title:"OTP resend Failed"
+                        })
+                    }
+                }
+            })
+            return false
+        }
+
+    </script>
+
+</body>
+
+</html>

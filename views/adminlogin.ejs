@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="/css/adminlogin.css" />
+  </head>
+
+  <body>
+    <div class="login-container">
+      <h2>Admin Login</h2>
+      <% if(error){ %>
+      <span> <%= error %> </span>
+      <%} %>
+      <form method="post" action="/admin/login">
+        <div class="input-group">
+          <label for="email">Email</label>
+          <input
+            name="email"
+            type="email"
+            id="email"
+            placeholder="Enter your email"
+          />
+        </div>
+
+        <div class="input-group">
+          <label for="password">Password</label>
+          <input
+            name="password"
+            type="password"
+            id="password"
+            placeholder="Enter your password"
+          />
+        </div>
+        <button type="submit" class="login-btn">Log in</button>
+      </form>
+    </div>
+  </body>
+</html>

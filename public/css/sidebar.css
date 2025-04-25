@@ -1,0 +1,106 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f3f4f6;
+    color: #1f2937;
+}
+
+.dashboard {
+    display: block;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #6396c9;
+    padding: 20px 0;
+    color: #334155;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.sidebar-logo {
+    font-size: 24px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 30px;
+    padding-left: 20px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar li {
+    margin-bottom: 10px;
+    padding: 0 20px;
+}
+
+.sidebar a {
+    color: #334155;
+    background-color: #e2e8f0;
+    text-decoration: none;
+    padding: 10px 20px;
+    display: block;
+    border-radius: 20px;
+    text-align: center;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.sidebar a:hover {
+    background-color: #6e9adb;
+}
+
+.sidebar a.active {
+    background-color: #3b82f6 !important;
+    color: white;
+    border-radius: 20px;
+    border: 1px solid #2563eb;
+}
+
+/* New Button Styles */
+.sidebar button {
+    background: linear-gradient(90deg, #4b6cb7, #8e44ad);
+    color: white;
+    border: none;
+    padding: 12px 0;
+    width: 50%;
+    display: block;
+    margin: 20px auto;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 25px;
+    font-size: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.sidebar button:hover {
+    background: linear-gradient(90deg, #355e9e, #6c3483);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+}
+
+.sidebar button.account-btn {
+    margin-bottom: 10px;
+}
+
+form button.logout-btn:hover {
+    background: linear-gradient(90deg, #355e9e, #6c3483);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+}
+
+.main-content {
+    margin-left: 250px;
+    padding: 20px;
+    flex-grow: 1;
+    background-color: #f3f4f6;
+    min-height: 100vh;
+}

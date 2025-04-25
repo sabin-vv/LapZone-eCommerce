@@ -1,0 +1,233 @@
+.main-content {
+    flex: 1;
+    padding: 20px;
+    margin-left: 250px; /* Match sidebar width */
+    background-color: #fff;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.user-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-section span {
+    font-weight: 500;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    background-color: #e2e8f0;
+    border-radius: 50%;
+}
+
+/* Filter and Sort Section */
+.filter-sort {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.filter, .sort {
+    display: flex;
+    gap: 10px;
+}
+
+.filter select, .sort select {
+    padding: 8px 16px;
+    border: 1px solid #d1d5db;
+    border-radius: 20px;
+    font-size: 14px;
+    color: #374151;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+.filter select:focus, .sort select:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
+/* Table Styles */
+.products-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.products-table thead {
+    background-color: #1f2937;
+    color: #fff;
+}
+
+.products-table th, .products-table td {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 14px;
+}
+
+.products-table th {
+    font-weight: 600;
+}
+
+.products-table tbody tr {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.products-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.products-table img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+/* Toggle Switch */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 5px;
+    font-size: 12px;
+    color: #fff;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #22c55e;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+input:not(:checked) + .slider {
+    background-color: #ef4444;
+}
+
+.slider.listed {
+    justify-content: flex-start;
+}
+
+.slider.unlisted {
+    justify-content: flex-end;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.action-buttons button {
+    background: none;
+    border: 1px solid #d1d5db;
+    padding: 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.action-buttons button.edit {
+    color: #6b7280;
+}
+
+.action-buttons button.delete {
+    color: #ef4444;
+}
+
+/* Offer Column */
+.offer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.offer span {
+    color: #ef4444;
+    font-weight: 500;
+}
+
+.offer button {
+    background-color: #1f2937;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.pagination {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.pagination .pages {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+.pagination a {
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #374151;
+}
+
+.pagination a.active {
+    background-color: #1f2937;
+    color: #fff;
+    border-color: #1f2937;
+}

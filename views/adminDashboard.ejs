@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LapZone Dashboard</title>
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/admindashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard">
+        <%- include("../views/partials/admin/sidebar.ejs") %>
+        <main class="main-content">
+            <header class="header">
+                <div class="user-section">
+                    <span>Admin</span>
+                    <div class="avatar"></div>
+                </div>
+            </header>
+            <h2>DASHBOARD</h2>
+            <!-- Metrics -->
+            <section class="metrics-grid">
+                <div class="metric-card">
+                    <div class="icon customers"></div>
+                    <div>
+                        <p>Total Customers</p>
+                        <h3>5,423</h3>
+                        <span class="trend">+16% this month</span>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="icon orders"></div>
+                    <div>
+                        <p>Total Orders</p>
+                        <h3>1,893</h3>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="icon sales"></div>
+                    <div>
+                        <p>Total Sales</p>
+                        <h3>₹65,805</h3>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="icon pending"></div>
+                    <div>
+                        <p>Total Pending</p>
+                        <h3>189</h3>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sales Details -->
+            <section class="sales-details">
+                <h2>Sales Details</h2>
+                <div class="details-container">
+                    <div class="sales-progress-card">
+                        <div class="progress-gauge">
+                            <div class="progress-fill" style="height: 75.55%;"></div>
+                        </div>
+                        <div class="progress-info">
+                            <p>Sales Progress This Quarter</p>
+                            <h3>75.55% <span class="trend">+10%</span></h3>
+                            <p>You succeeded earn ₹28K today, its higher than yesterday ₹16K</p>
+                            <p>Target: <span class="target">₹30K</span> | Today: <span class="today">₹28K</span></p>
+                        </div>
+                    </div>
+                    <div class="activity-chart-card">
+                        <div class="chart-header">
+                            <span>Activity</span>
+                            <select>
+                                <option>Month</option>
+                            </select>
+                        </div>
+                        <div class="chart-placeholder">
+                            <canvas id="myChart"></canvas>
+                        </div>
+                        <div class="chart-labels">
+                            <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span>
+                            <span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span>
+                            <span>Nov</span><span>Dec</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script>
+        const data = {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            datasets: [{
+                label: 'Sales Activity',
+                data: [50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 600, 700],
+                backgroundColor: '#3b82f6',
+                borderWidth: 1
+            }]
+        };
+
+        const config = {
+            type: 'bar',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 700
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        };
+
+        const ctx = document.getElementById('myChart').getContext('2d');
+        new Chart(ctx, config);
+    </script>
+</body>
+</html>
