@@ -1,17 +1,21 @@
 const Product = require("../../model/products")
 
 
-const categoryListing = async (req,res) =>{
+const categoryListing = async (req, res) => {
 
-    if(!req.session.admin)
+    if (!req.session.admin)
         return res.redirect("/admin/login")
 
     const category = await Product.aggregate([{
-        $group:{_id:"$category",count:{$sum:1}}
+        $group: { _id: "$category", count: { $sum: 1 } }
+    }, {
+        $sort: {
+            _id: 1
+        }
     }])
-    
 
-    res.render("categoryListing",{category})
+
+    res.render("categoryListing", { category })
 }
 
 

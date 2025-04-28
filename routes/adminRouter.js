@@ -4,6 +4,7 @@ const adminController = require("../controllers/admin/adminController")
 const customerController = require("../controllers/admin/customerController")
 const categoryController = require("../controllers/admin/categoryController")
 const productController = require("../controllers/admin/productController")
+const upload = require("../middlewares/multer")
 
 
 
@@ -27,7 +28,16 @@ router.get("/category" ,categoryController.categoryListing)
 
 router.get("/products",productController.productListing)
 
+router.get("/product/add" ,productController.newProduct)
 
+router.get("/product/edit/:id",productController.editProduct)
+
+router.put("/products/:id", upload.fields([
+    { name: 'images[0].file', maxCount: 1 },
+    { name: 'images[1].file', maxCount: 1 },
+    { name: 'images[2].file', maxCount: 1 },
+    { name: 'images[3].file', maxCount: 1 }
+]), productController.updtaeProduct);
 
 
 

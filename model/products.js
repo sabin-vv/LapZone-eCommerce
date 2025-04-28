@@ -6,7 +6,7 @@ const productSchema = new mongoose.Schema({
         required: true
     },
     modelNumber: {
-        type: Number,
+        type: String,
         required: true
     },
     category: {
@@ -29,6 +29,10 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    OS: {
+            type: String,
+            required: false,
+        },
     screen: {
         type: String,
         required: true
@@ -50,7 +54,7 @@ const productSchema = new mongoose.Schema({
         type: Boolean,
         default: true,
     },
-    varients: [{
+    variants: [{
         RAM: {
             type: String,
             required: true,
@@ -82,10 +86,7 @@ const productSchema = new mongoose.Schema({
             type: String,
             required: false,
         },
-        "OS": {
-            type: String,
-            required: false,
-        },
+        
         "LAN": {
             type: String,
             required: false,
@@ -107,7 +108,7 @@ const productSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    warrenty: {
+    warranty: {
         type: String,
         required: true
     },
@@ -118,9 +119,10 @@ const productSchema = new mongoose.Schema({
         },
         isMain: {
             type: Boolean,
+            required:true,
             default: false
         }
-    }]
+    },{ default: [] }]
 
 }, { timestamps: true })
 

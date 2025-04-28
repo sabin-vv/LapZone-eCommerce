@@ -6,6 +6,8 @@
     <title>LapZone Dashboard - Customers</title>
     <link rel="stylesheet" href="/css/customerslist.css">
     <link rel="stylesheet" href="/css/sidebar.css">
+    <!-- Include SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         .switch {
             position: relative;
@@ -27,7 +29,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: #ef4444;
+            background-color: #10b981;      
             transition: 0.4s;
             border-radius: 34px;
         }
@@ -45,11 +47,43 @@
         }
 
         input:checked + .slider {
-            background-color: #10b981;
+            background-color: #ef4444;
         }
 
         input:checked + .slider:before {
             transform: translateX(24px);
+        }
+        .search-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: flex-end
+
+        }
+
+        .search-container input {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 300px;
+        }
+
+        .search-container button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .search-container .search-btn {
+            background-color: #3085d6;
+            color: white;
+        }
+
+        .search-container .clear-btn {
+            background-color: #ef4444;
+            color: white;
         }
     </style>
 </head>
@@ -67,6 +101,18 @@
             <div class="container mx-auto p-6">
                 <div class="customers">
                     <div class="products">
+                        <div class="search-container">
+                            <form action="/admin/customers" method="get" class="search-form">
+                                <input 
+                                    type="text" 
+                                    name="search" 
+                                    placeholder="Search by name, email, or mobile..." 
+                                    value="<%= searchQuery || '' %>"
+                                >
+                                <button type="submit" class="search-btn">Search</button>
+                                <button type="button" class="clear-btn" onclick="window.location.href='/admin/customers'">Clear</button>
+                            </form>
+                        </div>
                         <table class="product-table" id="productTable">
                             <thead>
                                 <tr>
@@ -88,10 +134,10 @@
                                         <td><%= user.createdAt.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }) %></td>
                                         <td class="status"><%= user.isBlocked ? "Blocked" : "Active" %></td>
                                         <td>
-                                            <form action="/admin/customer-block-unblock/<%= user._id %>?page=<%= currentPage || 1 %>" method="post">
+                                            <form action="/admin/customer-block-unblock/<%= user._id %>?page=<%= currentPage || 1 %>" method="post" class="block-unblock-form">
                                                 <input type="hidden" name="isBlocked" value="<%= !user.isBlocked %>">
                                                 <label class="switch">
-                                                    <input type="checkbox" <%= user.isBlocked ? '' : 'checked' %> onchange="this.form.submit()">
+                                                    <input type="checkbox" <%= user.isBlocked ? 'checked' : '' %> onchange="confirmBlockUnblock(this)">
                                                     <span class="slider"></span>
                                                 </label>
                                             </form>
@@ -117,5 +163,31 @@
             </div>
         </main>
     </div>
+
+    <script>
+        function confirmBlockUnblock(checkbox) {
+            const form = checkbox.closest('form');
+            const isBlocking = checkbox.checked; // If checked, user will be blocked
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: `Do you want to ${isBlocking ? 'block' : 'unblock'} this customer?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, proceed!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // If user confirms, submit the form
+                    form.submit();
+                } else {
+                    // If user cancels, revert the checkbox state
+                    checkbox.checked = !checkbox.checked;
+                }
+            });
+        }
+    </script>
 </body>
 </html>
