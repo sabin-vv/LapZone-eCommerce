@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const CategorySchema = require("./category")
 
 const productSchema = new mongoose.Schema({
     name: {
@@ -21,6 +22,10 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    categoryId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: false
+    },
     brand: {
         type: String,
         required: true
@@ -30,9 +35,9 @@ const productSchema = new mongoose.Schema({
         required: true,
     },
     OS: {
-            type: String,
-            required: false,
-        },
+        type: String,
+        required: false,
+    },
     screen: {
         type: String,
         required: true
@@ -86,7 +91,7 @@ const productSchema = new mongoose.Schema({
             type: String,
             required: false,
         },
-        
+
         "LAN": {
             type: String,
             required: false,
@@ -119,10 +124,18 @@ const productSchema = new mongoose.Schema({
         },
         isMain: {
             type: Boolean,
-            required:true,
+            required: true,
             default: false
         }
-    },{ default: [] }]
+    },
+
+    { default: [] }],
+    isExisting: {
+        type: Boolean,
+        required: true,
+        default: true,
+    },
+
 
 }, { timestamps: true })
 

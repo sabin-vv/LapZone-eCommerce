@@ -6,10 +6,12 @@
     <title>LapZone Dashboard - Products</title>
     <link rel="stylesheet" href="/css/sidebar.css">
     <link rel="stylesheet" href="/css/productlisting.css">
+    <!-- Add SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <div class="dashboard">
-        <%- include("../views/partials/admin/sidebar.ejs") %>
+        <%- include("../partials/admin/sidebar.ejs") %>
         <main class="main-content">
             <header class="header">
                 <h2>Products</h2>
@@ -19,19 +21,29 @@
                 </div>
             </header>
             <div class="action-bar">
+                
                 <button class="add-product-btn" onclick="window.location.href='/admin/product/add'">
                     <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                         <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
                     </svg>
                     Add Product
                 </button>
+                <div class="search-container">
+                    <form action="/admin/products" method="get" class="search-form">
+                        <input type="text" name="search" placeholder="Search by name, email, or mobile..."
+                            value="<%= searchQuery || '' %>">
+                        <button type="submit" class="search-btn">Search</button>
+                        <button type="button" class="clear-btn"
+                            onclick="window.location.href='/admin/products'">Clear</button>
+                    </form>
+                </div>
             </div>
             <div class="container">
                 <!-- Filter and Sort -->
                 <div class="filter-sort">
                     <div class="filter">
                         <select name="category">
-                            <option value="">Product Category</option>
+                            <option value="">Category</option>
                             <% categories.forEach(category => { %>
                                 <option value="<%= category.name %>" <%= category.name === (query.category || '') ? 'selected' : '' %>><%= category.name %></option>
                             <% }) %>
@@ -75,15 +87,12 @@
                                 <td>₹<%= product.salePrice %></td>
                                 <td><%= product.count %></td>
                                 <td>
-                                    <form action="/admin/product-toggle/<%= product._id %>?page=<%= currentPage || 1 %>&category=<%= query.category || '' %>&price=<%= query.price || '' %>&sort=<%= query.sort || '' %>" method="post">
-                                        <input type="hidden" name="isActive" value="<%= !product.isActive %>">
-                                        <label class="switch">
-                                            <input type="checkbox" <%= product.isActive ? "checked" : "" %> onchange="this.form.submit()">
-                                            <span class="slider <%= product.isActive ? 'listed' : 'unlisted' %>">
-                                                <%= product.isActive ? "LIST" : "UNLIST" %>
-                                            </span>
-                                        </label>
-                                    </form>
+                                    <label class="switch">
+                                        <input type="checkbox" <%= product.isActive ? "checked" : "" %> onchange="toggleProduct('<%= product._id %>', this)">
+                                        <span class="slider <%= product.isActive ? 'listed' : 'unlisted' %>">
+                                            <%= product.isActive ? "LIST" : "UNLIST" %>
+                                        </span>
+                                    </label>
                                 </td>
                                 <td>
                                     <div class="action-buttons">
@@ -130,26 +139,109 @@
         }
 
         function deleteProduct(productId) {
-            if (confirm('Are you sure you want to delete this product?')) {
-                fetch(`/admin/product/delete/${productId}`, { method: 'POST' })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            window.location.reload();
-                        } else {
-                            alert('Failed to delete product');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error deleting product:', error);
-                        alert('An error occurred while deleting the product');
-                    });
-            }
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You won\'t be able to revert this!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/admin/product/delete/${productId}`, { method: 'POST' })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire(
+                                    'Deleted!',
+                                    'Product has been deleted.',
+                                    'success'
+                                ).then(() => {
+                                    window.location.reload();
+                                });
+                            } else {
+                                Swal.fire(
+                                    'Error!',
+                                    'Failed to delete product.',
+                                    'error'
+                                );
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error deleting product:', error);
+                            Swal.fire(
+                                'Error!',
+                                'An error occurred while deleting the product.',
+                                'error'
+                            );
+                        });
+                }
+            });
         }
 
         function addOffer(productId) {
             console.log(`Add offer for product: ${productId}`);
             window.location.href = `/admin/product/add-offer/${productId}`;
+        }
+
+        function toggleProduct(productId, checkbox) {
+            const isActive = checkbox.checked;
+            const actionText = isActive ? 'list' : 'unlist';
+            
+            Swal.fire({
+                title: `Are you sure you want to ${actionText} this product?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: `Yes, ${actionText} it!`
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/admin/product-toggle/${productId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ isActive })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire(
+                                'Success!',
+                                `Product has been ${actionText}ed.`,
+                                'success'
+                            ).then(() => {
+                                // Update slider text and class without reloading
+                                const slider = checkbox.nextElementSibling;
+                                slider.textContent = isActive ? 'LIST' : 'UNLIST';
+                                slider.className = `slider ${isActive ? 'listed' : 'unlisted'}`;
+                            });
+                        } else {
+                            // Revert checkbox state on failure
+                            checkbox.checked = !isActive;
+                            Swal.fire(
+                                'Error!',
+                                'Failed to toggle product status.',
+                                'error'
+                            );
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error toggling product:', error);
+                        checkbox.checked = !isActive;
+                        Swal.fire(
+                            'Error!',
+                            'An error occurred while toggling the product.',
+                            'error'
+                        );
+                    });
+                } else {
+                    // Revert checkbox state if user cancels
+                    checkbox.checked = !isActive;
+                }
+            });
         }
 
         document.querySelectorAll('.filter select, .sort select').forEach(select => {

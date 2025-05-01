@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laptop Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/header.css">
+    <style>
+        .product-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        .filter-section {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        .filter-section.open {
+            max-height: 500px;
+        }
+        .rating-stars {
+            color: #facc15;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 font-sans">
+
+    <%- include("../partials/user/header.ejs") %>
+
+    <div class="container mx-auto px-4 py-8 flex flex-col md:flex-row gap-6">
+        <!-- Filter Sidebar -->
+        <aside class="w-full md:w-1/4 bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-bold mb-4">Filter By</h2>
+            <form id="filter-form" action="/shop" method="GET">
+                <!-- Search Bar -->
+                <div class="mb-6">
+                    <label for="search" class="block text-sm font-medium text-gray-700">Search</label>
+                    <input type="text" id="search" name="search" value="<%= searchQuery || '' %>" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Search products...">
+                </div>
+
+                <!-- Brand Filter -->
+                <div class="mb-4">
+                    <button type="button" class="w-full text-left font-semibold text-gray-700 flex justify-between items-center" onclick="toggleFilter('brand')">
+                        Brand
+                        <svg class="w-4 h-4 transform transition-transform" id="brand-toggle" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="brand-section" class="filter-section open">
+                        <% brands.forEach(brand => { %>
+                            <label class="block mt-2">
+                                <input type="checkbox" name="brand" value="<%= brand %>" <%= query.brand && query.brand.includes(brand) ? 'checked' : '' %> class="rounded text-indigo-600 focus:ring-indigo-500">
+                                <span class="ml-2 text-sm text-gray-600"><%= brand %></span>
+                            </label>
+                        <% }) %>
+                    </div>
+                </div>
+
+                <!-- RAM Filter -->
+                <div class="mb-4">
+                    <button type="button" class="w-full text-left font-semibold text-gray-700 flex justify-between items-center" onclick="toggleFilter('ram')">
+                        RAM Capacity
+                        <svg class="w-4 h-4 transform transition-transform" id="ram-toggle" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="ram-section" class="filter-section open">
+                        <% rams.forEach(ram => { %>
+                            <label class="block mt-2">
+                                <input type="checkbox" name="ram" value="<%= ram %>" <%= query.ram && query.ram.includes(ram) ? 'checked' : '' %> class="rounded text-indigo-600 focus:ring-indigo-500">
+                                <span class="ml-2 text-sm text-gray-600"><%= ram %></span>
+                            </label>
+                        <% }) %>
+                    </div>
+                </div>
+
+                <!-- SSD Filter -->
+                <div class="mb-4">
+                    <button type="button" class="w-full text-left font-semibold text-gray-700 flex justify-between items-center" onclick="toggleFilter('ssd')">
+                        SSD Capacity
+                        <svg class="w-4 h-4 transform transition-transform" id="ssd-toggle" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="ssd-section" class="filter-section open">
+                        <% ssds.forEach(ssd => { %>
+                            <label class="block mt-2">
+                                <input type="checkbox" name="ssd" value="<%= ssd %>" <%= query.ssd && query.ssd.includes(ssd) ? 'checked' : '' %> class="rounded text-indigo-600 focus:ring-indigo-500">
+                                <span class="ml-2 text-sm text-gray-600"><%= ssd %></span>
+                            </label>
+                        <% }) %>
+                    </div>
+                </div>
+
+                <!-- Graphics Filter -->
+                <div class="mb-4">
+                    <button type="button" class="w-full text-left font-semibold text-gray-700 flex justify-between items-center" onclick="toggleFilter('graphics')">
+                        Graphics Processor
+                        <svg class="w-4 h-4 transform transition-transform" id="graphics-toggle" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="graphics-section" class="filter-section open">
+                        <% graphics.forEach(graphic => { %>
+                            <label class="block mt-2">
+                                <input type="checkbox" name="graphics" value="<%= graphic %>" <%= query.graphics && query.graphics.includes(graphic) ? 'checked' : '' %> class="rounded text-indigo-600 focus:ring-indigo-500">
+                                <span class="ml-2 text-sm text-gray-600"><%= graphic %></span>
+                            </label>
+                        <% }) %>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Apply Filters</button>
+            </form>
+        </aside>
+
+        <!-- Product Grid -->
+        <main class="w-full md:w-3/4">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold">Products (<%= totalProducts %>)</h2>
+                <div class="flex items-center gap-4">
+                    <label for="sort" class="text-sm font-medium text-gray-700">Sort By:</label>
+                    <select id="sort" name="sort" onchange="this.form.submit()" form="filter-form" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        <option value="popularity" <%= query.sort === 'popularity' ? 'selected' : '' %>>Popularity</option>
+                        <option value="newest" <%= query.sort === 'newest' ? 'selected' : '' %>>Newest First</option>
+                        <option value="price-asc" <%= query.sort === 'price-asc' ? 'selected' : '' %>>Price Low-High</option>
+                        <option value="price-desc" <%= query.sort === 'price-desc' ? 'selected' : '' %>>Price High-Low</option>
+                    </select>
+                </div>
+            </div>
+
+            <% if (products.length === 0) { %>
+                <p class="text-gray-600">No products found.</p>
+            <% } else { %>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <% products.forEach(product => { %>
+                        <div class="product-card bg-white rounded-lg shadow-md overflow-hidden">
+                            <img src="<%= product.images.find(img => img.isMain)?.url || 'https://placehold.co/200x150' %>" alt="<%= product.name %>" class="w-full h-48 object-cover">
+                            <div class="p-4">
+                                <div class="rating-stars mb-2">
+                                    <% for (let i = 1; i <= 5; i++) { %>
+                                        <% if (i <= Math.floor(product.rating)) { %>
+                                            <span>★</span>
+                                        <% } else if (i === Math.ceil(product.rating) && product.rating % 1 !== 0) { %>
+                                            <span>☆</span>
+                                        <% } else { %>
+                                            <span>☆</span>
+                                        <% } %>
+                                    <% } %>
+                                    <span class="text-sm text-gray-600 ml-2">(<%= product.rating.toFixed(1) %>)</span>
+                                </div>
+                                <h3 class="text-lg font-semibold text-gray-800"><%= product.name %></h3>
+                                <ul class="text-sm text-gray-600 mb-4">
+                                    <li><%= product.CPU %></li>
+                                    <li><%= product.variants[0]?.RAM || 'N/A' %> RAM</li>
+                                    <li><%= product.variants[0]?.Storage || 'N/A' %> Storage</li>
+                                    <li><%= product.screen %></li>
+                                </ul>
+                                <p class="text-lg font-bold text-indigo-600">₹<%= product.salePrice.toFixed(2) %></p>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+
+                <!-- Pagination -->
+                <div class="mt-8 flex justify-center">
+                    <nav aria-label="Page navigation">
+                        <ul class="inline-flex items-center -space-x-px">
+                            <% if (currentPage > 1) { %>
+                                <li>
+                                    <a href="/shop?page=<%= currentPage - 1 %>&search=<%= encodeURIComponent(searchQuery || '') %>&brand=<%= query.brand ? query.brand.join(',') : '' %>&ram=<%= query.ram ? query.ram.join(',') : '' %>&ssd=<%= query.ssd ? query.ssd.join(',') : '' %>&graphics=<%= query.graphics ? query.graphics.join(',') : '' %>&sort=<%= query.sort || 'popularity' %>" class="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700">Previous</a>
+                                </li>
+                            <% } %>
+                            <% for (let i = 1; i <= totalPages; i++) { %>
+                                <li>
+                                    <a href="/shop?page=<%= i %>&search=<%= encodeURIComponent(searchQuery || '') %>&brand=<%= query.brand ? query.brand.join(',') : '' %>&ram=<%= query.ram ? query.ram.join(',') : '' %>&ssd=<%= query.ssd ? query.ssd.join(',') : '' %>&graphics=<%= query.graphics ? query.graphics.join(',') : '' %>&sort=<%= query.sort || 'popularity' %>" class="px-3 py-2 leading-tight <%= currentPage === i ? 'text-indigo-600 bg-indigo-50 border-indigo-300' : 'text-gray-500 bg-white border-gray-300' %> hover:bg-gray-100 hover:text-gray-700"><%= i %></a>
+                                </li>
+                            <% } %>
+                            <% if (currentPage < totalPages) { %>
+                                <li>
+                                    <a href="/shop?page=<%= currentPage + 1 %>&search=<%= encodeURIComponent(searchQuery || '') %>&brand=<%= query.brand ? query.brand.join(',') : '' %>&ram=<%= query.ram ? query.ram.join(',') : '' %>&ssd=<%= query.ssd ? query.ssd.join(',') : '' %>&graphics=<%= query.graphics ? query.graphics.join(',') : '' %>&sort=<%= query.sort || 'popularity' %>" class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700">Next</a>
+                                </li>
+                            <% } %>
+                        </ul>
+                    </nav>
+                </div>
+            <% } %>
+        </main>
+    </div>
+
+    <script src="/js/header.js"></script>
+    <script>
+        
+        function toggleFilter(section) {
+            const sectionElement = document.getElementById(`${section}-section`);
+            const toggleIcon = document.getElementById(`${section}-toggle`);
+            sectionElement.classList.toggle('open');
+            toggleIcon.classList.toggle('rotate-180');
+        }
+
+        // Submit form on search input change (debounced)
+        let searchTimeout;
+        document.getElementById('search').addEventListener('input', () => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                document.getElementById('filter-form').submit();
+            }, 500);
+        });
+    </script>
+</body>
+</html>

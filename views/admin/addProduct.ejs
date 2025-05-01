@@ -22,7 +22,7 @@
         <!-- Main Content -->
         <main class="main-content flex-1 p-6 md:ml-64">
             <h1 class="text-2xl font-bold mb-6">Add New Product</h1>
-            <form class="bg-white p-6 rounded-lg shadow-md" enctype="multipart/form-data" action="/products" method="POST">
+            <form class="bg-white p-6 rounded-lg shadow-md" enctype="multipart/form-data" action="/admin/products/add" method="POST">
                 <div class="form-grid">
                     <div>
                         <label for="name" class="block text-sm font-medium text-gray-700">Product Name</label>
@@ -127,9 +127,34 @@
                 <!-- Ports Section -->
                 <fieldset class="nested-fieldset mt-6">
                     <legend>Ports</legend>
-                    <div id="ports-container" class="space-y-4"></div>
-                    <button type="button" id="add-port" class="mt-4 inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Add Port</button>
+                    <div class="form-grid">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">USB Type-A</label>
+                            <input type="text" name="ports[0]['USB Type-A']" class="mt-1 block w-full custom-input">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">USB Type-C</label>
+                            <input type="text" name="ports[0]['USB Type-C']" class="mt-1 block w-full custom-input">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">HDMI</label>
+                            <input type="text" name="ports[0]['HDMI']" class="mt-1 block w-full custom-input">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Audio Jack</label>
+                            <input type="text" name="ports[0]['AudioJack']" class="mt-1 block w-full custom-input">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">LAN</label>
+                            <input type="text" name="ports[0]['LAN']" class="mt-1 block w-full custom-input">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Card Reader</label>
+                            <input type="text" name="ports[0]['Card Reader']" class="mt-1 block w-full custom-input">
+                        </div>
+                    </div>
                 </fieldset>
+                
 
                 <!-- Images Section -->
                 <fieldset class="nested-fieldset mt-6">
@@ -290,63 +315,7 @@
                 updateRemoveButtons();
             });
         });
-
-        // Dynamic Port Addition and Removal
-        let portIndex = 0;
-
-        document.getElementById('add-port').addEventListener('click', () => {
-            const container = document.getElementById('ports-container');
-            const newPort = document.createElement('div');
-            newPort.className = 'port form-grid';
-            newPort.dataset.index = portIndex;
-            newPort.innerHTML = `
-                <div>
-                    <label for="port-usbTypeA-${portIndex}" class="block text-sm font-medium text-gray-700">USB Type-A</label>
-                    <input type="text" id="port-usbTypeA-${portIndex}" name="ports[${portIndex}].USB Type-A" class="mt-1 block w-full custom-input">
-                </div>
-                <div>
-                    <label for="port-usbTypeC-${portIndex}" class="block text-sm font-medium text-gray-700">USB Type-C</label>
-                    <input type="text" id="port-usbTypeC-${portIndex}" name="ports[${portIndex}].USB Type-C" class="mt-1 block w-full custom-input">
-                </div>
-                <div>
-                    <label for="port-hdmi-${portIndex}" class="block text-sm font-medium text-gray-700">HDMI</label>
-                    <input type="text" id="port-hdmi-${portIndex}" name="ports[${portIndex}].HDMI" class="mt-1 block w-full custom-input">
-                </div>
-                <div>
-                    <label for="port-audioJack-${portIndex}" class="block text-sm font-medium text-gray-700">Audio Jack</label>
-                    <input type="text" id="port-audioJack-${portIndex}" name="ports[${portIndex}].AudioJack" class="mt-1 block w-full custom-input">
-                </div>
-                <div>
-                    <label for="port-lan-${portIndex}" class="block text-sm font-medium text-gray-700">LAN</label>
-                    <input type="text" id="port-lan-${portIndex}" name="ports[${portIndex}].LAN" class="mt-1 block w-full custom-input">
-                </div>
-                <div>
-                    <label for="port-cardReader-${portIndex}" class="block text-sm font-medium text-gray-700">Card Reader</label>
-                    <input type="text" id="port-cardReader-${portIndex}" name="ports[${portIndex}].Card Reader" class="mt-1 block w-full custom-input">
-                </div>
-                <div class="flex items-end">
-                    <button type="button" class="remove-port inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">Remove</button>
-                </div>
-            `;
-            container.appendChild(newPort);
-            portIndex++;
-
-            newPort.querySelector('.remove-port').addEventListener('click', () => {
-                newPort.remove();
-                const remainingPorts = document.querySelectorAll('.port');
-                remainingPorts.forEach((port, idx) => {
-                    port.dataset.index = idx;
-                    const inputs = port.querySelectorAll('input');
-                    inputs.forEach(input => {
-                        const name = input.name.replace(/\[\d+\]/, `[${idx}]`);
-                        const id = input.id.replace(/-\d+$/, `-${idx}`);
-                        input.name = name;
-                        input.id = id;
-                    });
-                });
-                portIndex = remainingPorts.length;
-            });
-        });
+        
 
         // Image Drag-and-Drop and Preview
         function setupDragAndDrop(dropArea, fileInput, preview, deleteButton) {

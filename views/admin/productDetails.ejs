@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,221 +8,275 @@
     <link rel="stylesheet" href="/css/productDetails.css">
     <link rel="stylesheet" href="/css/sidebar.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-     
-    </style>
 </head>
+
 <body class="bg-gray-100 font-sans">
     <div class="flex min-h-screen">
         <!-- Sidebar Partial -->
         <%- include("../partials/admin/sidebar.ejs") %>
 
-        <!-- Main Content -->
-        <main class="main-content flex-1 p-6 md:ml-64">
-            <h1 class="text-2xl font-bold mb-6">Product Details</h1>
-            <form class="bg-white p-6 rounded-lg shadow-md" enctype="multipart/form-data" action="<%= product._id ? `/admin/products/${product._id}?_method=PUT` : '/products' %>" method="POST">
-                <div class="form-grid">
-                    <div>
-                        <label for="name" class="block text-sm font-medium text-gray-700">Product Name</label>
-                        <input type="text" id="name" name="name" required class="mt-1 block w-full custom-input" value="<%= product.name || '' %>">
-                    </div>
-                    <div>
-                        <label for="modelNumber" class="block text-sm font-medium text-gray-700">Model Number</label>
-                        <input type="text" id="modelNumber" name="modelNumber" required class="mt-1 block w-full custom-input" value="<%= product.modelNumber || '' %>">
-                    </div>
-                    <div>
-                        <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
-                        <select id="category" name="category" required class="mt-1 block w-full custom-select">
-                            <option value="" <%= !product || !product.category ? 'selected' : '' %>>Select Category</option>
-                            <% categories.forEach(category => { %>
-                                <option value="<%= category._id %>" <%= product && product.category === category._id ? 'selected' : '' %>><%= category._id %></option>
-                            <% }) %>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="color" class="block text-sm font-medium text-gray-700">Color</label>
-                        <input type="text" id="color" name="color" required class="mt-1 block w-full custom-input" value="<%= product.color || '' %>">
-                    </div>
-                    <div class="col-span-2">
-                        <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-                        <textarea id="description" name="description" required class="mt-1 block w-full custom-textarea" rows="4"><%= product.description || '' %></textarea>
-                    </div>
-                    <div>
-                        <label for="brand" class="block text-sm font-medium text-gray-700">Brand</label>
-                        <input type="text" id="brand" name="brand" required class="mt-1 block w-full custom-input" value="<%= product.brand || '' %>">
-                    </div>
-                    <div>
-                        <label for="CPU" class="block text-sm font-medium text-gray-700">CPU</label>
-                        <input type="text" id="CPU" name="CPU" required class="mt-1 block w-full custom-input" value="<%= product.CPU || '' %>">
-                    </div>
-                    <div>
-                        <label for="os" class="block text-sm font-medium text-gray-700">OS</label>
-                        <input type="text" id="os" name="os" class="mt-1 block w-full custom-input" value="<%= product.OS || '' %>">
-                    </div>
-                    <div>
-                        <label for="screen" class="block text-sm font-medium text-gray-700">Screen</label>
-                        <input type="text" id="screen" name="screen" required class="mt-1 block w-full custom-input" value="<%= product.screen || '' %>">
-                    </div>
-                    <div>
-                        <label for="graphics" class="block text-sm font-medium text-gray-700">Graphics</label>
-                        <input type="text" id="graphics" name="graphics" required class="mt-1 block w-full custom-input" value="<%= product.graphics || '' %>">
-                    </div>
-                    <div>
-                        <label for="offer" class="block text-sm font-medium text-gray-700">Offer (%)</label>
-                        <input type="number" id="offer" name="offer" class="mt-1 block w-full custom-input" value="<%= product.offer || '' %>">
-                    </div>
-                    <div>
-                        <label for="rating" class="block text-sm font-medium text-gray-700">Rating</label>
-                        <input type="number" id="rating" name="rating" required class="mt-1 block w-full custom-input" step="0.1" min="0" max="5" value="<%= product.rating || '' %>">
-                    </div>
-                    <div>
-                        <label for="count" class="block text-sm font-medium text-gray-700">Stock Count</label>
-                        <input type="number" id="count" name="count" required class="mt-1 block w-full custom-input" value="<%= product.count || '' %>">
-                    </div>
-                    <div>
-                        <label for="regularPrice" class="block text-sm font-medium text-gray-700">Regular Price</label>
-                        <input type="number" id="regularPrice" name="regularPrice" required class="mt-1 block w-full custom-input" value="<%= product.regularPrice || '' %>">
-                    </div>
-                    <div>
-                        <label for="salePrice" class="block text-sm font-medium text-gray-700">Sale Price</label>
-                        <input type="number" id="salePrice" name="salePrice" required class="mt-1 block w-full custom-input" value="<%= product.salePrice || '' %>">
-                    </div>
-                    <div>
-                        <label for="warrenty" class="block text-sm font-medium text-gray-700">Warranty</label>
-                        <input type="text" id="warrenty" name="warrenty" required class="mt-1 block w-full custom-input" value="<%= product.warranty || '' %>">
-                    </div>
-                    <div>
-                        <label for="webcam" class="block text-sm font-medium text-gray-700">Webcam</label>
-                        <input type="text" id="webcam" name="webcam" class="mt-1 block w-full custom-input" value="<%= product.webcam || '' %>">
-                    </div>
-                </div>
-
-                <!-- Variants Section -->
-                <fieldset class="nested-fieldset mt-6">
-                    <legend>Variants</legend>
-                    <div id="variants-container" class="space-y-4">
-                        <% (product.variants || []).forEach((variant, index) => { %>
-                            <div class="variant form-grid" data-index="<%= index %>">
-                                <div>
-                                    <label for="variant-ram-<%= index %>" class="block text-sm font-medium text-gray-700">RAM</label>
-                                    <input type="text" id="variant-ram-<%= index %>" name="variants[<%= index %>].RAM" required class="mt-1 block w-full custom-input" value="<%= variant.RAM %>">
-                                </div>
-                                <div>
-                                    <label for="variant-storage-<%= index %>" class="block text-sm font-medium text-gray-700">Storage</label>
-                                    <input type="text" id="variant-storage-<%= index %>" name="variants[<%= index %>].Storage" required class="mt-1 block w-full custom-input" value="<%= variant.Storage %>">
-                                </div>
-                                <div>
-                                    <label for="variant-priceAdjustment-<%= index %>" class="block text-sm font-medium text-gray-700">Price Adjustment</label>
-                                    <input type="number" id="variant-priceAdjustment-<%= index %>" name="variants[<%= index %>].priceAdjustment" class="mt-1 block w-full custom-input" value="<%= variant.priceAdjustment %>">
-                                </div>
-                            </div>
-                        <% }) %>
-                    </div>
-                    <button type="button" id="add-variant" class="mt-4 inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Add Variant</button>
-                </fieldset>
-
-                <!-- Ports Section -->
-                <fieldset class="nested-fieldset mt-6">
-                    <legend>Ports</legend>
-                    <div id="ports-container" class="space-y-4">
-                        <% (product.ports || []).forEach((port, index) => { %>
-                            <div class="port form-grid" data-index="<%= index %>">
-                                <div>
-                                    <label for="port-usbTypeA-<%= index %>" class="block text-sm font-medium text-gray-700">USB Type-A</label>
-                                    <input type="text" id="port-usbTypeA-<%= index %>" name="ports[<%= index %>].USB Type-A" class="mt-1 block w-full custom-input" value="<%= port['USB Type-A'] || '' %>">
-                                </div>
-                                <div>
-                                    <label for="port-usbTypeC-<%= index %>" class="block text-sm font-medium text-gray-700">USB Type-C</label>
-                                    <input type="text" id="port-usbTypeC-<%= index %>" name="ports[<%= index %>].USB Type-C" class="mt-1 block w-full custom-input" value="<%= port['USB Type-C'] || '' %>">
-                                </div>
-                                <div>
-                                    <label for="port-hdmi-<%= index %>" class="block text-sm font-medium text-gray-700">HDMI</label>
-                                    <input type="text" id="port-hdmi-<%= index %>" name="ports[<%= index %>].HDMI" class="mt-1 block w-full custom-input" value="<%= port['HDMI'] || '' %>">
-                                </div>
-                                <div>
-                                    <label for="port-audioJack-<%= index %>" class="block text-sm font-medium text-gray-700">Audio Jack</label>
-                                    <input type="text" id="port-audioJack-<%= index %>" name="ports[<%= index %>].AudioJack" class="mt-1 block w-full custom-input" value="<%= port['AudioJack'] || '' %>">
-                                </div>
-                                <div>
-                                    <label for="port-lan-<%= index %>" class="block text-sm font-medium text-gray-700">LAN</label>
-                                    <input type="text" id="port-lan-<%= index %>" name="ports[<%= index %>].LAN" class="mt-1 block w-full custom-input" value="<%= port['LAN'] || '' %>">
-                                </div>
-                                <div>
-                                    <label for="port-cardReader-<%= index %>" class="block text-sm font-medium text-gray-700">Card Reader</label>
-                                    <input type="text" id="port-cardReader-<%= index %>" name="ports[<%= index %>].Card Reader" class="mt-1 block w-full custom-input" value="<%= port['Card Reader'] || '' %>">
-                                </div>
-                            </div>
-                        <% }) %>
-                    </div>
-                    <button type="button" id="add-port" class="mt-4 inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Add Port</button>
-                </fieldset>
-
-                <!-- Images Section -->
-                <fieldset class="nested-fieldset mt-6">
-                    <legend class="font-semibold text-gray-700">Product Images</legend>
+            <!-- Main Content -->
+            <main class="main-content flex-1 p-6 md:ml-64">
+                <h1 class="text-2xl font-bold mb-6">Product Details</h1>
+                <form class="bg-white p-6 rounded-lg shadow-md" enctype="multipart/form-data"
+                    action="<%= product._id ? `/admin/products/${product._id}?_method=PUT` : '/products' %>"
+                    method="POST">
                     <div class="form-grid">
-                        <!-- Main Photo -->
-                        <div class="image-container">
-                            <h2 class="text-lg font-medium mb-4">Main Photo</h2>
-                            <input type="hidden" name="productId" value="<%= product._id || '' %>">
-                            <input type="file" id="main-file" name="images[0].file" accept="image/*" class="hidden custom-file">
-                            <div class="main-photo" id="main-drop" data-index="0">
-                                <svg class="placeholder-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                </svg>
-                                <p class="text-sm text-gray-600 mt-2">Drag and drop image here, or click add image</p>
-                                <button type="button" class="custom-button mt-4" onclick="document.getElementById('main-file').click()">Add Image</button>
-                                <img id="main-preview" class="image-preview hidden" alt="Main Photo Preview">
-                            </div>
-                            <input type="hidden" name="images[0].isMain" id="hidden-isMain-0" value="true">
-                            <input type="hidden" name="images[0].url" id="existing-image-0" value="<%= product.images?.[0]?.url || '' %>">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700">Product Name</label>
+                            <input type="text" id="name" name="name" required class="mt-1 block w-full custom-input"
+                                value="<%= product.name || '' %>">
                         </div>
-
-                        <!-- Additional Photos -->
-                        <div class="image-container">
-                            <h2 class="text-lg font-medium mb-4">Additional Photos</h2>
-                            <div class="photo-grid">
-                                <% for (let i = 1; i <= 4; i++) { %>
-                                    <div>
-                                        <input type="file" id="additional-file-<%= i %>" name="images[<%= i %>].file" accept="image/*" class="hidden custom-file">
-                                        <div class="additional-photo" id="additional-drop-<%= i %>" data-index="<%= i %>">
-                                            <svg class="placeholder-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                            </svg>
-                                            <p class="text-sm text-gray-600 mt-2">Drag and drop image here, or click add image</p>
-                                            <button type="button" class="custom-button mt-4" onclick="document.getElementById('additional-file-<%= i %>').click()">Add Image</button>
-                                            <img id="additional-preview-<%= i %>" class="image-preview hidden" alt="Additional Photo <%= i %> Preview">
-                                        </div>
-                                        <input type="hidden" name="images[<%= i %>].isMain" id="hidden-isMain-<%= i %>" value="false">
-                                        <input type="hidden" name="images[<%= i %>].url" id="existing-image-<%= i %>" value="<%= product.images?.[i]?.url || '' %>">
-                                    </div>
-                                <% } %>
-                            </div>
+                        <div>
+                            <label for="modelNumber" class="block text-sm font-medium text-gray-700">Model
+                                Number</label>
+                            <input type="text" id="modelNumber" name="modelNumber" required
+                                class="mt-1 block w-full custom-input" value="<%= product.modelNumber || '' %>">
+                        </div>
+                        <div>
+                            <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
+                            <select id="category" name="category" required class="mt-1 block w-full custom-select">
+                                <option value="" <%=!product || !product.category ? 'selected' : '' %>>Select Category
+                                </option>
+                                <% categories.forEach(category=> { %>
+                                    <option value="<%= category._id %>" <%=product && product.category===category._id
+                                        ? 'selected' : '' %>><%= category._id %>
+                                    </option>
+                                    <% }) %>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="color" class="block text-sm font-medium text-gray-700">Color</label>
+                            <input type="text" id="color" name="color" required class="mt-1 block w-full custom-input"
+                                value="<%= product.color || '' %>">
+                        </div>
+                        <div class="col-span-2">
+                            <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                            <textarea id="description" name="description" required
+                                class="mt-1 block w-full custom-textarea"
+                                rows="4"><%= product.description || '' %></textarea>
+                        </div>
+                        <div>
+                            <label for="brand" class="block text-sm font-medium text-gray-700">Brand</label>
+                            <input type="text" id="brand" name="brand" required class="mt-1 block w-full custom-input"
+                                value="<%= product.brand || '' %>">
+                        </div>
+                        <div>
+                            <label for="CPU" class="block text-sm font-medium text-gray-700">CPU</label>
+                            <input type="text" id="CPU" name="CPU" required class="mt-1 block w-full custom-input"
+                                value="<%= product.CPU || '' %>">
+                        </div>
+                        <div>
+                            <label for="os" class="block text-sm font-medium text-gray-700">OS</label>
+                            <input type="text" id="os" name="os" class="mt-1 block w-full custom-input"
+                                value="<%= product.OS || '' %>">
+                        </div>
+                        <div>
+                            <label for="screen" class="block text-sm font-medium text-gray-700">Screen</label>
+                            <input type="text" id="screen" name="screen" required class="mt-1 block w-full custom-input"
+                                value="<%= product.screen || '' %>">
+                        </div>
+                        <div>
+                            <label for="graphics" class="block text-sm font-medium text-gray-700">Graphics</label>
+                            <input type="text" id="graphics" name="graphics" required
+                                class="mt-1 block w-full custom-input" value="<%= product.graphics || '' %>">
+                        </div>
+                        <div>
+                            <label for="offer" class="block text-sm font-medium text-gray-700">Offer (%)</label>
+                            <input type="number" id="offer" name="offer" class="mt-1 block w-full custom-input"
+                                value="<%= product.offer || '' %>">
+                        </div>
+                        <div>
+                            <label for="rating" class="block text-sm font-medium text-gray-700">Rating</label>
+                            <input type="number" id="rating" name="rating" required
+                                class="mt-1 block w-full custom-input" step="0.1" min="0" max="5"
+                                value="<%= product.rating || '' %>">
+                        </div>
+                        <div>
+                            <label for="count" class="block text-sm font-medium text-gray-700">Stock Count</label>
+                            <input type="number" id="count" name="count" required class="mt-1 block w-full custom-input"
+                                value="<%= product.count || '' %>">
+                        </div>
+                        <div>
+                            <label for="regularPrice" class="block text-sm font-medium text-gray-700">Regular
+                                Price</label>
+                            <input type="number" id="regularPrice" name="regularPrice" required
+                                class="mt-1 block w-full custom-input" value="<%= product.regularPrice || '' %>">
+                        </div>
+                        <div>
+                            <label for="salePrice" class="block text-sm font-medium text-gray-700">Sale Price</label>
+                            <input type="number" id="salePrice" name="salePrice" required
+                                class="mt-1 block w-full custom-input" value="<%= product.salePrice || '' %>">
+                        </div>
+                        <div>
+                            <label for="warranty" class="block text-sm font-medium text-gray-700">Warranty</label>
+                            <input type="text" id="warranty" name="warranty" required
+                                class="mt-1 block w-full custom-input" value="<%= product.warranty || '' %>">
+                        </div>
+                        <div>
+                            <label for="webcam" class="block text-sm font-medium text-gray-700">Webcam</label>
+                            <input type="text" id="webcam" name="webcam" class="mt-1 block w-full custom-input"
+                                value="<%= product.webcam || '' %>">
                         </div>
                     </div>
-                </fieldset>
 
-                <!-- Show in Shopping Page Checkbox -->
-                <div class="mt-6">
-                    <label for="isActive" class="inline-flex items-center text-sm font-medium text-gray-700">
-                        <input type="checkbox" id="isActive" name="isActive" <%= product.isActive !== false ? 'checked' : '' %> class="mr-2 custom-checkbox">
-                        Show in Shopping Page
-                    </label>
-                </div>
+                    <!-- Variants Section -->
+                    <fieldset class="nested-fieldset mt-6">
+                        <legend>Variants</legend>
+                        <div id="variants-container" class="space-y-4">
+                            <% (product.variants?.length ? product.variants : [{}]).forEach((variant, index)=> { %>
+                                <div class="variant form-grid" data-index="<%= index %>">
+                                    <div>
+                                        <label>RAM</label>
+                                        <input type="text" name="variants[<%= index %>].RAM"
+                                            value="<%= variant.RAM || '' %>" required class="custom-input">
+                                    </div>
+                                    <div>
+                                        <label>Storage</label>
+                                        <input type="text" name="variants[<%= index %>].Storage"
+                                            value="<%= variant.Storage || '' %>" required class="custom-input">
+                                    </div>
+                                    <div>
+                                        <label>Price Adjustment</label>
+                                        <input type="number" name="variants[<%= index %>].priceAdjustment"
+                                            value="<%= variant.priceAdjustment || '' %>" class="custom-input">
+                                    </div>
+                                    <div class="flex items-end">
+                                        <button type="button"
+                                            class="remove-variant bg-red-600 text-white px-2 py-1 rounded-md hidden">Remove</button>
+                                    </div>
+                                </div>
+                                <% }) %>
+                        </div>
+                        <button type="button" id="add-variant"
+                            class="mt-4 inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Add
+                            Variant</button>
+                    </fieldset>
 
-                <!-- Submit and Cancel Buttons -->
-                <div class="mt-6 flex space-x-4">
-                    <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Update</button>
-                    <button type="button" onclick="window.location.href='/admin/products'" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">Cancel</button>
-                </div>
-            </form>
-        </main>
+                    <!-- Ports Section -->
+                    <fieldset class="nested-fieldset mt-6">
+                        <legend>Ports</legend>
+                        <div class="form-grid">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">USB Type-A</label>
+                                <input type="text" name="ports[0]['USB Type-A']" class="mt-1 block w-full custom-input">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">USB Type-C</label>
+                                <input type="text" name="ports[0]['USB Type-C']" class="mt-1 block w-full custom-input">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">HDMI</label>
+                                <input type="text" name="ports[0]['HDMI']" class="mt-1 block w-full custom-input">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Audio Jack</label>
+                                <input type="text" name="ports[0]['AudioJack']" class="mt-1 block w-full custom-input">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">LAN</label>
+                                <input type="text" name="ports[0]['LAN']" class="mt-1 block w-full custom-input">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Card Reader</label>
+                                <input type="text" name="ports[0]['Card Reader']"
+                                    class="mt-1 block w-full custom-input">
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- Images Section -->
+                    <fieldset class="nested-fieldset mt-6">
+                        <legend class="font-semibold text-gray-700">Product Images</legend>
+                        <div class="form-grid">
+                            <!-- Main Photo -->
+                            <div class="image-container">
+                                <h2 class="text-lg font-medium mb-4">Main Photo</h2>
+                                <input type="hidden" name="productId" value="<%= product._id || '' %>">
+                                <input type="file" id="main-file" name="images[0].file" accept="image/*"
+                                    class="hidden custom-file">
+                                <div class="main-photo" id="main-drop" data-index="0">
+                                    <svg class="placeholder-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                        </path>
+                                    </svg>
+                                    <p class="text-sm text-gray-600 mt-2">Drag and drop or click to add
+                                        image
+                                    </p>
+                                    <button type="button" class="custom-button mt-4">Add Image</button>
+                                    <img id="main-preview"
+                                        class="image-preview  <%= product.images?.[0]?.url ? '' : 'hidden' %>"
+                                        alt="Main Photo Preview" src="<%= product.images[0]?.url || '' %>">
+                                    <button type="button" class="delete-image hidden">✕</button>
+                                </div>
+                                <input type="hidden" name="images[0].isMain" id="hidden-isMain-0" value="true">
+                                <input type="hidden" name="images[0].url" id="existing-image-0"
+                                    value="<%= product.images?.[0]?.url || '' %>">
+                            </div>
+
+                            <!-- Additional Photos -->
+                            <div class="image-container">
+                                <h2 class="text-lg font-medium mb-4">Additional Photos</h2>
+                                <div class="photo-grid">
+                                    <% for (let i=1; i <=4; i++) { %>
+                                        <div>
+                                            <input type="file" id="additional-file-<%= i %>"
+                                                name="images[<%= i %>].file" accept="image/*"
+                                                class="hidden custom-file">
+                                            <div class="additional-photo" id="additional-drop-<%= i %>"
+                                                data-index="<%= i %>">
+                                                <svg class="placeholder-icon" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                                    </path>
+                                                </svg>
+                                                <p class="text-sm text-gray-600 mt-2">Drag and drop, or click
+                                                    to add image</p>
+                                                <button type="button" class="custom-button mt-4">Add Image</button>
+                                                <img id="additional-preview-<%= i %>"
+                                                    class="image-preview <%= product.images?.[i]?.url ? '' : 'hidden' %>"
+                                                    alt="Additional Photo <%= i %> Preview"
+                                                    src="<%= product.images[i]?.url || '' %>">
+                                                <button type="button" class="delete-image hidden">✕</button>
+                                            </div>
+                                            <input type="hidden" name="images[<%= i %>].isMain"
+                                                id="hidden-isMain-<%= i %>" value="false">
+                                            <input type="hidden" name="images[<%= i %>].url"
+                                                id="existing-image-<%= i %>"
+                                                value="<%= product.images?.[i]?.url || '' %>">
+                                        </div>
+                                        <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- Show in Shopping Page Checkbox -->
+                    <div class="mt-6">
+                        <label for="isActive" class="inline-flex items-center text-sm font-medium text-gray-700">
+                            <input type="checkbox" id="isActive" name="isActive" <%=product.isActive !==false
+                                ? 'checked' : '' %> class="mr-2 custom-checkbox">
+                            Show in Shopping Page
+                        </label>
+                    </div>
+
+                    <!-- Submit and Cancel Buttons -->
+                    <div class="mt-6 flex space-x-4">
+                        <button type="submit"
+                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Update</button>
+                        <button type="button" onclick="window.location.href='/admin/products'"
+                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">Cancel</button>
+                    </div>
+                </form>
+            </main>
     </div>
 
     <script>
         // Dynamic Variant Addition and Removal
         let variantIndex = 1;
-
         function updateRemoveButtons() {
             const variants = document.querySelectorAll('.variant');
             const removeButtons = document.querySelectorAll('.remove-variant');
@@ -244,11 +299,11 @@
                 </div>
                 <div>
                     <label for="variant-storage-${variantIndex}" class="block text-sm font-medium text-gray-700">Storage</label>
-                    <input type="text" id="variant-storage-${variantIndex}" name="varients[${variantIndex}].Storage" required class="mt-1 block w-full custom-input">
+                    <input type="text" id="variant-storage-${variantIndex}" name="variants[${variantIndex}].Storage" required class="mt-1 block w-full custom-input">
                 </div>
                 <div>
                     <label for="variant-priceAdjustment-${variantIndex}" class="block text-sm font-medium text-gray-700">Price Adjustment</label>
-                    <input type="number" id="variant-priceAdjustment-${variantIndex}" name="varients[${variantIndex}].priceAdjustment" class="mt-1 block w-full custom-input">
+                    <input type="number" id="variant-priceAdjustment-${variantIndex}" name="variants[${variantIndex}].priceAdjustment" class="mt-1 block w-full custom-input">
                 </div>
                 <div class="flex items-end">
                     <button type="button" class="remove-variant inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" data-index="${variantIndex}">Remove</button>
@@ -267,11 +322,11 @@
                     variant.dataset.index = idx;
                     const inputs = variant.querySelectorAll('input');
                     inputs[0].id = `variant-ram-${idx}`;
-                    inputs[0].name = `varients[${idx}].RAM`;
+                    inputs[0].name = `variants[${idx}].RAM`;
                     inputs[1].id = `variant-storage-${idx}`;
-                    inputs[1].name = `varients[${idx}].Storage`;
+                    inputs[1].name = `variants[${idx}].Storage`;
                     inputs[2].id = `variant-priceAdjustment-${idx}`;
-                    inputs[2].name = `varients[${idx}].priceAdjustment`;
+                    inputs[2].name = `variants[${idx}].priceAdjustment`;
                     const removeButton = variant.querySelector('.remove-variant');
                     if (removeButton) {
                         removeButton.dataset.index = idx;
@@ -282,29 +337,30 @@
             });
         });
 
-        // Initial setup for remove buttons
-        updateRemoveButtons();
 
-        // Image Preview and Main Image Selection
 
+
+
+        // Image Preview and Handling
         function fetchImages() {
             const productId = '<%= product._id %>';
+            if (!productId) return;
             fetch(`/api/products/${productId}/images`)
                 .then(response => response.json())
                 .then(images => {
                     images.forEach((image, index) => {
-                        if (index < 5) { // Main (0) + 3 additional (1-3)
+                        if (index < 5) {
                             const isMain = index === 0;
                             const previewId = isMain ? 'main-preview' : `additional-preview-${index}`;
                             const dropId = isMain ? 'main-drop' : `additional-drop-${index}`;
-                            const fileId = isMain ? 'main-file' : `additional-file-${index}`;
-                            const textId = isMain ? 'main-text' : `additional-text-${index}`;
                             const existingImageId = `existing-image-${index}`;
                             const hiddenIsMainId = `hidden-isMain-${index}`;
 
                             const preview = document.getElementById(previewId);
                             const dropArea = document.getElementById(dropId);
                             const text = dropArea.querySelector('p');
+                            const addButton = dropArea.querySelector('.custom-button');
+                            const deleteButton = dropArea.querySelector('.delete-image');
                             const existingImageInput = document.getElementById(existingImageId);
                             const hiddenIsMain = document.getElementById(hiddenIsMainId);
 
@@ -336,8 +392,14 @@
                                     preview.src = canvas.toDataURL('image/jpeg');
                                     preview.classList.remove('hidden');
                                     preview.dataset.originalSrc = image.url;
-                                    text.textContent = 'Replace image by dragging or clicking';
+                                    text.classList.add('hidden');
+                                    addButton.classList.add('hidden');
                                     existingImageInput.value = image.url;
+                                    if (image.url) {
+                                        deleteButton.classList.remove('hidden');
+                                    }
+
+
                                 };
                                 img.src = image.url;
 
@@ -349,94 +411,140 @@
                 .catch(error => console.error('Error fetching images:', error));
         }
 
-        document.addEventListener('DOMContentLoaded', fetchImages);
+        document.addEventListener('click', function (e) {
+            if (e.target.classList.contains('remove-variant')) {
+                const container = document.getElementById('variants-container');
+                if (container.children.length > 1) {
+                    e.target.closest('.variant').remove();
+                    updateRemoveButtons();
+                }
+            }
+        });
 
         // Image Drag-and-Drop and Preview
-        function setupDragAndDrop(dropArea, fileInput, preview) {
-            dropArea.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                dropArea.classList.add('drag-active');
+        function setupImageHandling(dropArea, fileInput, preview, isMain) {
+            const text = dropArea.querySelector('p');
+            const addButton = dropArea.querySelector('.custom-button');
+            const deleteButton = dropArea.querySelector('.delete-image');
+            const hiddenUrlInput = dropArea.querySelector('input[type="hidden"][name*="url"]');
+
+            // Prevent default drag behaviors
+            ['dragenter', 'dragover'].forEach(event => {
+                dropArea.addEventListener(event, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropArea.classList.add('drag-active');
+                });
             });
 
-            dropArea.addEventListener('dragenter', (e) => {
+            dropArea.addEventListener('dragleave', (e) => {
                 e.preventDefault();
-                dropArea.classList.add('drag-active');
-            });
-
-            dropArea.addEventListener('dragleave', () => {
+                e.stopPropagation();
                 dropArea.classList.remove('drag-active');
             });
 
             dropArea.addEventListener('drop', (e) => {
                 e.preventDefault();
+                e.stopPropagation();
                 dropArea.classList.remove('drag-active');
                 const files = e.dataTransfer.files;
                 if (files.length > 0 && files[0].type.startsWith('image/')) {
                     fileInput.files = files;
-                    handleImage(files[0], preview, dropArea.querySelector('p'));
+                    handleImage(files[0]);
                 }
             });
 
-            dropArea.addEventListener('click', () => {
+            // Handle click on drop area to trigger file input
+            dropArea.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 fileInput.click();
             });
 
+            // Handle button click
+            addButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                fileInput.click();
+            });
+
+            // Handle file input change
             fileInput.addEventListener('change', () => {
                 const file = fileInput.files[0];
-                if (file) {
-                    handleImage(file, preview, dropArea.querySelector('p'));
-                } else {
-                    preview.src = preview.dataset.originalSrc || '';
-                    preview.classList.toggle('hidden', !preview.src);
-                    dropArea.querySelector('p').textContent = preview.src ? 'Replace image by dragging or clicking' : 'Drag and drop image here, or click add image';
+                if (file && file.type.startsWith('image/')) {
+                    handleImage(file);
                 }
             });
-        }
 
-        function handleImage(file, preview, text) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    const maxWidth = preview.closest('.main-photo') ? 400 : 150;
-                    const maxHeight = preview.closest('.main-photo') ? 300 : 150;
-                    let width = img.width;
-                    let height = img.height;
+            // Handle delete button
+            deleteButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                preview.src = '';
+                preview.classList.add('hidden');
+                fileInput.value = '';
+                if (hiddenUrlInput) hiddenUrlInput.value = '';
+                text.classList.remove('hidden');
+                addButton.classList.remove('hidden');
+                deleteButton.classList.add('hidden');
+            });
 
-                    if (width > height) {
-                        if (width > maxWidth) {
-                            height = Math.round((height * maxWidth) / width);
-                            width = maxWidth;
+            function handleImage(file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        const maxWidth = isMain ? 400 : 150;
+                        const maxHeight = isMain ? 300 : 150;
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > height) {
+                            if (width > maxWidth) {
+                                height = Math.round((height * maxWidth) / width);
+                                width = maxWidth;
+                            }
+                        } else {
+                            if (height > maxHeight) {
+                                width = Math.round((width * maxHeight) / height);
+                                height = maxHeight;
+                            }
                         }
-                    } else {
-                        if (height > maxHeight) {
-                            width = Math.round((width * maxHeight) / height);
-                            height = maxHeight;
-                        }
-                    }
 
-                    canvas.width = width;
-                    canvas.height = height;
-                    ctx.drawImage(img, 0, 0, width, height);
-                    preview.src = canvas.toDataURL('image/jpeg');
-                    preview.classList.remove('hidden');
-                    text.textContent = 'Replace image by dragging or clicking';
+                        canvas.width = width;
+                        canvas.height = height;
+                        ctx.drawImage(img, 0, 0, width, height);
+                        preview.src = canvas.toDataURL('image/jpeg');
+                        preview.classList.remove('hidden');
+                        text.classList.add('hidden');
+                        addButton.classList.add('hidden');
+                        deleteButton.classList.remove('hidden');
+                    };
+                    img.src = e.target.result;
                 };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
+                reader.readAsDataURL(file);
+            }
         }
 
         // Setup for main photo
-        setupDragAndDrop(document.getElementById('main-drop'), document.getElementById('main-file'), document.getElementById('main-preview'));
+        setupImageHandling(
+            document.getElementById('main-drop'),
+            document.getElementById('main-file'),
+            document.getElementById('main-preview'),
+            true
+        );
 
         // Setup for additional photos
-        for (let i = 1; i <= 3; i++) {
-            setupDragAndDrop(document.getElementById(`additional-drop-${i}`), document.getElementById(`additional-file-${i}`), document.getElementById(`additional-preview-${i}`));
+        for (let i = 1; i <= 4; i++) {
+            setupImageHandling(
+                document.getElementById(`additional-drop-${i}`),
+                document.getElementById(`additional-file-${i}`),
+                document.getElementById(`additional-preview-${i}`),
+                false
+            );
         }
-
     </script>
 </body>
 

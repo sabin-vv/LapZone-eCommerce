@@ -89,7 +89,7 @@
 </head>
 <body>
     <div class="dashboard">
-        <%- include("../views/partials/admin/sidebar.ejs") %>
+        <%- include("../partials/admin/sidebar.ejs") %>
         <main class="main-content">
             <header class="header">
                 <h2>Customer List</h2>
@@ -167,7 +167,7 @@
     <script>
         function confirmBlockUnblock(checkbox) {
             const form = checkbox.closest('form');
-            const isBlocking = checkbox.checked; // If checked, user will be blocked
+            const isBlocking = checkbox.checked; 
 
             Swal.fire({
                 title: 'Are you sure?',

@@ -1,5 +1,4 @@
-const User = require("../../model/user.js")
-const bcrypt = require("bcrypt")
+const User = require("../../model/user.js");
 
 
 const customerList = async (req, res) => {
@@ -10,66 +9,56 @@ const customerList = async (req, res) => {
         const limit = 10;
         const skip = (page - 1) * limit;
 
-
-        const searchQuery = req.query.search || ''; 
+        const searchQuery = req.query.search || "";
         let filter = {};
         if (searchQuery) {
-            const regex = new RegExp(searchQuery, 'i');
+            const regex = new RegExp(searchQuery, "i");
             filter = {
-                $or: [
-                    { fullname: regex },
-                    { email: regex }
-                ]
+                $or: [{ fullname: regex }, { email: regex }],
             };
         }
 
-       
         const totalUsers = await User.countDocuments(filter);
-        
+
         const users = await User.find(filter)
-            .sort({ createdAt: -1 }) 
+            .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit);
 
         const totalPages = Math.ceil(totalUsers / limit);
 
-        res.render("customerslist", {
+        res.render("admin/customerslist", {
             users,
             currentPage: page,
             totalPages,
-            searchQuery 
+            searchQuery,
         });
     } catch (error) {
-        console.error('Error in customerList:', error);
-        res.status(500).send('Server Error');
+        console.error("Error in customerList:", error);
+        res.status(500).send("Server Error");
     }
 };
 
+
+
 const customerControll = async (req, res) => {
-
     try {
-
         const userId = req.params.id;
-        const isBlocked = req.body.isBlocked === 'true'; // Convert string to boolean
-        console.log(`Updating user ${userId}: isBlocked = ${isBlocked}`); // Debug log
+        const isBlocked = req.body.isBlocked === "true";
 
-        const updatedUser = await User.findByIdAndUpdate(userId, { isBlocked }, { new: true });
-        console.log('Updated user:', updatedUser.isBlocked); // Debug log
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { isBlocked },
+            { new: true }
+        );
 
-        res.redirect('/admin/customers'); // Redirect to customer list
-
+        res.redirect("/admin/customers");
     } catch (error) {
-
-        console.error('Error updating user:', error);
-        res.status(500).send('Server Error');
-
+        res.status(500).send("Server Error");
     }
-}
-
-
+};
 
 module.exports = {
     customerList,
     customerControll,
-
-}
+};

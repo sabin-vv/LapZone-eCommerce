@@ -4,31 +4,31 @@ const bcrypt = require("bcrypt")
 const getadminLogin = (req, res) => {
 
     if (req.session.admin)
-        return res.render("adminDashboard")
+        return res.render("admin/adminDashboard")
 
-    res.render("adminlogin", { error: null })
+    res.render("admin/adminlogin", { error: null })
 
 }
 const login = async (req, res) => {
 
     if (req.session.admin)
-        return res.render("adminDashboard")
+        return res.render("admin/adminDashboard")
 
     const { email, password } = req.body
 
     if (!email || !password)
-        return res.render("adminlogin", { error: "All Fields re Required" })
+        return res.render("admin/adminlogin", { error: "All Fields re Required" })
 
     const user = await User.findOne({ email })
     if (!user)
-        return res.render("adminlogin", { error: "Account not Found" })
+        return res.render("admin/adminlogin", { error: "Account not Found" })
 
     if (!user.isAdmin)
-        return res.render("adminlogin", { error: "Unauthorized Access" })
+        return res.render("admin/adminlogin", { error: "Unauthorized Access" })
 
     const isMatch = await bcrypt.compare(password, user.password)
     if (!isMatch)
-        return res.render("adminlogin", { error: "Invalid Credentials" })
+        return res.render("admin/adminlogin", { error: "Invalid Credentials" })
 
     req.session.admin = email
     res.redirect("/admin/dashboard")
@@ -57,9 +57,9 @@ const adminLogout = (req,res) =>{
 const adminDashbaord = (req, res) => {
 
     if (req.session.admin)
-        return res.render("adminDashboard")
+        return res.render("admin/adminDashboard")
 
-    res.render("adminlogin", { error: null })
+    res.render("admin/adminlogin", { error: null })
 
 }
 
