@@ -5,31 +5,130 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Laptop Store</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="/css/header.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
     <style>
         .product-card {
             transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            padding-bottom: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            min-height: 400px; /* Fixed height for uniformity */
+            border: none; /* Remove default button border */
+            background: none; /* Remove default button background */
+            cursor: pointer; /* Indicate clickability */
+            width: 100%; /* Ensure full width */
         }
+
         .product-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
         }
+
+        .product-card img {
+            width: 100%;
+            height: 192px; /* Fixed height for images */
+            object-fit: cover;
+        }
+
+        .product-card:focus {
+            outline: none; /* Remove focus outline */
+        }
+
+        main .product-card {
+            background: white; /* Ensure card background is white */
+            border-radius: 0.5rem; /* Match rounded-lg from Tailwind */
+            overflow: hidden; /* Ensure content stays within bounds */
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .pagination a {
+            text-decoration: underline;
+        }
+
         .filter-section {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.3s ease;
         }
+
         .filter-section.open {
             max-height: 500px;
         }
+
         .rating-stars {
             color: #facc15;
         }
+
+        .card-content {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: space-between;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        .clear-search {
+            position: absolute;
+            right: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            display: none;
+        }
+
+        .clear-search.show {
+            display: block;
+        }
+
+        .range-slider {
+            position: relative;
+            width: 100%;
+            margin: 1rem 0;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            background: #e5e7eb;
+            height: 4px;
+            border-radius: 2px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #4f46e5;
+            border-radius: 50%;
+            cursor: pointer;
+            margin-top: -6px;
+        }
+
+        input[type="range"]::-webkit-slider-runnable-track {
+            height: 4px;
+            background: transparent;
+        }
+
+        .fixed-price {
+            position: absolute;
+            bottom: 0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            text-align: center;
+        }
     </style>
 </head>
-
 <body class="bg-gray-100 font-sans">
-
     <%- include("../partials/user/header.ejs") %>
 
     <div class="container mx-auto px-4 py-8 flex flex-col md:flex-row gap-6">
@@ -38,23 +137,59 @@
             <h2 class="text-xl font-bold mb-4">Filter By</h2>
             <form id="filter-form" action="/shop" method="GET">
                 <!-- Search Bar -->
-                <div class="mb-6">
+                <div class="mb-6 search-container">
                     <label for="search" class="block text-sm font-medium text-gray-700">Search</label>
-                    <input type="text" id="search" name="search" value="<%= searchQuery || '' %>" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Search products...">
+                    <input type="text" id="search" name="search" value="<%= searchQuery || '' %>"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm pr-8"
+                        placeholder="Search products..." aria-label="Search products">
+                    <button type="button" class="clear-search <%= searchQuery ? 'show' : '' %>"
+                        onclick="clearSearch()" aria-label="Clear search">
+                        <i class="bi bi-x text-lg"></i>
+                    </button>
+                </div>
+
+                <!-- Price Selector -->
+                <div class="mb-4">
+                    <button type="button"
+                        class="w-full text-left font-semibold text-gray-700 flex justify-between items-center"
+                        onclick="toggleFilter('price')">
+                        Max Price
+                        <svg class="w-4 h-4 transform transition-transform" id="price-toggle" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="price-section" class="filter-section open">
+                        <div class="range-slider">
+                            <input type="range" id="maxPrice" name="maxPrice" min="0" max="500000" step="1000"
+                                value="<%= query.maxPrice || 500000 %>" class="w-full">
+                        </div>
+                        <div class="text-sm text-gray-600">
+                            Up to ₹<span id="maxPriceValue">
+                                <%= query.maxPrice ? parseFloat(query.maxPrice).toLocaleString('en-IN') : '500,000' %>
+                            </span>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Brand Filter -->
                 <div class="mb-4">
-                    <button type="button" class="w-full text-left font-semibold text-gray-700 flex justify-between items-center" onclick="toggleFilter('brand')">
+                    <button type="button"
+                        class="w-full text-left font-semibold text-gray-700 flex justify-between items-center"
+                        onclick="toggleFilter('brand')">
                         Brand
-                        <svg class="w-4 h-4 transform transition-transform" id="brand-toggle" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        <svg class="w-4 h-4 transform transition-transform" id="brand-toggle" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 9l-7 7-7-7"></path>
                         </svg>
                     </button>
                     <div id="brand-section" class="filter-section open">
                         <% brands.forEach(brand => { %>
                             <label class="block mt-2">
-                                <input type="checkbox" name="brand" value="<%= brand %>" <%= query.brand && query.brand.includes(brand) ? 'checked' : '' %> class="rounded text-indigo-600 focus:ring-indigo-500">
+                                <input type="checkbox" name="brand" value="<%= brand %>" <%= query.brand && query.brand.includes(brand) ? 'checked' : '' %>
+                                    class="rounded text-indigo-600 focus:ring-indigo-500">
                                 <span class="ml-2 text-sm text-gray-600"><%= brand %></span>
                             </label>
                         <% }) %>
@@ -63,16 +198,21 @@
 
                 <!-- RAM Filter -->
                 <div class="mb-4">
-                    <button type="button" class="w-full text-left font-semibold text-gray-700 flex justify-between items-center" onclick="toggleFilter('ram')">
+                    <button type="button"
+                        class="w-full text-left font-semibold text-gray-700 flex justify-between items-center"
+                        onclick="toggleFilter('ram')">
                         RAM Capacity
-                        <svg class="w-4 h-4 transform transition-transform" id="ram-toggle" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        <svg class="w-4 h-4 transform transition-transform" id="ram-toggle" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 9l-7 7-7-7"></path>
                         </svg>
                     </button>
                     <div id="ram-section" class="filter-section open">
                         <% rams.forEach(ram => { %>
                             <label class="block mt-2">
-                                <input type="checkbox" name="ram" value="<%= ram %>" <%= query.ram && query.ram.includes(ram) ? 'checked' : '' %> class="rounded text-indigo-600 focus:ring-indigo-500">
+                                <input type="checkbox" name="ram" value="<%= ram %>" <%= query.ram && query.ram.includes(ram) ? 'checked' : '' %>
+                                    class="rounded text-indigo-600 focus:ring-indigo-500">
                                 <span class="ml-2 text-sm text-gray-600"><%= ram %></span>
                             </label>
                         <% }) %>
@@ -81,16 +221,21 @@
 
                 <!-- SSD Filter -->
                 <div class="mb-4">
-                    <button type="button" class="w-full text-left font-semibold text-gray-700 flex justify-between items-center" onclick="toggleFilter('ssd')">
+                    <button type="button"
+                        class="w-full text-left font-semibold text-gray-700 flex justify-between items-center"
+                        onclick="toggleFilter('ssd')">
                         SSD Capacity
-                        <svg class="w-4 h-4 transform transition-transform" id="ssd-toggle" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        <svg class="w-4 h-4 transform transition-transform" id="ssd-toggle" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 9l-7 7-7-7"></path>
                         </svg>
                     </button>
                     <div id="ssd-section" class="filter-section open">
                         <% ssds.forEach(ssd => { %>
                             <label class="block mt-2">
-                                <input type="checkbox" name="ssd" value="<%= ssd %>" <%= query.ssd && query.ssd.includes(ssd) ? 'checked' : '' %> class="rounded text-indigo-600 focus:ring-indigo-500">
+                                <input type="checkbox" name="ssd" value="<%= ssd %>" <%= query.ssd && query.ssd.includes(ssd) ? 'checked' : '' %>
+                                    class="rounded text-indigo-600 focus:ring-indigo-500">
                                 <span class="ml-2 text-sm text-gray-600"><%= ssd %></span>
                             </label>
                         <% }) %>
@@ -99,23 +244,31 @@
 
                 <!-- Graphics Filter -->
                 <div class="mb-4">
-                    <button type="button" class="w-full text-left font-semibold text-gray-700 flex justify-between items-center" onclick="toggleFilter('graphics')">
+                    <button type="button"
+                        class="w-full text-left font-semibold text-gray-700 flex justify-between items-center"
+                        onclick="toggleFilter('graphics')">
                         Graphics Processor
-                        <svg class="w-4 h-4 transform transition-transform" id="graphics-toggle" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        <svg class="w-4 h-4 transform transition-transform" id="graphics-toggle" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 9l-7 7-7-7"></path>
                         </svg>
                     </button>
                     <div id="graphics-section" class="filter-section open">
                         <% graphics.forEach(graphic => { %>
                             <label class="block mt-2">
-                                <input type="checkbox" name="graphics" value="<%= graphic %>" <%= query.graphics && query.graphics.includes(graphic) ? 'checked' : '' %> class="rounded text-indigo-600 focus:ring-indigo-500">
+                                <input type="checkbox" name="graphics" value="<%= graphic %>"
+                                    <%= query.graphics && query.graphics.includes(graphic) ? 'checked' : '' %>
+                                    class="rounded text-indigo-600 focus:ring-indigo-500">
                                 <span class="ml-2 text-sm text-gray-600"><%= graphic %></span>
                             </label>
                         <% }) %>
                     </div>
                 </div>
 
-                <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Apply Filters</button>
+                <button type="submit"
+                    class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Apply
+                    Filters</button>
             </form>
         </aside>
 
@@ -125,11 +278,15 @@
                 <h2 class="text-xl font-bold">Products (<%= totalProducts %>)</h2>
                 <div class="flex items-center gap-4">
                     <label for="sort" class="text-sm font-medium text-gray-700">Sort By:</label>
-                    <select id="sort" name="sort" onchange="this.form.submit()" form="filter-form" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                        <option value="popularity" <%= query.sort === 'popularity' ? 'selected' : '' %>>Popularity</option>
+                    <select id="sort" name="sort" onchange="this.form.submit()" form="filter-form"
+                        class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        <option value="popularity" <%= query.sort === 'popularity' ? 'selected' : '' %>>Popularity
+                        </option>
                         <option value="newest" <%= query.sort === 'newest' ? 'selected' : '' %>>Newest First</option>
-                        <option value="price-asc" <%= query.sort === 'price-asc' ? 'selected' : '' %>>Price Low-High</option>
-                        <option value="price-desc" <%= query.sort === 'price-desc' ? 'selected' : '' %>>Price High-Low</option>
+                        <option value="price-asc" <%= query.sort === 'price-asc' ? 'selected' : '' %>>Price Low-High
+                        </option>
+                        <option value="price-desc" <%= query.sort === 'price-desc' ? 'selected' : '' %>>Price High-Low
+                        </option>
                     </select>
                 </div>
             </div>
@@ -139,9 +296,10 @@
             <% } else { %>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     <% products.forEach(product => { %>
-                        <div class="product-card bg-white rounded-lg shadow-md overflow-hidden">
-                            <img src="<%= product.images.find(img => img.isMain)?.url || 'https://placehold.co/200x150' %>" alt="<%= product.name %>" class="w-full h-48 object-cover">
-                            <div class="p-4">
+                        <button onclick="window.location.href='/shop/product/<%= product._id %>'" class="product-card bg-white rounded-lg shadow-md overflow-hidden w-full focus:outline-none">
+                            <img src="<%= product.images.find(img => img.isMain)?.url || 'https://placehold.co/200x150' %>"
+                                alt="<%= product.name %> laptop" class="w-full h-48 object-cover">
+                            <div class="p-4 card-content">
                                 <div class="rating-stars mb-2">
                                     <% for (let i = 1; i <= 5; i++) { %>
                                         <% if (i <= Math.floor(product.rating)) { %>
@@ -161,29 +319,34 @@
                                     <li><%= product.variants[0]?.Storage || 'N/A' %> Storage</li>
                                     <li><%= product.screen %></li>
                                 </ul>
-                                <p class="text-lg font-bold text-indigo-600">₹<%= product.salePrice.toFixed(2) %></p>
+                                <p class="text-lg font-bold text-indigo-600 fixed-price">₹<%= product.salePrice.toFixed(2) %></p>
                             </div>
-                        </div>
+                        </button>
                     <% }) %>
                 </div>
 
                 <!-- Pagination -->
                 <div class="mt-8 flex justify-center">
-                    <nav aria-label="Page navigation">
+                    <nav class="pagination" aria-label="Page navigation">
                         <ul class="inline-flex items-center -space-x-px">
                             <% if (currentPage > 1) { %>
                                 <li>
-                                    <a href="/shop?page=<%= currentPage - 1 %>&search=<%= encodeURIComponent(searchQuery || '') %>&brand=<%= query.brand ? query.brand.join(',') : '' %>&ram=<%= query.ram ? query.ram.join(',') : '' %>&ssd=<%= query.ssd ? query.ssd.join(',') : '' %>&graphics=<%= query.graphics ? query.graphics.join(',') : '' %>&sort=<%= query.sort || 'popularity' %>" class="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700">Previous</a>
+                                    <a href="/shop?page=<%= currentPage - 1 %>&search=<%= encodeURIComponent(searchQuery || '') %>&brand=<%= query.brand ? query.brand.join(',') : '' %>&ram=<%= query.ram ? query.ram.join(',') : '' %>&ssd=<%= query.ssd ? query.ssd.join(',') : '' %>&graphics=<%= query.graphics ? query.graphics.join(',') : '' %>&maxPrice=<%= query.maxPrice || '' %>&sort=<%= query.sort || 'popularity' %>"
+                                        class="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700">Previous</a>
                                 </li>
                             <% } %>
                             <% for (let i = 1; i <= totalPages; i++) { %>
                                 <li>
-                                    <a href="/shop?page=<%= i %>&search=<%= encodeURIComponent(searchQuery || '') %>&brand=<%= query.brand ? query.brand.join(',') : '' %>&ram=<%= query.ram ? query.ram.join(',') : '' %>&ssd=<%= query.ssd ? query.ssd.join(',') : '' %>&graphics=<%= query.graphics ? query.graphics.join(',') : '' %>&sort=<%= query.sort || 'popularity' %>" class="px-3 py-2 leading-tight <%= currentPage === i ? 'text-indigo-600 bg-indigo-50 border-indigo-300' : 'text-gray-500 bg-white border-gray-300' %> hover:bg-gray-100 hover:text-gray-700"><%= i %></a>
+                                    <a href="/shop?page=<%= i %>&search=<%= encodeURIComponent(searchQuery || '') %>&brand=<%= query.brand ? query.brand.join(',') : '' %>&ram=<%= query.ram ? query.ram.join(',') : '' %>&ssd=<%= query.ssd ? query.ssd.join(',') : '' %>&graphics=<%= query.graphics ? query.graphics.join(',') : '' %>&maxPrice=<%= query.maxPrice || '' %>&sort=<%= query.sort || 'popularity' %>"
+                                        class="px-3 py-2 leading-tight <%= currentPage === i ? 'text-indigo-600 bg-indigo-50 border-indigo-300' : 'text-gray-500 bg-white border-gray-300' %> hover:bg-gray-100 hover:text-gray-700">
+                                        <%= i %>
+                                    </a>
                                 </li>
                             <% } %>
                             <% if (currentPage < totalPages) { %>
                                 <li>
-                                    <a href="/shop?page=<%= currentPage + 1 %>&search=<%= encodeURIComponent(searchQuery || '') %>&brand=<%= query.brand ? query.brand.join(',') : '' %>&ram=<%= query.ram ? query.ram.join(',') : '' %>&ssd=<%= query.ssd ? query.ssd.join(',') : '' %>&graphics=<%= query.graphics ? query.graphics.join(',') : '' %>&sort=<%= query.sort || 'popularity' %>" class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700">Next</a>
+                                    <a href="/shop?page=<%= currentPage + 1 %>&search=<%= encodeURIComponent(searchQuery || '') %>&brand=<%= query.brand ? query.brand.join(',') : '' %>&ram=<%= query.ram ? query.ram.join(',') : '' %>&ssd=<%= query.ssd ? query.ssd.join(',') : '' %>&graphics=<%= query.graphics ? query.graphics.join(',') : '' %>&maxPrice=<%= query.maxPrice || '' %>&sort=<%= query.sort || 'popularity' %>"
+                                        class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700">Next</a>
                                 </li>
                             <% } %>
                         </ul>
@@ -193,15 +356,25 @@
         </main>
     </div>
 
-    <script src="/js/header.js"></script>
     <script>
-        
         function toggleFilter(section) {
             const sectionElement = document.getElementById(`${section}-section`);
             const toggleIcon = document.getElementById(`${section}-toggle`);
             sectionElement.classList.toggle('open');
             toggleIcon.classList.toggle('rotate-180');
         }
+
+        function clearSearch() {
+            const searchInput = document.getElementById('search');
+            searchInput.value = '';
+            document.getElementById('filter-form').submit();
+        }
+
+        // Handle search input to show/hide clear button
+        document.getElementById('search').addEventListener('input', (e) => {
+            const clearButton = document.querySelector('.clear-search');
+            clearButton.classList.toggle('show', e.target.value !== '');
+        });
 
         // Submit form on search input change (debounced)
         let searchTimeout;
@@ -210,6 +383,25 @@
             searchTimeout = setTimeout(() => {
                 document.getElementById('filter-form').submit();
             }, 500);
+        });
+
+        // Price selector logic
+        const maxPriceInput = document.getElementById('maxPrice');
+        const maxPriceValue = document.getElementById('maxPriceValue');
+
+        function updatePriceValue() {
+            const max = parseFloat(maxPriceInput.value);
+            maxPriceValue.textContent = max.toLocaleString('en-IN');
+        }
+
+        maxPriceInput.addEventListener('input', updatePriceValue);
+
+        // Initialize price value
+        updatePriceValue();
+
+        // Debug header rendering
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Header element:', document.querySelector('header'));
         });
     </script>
 </body>

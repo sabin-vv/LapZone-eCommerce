@@ -11,10 +11,13 @@ const listProducts = async (req, res) => {
   const ramFilter = req.query.ram ? (Array.isArray(req.query.ram) ? req.query.ram : req.query.ram.split(",")) : [];
   const ssdFilter = req.query.ssd ? (Array.isArray(req.query.ssd) ? req.query.ssd : req.query.ssd.split(",")) : [];
   const graphicsFilter = req.query.graphics ? (Array.isArray(req.query.graphics) ? req.query.graphics : req.query.graphics.split(",")) : [];
+  const maxPrice = req.query.maxPrice ? parseFloat(req.query.maxPrice) : null;
   const sortOption = req.query.sort || "popularity";
   const page = parseInt(req.query.page) || 1;
   const limit = 9; // 9 products per page for 3x3 grid
   const skip = (page - 1) * limit;
+
+  
 
   // Build query
   const query = { isActive: true, isExisting: true };
@@ -25,13 +28,25 @@ const listProducts = async (req, res) => {
     query.brand = { $in: brandFilter };
   }
   if (ramFilter.length > 0) {
-    query["variants.RAM"] = { $in: ramFilter };
+    query.variants = {
+      $elemMatch: {
+        RAM: { $in: ramFilter.map(ram => new RegExp("^" + ram, "i")) }
+      }
+    };
+    
   }
   if (ssdFilter.length > 0) {
-    query["variants.Storage"] = { $in: ssdFilter };
+    query.variants = {
+      $elemMatch:{
+        Storage:{$in: ssdFilter.map(ssd => new RegExp("^" + ssd,"i"))}
+      }
+    }
   }
   if (graphicsFilter.length > 0) {
     query.graphics = { $in: graphicsFilter };
+  }
+  if (maxPrice) {
+    query.salePrice = { $lte: maxPrice };
   }
 
   // Build sort
@@ -52,8 +67,10 @@ const listProducts = async (req, res) => {
 
     // Fetch filter options
     const brands = await Product.distinct("brand");
-    const rams = await Product.distinct("variants.RAM");
-    const ssds = await Product.distinct("variants.Storage");
+    const ramvariants = await Product.distinct("variants.RAM");
+    const rams = [...new Set(ramvariants.map(ram => ram.split(" ")[0]))];
+    const ssdvariants = await Product.distinct("variants.Storage");
+    const ssds = [...new Set(ssdvariants.map(ssd => ssd.split(" ")[0]))];
     const graphics = await Product.distinct("graphics");
 
     // Pagination
@@ -74,13 +91,13 @@ const listProducts = async (req, res) => {
         ssd: ssdFilter,
         graphics: graphicsFilter,
         sort: sortOption,
+        maxPrice: maxPrice || null
       },
       currentPage: page,
       totalPages,
       totalProducts,
     });
   } catch (error) {
-    console.error("Error listing products:", error);
     res.render("user/shoppingPage", {
       products: [],
       user,
@@ -89,7 +106,14 @@ const listProducts = async (req, res) => {
       ssds: [],
       graphics: [],
       searchQuery: "",
-      query: {},
+      query: {
+        brand: [],
+        ram: [],
+        ssd: [],
+        graphics: [],
+        sort: "popularity",
+        maxPrice: null
+      },
       currentPage: 1,
       totalPages: 0,
       totalProducts: 0,
@@ -98,6 +122,22 @@ const listProducts = async (req, res) => {
   }
 };
 
+
+
+const viewProduct =async  (req,res) =>{
+
+  if(!req.session.user)
+    return res.redirect("/")
+
+  const user = req.session.user
+  const productId  = req.params.id
+  const product = await Product.findById(productId)
+  
+
+  res.render("user/productPage",{product,user})
+}
+
 module.exports = {
   listProducts,
+  viewProduct,
 };

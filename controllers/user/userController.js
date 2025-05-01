@@ -11,7 +11,7 @@ const landingPage = async (req, res) => {
 
     const products = await Product.find({ isActive: true, isExisting: true }).sort({ updatedAt: -1 }).limit(4)
     const gamingProducts = await Product.find({isActive:true,isExisting:true,category:"Gaming Laptop"}).sort({updatedAt:-1}).limit(4)
-    console.log(gamingProducts)
+    
 
     if (req.session.user) {
         return res.redirect("/home")
@@ -203,7 +203,7 @@ const homePage = async (req, res) => {
 
     if (req.session.user) {
         const user = req.session.user
-        console.log(user)
+        
         const products = await Product.find({ isActive: true, isExisting: true }).sort({ updatedAt: -1 }).limit(4)
         const gamingProducts = await Product.find({isActive:true,isExisting:true,category:"Gaming Laptop"}).sort({updatedAt:-1}).limit(4)
         return res.render("user/landingPage", { user, products,gamingProducts })

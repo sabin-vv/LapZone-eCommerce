@@ -47,6 +47,7 @@ router.get("/logout", userController.userLogout)
 
 
 router.get("/shop", productController.listProducts)
+router.get("/shop/product/:id",productController.viewProduct)
 
 
 

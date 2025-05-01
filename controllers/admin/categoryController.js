@@ -46,6 +46,8 @@ const categoryListing = async (req, res) => {
 
 
 const addCategory = (req, res) => {
+
+    if (!req.session.admin) return res.redirect("/admin");
     
     res.render("admin/addCategory", { error: null, category: null })
 
@@ -53,6 +55,8 @@ const addCategory = (req, res) => {
 
 
 const newCategory = async (req, res) => {
+
+    if (!req.session.admin) return res.redirect("/admin");
 
     const { name, description, offer, isListed } = req.body
 
@@ -81,10 +85,7 @@ const newCategory = async (req, res) => {
 const categoryListUnlist = async (req, res) => {
     try {
 
-        if (!req.session.admin) {
-
-            return res.status(401).redirect('/admin/login');
-        }
+        if (!req.session.admin) return res.redirect("/admin");
 
         const categoryId = req.params.id;
         if (!mongoose.Types.ObjectId.isValid(categoryId)) {
@@ -112,8 +113,10 @@ const categoryListUnlist = async (req, res) => {
 
 const editCategory = async (req, res) => {
 
+    if (!req.session.admin) return res.redirect("/admin");
+
     const categoryId = req.params.id
-    console.log(categoryId)
+    
     const category = await Category.findOne({ _id: categoryId })
     if (!category)
         return res.redirect("/admin/category")
@@ -125,6 +128,8 @@ const editCategory = async (req, res) => {
 }
 
 const updateCategory = async (req, res) => {
+
+    if (!req.session.admin) return res.redirect("/admin");
 
     const categoryId = req.params.id
     const categoryData = req.body
@@ -142,6 +147,8 @@ const updateCategory = async (req, res) => {
 }
 
 const softdeleteCategory = async (req, res) => {
+
+    if (!req.session.admin) return res.redirect("/admin");
 
     const categoryId = req.params.id
     const category = await Category.findById(categoryId)

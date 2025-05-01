@@ -43,6 +43,9 @@ const customerList = async (req, res) => {
 
 const customerControll = async (req, res) => {
     try {
+        if (!req.session.admin) return res.redirect("/admin");
+
+    
         const userId = req.params.id;
         const isBlocked = req.body.isBlocked === "true";
 

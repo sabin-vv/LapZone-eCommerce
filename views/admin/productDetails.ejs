@@ -128,17 +128,17 @@
                                 <div class="variant form-grid" data-index="<%= index %>">
                                     <div>
                                         <label>RAM</label>
-                                        <input type="text" name="variants[<%= index %>].RAM"
+                                        <input type="text" name="variants[<%= index %>][RAM]"
                                             value="<%= variant.RAM || '' %>" required class="custom-input">
                                     </div>
                                     <div>
                                         <label>Storage</label>
-                                        <input type="text" name="variants[<%= index %>].Storage"
+                                        <input type="text" name="variants[<%= index %>][Storage]"
                                             value="<%= variant.Storage || '' %>" required class="custom-input">
                                     </div>
                                     <div>
                                         <label>Price Adjustment</label>
-                                        <input type="number" name="variants[<%= index %>].priceAdjustment"
+                                        <input type="number" name="variants[<%= index %>][priceAdjustment]"
                                             value="<%= variant.priceAdjustment || '' %>" class="custom-input">
                                     </div>
                                     <div class="flex items-end">
@@ -156,33 +156,37 @@
                     <!-- Ports Section -->
                     <fieldset class="nested-fieldset mt-6">
                         <legend>Ports</legend>
+                       <% if(product.ports?.length ){ %>
+                            
+                       
                         <div class="form-grid">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">USB Type-A</label>
-                                <input type="text" name="ports[0]['USB Type-A']" class="mt-1 block w-full custom-input">
+                                <input type="text" name="ports[0][USB Type-A]" class="mt-1 block w-full custom-input" value="<%=product.ports[0]['USB Type-A'] %>">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">USB Type-C</label>
-                                <input type="text" name="ports[0]['USB Type-C']" class="mt-1 block w-full custom-input">
+                                <input type="text" name="ports[0][USB Type-C]" class="mt-1 block w-full custom-input " value="<%= product.ports[0]['USB Type-C'] %>">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">HDMI</label>
-                                <input type="text" name="ports[0]['HDMI']" class="mt-1 block w-full custom-input">
+                                <input type="text" name="ports[0][HDMI]" class="mt-1 block w-full custom-input" value="<%= product.ports[0]['HDMI'] %>">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Audio Jack</label>
-                                <input type="text" name="ports[0]['AudioJack']" class="mt-1 block w-full custom-input">
+                                <input type="text" name="ports[0][AudioJack]" class="mt-1 block w-full custom-input" value="<%= product.ports[0]['AudioJack'] %>">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">LAN</label>
-                                <input type="text" name="ports[0]['LAN']" class="mt-1 block w-full custom-input">
+                                <input type="text" name="ports[0][LAN]" class="mt-1 block w-full custom-input" value="<%= product.ports[0]['LAN'] %>">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Card Reader</label>
-                                <input type="text" name="ports[0]['Card Reader']"
-                                    class="mt-1 block w-full custom-input">
+                                <input type="text" name="ports[0][Card Reader]"
+                                    class="mt-1 block w-full custom-input" value="<%= product.ports[0]['Card Reader'] %>">
                             </div>
                         </div>
+                       <% } %>
                     </fieldset>
 
                     <!-- Images Section -->
