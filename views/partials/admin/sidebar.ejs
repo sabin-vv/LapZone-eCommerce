@@ -1,8 +1,9 @@
 <!-- Sidebar -->
-<aside class="sidebar">
+<aside class="sidebar" id="sidebar">
     <div class="logo-container">
         <img src="/uploads/logo/logo.png" alt="LapZone Logo">
         <h1 class="sidebar-logo">LapZone</h1>
+        
     </div>
     <nav>
         <ul>
@@ -21,6 +22,11 @@
         <button type="submit" class="logout-btn">Logout</button>
     </form>
 </aside>
+
+<!-- Hamburger Menu for Mobile -->
+<button class="hamburger-btn" id="toggle-sidebar" aria-label="Toggle sidebar">
+    <i class="bi bi-list"></i> <!-- Bootstrap Icons for the hamburger icon -->
+</button>
 
 <script>
     function setActiveSidebarLink() {

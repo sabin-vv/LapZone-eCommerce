@@ -18,13 +18,14 @@
     <section class="section container py-5">
         <h2 class="text-center mb-5">New Arrivals</h2>
         <% if (products && products.length) { %>
+            
             <div class="product-list row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 justify-content-center">
                 <% products.forEach(product => { 
                     const mainImage = product.images.find(img => img.isMain); 
-                    const variant = product.variants?.[0]; 
-                %>
+                    const variant = product.variants?.[0]; %>
                     <div class="col">
                         <div class="product card h-100 border-0 shadow-sm">
+                            <a href="/shop/product/<%= product._id %>" class="text-decoration-none text-dark">
                             <img 
                                 src="<%= mainImage?.url || '/images/default.jpg' %>" 
                                 alt="<%= product.name %> laptop" 
@@ -37,6 +38,7 @@
                                 </p>
                                 <p class="card-text fw-bold text-primary">₹<%= product.salePrice.toFixed(2) %></p>
                             </div>
+                        </a>
                         </div>
                     </div>
                 <% }) %>
@@ -63,6 +65,7 @@
                 %>
                     <div class="col">
                         <div class="product card h-100 border-0 shadow-sm">
+                            <a href="/shop/product/<%= product._id %>" class="text-decoration-none text-dark">
                             <img 
                                 src="<%= mainImage?.url || '/images/default.jpg' %>" 
                                 alt="<%= product.name %> laptop" 
@@ -75,6 +78,7 @@
                                 </p>
                                 <p class="card-text fw-bold text-primary">₹<%= product.salePrice.toFixed(2) %></p>
                             </div>
+                            </a>
                         </div>
                     </div>
                 <% }) %>

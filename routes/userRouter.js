@@ -3,6 +3,7 @@ const router = express.Router();
 const passport = require("passport")
 const userController = require("../controllers/user/userController")
 const productController = require("../controllers/user/productController")
+const isUserBlocked = require("../middlewares/userAuthCheck")
 
 router.get('/', userController.landingPage)
 
@@ -21,7 +22,7 @@ router.post("/resend-otp", userController.resendOtp)
 
 router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }))
 
-router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: "/signup" }), (req, res) => {
+router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: "/login" }), (req, res) => {
     req.session.user = req.user;
     res.redirect('/home')
 })
@@ -30,7 +31,7 @@ router.get('/auth/google/callback', passport.authenticate('google', { failureRed
 
 router.post("/login", userController.postLoginPage)
 
-router.get("/home", userController.homePage)
+router.get("/home", isUserBlocked, userController.homePage)
 
 router.get("/forgot-password", userController.forgotPassword)
 
@@ -46,8 +47,8 @@ router.get("/logout", userController.userLogout)
 
 
 
-router.get("/shop", productController.listProducts)
-router.get("/shop/product/:id",productController.viewProduct)
+router.get("/shop", isUserBlocked, productController.listProducts)
+router.get("/shop/product/:id", isUserBlocked, productController.viewProduct)
 
 
 

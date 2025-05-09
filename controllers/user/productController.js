@@ -1,4 +1,6 @@
 const Product = require("../../model/products");
+const { off } = require("../../model/user");
+const mongoose = require('mongoose')
 
 const listProducts = async (req, res) => {
   if (!req.session.user) {
@@ -6,7 +8,9 @@ const listProducts = async (req, res) => {
   }
 
   const user = req.session.user;
+  const username = req.session.username
   const searchQuery = req.query.search ? req.query.search.trim() : "";
+
   const brandFilter = req.query.brand ? (Array.isArray(req.query.brand) ? req.query.brand : req.query.brand.split(",")) : [];
   const ramFilter = req.query.ram ? (Array.isArray(req.query.ram) ? req.query.ram : req.query.ram.split(",")) : [];
   const ssdFilter = req.query.ssd ? (Array.isArray(req.query.ssd) ? req.query.ssd : req.query.ssd.split(",")) : [];
@@ -14,10 +18,10 @@ const listProducts = async (req, res) => {
   const maxPrice = req.query.maxPrice ? parseFloat(req.query.maxPrice) : null;
   const sortOption = req.query.sort || "popularity";
   const page = parseInt(req.query.page) || 1;
-  const limit = 9; // 9 products per page for 3x3 grid
+  const limit = 9;
   const skip = (page - 1) * limit;
 
-  
+
 
   // Build query
   const query = { isActive: true, isExisting: true };
@@ -33,12 +37,12 @@ const listProducts = async (req, res) => {
         RAM: { $in: ramFilter.map(ram => new RegExp("^" + ram, "i")) }
       }
     };
-    
+
   }
   if (ssdFilter.length > 0) {
     query.variants = {
-      $elemMatch:{
-        Storage:{$in: ssdFilter.map(ssd => new RegExp("^" + ssd,"i"))}
+      $elemMatch: {
+        Storage: { $in: ssdFilter.map(ssd => new RegExp("^" + ssd, "i")) }
       }
     }
   }
@@ -59,6 +63,8 @@ const listProducts = async (req, res) => {
     sort.salePrice = 1;
   } else if (sortOption === "price-desc") {
     sort.salePrice = -1;
+  } else if (sortOption === 'name-asc') {
+    sort.name = 1
   }
 
   try {
@@ -80,6 +86,7 @@ const listProducts = async (req, res) => {
     res.render("user/shoppingPage", {
       products,
       user,
+      username,
       brands,
       rams,
       ssds,
@@ -101,6 +108,7 @@ const listProducts = async (req, res) => {
     res.render("user/shoppingPage", {
       products: [],
       user,
+      username,
       brands: [],
       rams: [],
       ssds: [],
@@ -124,17 +132,22 @@ const listProducts = async (req, res) => {
 
 
 
-const viewProduct =async  (req,res) =>{
+const viewProduct = async (req, res) => {
 
-  if(!req.session.user)
-    return res.redirect("/")
-
+  if (!req.session.user)
+    return res.redirect("/login")
+  
   const user = req.session.user
-  const productId  = req.params.id
+  const username = req.session.username
+  const productId = req.params.id
   const product = await Product.findById(productId)
+
+  const suggesionCategory = product.category
+  
+  productSuggesions = await Product.find({category:suggesionCategory,_id:{$ne:productId}})
   
 
-  res.render("user/productPage",{product,user})
+  res.render("user/productPage", { product, user ,username,productSuggesions })
 }
 
 module.exports = {

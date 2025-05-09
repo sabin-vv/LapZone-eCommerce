@@ -7,6 +7,7 @@
     <title>Add New Product</title>
     <link rel="stylesheet" href="/css/productDetails.css">
     <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
@@ -206,14 +207,12 @@
                                             d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
                                         </path>
                                     </svg>
-                                    <p class="text-sm text-gray-600 mt-2">Drag and drop or click to add
-                                        image
-                                    </p>
-                                    <button type="button" class="custom-button mt-4">Add Image</button>
+                                    <p class="text-sm text-gray-600 mt-2 <%= product.images?.[0]?.url ? 'hidden' : '' %>">Drag and drop or click to add image</p>
+                                    <button type="button" class="custom-button mt-4 add-image-button <%= product.images?.[0]?.url ? 'hidden' : '' %>" data-input-id="main-file">Add Image</button>
                                     <img id="main-preview"
                                         class="image-preview  <%= product.images?.[0]?.url ? '' : 'hidden' %>"
                                         alt="Main Photo Preview" src="<%= product.images[0]?.url || '' %>">
-                                    <button type="button" class="delete-image hidden">✕</button>
+                                        <button type="button" class="delete-image <%= product.images?.[0]?.url ? '' : 'hidden' %>">✕</button>
                                 </div>
                                 <input type="hidden" name="images[0].isMain" id="hidden-isMain-0" value="true">
                                 <input type="hidden" name="images[0].url" id="existing-image-0"
@@ -237,14 +236,13 @@
                                                         d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
                                                     </path>
                                                 </svg>
-                                                <p class="text-sm text-gray-600 mt-2">Drag and drop, or click
-                                                    to add image</p>
-                                                <button type="button" class="custom-button mt-4">Add Image</button>
+                                                <p class="text-sm text-gray-600 mt-2 <%= product.images?.[i]?.url ? 'hidden' : '' %>">Drag and drop, or click to add image</p>
+                                                <button type="button" class="custom-button mt-4 add-image-button <%= product.images?.[i]?.url ? 'hidden' : '' %>" data-input-id="additional-file-<%= i %>">Add Image</button>                                                
                                                 <img id="additional-preview-<%= i %>"
-                                                    class="image-preview <%= product.images?.[i]?.url ? '' : 'hidden' %>"
+                                                    class="image-preview  <%= product.images?.[i]?.url ? '' : 'hidden' %>"
                                                     alt="Additional Photo <%= i %> Preview"
                                                     src="<%= product.images[i]?.url || '' %>">
-                                                <button type="button" class="delete-image hidden">✕</button>
+                                                    <button type="button" id="additional-delete-<%= i %>" class=" delete-image <%= product.images?.[i]?.url ? '' : 'hidden' %>">✕</button>
                                             </div>
                                             <input type="hidden" name="images[<%= i %>].isMain"
                                                 id="hidden-isMain-<%= i %>" value="false">
@@ -277,18 +275,29 @@
                 </form>
             </main>
     </div>
+    <div id="cropModal">
+        <div class="cropper-container">
+            <div class="cropper-image-wrapper">
+                <img id="cropImage" alt="Image to crop"> 
+            </div>
+            <div class="cropper-buttons">
+                <button class="btn btn-blue text-sm px-4 py2" id="cropConfirm">Crop & Save</button>
+                <button class="btn btn-red text-sm px-4 py2" id="cropCancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+    
 
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
     <script>
-        // Dynamic Variant Addition and Removal
-        let variantIndex = 1;
+
+       // Variant Management
+       let variantIndex = 1;
         function updateRemoveButtons() {
             const variants = document.querySelectorAll('.variant');
             const removeButtons = document.querySelectorAll('.remove-variant');
-            if (variants.length > 1) {
-                removeButtons.forEach(button => button.classList.remove('hidden'));
-            } else {
-                removeButtons.forEach(button => button.classList.add('hidden'));
-            }
+            removeButtons.forEach(button => button.classList.toggle('hidden', variants.length <= 1));
         }
 
         document.getElementById('add-variant').addEventListener('click', () => {
@@ -299,256 +308,273 @@
             newVariant.innerHTML = `
                 <div>
                     <label for="variant-ram-${variantIndex}" class="block text-sm font-medium text-gray-700">RAM</label>
-                    <input type="text" id="variant-ram-${variantIndex}" name="variants[${variantIndex}].RAM" required class="mt-1 block w-full custom-input">
+                    <input type="text" id="variant-ram-${variantIndex}" name="variants[${variantIndex}][RAM]" class="mt-1 block w-full custom-input" required aria-describedby="variant-ram-${variantIndex}-error">
+                    <p id="variant-ram-${variantIndex}-error" data-error="variants[${variantIndex}][RAM]" class="text-red-500 text-xs italic hidden"></p>
                 </div>
                 <div>
                     <label for="variant-storage-${variantIndex}" class="block text-sm font-medium text-gray-700">Storage</label>
-                    <input type="text" id="variant-storage-${variantIndex}" name="variants[${variantIndex}].Storage" required class="mt-1 block w-full custom-input">
+                    <input type="text" id="variant-storage-${variantIndex}" name="variants[${variantIndex}][Storage]" class="mt-1 block w-full custom-input" required aria-describedby="variant-storage-${variantIndex}-error">
+                    <p id="variant-storage-${variantIndex}-error" data-error="variants[${variantIndex}][Storage]" class="text-red-500 text-xs italic hidden"></p>
                 </div>
                 <div>
                     <label for="variant-priceAdjustment-${variantIndex}" class="block text-sm font-medium text-gray-700">Price Adjustment</label>
-                    <input type="number" id="variant-priceAdjustment-${variantIndex}" name="variants[${variantIndex}].priceAdjustment" class="mt-1 block w-full custom-input">
+                    <input type="number" id="variant-priceAdjustment-${variantIndex}" name="variants[${variantIndex}][priceAdjustment]" class="mt-1 block w-full custom-input" step="0.01" aria-describedby="variant-priceAdjustment-${variantIndex}-error">
+                    <p id="variant-priceAdjustment-${variantIndex}-error" data-error="variants[${variantIndex}][priceAdjustment]" class="text-red-500 text-xs italic hidden"></p>
                 </div>
                 <div class="flex items-end">
-                    <button type="button" class="remove-variant inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" data-index="${variantIndex}">Remove</button>
+                    <button type="button" class="remove-variant inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" data-index="${variantIndex}" aria-label="Remove variant">Remove</button>
                 </div>
             `;
             container.appendChild(newVariant);
             variantIndex++;
             updateRemoveButtons();
 
-            // Add event listener for the new remove button
             newVariant.querySelector('.remove-variant').addEventListener('click', () => {
                 newVariant.remove();
-                // Reindex remaining variants to maintain correct naming
                 const remainingVariants = document.querySelectorAll('.variant');
                 remainingVariants.forEach((variant, idx) => {
                     variant.dataset.index = idx;
                     const inputs = variant.querySelectorAll('input');
                     inputs[0].id = `variant-ram-${idx}`;
-                    inputs[0].name = `variants[${idx}].RAM`;
+                    inputs[0].name = `variants[${idx}][RAM]`;
+                    inputs[0].setAttribute('aria-describedby', `variant-ram-${idx}-error`);
                     inputs[1].id = `variant-storage-${idx}`;
-                    inputs[1].name = `variants[${idx}].Storage`;
+                    inputs[1].name = `variants[${idx}][Storage]`;
+                    inputs[1].setAttribute('aria-describedby', `variant-storage-${idx}-error`);
                     inputs[2].id = `variant-priceAdjustment-${idx}`;
-                    inputs[2].name = `variants[${idx}].priceAdjustment`;
+                    inputs[2].name = `variants[${idx}][priceAdjustment]`;
+                    inputs[2].setAttribute('aria-describedby', `variant-priceAdjustment-${idx}-error`);
+                    const errorEls = variant.querySelectorAll('p[data-error]');
+                    errorEls[0].id = `variant-ram-${idx}-error`;
+                    errorEls[0].dataset.error = `variants[${idx}][RAM]`;
+                    errorEls[1].id = `variant-storage-${idx}-error`;
+                    errorEls[1].dataset.error = `variants[${idx}][Storage]`;
+                    errorEls[2].id = `variant-priceAdjustment-${idx}-error`;
+                    errorEls[2].dataset.error = `variants[${idx}][priceAdjustment]`;
                     const removeButton = variant.querySelector('.remove-variant');
-                    if (removeButton) {
-                        removeButton.dataset.index = idx;
-                    }
+                    if (removeButton) removeButton.dataset.index = idx;
                 });
                 variantIndex = remainingVariants.length;
                 updateRemoveButtons();
             });
         });
 
+        // Image Drag-and-Drop and Cropping
+        let cropper = null;
+        let currentFileInput = null;
+        let currentPreview = null;
+        let currentText = null;
+        let currentAddButton = null;
+        let currentDeleteButton = null;
 
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('input[type="file"]').forEach(input => input.value = '');
+            const cropModal = document.getElementById('cropModal');
+            
 
-
-
-        // Image Preview and Handling
-        function fetchImages() {
-            const productId = '<%= product._id %>';
-            if (!productId) return;
-            fetch(`/api/products/${productId}/images`)
-                .then(response => response.json())
-                .then(images => {
-                    images.forEach((image, index) => {
-                        if (index < 5) {
-                            const isMain = index === 0;
-                            const previewId = isMain ? 'main-preview' : `additional-preview-${index}`;
-                            const dropId = isMain ? 'main-drop' : `additional-drop-${index}`;
-                            const existingImageId = `existing-image-${index}`;
-                            const hiddenIsMainId = `hidden-isMain-${index}`;
-
-                            const preview = document.getElementById(previewId);
-                            const dropArea = document.getElementById(dropId);
-                            const text = dropArea.querySelector('p');
-                            const addButton = dropArea.querySelector('.custom-button');
-                            const deleteButton = dropArea.querySelector('.delete-image');
-                            const existingImageInput = document.getElementById(existingImageId);
-                            const hiddenIsMain = document.getElementById(hiddenIsMainId);
-
-                            if (image.url) {
-                                const img = new Image();
-                                img.onload = () => {
-                                    const canvas = document.createElement('canvas');
-                                    const ctx = canvas.getContext('2d');
-                                    const maxWidth = isMain ? 400 : 150;
-                                    const maxHeight = isMain ? 300 : 150;
-                                    let width = img.width;
-                                    let height = img.height;
-
-                                    if (width > height) {
-                                        if (width > maxWidth) {
-                                            height = Math.round((height * maxWidth) / width);
-                                            width = maxWidth;
-                                        }
-                                    } else {
-                                        if (height > maxHeight) {
-                                            width = Math.round((width * maxHeight) / height);
-                                            height = maxHeight;
-                                        }
-                                    }
-
-                                    canvas.width = width;
-                                    canvas.height = height;
-                                    ctx.drawImage(img, 0, 0, width, height);
-                                    preview.src = canvas.toDataURL('image/jpeg');
-                                    preview.classList.remove('hidden');
-                                    preview.dataset.originalSrc = image.url;
-                                    text.classList.add('hidden');
-                                    addButton.classList.add('hidden');
-                                    existingImageInput.value = image.url;
-                                    if (image.url) {
-                                        deleteButton.classList.remove('hidden');
-                                    }
-
-
-                                };
-                                img.src = image.url;
-
-                                hiddenIsMain.value = image.isMain ? 'true' : 'false';
-                            }
-                        }
-                    });
-                })
-                .catch(error => console.error('Error fetching images:', error));
-        }
-
-        document.addEventListener('click', function (e) {
-            if (e.target.classList.contains('remove-variant')) {
-                const container = document.getElementById('variants-container');
-                if (container.children.length > 1) {
-                    e.target.closest('.variant').remove();
-                    updateRemoveButtons();
-                }
-            }
+            updateRemoveButtons();
         });
 
-        // Image Drag-and-Drop and Preview
-        function setupImageHandling(dropArea, fileInput, preview, isMain) {
+        function setupDragAndDrop(dropArea, fileInput, preview, deleteButton) {
             const text = dropArea.querySelector('p');
-            const addButton = dropArea.querySelector('.custom-button');
-            const deleteButton = dropArea.querySelector('.delete-image');
-            const hiddenUrlInput = dropArea.querySelector('input[type="hidden"][name*="url"]');
+            const buttons = dropArea.querySelectorAll('button');
+            const addButton = dropArea.querySelector('.add-image-button')
 
-            // Prevent default drag behaviors
-            ['dragenter', 'dragover'].forEach(event => {
-                dropArea.addEventListener(event, (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    dropArea.classList.add('drag-active');
-                });
+
+            dropArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropArea.classList.add('drag-active');
             });
 
-            dropArea.addEventListener('dragleave', (e) => {
+            dropArea.addEventListener('dragenter', (e) => {
                 e.preventDefault();
-                e.stopPropagation();
+                dropArea.classList.add('drag-active');
+            });
+
+            dropArea.addEventListener('dragleave', () => {
                 dropArea.classList.remove('drag-active');
             });
 
             dropArea.addEventListener('drop', (e) => {
                 e.preventDefault();
-                e.stopPropagation();
                 dropArea.classList.remove('drag-active');
                 const files = e.dataTransfer.files;
                 if (files.length > 0 && files[0].type.startsWith('image/')) {
                     fileInput.files = files;
-                    handleImage(files[0]);
+                    handleImage(files[0], fileInput, preview, text, addButton, deleteButton);
+                } else {
+                    showError(fileInput.name, 'Please upload an image file.');
                 }
             });
 
-            // Handle click on drop area to trigger file input
-            dropArea.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                fileInput.click();
-            });
+            dropArea.addEventListener('click', () => fileInput.click());
 
-            // Handle button click
-            addButton.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                fileInput.click();
-            });
-
-            // Handle file input change
             fileInput.addEventListener('change', () => {
                 const file = fileInput.files[0];
                 if (file && file.type.startsWith('image/')) {
-                    handleImage(file);
+                    if (file.size > 5 * 1024 * 1024) {
+                        showError(fileInput.name, 'Image size must be less than 5MB.');
+                        fileInput.value = '';
+                    } else {
+                        handleImage(file, fileInput, preview, text, addButton, deleteButton);
+                    }
+                } else {
+                    showError(fileInput.name, 'Please upload an image file.');
+                    clearImage(preview, text, addButton, fileInput, deleteButton);
                 }
             });
 
-            // Handle delete button
             deleteButton.addEventListener('click', (e) => {
-                e.preventDefault();
                 e.stopPropagation();
-                preview.src = '';
-                preview.classList.add('hidden');
-                fileInput.value = '';
-                if (hiddenUrlInput) hiddenUrlInput.value = '';
-                text.classList.remove('hidden');
-                addButton.classList.remove('hidden');
-                deleteButton.classList.add('hidden');
+                clearImage(preview, text, addButton, fileInput, deleteButton);
             });
+        }
 
-            function handleImage(file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d');
-                        const maxWidth = isMain ? 400 : 150;
-                        const maxHeight = isMain ? 300 : 150;
-                        let width = img.width;
-                        let height = img.height;
+        function handleImage(file, fileInput, preview, text, addButton, deleteButton) {
+            currentFileInput = fileInput;
+            currentPreview = preview;
+            currentText = text;
+            currentAddButton = addButton;
+            currentDeleteButton = deleteButton;
 
-                        if (width > height) {
-                            if (width > maxWidth) {
-                                height = Math.round((height * maxWidth) / width);
-                                width = maxWidth;
-                            }
-                        } else {
-                            if (height > maxHeight) {
-                                width = Math.round((width * maxHeight) / height);
-                                height = maxHeight;
-                            }
-                        }
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const cropImage = document.getElementById('cropImage');
+                cropImage.onload = () => {
+                
+                document.getElementById('cropModal').style.display = 'flex';
 
-                        canvas.width = width;
-                        canvas.height = height;
-                        ctx.drawImage(img, 0, 0, width, height);
-                        preview.src = canvas.toDataURL('image/jpeg');
-                        preview.classList.remove('hidden');
-                        text.classList.add('hidden');
-                        addButton.classList.add('hidden');
-                        deleteButton.classList.remove('hidden');
-                    };
-                    img.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
+                if (cropper) cropper.destroy();
+                const isMainPhoto = preview.closest('.main-photo');
+                cropper = new Cropper(cropImage, {
+                    aspectRatio: isMainPhoto ? 400 / 300 : 150 / 150,
+                    viewMode: 1,
+                    autoCropArea: 1,
+                });
+            }
+            cropImage.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        document.getElementById('cropConfirm').addEventListener('click', () => {
+    if (!cropper) return;
+
+    const isMainPhoto = currentPreview.closest('.main-photo');
+    const croppedCanvas = cropper.getCroppedCanvas({
+        width: isMainPhoto ? 400 : 150,
+        height: isMainPhoto ? 300 : 150,
+    });
+
+    currentPreview.src = croppedCanvas.toDataURL('image/jpeg');
+    currentPreview.classList.remove('hidden');
+    currentText.classList.add('hidden');
+    currentAddButton.classList.add('hidden');
+    currentDeleteButton.classList.remove('hidden');
+
+    croppedCanvas.toBlob((blob) => {
+        const file = new File([blob], 'cropped.jpg', { type: 'image/jpeg' });
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        currentFileInput.files = dataTransfer.files;
+    });
+
+    document.getElementById('cropModal').style.display = 'none';
+    cropper.destroy();
+    cropper = null;
+});
+
+
+        function clearImage(preview, text, addButton, fileInput, deleteButton) {
+            preview.src = '';
+            preview.classList.add('hidden');
+            text.classList.remove('hidden');
+            addButton.classList.remove('hidden');
+            deleteButton.classList.add('hidden');
+            fileInput.value = '';
+            clearError(fileInput.name);
+        }
+
+        function showError(fieldName, message) {
+            const errorEl = document.querySelector(`p[data-error="${fieldName}"]`);
+            if (errorEl) {
+                errorEl.textContent = message;
+                errorEl.classList.remove('hidden');
             }
         }
 
+        function clearError(fieldName) {
+            const errorEl = document.querySelector(`p[data-error="${fieldName}"]`);
+            if (errorEl) {
+                errorEl.textContent = '';
+                errorEl.classList.add('hidden');
+            }
+        }
+
+        
+
+        document.querySelector('#cropModal .btn-red').addEventListener('click', () => {
+            document.getElementById('cropModal').style.display = 'none';
+            cropper.destroy();
+            cropper = null;
+            clearImage(currentPreview, currentText, currentAddButton, currentFileInput, currentDeleteButton);
+        });
+
         // Setup for main photo
-        setupImageHandling(
+        setupDragAndDrop(
             document.getElementById('main-drop'),
             document.getElementById('main-file'),
             document.getElementById('main-preview'),
-            true
+            document.querySelector('#main-drop .delete-image')
         );
 
         // Setup for additional photos
         for (let i = 1; i <= 4; i++) {
-            setupImageHandling(
+            setupDragAndDrop(
                 document.getElementById(`additional-drop-${i}`),
                 document.getElementById(`additional-file-${i}`),
                 document.getElementById(`additional-preview-${i}`),
-                false
+                document.getElementById(`additional-delete-${i}`)
             );
         }
+
+        // Form Validation
+        const form = document.getElementById('product-form');
+        form.addEventListener('submit', (e) => {
+            let hasError = false;
+            const inputs = form.querySelectorAll('input[required], select[required], textarea[required]');
+            inputs.forEach(input => {
+                if (!input.value.trim()) {
+                    showError(input.name, `${input.name.replace(/\[.*\]/, '')} is required`);
+                    hasError = true;
+                } else {
+                    clearError(input.name);
+                }
+            });
+
+            const rating = document.getElementById('rating');
+            if (rating.value && (rating.value < 0 || rating.value > 5)) {
+                showError('rating', 'Rating must be between 0 and 5');
+                hasError = true;
+            }
+
+            if (hasError) {
+                e.preventDefault();
+                alert('Please fill out all required fields correctly.');
+            }
+        });
+
+        // Cancel Confirmation
+        document.getElementById('cancel-button').addEventListener('click', () => {
+            const form = document.getElementById('product-form');
+            const inputs = form.querySelectorAll('input, select, textarea');
+            const isDirty = Array.from(inputs).some(input => input.value || input.checked !== input.defaultChecked);
+            if (isDirty && !confirm('Are you sure you want to cancel? Unsaved changes will be lost.')) {
+                return;
+            }
+            window.location.href = '/admin/products';
+        });
+
     </script>
 </body>
 

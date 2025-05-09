@@ -9,9 +9,12 @@ passport.use(new GoogleStrategy({
     callbackURL: "/auth/google/callback"
 },
     async function (accessToken, refreshToken, profile, done) {
+        
         let user = await User.findOne({ googleId: profile.id })
+        if (user.isBlocked)
+            return done(null, false, { message: "User is Blocked" })
         if (user) {
-           return  done(null, user)
+            return done(null, user)
         } else {
             user = new User({
                 fullname: profile.displayName,
@@ -19,22 +22,22 @@ passport.use(new GoogleStrategy({
                 googleId: profile.id
             })
             await user.save()
-            return done(null,user)
+            return done(null, user)
         }
     }
 ));
 
-passport.serializeUser((user,done) =>{
-    done(null,user.id)
+passport.serializeUser((user, done) => {
+    done(null, user.id)
 })
 
-passport.deserializeUser((id,done) => {
+passport.deserializeUser((id, done) => {
     User.findById(id)
-    .then(user =>{
-        done(null,user)
-    }).catch(err => {
-        done(err,null)
-    })
+        .then(user => {
+            done(null, user)
+        }).catch(err => {
+            done(err, null)
+        })
 })
 
 module.exports = passport

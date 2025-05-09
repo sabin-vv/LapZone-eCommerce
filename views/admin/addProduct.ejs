@@ -1,263 +1,416 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add New Product</title>
-    <link rel="stylesheet" href="/css/productDetails.css">
     <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/productDetails.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+    <script src="/js/header.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Ensure image containers are positioned relatively for absolute delete buttons */
-        .image-container, .main-photo, .additional-photo {
-            position: relative;
-        }
-    </style>
 </head>
+
 <body class="bg-gray-100 font-sans">
     <div class="flex min-h-screen">
         <!-- Sidebar Partial -->
         <%- include("../partials/admin/sidebar.ejs") %>
 
-        <!-- Main Content -->
-        <main class="main-content flex-1 p-6 md:ml-64">
-            <h1 class="text-2xl font-bold mb-6">Add New Product</h1>
-            <form class="bg-white p-6 rounded-lg shadow-md" enctype="multipart/form-data" action="/admin/product/add" method="POST">
-                <div class="form-grid">
-                    <div>
-                        <label for="name" class="block text-sm font-medium text-gray-700">Product Name</label>
-                        <input type="text" id="name" name="name" required class="mt-1 block w-full custom-input">
-                    </div>
-                    <div>
-                        <label for="modelNumber" class="block text-sm font-medium text-gray-700">Model Number</label>
-                        <input type="text" id="modelNumber" name="modelNumber" required class="mt-1 block w-full custom-input">
-                    </div>
-                    <div>
-                        <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
-                        <select id="category" name="category" required class="mt-1 block w-full custom-select">
-                            <option value="" selected>Select Category</option>
-                            <% categories.forEach(category => { %>
-                                <option value="laptops"><%= category._id %></option>
-                            <% }) %>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="color" class="block text-sm font-medium text-gray-700">Color</label>
-                        <input type="text" id="color" name="color" required class="mt-1 block w-full custom-input">
-                    </div>
-                    <div class="col-span-2">
-                        <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-                        <textarea id="description" name="description" required class="mt-1 block w-full custom-textarea" rows="4"></textarea>
-                    </div>
-                    <div>
-                        <label for="brand" class="block text-sm font-medium text-gray-700">Brand</label>
-                        <input type="text" id="brand" name="brand" required class="mt-1 block w-full custom-input">
-                    </div>
-                    <div>
-                        <label for="CPU" class="block text-sm font-medium text-gray-700">CPU</label>
-                        <input type="text" id="CPU" name="CPU" required class="mt-1 block w-full custom-input">
-                    </div>
-                    <div>
-                        <label for="os" class="block text-sm font-medium text-gray-700">OS</label>
-                        <input type="text" id="os" name="os" class="mt-1 block w-full custom-input">
-                    </div>
-                    <div>
-                        <label for="screen" class="block text-sm font-medium text-gray-700">Screen</label>
-                        <input type="text" id="screen" name="screen" required class="mt-1 block w-full custom-input">
-                    </div>
-                    <div>
-                        <label for="graphics" class="block text-sm font-medium text-gray-700">Graphics</label>
-                        <input type="text" id="graphics" name="graphics" required class="mt-1 block w-full custom-input">
-                    </div>
-                    <div>
-                        <label for="offer" class="block text-sm font-medium text-gray-700">Offer (%)</label>
-                        <input type="number" id="offer" name="offer" class="mt-1 block w-full custom-input">
-                    </div>
-                    <div>
-                        <label for="rating" class="block text-sm font-medium text-gray-700">Rating</label>
-                        <input type="number" id="rating" name="rating" required class="mt-1 block w-full custom-input" step="0.1" min="0" max="5">
-                    </div>
-                    <div>
-                        <label for="count" class="block text-sm font-medium text-gray-700">Stock Count</label>
-                        <input type="number" id="count" name="count" required class="mt-1 block w-full custom-input">
-                    </div>
-                    <div>
-                        <label for="regularPrice" class="block text-sm font-medium text-gray-700">Regular Price</label>
-                        <input type="number" id="regularPrice" name="regularPrice" required class="mt-1 block w-full custom-input">
-                    </div>
-                    <div>
-                        <label for="salePrice" class="block text-sm font-medium text-gray-700">Sale Price</label>
-                        <input type="number" id="salePrice" name="salePrice" required class="mt-1 block w-full custom-input">
-                    </div>
-                    <div>
-                        <label for="warranty" class="block text-sm font-medium text-gray-700">Warranty</label>
-                        <input type="text" id="warranty" name="warranty" required class="mt-1 block w-full custom-input">
-                    </div>
-                    <div>
-                        <label for="webcam" class="block text-sm font-medium text-gray-700">Webcam</label>
-                        <input type="text" id="webcam" name="webcam" class="mt-1 block w-full custom-input">
-                    </div>
-                </div>
-
-                <!-- Variants Section -->
-                <fieldset class="nested-fieldset mt-6">
-                    <legend>Variants</legend>
-                    <div id="variants-container" class="space-y-4">
-                        <div class="variant form-grid" data-index="0">
+            <!-- Main Content -->
+            <main class="main-content flex-1 p-6 md:ml-64">
+                <h1 class="text-2xl font-bold mb-6">Add New Product</h1>
+                <form class="bg-white p-6 rounded-lg shadow-md" enctype="multipart/form-data"
+                    action="/admin/product/add" method="POST">
+                        <div class="form-grid">
                             <div>
-                                <label for="variant-ram-0" class="block text-sm font-medium text-gray-700">RAM</label>
-                                <input type="text" id="variant-ram-0" name="variants[0][RAM]" required class="mt-1 block w-full custom-input">
+                                <label for="name" class="block text-sm font-medium text-gray-700">Product Name</label>
+                                <input type="text" id="name" name="name" class="mt-1 block w-full custom-input">
+                                <p data-error="name" class="text-red-500 text-xs italic">
+                                    <%= errors? errors.name: "" %>
+                                </p>
                             </div>
                             <div>
-                                <label for="variant-storage-0" class="block text-sm font-medium text-gray-700">Storage</label>
-                                <input type="text" id="variant-storage-0" name="variants[0][Storage]" required class="mt-1 block w-full custom-input">
+                                <label for="modelNumber" class="block text-sm font-medium text-gray-700">Model
+                                    Number</label>
+                                <input type="text" id="modelNumber" name="modelNumber"
+                                    class="mt-1 block w-full custom-input">
+                                <p data-error="modelNumber" class="text-red-500 text-xs italic">
+                                    <%=errors? errors.modelNumber : '' %>
+                                </p>
                             </div>
                             <div>
-                                <label for="variant-priceAdjustment-0" class="block text-sm font-medium text-gray-700">Price Adjustment</label>
-                                <input type="number" id="variant-priceAdjustment-0" name="variants[0][priceAdjustment]" class="mt-1 block w-full custom-input">
+                                <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
+                                <select id="category" name="category" class="mt-1 block w-full custom-select">
+                                    <option value="" selected>Select Category</option>
+                                    <% categories.forEach(category=> { %>
+                                        <option value="<%= category.name%>" >
+                                            <%= category.name %>
+                                        </option>
+                                        <% }) %>
+                                </select>
                             </div>
-                            <div class="flex items-end">
-                                <button type="button" class="remove-variant inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 hidden" data-index="0">Remove</button>
+                            <div>
+                                <label for="color" class="block text-sm font-medium text-gray-700">Color</label>
+                                <input type="text" id="color" name="color" class="mt-1 block w-full custom-input">
+                                <p data-error="color" class="text-red-500 text-xs italic">
+                                    <%=errors? errors.color : '' %>
+                                </p>
                             </div>
-                        </div>
-                    </div>
-                    <button type="button" id="add-variant" class="mt-4 inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Add Variant</button>
-                </fieldset>
-
-                <!-- Ports Section -->
-                <fieldset class="nested-fieldset mt-6">
-                    <legend>Ports</legend>
-                    <div class="form-grid">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">USB Type-A</label>
-                            <input type="text" name="ports[0][USB Type-A]" class="mt-1 block w-full custom-input">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">USB Type-C</label>
-                            <input type="text" name="ports[0][USB Type-C]" class="mt-1 block w-full custom-input">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">HDMI</label>
-                            <input type="text" name="ports[0][HDMI]" class="mt-1 block w-full custom-input">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Audio Jack</label>
-                            <input type="text" name="ports[0][AudioJack]" class="mt-1 block w-full custom-input">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">LAN</label>
-                            <input type="text" name="ports[0][LAN]" class="mt-1 block w-full custom-input">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Card Reader</label>
-                            <input type="text" name="ports[0][Card Reader]" class="mt-1 block w-full custom-input">
-                        </div>
-                    </div>
-                </fieldset>
-                
-
-                <!-- Images Section -->
-                <fieldset class="nested-fieldset mt-6">
-                    <legend class="font-semibold text-gray-700">Product Images</legend>
-                    <div class="form-grid">
-                        <!-- Main Photo -->
-                        <div class="image-container">
-                            <h2 class="text-lg font-medium mb-4">Main Photo</h2>
-                            <input type="file" id="main-file" name="images[0].file" accept="image/*" class="hidden custom-file">
-                            <div class="main-photo" id="main-drop" data-index="0">
-                                <svg class="placeholder-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                </svg>
-                                <p class="text-sm text-gray-600 mt-2">Drag and drop image here, or click add image</p>
-                                <button type="button" class="custom-button mt-4">Add Image</button>
-                                <img id="main-preview" class="image-preview hidden" alt="Main Photo Preview">
-                                <button type="button" id="main-delete" class="delete-image hidden absolute top-1 right-1 bg-red-600 text-white p-2 rounded-full text-sm font-bold shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition">✖</button>
+                            <div class="col-span-2">
+                                <label for="description"
+                                    class="block text-sm font-medium text-gray-700">Description</label>
+                                <textarea id="description" name="description" class="mt-1 block w-full custom-textarea"
+                                    rows="4"></textarea>
+                                <p data-error="description" class="text-red-500 text-xs italic">
+                                    <%=errors? errors.description : '' %>
+                                </p>
                             </div>
-                            <input type="hidden" name="images[0].isMain" id="hidden-isMain-0" value="true">
-                        </div>
-
-                        <!-- Additional Photos -->
-                        <div class="image-container">
-                            <h2 class="text-lg font-medium mb-4">Additional Photos</h2>
-                            <div class="photo-grid">
-                                <div>
-                                    <input type="file" id="additional-file-1" name="images[1].file" accept="image/*" class="hidden custom-file">
-                                    <div class="additional-photo" id="additional-drop-1" data-index="1">
-                                        <svg class="placeholder-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                        </svg>
-                                        <p class="text-sm text-gray-600 mt-2">Drag and drop image here, or click add image</p>
-                                        <button type="button" class="custom-button mt-4">Add Image</button>
-                                        <img id="additional-preview-1" class="image-preview hidden" alt="Additional Photo 1 Preview">
-                                        <button type="button" id="additional-delete-1" class="delete-image hidden absolute top-1 right-1 bg-red-600 text-white p-2 rounded-full text-sm font-bold shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition">✖</button>
-                                    </div>
-                                    <input type="hidden" name="images[1].isMain" id="hidden-isMain-1" value="false">
-                                </div>
-                                <div>
-                                    <input type="file" id="additional-file-2" name="images[2].file" accept="image/*" class="hidden custom-file">
-                                    <div class="additional-photo" id="additional-drop-2" data-index="2">
-                                        <svg class="placeholder-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                        </svg>
-                                        <p class="text-sm text-gray-600 mt-2">Drag and drop image here, or click add image</p>
-                                        <button type="button" class="custom-button mt-4">Add Image</button>
-                                        <img id="additional-preview-2" class="image-preview hidden" alt="Additional Photo 2 Preview">
-                                        <button type="button" id="additional-delete-2" class="delete-image hidden absolute top-1 right-1 bg-red-600 text-white p-2 rounded-full text-sm font-bold shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition">✖</button>
-                                    </div>
-                                    <input type="hidden" name="images[2].isMain" id="hidden-isMain-2" value="false">
-                                </div>
-                                <div>
-                                    <input type="file" id="additional-file-3" name="images[3].file" accept="image/*" class="hidden custom-file">
-                                    <div class="additional-photo" id="additional-drop-3" data-index="3">
-                                        <svg class="placeholder-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                        </svg>
-                                        <p class="text-sm text-gray-600 mt-2">Drag and drop image here, or click add image</p>
-                                        <button type="button" class="custom-button mt-4">Add Image</button>
-                                        <img id="additional-preview-3" class="image-preview hidden" alt="Additional Photo 3 Preview">
-                                        <button type="button" id="additional-delete-3" class="delete-image hidden absolute top-1 right-1 bg-red-600 text-white p-2 rounded-full text-sm font-bold shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition">✖</button>
-                                    </div>
-                                    <input type="hidden" name="images[3].isMain" id="hidden-isMain-3" value="false">
-                                </div>
-                                <div>
-                                    <input type="file" id="additional-file-4" name="images[4].file" accept="image/*" class="hidden custom-file">
-                                    <div class="additional-photo" id="additional-drop-4" data-index="4">
-                                        <svg class="placeholder-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                        </svg>
-                                        <p class="text-sm text-gray-600 mt-2">Drag and drop image here, or click add image</p>
-                                        <button type="button" class="custom-button mt-4">Add Image</button>
-                                        <img id="additional-preview-4" class="image-preview hidden" alt="Additional Photo 4 Preview">
-                                        <button type="button" id="additional-delete-4" class="delete-image hidden absolute top-1 right-1 bg-red-600 text-white p-2 rounded-full text-sm font-bold shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition">✖</button>
-                                    </div>
-                                    <input type="hidden" name="images[4].isMain" id="hidden-isMain-4" value="false">
-                                </div>
+                            <div>
+                                <label for="brand" class="block text-sm font-medium text-gray-700">Brand</label>
+                                <input type="text" id="brand" name="brand" class="mt-1 block w-full custom-input">
+                                <p data-error="brand" class="text-red-500 text-xs italic">
+                                    <%=errors? errors.brand :'' %>
+                                </p>
+                            </div>
+                            <div>
+                                <label for="CPU" class="block text-sm font-medium text-gray-700">CPU</label>
+                                <input type="text" id="CPU" name="CPU" class="mt-1 block w-full custom-input">
+                                <p data-error="CPU" class="text-red-500 text-xs italic">
+                                    <%=errors? errors.CPU : "" %>
+                                </p>
+                            </div>
+                            <div>
+                                <label for="os" class="block text-sm font-medium text-gray-700">OS</label>
+                                <input type="text" id="os" name="os" class="mt-1 block w-full custom-input">
+                                <p data-error="os" class="text-red-500 text-xs italic">
+                                    <%=errors? errors.os : '' %>
+                                </p>
+                            </div>
+                            <div>
+                                <label for="screen" class="block text-sm font-medium text-gray-700">Screen</label>
+                                <input type="text" id="screen" name="screen" class="mt-1 block w-full custom-input">
+                                <p data-error="screen" class="text-red-500 text-xs italic">
+                                    <%=errors? errors.screen : '' %>
+                                </p>
+                            </div>
+                            <div>
+                                <label for="graphics" class="block text-sm font-medium text-gray-700">Graphics</label>
+                                <input type="text" id="graphics" name="graphics" class="mt-1 block w-full custom-input">
+                                <p data-error="graphics" class="text-red-500 text-xs italic">
+                                    <%=errors? errors.graphics : '' %>
+                                </p>
+                            </div>
+                            <div>
+                                <label for="offer" class="block text-sm font-medium text-gray-700">Offer (%)</label>
+                                <input type="number" id="offer" name="offer" class="mt-1 block w-full custom-input">
+                            </div>
+                            <div>
+                                <label for="rating" class="block text-sm font-medium text-gray-700">Rating</label>
+                                <input type="number" id="rating" name="rating" class="mt-1 block w-full custom-input"
+                                    step="0.1" min="0" max="5">
+                                <p data-error="rating" class="text-red-500 text-xs italic">
+                                    <%=errors? errors.rating : '' %>
+                                </p>
+                            </div>
+                            <div>
+                                <label for="count" class="block text-sm font-medium text-gray-700">Stock Count</label>
+                                <input type="number" id="count" name="count" class="mt-1 block w-full custom-input">
+                                <p data-error="count" class="text-red-500 text-xs italic">
+                                    <%=errors? errors.count : '' %>
+                                </p>
+                            </div>
+                            <div>
+                                <label for="regularPrice" class="block text-sm font-medium text-gray-700">Regular
+                                    Price</label>
+                                <input type="number" id="regularPrice" name="regularPrice"
+                                    class="mt-1 block w-full custom-input">
+                                <p data-error="regularPrice" class="text-red-500 text-xs italic">
+                                    <%=errors? errors.regularPrice : '' %>
+                                </p>
+                            </div>
+                            <div>
+                                <label for="salePrice" class="block text-sm font-medium text-gray-700">Sale
+                                    Price</label>
+                                <input type="number" id="salePrice" name="salePrice"
+                                    class="mt-1 block w-full custom-input">
+                                <p data-error="salePrice" class="text-red-500 text-xs italic">
+                                    <%=errors? errors.salePrice : '' %>
+                                </p>
+                            </div>
+                            <div>
+                                <label for="warranty" class="block text-sm font-medium text-gray-700">Warranty</label>
+                                <input type="text" id="warranty" name="warranty" class="mt-1 block w-full custom-input">
+                                <p data-error="warranty" class="text-red-500 text-xs italic">
+                                    <%=errors? errors.warranty : '' %>
+                                </p>
+                            </div>
+                            <div>
+                                <label for="webcam" class="block text-sm font-medium text-gray-700">Webcam</label>
+                                <input type="text" id="webcam" name="webcam" class="mt-1 block w-full custom-input">
+                                <p data-error="webcam" class="text-red-500 text-xs italic">
+                                    <%=errors? errors.webcam : '' %>
+                                </p>
                             </div>
                         </div>
-                    </div>
-                </fieldset>
 
-                <!-- Show in Shopping Page Checkbox -->
-                <div class="mt-6">
-                    <label for="isActive" class="inline-flex items-center text-sm font-medium text-gray-700">
-                        <input type="checkbox" id="isActive" name="isActive" checked class="mr-2 custom-checkbox">
-                        Show in Shopping Page
-                    </label>
-                </div>
+                        <!-- Variants Section -->
+                        <fieldset class="nested-fieldset mt-6">
+                            <legend>Variants</legend>
+                            <div id="variants-container" class="space-y-4">
+                                <div class="variant form-grid" data-index="0">
+                                    <div>
+                                        <label for="variant-ram-0"
+                                            class="block text-sm font-medium text-gray-700">RAM</label>
+                                        <input type="text" id="variant-ram-0" name="variants[0][RAM]"
+                                            class="mt-1 block w-full custom-input">
+                                        <p data-error="variants[0][RAM]" class="text-red-500 text-xs italic">
+                                            <%= errors?.variants?.[0]?.["RAM"] || '' %>
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <label for="variant-storage-0"
+                                            class="block text-sm font-medium text-gray-700">Storage</label>
+                                        <input type="text" id="variant-storage-0" name="variants[0][Storage]"
+                                            class="mt-1 block w-full custom-input">
+                                        <p data-error="variants[0][Storage]" class="text-red-500 text-xs italic">
+                                            <%= errors?.variants?.[0]?.['Storage'] || '' %>
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <label for="variant-priceAdjustment-0"
+                                            class="block text-sm font-medium text-gray-700">Price Adjustment</label>
+                                        <input type="number" id="variant-priceAdjustment-0"
+                                            name="variants[0][priceAdjustment]" class="mt-1 block w-full custom-input">
+                                    </div>
+                                    <div class="flex items-end">
+                                        <button type="button"
+                                            class="remove-variant inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 hidden"
+                                            data-index="0">Remove</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" id="add-variant"
+                                class="mt-4 inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Add
+                                Variant</button>
+                        </fieldset>
 
-                <!-- Submit and Cancel Buttons -->
-                <div class="mt-6 flex space-x-4">
-                    <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Add Product</button>
-                    <button type="button" onclick="window.location.href='/admin/products'" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">Cancel</button>
-                </div>
-            </form>
-        </main>
+                        <!-- Ports Section -->
+                        <fieldset class="nested-fieldset mt-6">
+                            <legend>Ports</legend>
+                            <div class="form-grid">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">USB Type-A</label>
+                                    <input type="text" name="ports[0][USB Type-A]"
+                                        class="mt-1 block w-full custom-input">
+                                    <p data-error="ports[0][USB Type-A]" class="text-red-500 text-xs italic">
+                                        <%= errors?.ports?.[0]?.["USB Type-A"] || '' %>
+                                    </p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">USB Type-C</label>
+                                    <input type="text" name="ports[0][USB Type-C]"
+                                        class="mt-1 block w-full custom-input">
+                                    <p data-error="ports[0][USB Type-C]" class="text-red-500 text-xs italic">
+                                        <%= errors?.ports?.[0]?.["USB Type-C"] || '' %>
+                                    </p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">HDMI</label>
+                                    <input type="text" name="ports[0][HDMI]" class="mt-1 block w-full custom-input">
+                                    <p data-error="ports[0][HDMI]" class="text-red-500 text-xs italic">
+                                        <%= errors?.ports?.[0]?.["HDMI"] || '' %>
+                                    </p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Audio Jack</label>
+                                    <input type="text" name="ports[0][AudioJack]"
+                                        class="mt-1 block w-full custom-input">
+                                    <p data-error="ports[0][AudioJack]" class="text-red-500 text-xs italic">
+                                        <%= errors?.ports?.[0]?.["AudioJack"] || '' %>
+                                    </p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">LAN</label>
+                                    <input type="text" name="ports[0][LAN]" class="mt-1 block w-full custom-input">
+                                    <p data-error="ports[0][LAN]" class="text-red-500 text-xs italic">
+                                        <%= errors?.ports?.[0]?.["LAN"] || '' %>
+                                    </p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Card Reader</label>
+                                    <input type="text" name="ports[0][Card Reader]"
+                                        class="mt-1 block w-full custom-input">
+                                    <p data-error="ports[0][Card Reader]" class="text-red-500 text-xs italic">
+                                        <%= errors?.ports?.[0]?.["Card Reader"] || '' %>
+                                    </p>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <!-- Images Section -->
+                        <fieldset class="nested-fieldset mt-6">
+                            <legend class="font-semibold text-gray-700">Product Images</legend>
+                            <div class="form-grid">
+                                <!-- Main Photo -->
+                                <div class="image-container">
+                                    <h2 class="text-lg font-medium mb-4">Main Photo</h2>
+                                    <input type="file" id="main-file" name="images[0].file" accept="image/*"
+                                        class="hidden custom-file">
+                                    <div class="main-photo" id="main-drop" data-index="0">
+                                        <svg class="placeholder-icon" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                            </path>
+                                        </svg>
+                                        <p class="text-sm text-gray-600 mt-2">Drag and drop image here, or click add
+                                            image</p>
+                                        <button type="button" class="custom-button mt-4">Add Image</button>
+                                        <img id="main-preview" class="image-preview hidden" alt="Main Photo Preview">
+                                        <button type="button" id="main-delete"
+                                            class="delete-image hidden absolute top-1 right-1 bg-red-600 text-white p-2 rounded-full text-sm font-bold shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition">✖</button>
+                                    </div>
+                                    <input type="hidden" name="images[0].isMain" id="hidden-isMain-0" value="true">
+                                </div>
+
+                                <!-- Additional Photos -->
+                                <div class="image-container">
+                                    <h2 class="text-lg font-medium mb-4">Additional Photos</h2>
+                                    <div class="photo-grid">
+                                        <div>
+                                            <input type="file" id="additional-file-1" name="images[1].file"
+                                                accept="image/*" class="hidden custom-file">
+                                            <div class="additional-photo" id="additional-drop-1" data-index="1">
+                                                <svg class="placeholder-icon" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                                    </path>
+                                                </svg>
+                                                <p class="text-sm text-gray-600 mt-2">Drag and drop or click add image
+                                                </p>
+                                                <button type="button" class="custom-button mt-4">Add Image</button>
+                                                <img id="additional-preview-1" class="image-preview hidden"
+                                                    alt="Additional Photo 1 Preview">
+                                                <button type="button" id="additional-delete-1"
+                                                    class="delete-image hidden absolute top-1 right-1 bg-red-600 text-white p-2 rounded-full text-sm font-bold shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition">✖</button>
+                                            </div>
+                                            <input type="hidden" name="images[1].isMain" id="hidden-isMain-1"
+                                                value="false">
+                                        </div>
+                                        <div>
+                                            <input type="file" id="additional-file-2" name="images[2].file"
+                                                accept="image/*" class="hidden custom-file">
+                                            <div class="additional-photo" id="additional-drop-2" data-index="2">
+                                                <svg class="placeholder-icon" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                                    </path>
+                                                </svg>
+                                                <p class="text-sm text-gray-600 mt-2">Drag and drop or click add image
+                                                </p>
+                                                <button type="button" class="custom-button mt-4">Add Image</button>
+                                                <img id="additional-preview-2" class="image-preview hidden"
+                                                    alt="Additional Photo 2 Preview">
+                                                <button type="button" id="additional-delete-2"
+                                                    class="delete-image hidden absolute top-1 right-1 bg-red-600 text-white p-2 rounded-full text-sm font-bold shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition">✖</button>
+                                            </div>
+                                            <input type="hidden" name="images[2].isMain" id="hidden-isMain-2"
+                                                value="false">
+                                        </div>
+                                        <div>
+                                            <input type="file" id="additional-file-3" name="images[3].file"
+                                                accept="image/*" class="hidden custom-file">
+                                            <div class="additional-photo" id="additional-drop-3" data-index="3">
+                                                <svg class="placeholder-icon" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                                    </path>
+                                                </svg>
+                                                <p class="text-sm text-gray-600 mt-2">Drag and drop or click add image
+                                                </p>
+                                                <button type="button" class="custom-button mt-4">Add Image</button>
+                                                <img id="additional-preview-3" class="image-preview hidden"
+                                                    alt="Additional Photo 3 Preview">
+                                                <button type="button" id="additional-delete-3"
+                                                    class="delete-image hidden absolute top-1 right-1 bg-red-600 text-white p-2 rounded-full text-sm font-bold shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition">✖</button>
+                                            </div>
+                                            <input type="hidden" name="images[3].isMain" id="hidden-isMain-3"
+                                                value="false">
+                                        </div>
+                                        <div>
+                                            <input type="file" id="additional-file-4" name="images[4].file"
+                                                accept="image/*" class="hidden custom-file">
+                                            <div class="additional-photo" id="additional-drop-4" data-index="4">
+                                                <svg class="placeholder-icon" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                                    </path>
+                                                </svg>
+                                                <p class="text-sm text-gray-600 mt-2">Drag and drop or click add image
+                                                </p>
+                                                <button type="button" class="custom-button mt-4">Add Image</button>
+                                                <img id="additional-preview-4" class="image-preview hidden"
+                                                    alt="Additional Photo 4 Preview">
+                                                <button type="button" id="additional-delete-4"
+                                                    class="delete-image hidden absolute top-1 right-1 bg-red-600 text-white p-2 rounded-full text-sm font-bold shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition">✖</button>
+                                            </div>
+                                            <input type="hidden" name="images[4].isMain" id="hidden-isMain-4"
+                                                value="false">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <!-- Show in Shopping Page Checkbox -->
+                        <div class="mt-6">
+                            <label for="isActive" class="inline-flex items-center text-sm font-medium text-gray-700">
+                                <input type="checkbox" id="isActive" name="isActive" checked
+                                    class="mr-2 custom-checkbox">
+                                Show in Shopping Page
+                            </label>
+                        </div>
+
+                        <!-- Submit and Cancel Buttons -->
+                        <div class="mt-6 flex space-x-4">
+                            <button type="submit"
+                                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Add
+                                Product</button>
+                            <button type="button" onclick="window.location.href='/admin/products'"
+                                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">Cancel</button>
+                        </div>
+                </form>
+            </main>
     </div>
 
-    <script>
-        // Dynamic Variant Addition and Removal
-        let variantIndex = 1;
+    <!-- Cropper Modal -->
+    <div id="cropModal">
+        <div class="cropper-container">
+            <img id="cropImage" alt="Image to Crop">
+            <div class="cropper-buttons">
+                <button type="button" id="cropConfirm"
+                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Crop
+                    & Save</button>
+                <button type="button" id="cropCancel"
+                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">Cancel</button>
+            </div>
+        </div>
+    </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    
+    <script>
+
+        let variantIndex = 1;
         function updateRemoveButtons() {
             const variants = document.querySelectorAll('.variant');
             const removeButtons = document.querySelectorAll('.remove-variant');
@@ -276,11 +429,11 @@
             newVariant.innerHTML = `
                 <div>
                     <label for="variant-ram-${variantIndex}" class="block text-sm font-medium text-gray-700">RAM</label>
-                    <input type="text" id="variant-ram-${variantIndex}" name="variants[${variantIndex}].RAM" required class="mt-1 block w-full custom-input">
+                    <input type="text" id="variant-ram-${variantIndex}" name="variants[${variantIndex}].RAM" class="mt-1 block w-full custom-input">
                 </div>
                 <div>
                     <label for="variant-storage-${variantIndex}" class="block text-sm font-medium text-gray-700">Storage</label>
-                    <input type="text" id="variant-storage-${variantIndex}" name="variants[${variantIndex}].Storage" required class="mt-1 block w-full custom-input">
+                    <input type="text" id="variant-storage-${variantIndex}" name="variants[${variantIndex}].Storage" class="mt-1 block w-full custom-input">
                 </div>
                 <div>
                     <label for="variant-priceAdjustment-${variantIndex}" class="block text-sm font-medium text-gray-700">Price Adjustment</label>
@@ -315,9 +468,26 @@
                 updateRemoveButtons();
             });
         });
-        
 
-        // Image Drag-and-Drop and Preview
+
+
+        // Image Drag-and-Drop and Cropping
+        let cropper = null;
+        let currentFileInput = null;
+        let currentPreview = null;
+        let currentText = null;
+        let currentAddButton = null;
+        let currentDeleteButton = null;
+
+        document.addEventListener('DOMContentLoaded',()=>{
+            const fileInputs = document.querySelectorAll("input[type = 'file']")
+            fileInputs.forEach(input => {
+                input.value = ''
+            })
+            const cropModal = document.getElementById('cropModal');
+            cropModal.style.display = 'none';
+        })
+
         function setupDragAndDrop(dropArea, fileInput, preview, deleteButton) {
             const text = dropArea.querySelector('p');
             const buttons = dropArea.querySelectorAll('button');
@@ -348,7 +518,7 @@
                 const files = e.dataTransfer.files;
                 if (files.length > 0 && files[0].type.startsWith('image/')) {
                     fileInput.files = files;
-                    handleImage(files[0], preview, text, addButton, deleteButton);
+                    handleImage(files[0], fileInput, preview, text, addButton, deleteButton);
                 }
             });
 
@@ -358,8 +528,8 @@
 
             fileInput.addEventListener('change', () => {
                 const file = fileInput.files[0];
-                if (file) {
-                    handleImage(file, preview, text, addButton, deleteButton);
+                if (file && file.type.startsWith('image/')) {
+                    handleImage(file, fileInput, preview, text, addButton, deleteButton);
                 } else {
                     clearImage(preview, text, addButton, fileInput, deleteButton);
                 }
@@ -371,40 +541,29 @@
             });
         }
 
-        function handleImage(file, preview, text, addButton, deleteButton) {
+        function handleImage(file, fileInput, preview, text, addButton, deleteButton) {
+            currentFileInput = fileInput;
+            currentPreview = preview;
+            currentText = text;
+            currentAddButton = addButton;
+            currentDeleteButton = deleteButton;
+
             const reader = new FileReader();
             reader.onload = (e) => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    const maxWidth = preview.closest('.main-photo') ? 400 : 150;
-                    const maxHeight = preview.closest('.main-photo') ? 300 : 150;
-                    let width = img.width;
-                    let height = img.height;
+                const cropImage = document.getElementById('cropImage');
+                cropImage.src = e.target.result;
+                document.getElementById('cropModal').style.display = 'flex';
 
-                    if (width > height) {
-                        if (width > maxWidth) {
-                            height = Math.round((height * maxWidth) / width);
-                            width = maxWidth;
-                        }
-                    } else {
-                        if (height > maxHeight) {
-                            width = Math.round((width * maxHeight) / height);
-                            height = maxHeight;
-                        }
-                    }
-
-                    canvas.width = width;
-                    canvas.height = height;
-                    ctx.drawImage(img, 0, 0, width, height);
-                    preview.src = canvas.toDataURL('image/jpeg');
-                    preview.classList.remove('hidden');
-                    text.classList.add('hidden');
-                    addButton.classList.add('hidden');
-                    deleteButton.classList.remove('hidden');
-                };
-                img.src = e.target.result;
+                // Initialize Cropper.js
+                if (cropper) {
+                    cropper.destroy();
+                }
+                const isMainPhoto = preview.closest('.main-photo');
+                cropper = new Cropper(cropImage, {
+                    aspectRatio: isMainPhoto ? 400 / 300 : 150 / 150,
+                    viewMode: 1,
+                    autoCropArea: 1,
+                });
             };
             reader.readAsDataURL(file);
         }
@@ -417,6 +576,42 @@
             deleteButton.classList.add('hidden');
             fileInput.value = '';
         }
+
+        // Cropper Modal Controls
+        document.getElementById('cropConfirm').addEventListener('click', () => {
+            const isMainPhoto = currentPreview.closest('.main-photo');
+            const croppedCanvas = cropper.getCroppedCanvas({
+                width: isMainPhoto ? 400 : 150,
+                height: isMainPhoto ? 300 : 150,
+            });
+
+            // Update preview
+            currentPreview.src = croppedCanvas.toDataURL('image/jpeg');
+            currentPreview.classList.remove('hidden');
+            currentText.classList.add('hidden');
+            currentAddButton.classList.add('hidden');
+            currentDeleteButton.classList.remove('hidden');
+
+            // Convert cropped image to file for form submission
+            croppedCanvas.toBlob((blob) => {
+                const file = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                currentFileInput.files = dataTransfer.files;
+            }, 'image/jpeg');
+
+            // Close modal
+            document.getElementById('cropModal').style.display = 'none';
+            cropper.destroy();
+            cropper = null;
+        });
+
+        document.getElementById('cropCancel').addEventListener('click', () => {
+            document.getElementById('cropModal').style.display = 'none';
+            cropper.destroy();
+            cropper = null;
+            clearImage(currentPreview, currentText, currentAddButton, currentFileInput, currentDeleteButton);
+        });
 
         // Setup for main photo
         const mainDropArea = document.getElementById('main-drop');
@@ -434,6 +629,30 @@
 
         // Initial setup for remove buttons
         updateRemoveButtons();
+
+  //Form validation
+  let form = document.querySelector('form')
+        let inputs = form.querySelectorAll('input')
+
+        form.addEventListener('submit', (e) => {
+            let hasError = false
+
+            inputs.forEach(input => {
+                let errorMessage = querySelector(`[data-error='${input.name}']`)
+                if (input.value.trim() === "") {
+                    errorMsg.textContent = `${input.name} is required`;
+                    errorMsg.classList.remove('hidden');
+                    hasError = true;
+                } else {
+                    errorMsg.textContent = "";
+                    errorMsg.classList.add('hidden');
+                }
+
+            });
+            if (!hasError) form.submit();
+        })
+
     </script>
 </body>
+
 </html>

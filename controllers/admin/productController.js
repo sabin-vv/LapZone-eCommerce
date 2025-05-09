@@ -1,6 +1,8 @@
 const Product = require("../../model/products")
+const Category = require("../../model/category")
 const cloudinary = require("../../config/cloudinary")
 const fs = require("fs")
+const mongoose = require("mongoose")
 
 const productListing = async (req, res) => {
 
@@ -10,9 +12,9 @@ const productListing = async (req, res) => {
   const searchQuery = req.query.search ? req.query.search.trim() : ""
   const categoryFilter = req.query.category ? req.query.category.trim() : ""
   const priceFilter = req.query.price ? req.query.price.trim() : ""
-  const sortOption = req.query.sort || "price-desc"
+  const sortOption = req.query.sort || "added-desc"
   const page = Number.parseInt(req.query.page) || 1
-  const limit = 10
+  const limit = 8
   const skip = (page - 1) * limit
 
   const query = {}
@@ -76,225 +78,207 @@ const productListing = async (req, res) => {
 }
 
 const newProduct = async (req, res) => {
-  
+
   if (!req.session.admin) return res.redirect("/admin");
 
-  const categories = await Product.aggregate([
-    {
-      $group: { _id: "$category" },
-    },
-    {
-      $sort: { _id: 1 },
-    },
-  ])
+  const categories = await Category.find()
+  console.log(categories)
 
-  res.render("admin/addProduct", { categories })
+  res.render("admin/addProduct", { categories, errors: null })
 }
 
 const addProduct = async (req, res) => {
-  try {
-    if (!req.session.admin) return res.redirect("/admin");
 
+  if (!req.session.admin) return res.redirect("/admin");
 
+  const errors = {}
 
-console.log(req.body.ports)
-    const fileFields = [
-      "images[0].file",
-      "images[1].file",
-      "images[2].file",
-      "images[3].file",
-      "images[4].file",
-    ];
-    const images = [];
+  const requiredFields = [
+    'name', 'modelNumber', 'category', 'color', 'description',
+    'brand', 'CPU', 'os', 'screen', 'graphics', 'rating',
+    'count', 'regularPrice', 'salePrice', 'warranty',
+  ];
 
-    
-    
-    // Validate required fields
-    const requiredFields = [
-      "name",
-      "modelNumber",
-      "category",
-      "color",
-      "description",
-      "brand",
-      "CPU",
-      "screen",
-      "graphics",
-      "rating",
-      "count",
-      "regularPrice",
-      "salePrice",
-      "warranty",
-    ];
-    const errors = [];
-    requiredFields.forEach((field) => {
-      if (!req.body[field] || req.body[field].trim() === "") {
-        errors.push(`Field '${field}' is required`);
-      }
-    });
-
-    // Validate numeric fields
-    const numericFields = ["regularPrice", "salePrice", "rating", "count", "offer"];
-    numericFields.forEach((field) => {
-      if (req.body[field] && isNaN(Number(req.body[field]))) {
-        errors.push(`Field '${field}' must be a valid number`);
-      }
-    });
-
-    // Validate at least one image is uploaded
-    if (!req.files || !req.files["images[0].file"]) {
-      errors.push("Main product image is required");
+  requiredFields.forEach(field => {
+    if (!req.body[field] || req.body[field].toString().trim() === '') {
+      errors[field] = `${field} is required`;
     }
+  });
 
-    // Validate variants (at least one variant with RAM and Storage)
-    let hasValidVariant = false;
-    
-    if (req.body.variants && typeof req.body.variants === "object") {
-      Object.values(req.body.variants).forEach((variant, index) => {
-        if (!variant.RAM || variant.RAM.trim() === "") {
-          errors.push(`Variant ${index + 1}: RAM is required`);
-        }
-        if (!variant.Storage || variant.Storage.trim() === "") {
-          errors.push(`Variant ${index + 1}: Storage is required`);
-        }
-        if (variant.RAM && variant.Storage) {
-          hasValidVariant = true;
-        }
-        if (variant.priceAdjustment && isNaN(Number(variant.priceAdjustment))) {
-          errors.push(`Variant ${index + 1}: Price Adjustment must be a valid number`);
-        }
-      });
-    }
-    if (!hasValidVariant) {
-      errors.push("At least one valid variant with RAM and Storage is required");
-    }
-console.log("1st check")
-    if (errors.length > 0) {
-      const categories = await Product.aggregate([
-        { $group: { _id: "$category" } },
-        { $sort: { _id: 1 } },
-      ]);
-      return res.render("admin/addProduct", {
-        product: null,
-        categories,
-        errors,
-        formData: req.body,
-      });
-    }
 
-    console.log("2nd check")
-    // Process image uploads
-    if (req.files && Object.keys(req.files).length > 0) {
-      
-      
-      for (let i = 0; i < fileFields.length; i++) {
-        const field = fileFields[i];
-        if (req.files[field] && req.files[field][0]) {
-          const file = req.files[field][0];
-          console.log("Uploading image:", file.path);
-          try {
-            
-            const result = await cloudinary.uploader.upload(file.path, {
-              folder: "products",
-              transformation: [
-                { width: 800, height: 600, crop: "limit" },
-                { quality: "auto", fetch_format: "auto" },
-              ],
-            });
-            console.log("Uploaded to Cloudinary:", result.secure_url);
-            images[i] = {
-              url: result.secure_url,
-              isMain: i === 0, 
-            };
-            fs.unlinkSync(file.path);
+  if (req.body.rating && (isNaN(req.body.rating) || req.body.rating < 0 || req.body.rating > 5)) {
+    errors.rating = 'Rating must be between 0 and 5';
+  }
 
-          } catch (err) {
-            console.error(`Failed to upload ${field}:`, err.message);
-          }
-           
+  if (req.body.count && (isNaN(req.body.count) || req.body.count < 0)) {
+    errors.count = 'Stock count must be a positive number';
+  }
+
+  if (req.body.regularPrice && (isNaN(req.body.regularPrice) || req.body.regularPrice < 0)) {
+    errors.regularPrice = 'Regular price must be a positive number';
+  }
+
+  if (req.body.salePrice && (isNaN(req.body.salePrice) || req.body.salePrice < 0)) {
+    errors.salePrice = 'Sale price must be a positive number';
+  }
+
+  if (req.body.offer && (isNaN(req.body.offer) || req.body.offer < 0 || req.body.offer > 100)) {
+    errors.offer = 'Offer must be between 0 and 100';
+
+  }
+
+
+  let variantsArray = req.body.variants;
+  if (!variantsArray || (typeof variantsArray === 'object' && !Array.isArray(variantsArray))) {
+    variantsArray = Object.values(variantsArray || {});
+  }
+
+  if (!variantsArray || !Array.isArray(variantsArray) || variantsArray.length === 0) {
+    errors.variants = 'At least one variant is required';
+  } else {
+    errors.variants = [];
+    variantsArray.forEach((variant, index) => {
+      const variantErrors = {};
+
+      if (!variant || typeof variant !== 'object') {
+        variantErrors.general = 'Invalid variant data';
+      } else {
+
+        if (!variant.RAM || typeof variant.RAM !== 'string' || variant.RAM.trim() === '') {
+          variantErrors.RAM = 'RAM is required';
+        } else if (!/^\d+\s*(GB|TB)$/i.test(variant.RAM.trim())) {
+          variantErrors.RAM = 'RAM must be in format "number GB" or "number TB"';
+        }
+
+        // Check Storage
+        if (!variant.Storage || typeof variant.Storage !== 'string' || variant.Storage.trim() === '') {
+          variantErrors.Storage = 'Storage is required';
+        } else if (!/^\d+\s*(GB|TB)$/i.test(variant.Storage.trim())) {
+          variantErrors.Storage = 'Storage must be in format "number GB" or "number TB"';
+        }
+
+        // Check priceAdjustment
+        if (variant.priceAdjustment && isNaN(variant.priceAdjustment)) {
+          variantErrors.priceAdjustment = 'Price adjustment must be a number';
         }
       }
-    }
 
-    // Ensure at least one image is marked as main
-    if (images.length > 0 && !images.some((img) => img.isMain)) {
-      images[0].isMain = true;
-    }
-
-    // Parse and validate variants
-    const variants = [];
-    if (req.body.variants && typeof req.body.variants === "object") {
-      Object.values(req.body.variants).forEach((variant) => {
-        if (variant.RAM && variant.Storage) {
-          variants.push({
-            RAM: variant.RAM,
-            Storage: variant.Storage,
-            priceAdjustment: Number.parseFloat(variant.priceAdjustment) || 0,
-          });
-        }
-      });
-    }
-
-    // Parse and validate ports
-    const ports = [];
-    if (req.body.ports && req.body.ports[0]) {
-      const portData = req.body.ports[0];
-      const portObj = {};
-      if (portData["USB Type-A"]) portObj["USB Type-A"] = portData["USB Type-A"];
-      if (portData["USB Type-C"]) portObj["USB Type-C"] = portData["USB Type-C"];
-      if (portData["HDMI"]) portObj["HDMI"] = portData["HDMI"];
-      if (portData["AudioJack"]) portObj["AudioJack"] = portData["AudioJack"];
-      if (portData["LAN"]) portObj["LAN"] = portData["LAN"];
-      if (portData["Card Reader"]) portObj["Card Reader"] = portData["Card Reader"];
-      if (Object.keys(portObj).length > 0) ports.push(portObj);
-    }
-
-    // Prepare product data
-    const productData = {
-      name: req.body.name,
-      modelNumber: req.body.modelNumber,
-      category: req.body.category,
-      color: req.body.color,
-      description: req.body.description,
-      brand: req.body.brand,
-      CPU: req.body.CPU,
-      OS: req.body.os || "",
-      screen: req.body.screen,
-      graphics: req.body.graphics,
-      offer: Number.parseFloat(req.body.offer) || 0,
-      rating: Number.parseFloat(req.body.rating) || 0,
-      count: Number.parseInt(req.body.count) || 0,
-      regularPrice: Number.parseFloat(req.body.regularPrice) || 0,
-      salePrice: Number.parseFloat(req.body.salePrice) || 0,
-      warranty: req.body.warranty,
-      webcam: req.body.webcam || "",
-      isActive: req.body.isActive === "on",
-      isExisting: true,
-      images,
-      variants,
-      ports,
-    };
-
-    // Create and save new product
-    const newProduct = new Product(productData);
-    await newProduct.save();
-
-    console.log("Product created successfully:", newProduct);
-    res.redirect("/admin/products");
-  } catch (error) {
-    console.error("Error creating product:", error);
-    const categories = await Product.aggregate([
-      { $group: { _id: "$category" } },
-      { $sort: { _id: 1 } },
-    ]);
-    res.render("admin/addProduct", {
-      product: null,
-      categories,
-      errors: [error.message || "Failed to create product"],
-      formData: req.body,
+      if (Object.keys(variantErrors).length > 0) {
+        errors.variants[index] = variantErrors;
+      }
     });
   }
+
+
+
+  let portErrors = {}
+  const portFields = ['USB Type-A', 'USB Type-C', 'HDMI', 'AudioJack', 'LAN', 'Card Reader'];
+  if (req.body.ports && req.body.ports[0]) {
+    portFields.forEach(field => {
+      const portValue = req.body.ports[0][field];
+      if (portValue && typeof portValue === 'string' && portValue.trim() !== '') {
+
+        if (!/^(?:\d+\s*(ports?|port)|Yes|No)$/i.test(portValue.trim())) {
+          portErrors[field] = `${field} must be in format "number port(s)" or Yes/No`;
+        }
+      }
+      
+    });
+  }
+  if (Object.keys(portErrors).length > 0) {
+    errors.ports = [portErrors];
+  }
+  // Remove empty ports errors object if no errors
+  if (errors.ports && Object.keys(errors.ports[0]).length === 0) {
+    delete errors.ports;
+  }
+
+  if (Object.keys(errors).length > 0) {
+    const categories = await Category.find();
+    return res.render("admin/addProduct", { categories, errors });
+  }  
+
+  const fileFields = [
+    "images[0].file",
+    "images[1].file",
+    "images[2].file",
+    "images[3].file",
+    "images[4].file",
+  ];
+
+  const images = [];
+  const uploadPromises = []
+
+    for (let i = 0; i < 5; i++) {
+      const fieldName = `images[${i}].file`
+      const fileArray = req.files?.[fieldName]
+
+      if (fileArray && fileArray[0]) {
+        const file = fileArray[0]
+
+        
+          const uploadPromise =  cloudinary.uploader.upload(file.path, {
+            folder: "products",
+            transformation: [
+              { width: 800, height: 600, crop: "limit" },
+              { quality: "auto", fetch_format: "auto" },
+            ],
+          }).then(result =>{
+
+            images.push( {
+              url: result.secure_url,
+              isMain: i === 0,
+            });
+            fs.unlinkSync(file.path);
+
+          }).catch(err => {
+            console.error(`error uploading ${fieldName} :`, err)
+          })
+
+          uploadPromises.push(uploadPromise)
+      }
+    }
+    await Promise.all(uploadPromises)
+  
+
+  if (images.length > 0 && !images.some((img) => img.isMain)) {
+    images[0].isMain = true;
+  }
+
+
+
+  // Prepare product data
+  const productData = {
+    name: req.body.name,
+    modelNumber: req.body.modelNumber,
+    category: req.body.category,
+    color: req.body.color,
+    description: req.body.description,
+    brand: req.body.brand,
+    CPU: req.body.CPU,
+    OS: req.body.os,
+    screen: req.body.screen,
+    graphics: req.body.graphics,
+    offer: req.body.offer || 0,
+    rating: req.body.rating,
+    count: req.body.count,
+    isActive: req.body.isActive === 'on',
+    regularPrice: req.body.regularPrice,
+    salePrice: req.body.salePrice,
+    warranty: req.body.warranty,
+    webcam: req.body.webcam,
+    variants: req.body.variants || [],
+    ports: req.body.ports || [{}],
+    images: images,
+    isExisting: true
+  };
+  const product = new Product(productData);
+  await product.save();
+
+  res.redirect('/admin/products');
+
 }
+
 
 const editProduct = async (req, res) => {
   if (!req.session.admin) return res.redirect("/admin/login")
@@ -319,7 +303,7 @@ const updateProduct = async (req, res) => {
     if (!req.session.admin) return res.redirect("/admin");
 
 
-    console.log(req.body)
+    
     const productId = req.params.id;
     const images = [];
 
@@ -340,10 +324,10 @@ const updateProduct = async (req, res) => {
       "salePrice",
       "warranty",
     ];
-    const errors = [];
+    const errors = {};
     requiredFields.forEach((field) => {
       if (!req.body[field] || req.body[field].trim() === "") {
-        errors.push(`Field '${field}' is required`);
+        errors[field] = `'${field}' is required`;
       }
     });
 
@@ -481,7 +465,6 @@ const updateProduct = async (req, res) => {
       });
     }
 
-    console.log("Product updated successfully:", updatedProduct);
     res.redirect("/admin/products");
   } catch (error) {
     console.error("Error updating product:", error);
@@ -515,7 +498,7 @@ const toggleProduct = async (req, res) => {
 const softDelete = async (req, res) => {
 
   if (!req.session.admin) return res.redirect("/admin");
-  
+
   const productId = req.params.id
 
   const product = await Product.findById(productId)

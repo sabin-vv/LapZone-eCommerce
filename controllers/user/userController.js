@@ -190,7 +190,9 @@ const postLoginPage = async (req, res) => {
     if (!passMatch)
         return res.render("user/userLogin", { error: "Invalid Credentials" })
 
-    req.session.user = email
+    req.session.user = user._id
+    req.session.username = user.fullname
+    
 
     res.redirect("/home")
 
@@ -203,10 +205,11 @@ const homePage = async (req, res) => {
 
     if (req.session.user) {
         const user = req.session.user
+        const username = req.session.username  || user.fullname
         
         const products = await Product.find({ isActive: true, isExisting: true }).sort({ updatedAt: -1 }).limit(4)
         const gamingProducts = await Product.find({isActive:true,isExisting:true,category:"Gaming Laptop"}).sort({updatedAt:-1}).limit(4)
-        return res.render("user/landingPage", { user, products,gamingProducts })
+        return res.render("user/landingPage", { user, products,gamingProducts,username })
     }
     else
         res.render("user/userLogin", { error: null })
@@ -300,7 +303,7 @@ const resetPassword = async (req, res) => {
     const { email } = req.session.userData
     const hashedPassword = await bcrypt.hash(password, 10)
     const user = await User.updateOne({ email: email }, { $set: { password: hashedPassword } })
-    console.log(user)
+    
 
     res.redirect("/login")
 }

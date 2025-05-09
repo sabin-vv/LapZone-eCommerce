@@ -64,7 +64,7 @@ const newCategory = async (req, res) => {
         return res.render("admin/addCategory", { error: "Name cannot be Empty" })
 
 
-    const existcategory = await Category.findOne({ name })
+    const existcategory = await Category.findOne({ name:{$regex:`^${name}`,$options:"i"} })
     if (existcategory)
         return res.render("admin/addCategory", { error: "Category Already Exist", category: null })
 
@@ -104,6 +104,10 @@ const categoryListUnlist = async (req, res) => {
             return res.status(404).redirect('/admin/category?error=Category+not+found');
         }
 
+        await Product.updateMany(
+            { category: updatedCategory.name }, 
+            { isActive: isListed })
+        
 
         res.redirect('/admin/category?success=Category+updated');
     } catch (error) {
@@ -152,13 +156,13 @@ const softdeleteCategory = async (req, res) => {
 
     const categoryId = req.params.id
     const category = await Category.findById(categoryId)
+    
     if (!category)
         return res.json({ success: false, message: "Category not Found" })
 
     category.isExisting = false
-    console.log("category Check",category.isExisting)
     await category.save()
-    console.log(category)
+
     return res.json({ success: true, message: "Category Deleted Succesfully" })
 }
 

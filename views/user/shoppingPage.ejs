@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Laptop Store</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />    
+    <link rel="stylesheet" href="/css/shoppingPage.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
     <style>
         .product-card {
             transition: transform 0.3s, box-shadow 0.3s;
@@ -131,9 +134,9 @@
 <body class="bg-gray-100 font-sans">
     <%- include("../partials/user/header.ejs") %>
 
-    <div class="container mx-auto px-4 py-8 flex flex-col md:flex-row gap-6">
+    <div class="d-flex flex-column flex-md-row container-fluid px-4 py-4 gap-4">
         <!-- Filter Sidebar -->
-        <aside class="w-full md:w-1/4 bg-white rounded-lg shadow-md p-6">
+        <aside class="col-12 col-md-3 bg-white rounded-lg shadow-md p-4 mb-4 mb-md-0">
             <h2 class="text-xl font-bold mb-4">Filter By</h2>
             <form id="filter-form" action="/shop" method="GET">
                 <!-- Search Bar -->
@@ -273,7 +276,8 @@
         </aside>
 
         <!-- Product Grid -->
-        <main class="w-full md:w-3/4">
+        
+        <main class="col-12 col-md-9 ">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-xl font-bold">Products (<%= totalProducts %>)</h2>
                 <div class="flex items-center gap-4">
@@ -287,6 +291,7 @@
                         </option>
                         <option value="price-desc" <%= query.sort === 'price-desc' ? 'selected' : '' %>>Price High-Low
                         </option>
+                        <option value="name-asc" <%= query.sort === 'name-asc ' ? 'selected ': '' %>>A-Z (a-z)</option>                       
                     </select>
                 </div>
             </div>
@@ -294,36 +299,36 @@
             <% if (products.length === 0) { %>
                 <p class="text-gray-600">No products found.</p>
             <% } else { %>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="row gy-4">
                     <% products.forEach(product => { %>
-                        <button onclick="window.location.href='/shop/product/<%= product._id %>'" class="product-card bg-white rounded-lg shadow-md overflow-hidden w-full focus:outline-none">
-                            <img src="<%= product.images.find(img => img.isMain)?.url || 'https://placehold.co/200x150' %>"
-                                alt="<%= product.name %> laptop" class="w-full h-48 object-cover">
-                            <div class="p-4 card-content">
-                                <div class="rating-stars mb-2">
-                                    <% for (let i = 1; i <= 5; i++) { %>
-                                        <% if (i <= Math.floor(product.rating)) { %>
-                                            <span>★</span>
-                                        <% } else if (i === Math.ceil(product.rating) && product.rating % 1 !== 0) { %>
-                                            <span>☆</span>
-                                        <% } else { %>
-                                            <span>☆</span>
-                                        <% } %>
-                                    <% } %>
-                                    <span class="text-sm text-gray-600 ml-2">(<%= product.rating.toFixed(1) %>)</span>
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-4 d-flex">
+                            <button onclick="window.location.href='/shop/product/<%= product._id %>'"
+                                    class="product-card bg-white rounded-lg shadow-sm w-100 h-100 text-start border-0">
+                                <img src="<%= product.images.find(img => img.isMain)?.url || 'https://placehold.co/200x150' %>"
+                                     alt="<%= product.name %> laptop"
+                                     class="w-100 mb-2" style="height: 180px; object-fit: cover;">
+                                <div class="card-content px-2 pb-2 d-flex flex-column justify-content-between h-100">
+                                    <div>
+                                        <div class="rating-stars text-warning mb-2">
+                                            <% for (let i = 1; i <= 5; i++) { %>
+                                                <span><%= i <= Math.floor(product.rating) ? '★' : '☆' %></span>
+                                            <% } %>
+                                            <span class="text-sm text-gray-600 ms-2">(<%= product.rating.toFixed(1) %>)</span>
+                                        </div>
+                                        <h3 class="fw-semibold text-dark fs-6"><%= product.name %></h3>
+                                        <ul class="list-unstyled small text-muted mb-2">
+                                            <li><%= product.CPU %></li>
+                                            <li><%= product.variants[0]?.RAM || 'N/A' %> RAM</li>
+                                            <li><%= product.variants[0]?.Storage || 'N/A' %> Storage</li>
+                                            <li><%= product.screen %></li>
+                                        </ul>
+                                    </div>
+                                    <p class="fw-bold text-primary fs-6 mb-0 mt-auto">₹<%= product.salePrice.toFixed(2) %></p>
                                 </div>
-                                <h3 class="text-lg font-semibold text-gray-800"><%= product.name %></h3>
-                                <ul class="text-sm text-gray-600 mb-4">
-                                    <li><%= product.CPU %></li>
-                                    <li><%= product.variants[0]?.RAM || 'N/A' %> RAM</li>
-                                    <li><%= product.variants[0]?.Storage || 'N/A' %> Storage</li>
-                                    <li><%= product.screen %></li>
-                                </ul>
-                                <p class="text-lg font-bold text-indigo-600 fixed-price">₹<%= product.salePrice.toFixed(2) %></p>
-                            </div>
-                        </button>
+                            </button>
+                        </div>
                     <% }) %>
-                </div>
+                </div>                
 
                 <!-- Pagination -->
                 <div class="mt-8 flex justify-center">
@@ -354,8 +359,11 @@
                 </div>
             <% } %>
         </main>
+        </div>
     </div>
 
+    <script src="/js/header.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function toggleFilter(section) {
             const sectionElement = document.getElementById(`${section}-section`);
