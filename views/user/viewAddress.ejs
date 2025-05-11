@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Address</title>
+    <link rel="stylesheet" href="/css/profileSidebar.css">
+    <link rel="stylesheet" href="/css/viewAddress.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+    <%- include("../partials/user/header.ejs") %>
+    <div class="main-body">
+        <%- include('../partials/user/profileSidebar.ejs') %>
+        <div class="main-content">
+            <div class="address-section">
+                <h2>Delivery Address</h2>
+                <div class="address-list">
+                    <% if(addresses) { %>
+                        <% addresses.forEach((address, index) => { %>
+                            <div class="address-card">
+                                <span class="edit-icon" onclick="editAddress('<%= address._id %>')">
+                                    <i class="fa-solid fa-pen"></i>
+                                </span>
+                                <div class="fullname"><%= address.fullname %></div>
+                                <div class="address-details">
+                                    <%= address.addressLine %>,<br>
+                                    <%= address.city %>,<br>
+                                    <%= address.state %>, India<br>
+                                    <%= address.pincode %>
+                                </div>
+                                <div>
+                                    Ph:<%= address.mobile%>
+                                </div>
+                                <!-- <% if (address.isDefault) { %>
+                                    <span class="default-label">Default</span>
+                                <% } else { %>
+                                    <form action="/profile/set-default-address/<%= user._id %>/<%= address._id %>" method="POST" class="action-form">
+                                        <button type="submit" class="default-label" style="background: none; border: none; color: #666; cursor: pointer;">Set as Default</button>
+                                    </form>
+                                <% } %> -->
+                                <form id="delete-form" action="/profile/delete-address/<%= address._id %>" method="POST" class="action-form">
+                                    <button type="button" class="delete-btn" onclick="deleteAddress()">DELETE</button>
+                                </form>
+                            </div>
+                        <% }) %>
+                    <% }else{ %>
+                        <p>No addresses found.</p>
+                    <% } %>
+                     
+                        
+                    
+                </div>
+                <form action="/profile/add-address/<%= user._id %>" method="GET" class="action-form">
+                    <button type="submit" class="add-new-btn">Add New Address</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function editAddress(addressId) {
+            window.location.href = `/profile/edit-address/${addressId}`;
+        }
+
+        function deleteAddress(){
+            const form = document.getElementById('delete-form')
+
+            Swal.fire({
+                title:"Are You want to delete Address",
+                icon:"warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!"
+            }).then(result =>{
+                
+                if(result.isConfirmed){
+                    Swal.fire({
+                        title:"Address Deleted",
+                        icon:"success"
+                    }).then(() =>{
+
+                        form.submit()
+                    })
+                }
+            })
+
+        }
+    </script>
+</body>
+
+</html>

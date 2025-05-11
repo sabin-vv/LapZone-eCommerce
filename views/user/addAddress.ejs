@@ -1,0 +1,90 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Address</title>
+    <link rel="stylesheet" href="/css/profileSidebar.css">
+    <link rel="stylesheet" href="/css/addAddress.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    
+</head>
+
+<body>
+    <%- include("../partials/user/header.ejs") %>
+    <div class="main-body">
+
+        <%- include("../partials/user/profileSidebar.ejs") %>
+        
+        <div class="main-content">
+            <div class="address-form-section">
+                <h2><%= heading %></h2>
+                <form action="/profile/add-address/<%= address ? addressId : user._id  %>" method="POST">
+                    <h3>Personal Information</h3>
+                    <input type="hidden" name="heading" value="<%= heading %>">
+                    <input type="hidden" name="button" value="<%= button %>">
+                    <div class="form-row">
+                        <div class="form-group">
+                            
+                            <input type="text" name="fullname" value="<%= address ? address.fullname : user.fullname %>" placeholder="Full Name (required)" >
+                            <p id="name" class="error-field"><%=  errors?.fullname || "" %></p>
+                        </div>
+                        <div class="form-group">
+                            
+                            <input type="tel" name="mobile" maxlength="10" value="<%= address ? address.mobile: user.mobile %>" placeholder="Phone number (required)" >
+                            <p id="mobile" class="error-field"><%= errors?.mobile || ''%> </p>
+                        </div>
+                    </div>
+                    <h3>Address</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            
+                            <input type="text" name="addressLine" value="<%= address ? address.addressLine : '' %>" placeholder="House Name, House Number, Locality (required)"  >
+                            <p id="address" class="error-field"><%= errors?.addressLine || ''%></p>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            
+                            <input type="text" name="state" value="<%= address ? address.state : '' %>" placeholder="State (required)" >
+                            <p id="state" class="error-field"><%= errors?.state || '' %></p>
+                        </div>
+                        <div class="form-group">
+                            
+                            <input type="text" name="district" value="<%= address ? address.district :'' %>" placeholder="District (required)" >
+                            <p id="district" class="error-field"><%= errors?.district || ''%></p>
+                        </div>
+                        
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            
+                            <input type="text" name="city" value="<%= address? address.city : '' %>" placeholder="City (required)" >
+                            <p id="city" class="error-field"><%= errors?.city || '' %></p>
+                        </div>
+                        <div class="form-group">
+                            
+                            <input type="text" name="pincode" value="<%=address ? address.pincode : '' %>" placeholder="Pin Code (required)" maxlength="6" >
+                            <p id="pincode" class="error-field"><%= errors?.pincode || '' %></p>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            
+                            <input type="text" name="landmark" value="<%= address ? address.landmark : '' %>" placeholder="Landmark (optional)">
+                            <p id="landmark" class="error-field"></p>
+                        </div>
+                    </div>
+                    <div class="buttons">
+                        <a href="/profile/address" class="cancel-btn">Cancel</a>
+                        <button type="submit" class="add-btn"><%= button %></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

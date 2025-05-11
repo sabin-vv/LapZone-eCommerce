@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Verify OTP</title>
-    <link rel="stylesheet" href="css/mailverification.css" />
+    <link rel="stylesheet" href="/css/mailverification.css" />
     <link rel="stylesheet" href="sweetalert2.min.css">
 </head>
 
@@ -18,7 +18,7 @@
         </strong>
     </p>
 
-    <form onsubmit="return validateOtp(event)" action="/forgot-verify-otp" method="post">
+    <form onsubmit="return validateOtp(event)" action="" method="post">
         <div class="otp-container">
             <input type="text" name="otp" maxlength="6" id="otp-input" />
         </div>
@@ -64,7 +64,7 @@
             console.log("OTP,InputOTP", inputOtp)
             $.ajax({
                 type: "POST",
-                url: "/forgot-verify-otp",
+                url: "/profile/profile-update-verify-otp",
                 data: { otp: inputOtp },
                 success: function (response) {
                     if (response.success) {
@@ -74,12 +74,6 @@
                             timer: 1500
                         }).then(() => {
                             window.location.href = response.redirecturl
-                        })
-                    } else {
-                        Swal.fire({
-                            icon: "error",
-                            title: "Invalid OTP",
-                            text: response.message
                         })
                     }
                 },

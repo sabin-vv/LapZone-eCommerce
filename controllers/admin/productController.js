@@ -170,21 +170,8 @@ const addProduct = async (req, res) => {
   }
 
 
-
-  let portErrors = {}
-  const portFields = ['USB Type-A', 'USB Type-C', 'HDMI', 'AudioJack', 'LAN', 'Card Reader'];
-  if (req.body.ports && req.body.ports[0]) {
-    portFields.forEach(field => {
-      const portValue = req.body.ports[0][field];
-      if (portValue && typeof portValue === 'string' && portValue.trim() !== '') {
-
-        if (!/^(?:\d+\s*(ports?|port)|Yes|No)$/i.test(portValue.trim())) {
-          portErrors[field] = `${field} must be in format "number port(s)" or Yes/No`;
-        }
-      }
       
-    });
-  }
+  
   if (Object.keys(portErrors).length > 0) {
     errors.ports = [portErrors];
   }
@@ -278,7 +265,6 @@ const addProduct = async (req, res) => {
   res.redirect('/admin/products');
 
 }
-
 
 const editProduct = async (req, res) => {
   if (!req.session.admin) return res.redirect("/admin/login")
@@ -508,6 +494,7 @@ const softDelete = async (req, res) => {
   await product.save()
   return res.json({ success: true, message: "Product deleted Succesfully" })
 }
+
 
 module.exports = {
   productListing,

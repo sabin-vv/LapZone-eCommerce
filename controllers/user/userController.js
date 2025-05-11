@@ -258,7 +258,7 @@ const forgotVerifyOtp = (req, res) => {
         return res.json({ success: true, redirecturl: "/newpassword" })
     }
 
-    res.render("use/forgot-mail-verify", { data: req.sessionData })
+    res.render("user/forgot-mail-verify", { data: req.sessionData })
 
 
 }
@@ -328,6 +328,8 @@ module.exports = {
     landingPage,
     loginPage,
     signupPage,
+    generateOtp,
+    sendverificationEmail,
     postSignUp,
     verifyOtp,
     resendOtp,
