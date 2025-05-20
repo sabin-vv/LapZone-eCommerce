@@ -1,90 +1,132 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add New Address</title>
-    <link rel="stylesheet" href="/css/profileSidebar.css">
-    <link rel="stylesheet" href="/css/addAddress.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-    
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add Address</title>
+  <link rel="stylesheet" href="/css/profileSidebar.css" />
+  <link rel="stylesheet" href="/css/addAddress.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <%- include("../partials/user/header.ejs") %>
-    <div class="main-body">
+  <%- include("../partials/user/header.ejs") %>
+  <div class="main-body">
+    <%- include("../partials/user/profileSidebar.ejs") %>
 
-        <%- include("../partials/user/profileSidebar.ejs") %>
-        
-        <div class="main-content">
-            <div class="address-form-section">
-                <h2><%= heading %></h2>
-                <form action="/profile/add-address/<%= address ? addressId : user._id  %>" method="POST">
-                    <h3>Personal Information</h3>
-                    <input type="hidden" name="heading" value="<%= heading %>">
-                    <input type="hidden" name="button" value="<%= button %>">
-                    <div class="form-row">
-                        <div class="form-group">
-                            
-                            <input type="text" name="fullname" value="<%= address ? address.fullname : user.fullname %>" placeholder="Full Name (required)" >
-                            <p id="name" class="error-field"><%=  errors?.fullname || "" %></p>
-                        </div>
-                        <div class="form-group">
-                            
-                            <input type="tel" name="mobile" maxlength="10" value="<%= address ? address.mobile: user.mobile %>" placeholder="Phone number (required)" >
-                            <p id="mobile" class="error-field"><%= errors?.mobile || ''%> </p>
-                        </div>
-                    </div>
-                    <h3>Address</h3>
-                    <div class="form-row">
-                        <div class="form-group">
-                            
-                            <input type="text" name="addressLine" value="<%= address ? address.addressLine : '' %>" placeholder="House Name, House Number, Locality (required)"  >
-                            <p id="address" class="error-field"><%= errors?.addressLine || ''%></p>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            
-                            <input type="text" name="state" value="<%= address ? address.state : '' %>" placeholder="State (required)" >
-                            <p id="state" class="error-field"><%= errors?.state || '' %></p>
-                        </div>
-                        <div class="form-group">
-                            
-                            <input type="text" name="district" value="<%= address ? address.district :'' %>" placeholder="District (required)" >
-                            <p id="district" class="error-field"><%= errors?.district || ''%></p>
-                        </div>
-                        
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            
-                            <input type="text" name="city" value="<%= address? address.city : '' %>" placeholder="City (required)" >
-                            <p id="city" class="error-field"><%= errors?.city || '' %></p>
-                        </div>
-                        <div class="form-group">
-                            
-                            <input type="text" name="pincode" value="<%=address ? address.pincode : '' %>" placeholder="Pin Code (required)" maxlength="6" >
-                            <p id="pincode" class="error-field"><%= errors?.pincode || '' %></p>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            
-                            <input type="text" name="landmark" value="<%= address ? address.landmark : '' %>" placeholder="Landmark (optional)">
-                            <p id="landmark" class="error-field"></p>
-                        </div>
-                    </div>
-                    <div class="buttons">
-                        <a href="/profile/address" class="cancel-btn">Cancel</a>
-                        <button type="submit" class="add-btn"><%= button %></button>
-                    </div>
-                </form>
+    <div class="main-content">
+      <div class="address-form-section">
+        <h2><i class="fas fa-map-marker-alt"></i> New Address</h2>
+
+        <form action="/profile/add-address/<%= user._id %>" method="POST">
+          <div class="form-row">
+            <div class="form-group">
+              <label><i class="fas fa-user"></i> Full Name</label>
+              <input type="text" name="fullname" value="<%= user.fullname %>" placeholder="Enter your full name" />
+              <% if(errors?.fullname) { %>
+                <p class="error-field"><i class="fas fa-exclamation-circle"></i> <%= errors.fullname %></p>
+              <% } %>
             </div>
-        </div>
+            <div class="form-group">
+              <label><i class="fas fa-phone"></i> Mobile Number</label>
+              <input type="tel" name="mobile" maxlength="10" value="<%= user.mobile %>" placeholder="Enter 10-digit mobile number" />
+              <% if(errors?.mobile) { %>
+                <p class="error-field"><i class="fas fa-exclamation-circle"></i> <%= errors.mobile %></p>
+              <% } %>
+            </div>
+          </div>
+
+          <div class="form-section-divider"></div>
+
+          <h3><i class="fas fa-home"></i> Address Details</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Address Line</label>
+              <input type="text" name="addressLine" value="" placeholder="House name, building, street, area" />
+              <% if(errors?.addressLine) { %>
+                <p class="error-field"><i class="fas fa-exclamation-circle"></i> <%= errors.addressLine %></p>
+              <% } %>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>State</label>
+              <input type="text" name="state" value="" placeholder="Enter state" />
+              <% if(errors?.state) { %>
+                <p class="error-field"><i class="fas fa-exclamation-circle"></i> <%= errors.state %></p>
+              <% } %>
+            </div>
+            <div class="form-group">
+              <label>District</label>
+              <input type="text" name="district" value="" placeholder="Enter district" />
+              <% if(errors?.district) { %>
+                <p class="error-field"><i class="fas fa-exclamation-circle"></i> <%= errors.district %></p>
+              <% } %>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>City</label>
+              <input type="text" name="city" value="" placeholder="Enter city" />
+              <% if(errors?.city) { %>
+                <p class="error-field"><i class="fas fa-exclamation-circle"></i> <%= errors.city %></p>
+              <% } %>
+            </div>
+            <div class="form-group">
+              <label>PIN Code</label>
+              <input type="text" name="pincode" value="" placeholder="6-digit PIN code" maxlength="6" />
+              <% if(errors?.pincode) { %>
+                <p class="error-field"><i class="fas fa-exclamation-circle"></i> <%= errors.pincode %></p>
+              <% } %>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Landmark (Optional)</label>
+              <input type="text" name="landmark" value="" placeholder="Nearby landmark to help locate address" />
+              <% if(errors?.landmark) { %>
+                <p class="error-field"><i class="fas fa-exclamation-circle"></i> <%= errors.landmark %></p>
+              <% } %>
+            </div>
+            <div class="form-group">
+              <label>Address Type</label>
+              <select name="addressType">
+                <option value="Home" <%= address?.addressType === 'Home' ? 'selected' : '' %>>Home</option>
+                <option value="Work" <%= address?.addressType === 'Work' ? 'selected' : '' %>>Work</option>
+              </select>
+              <% if(errors?.addressType) { %>
+                <p class="error-field"><i class="fas fa-exclamation-circle"></i> <%= errors.addressType %></p>
+              <% } %>
+            </div>
+          </div>
+
+          <div class="form-section-divider"></div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <div class="checkbox-container">
+                <input type="checkbox" id="defaultAddress" name="isdefault" value="true" <%= address?.isdefault ? 'checked' : '' %> />
+                <span>Set as default address</span>
+              </div>
+              <% if(errors?.isdefault) { %>
+                <p class="error-field"><i class="fas fa-exclamation-circle"></i> <%= errors.isdefault %></p>
+              <% } %>
+            </div>
+          </div>
+
+          <div class="buttons">
+            <a href="/profile/address" class="cancel-btn"><i class="fas fa-times"></i> Cancel</a>
+            <button type="submit" class="add-btn"><i class="fas fa-check"></i> Add Address</button>
+          </div>
+        </form>
+      </div>
     </div>
+  </div>
 </body>
 
 </html>

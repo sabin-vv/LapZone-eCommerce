@@ -1,0 +1,34 @@
+footer.bg-dark {
+  background-color: var(--dark-bg) !important;
+  padding: 4rem 0 2rem;
+}
+
+.footer-links {
+  margin-top: 1.5rem;
+}
+
+.footer-links a {
+  color: var(--text-white);
+  margin: 0 0.75rem;
+  transition: var(--transition);
+  position: relative;
+}
+
+.footer-links a:hover {
+  color: var(--accent-color);
+}
+
+.footer-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--accent-color);
+  transition: var(--transition);
+}
+
+.footer-links a:hover::after {
+  width: 100%;
+}

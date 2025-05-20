@@ -5,47 +5,82 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sign Up</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
-  <link rel="stylesheet" href="css/userSignup.css" />
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 
-<body>
-  <div class="container">
-    <h1>Sign up</h1>
+<body class="bg-gray-100 min-h-screen flex justify-center pt-10">
 
-    <% if(message){ %>
-      <span>
-        <%= message %>
-      </span>
-      <%} %>
+  <div class="w-full max-w-md bg-white shadow-lg rounded-xl p-8">
+    <h1 class="text-3xl font-bold text-center text-indigo-600 mb-6">Create Account</h1>
+    <p> <%= message ? message :"" %></p>
 
-        <form class="form" method="post" action="/signup">
-          <input type="text" name="fname" placeholder="Full name (Required)" />
-          <input type="email" name="email" placeholder="Email (Required)" />
-          <input type="text" name="mobile" placeholder="Mobile Number (Required)" maxlength="10" />
-          <input type="password" name="password" placeholder="Password (Required)" />
-          <input type="password" name="confpassword" placeholder="Confirm password (Required)" />
+    <form method="POST" action="/signup" class="space-y-4">
+      <!-- Full Name -->
+      <div>
+        <input type="text" name="fullname" placeholder="Full Name"
+          class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          value="<%= typeof formData !== 'undefined' ? formData.fullname : '' %>" />
+        <p class="text-red-500 text-xs italic mt-1"><%= errors?.fullname || '' %></p>
+      </div>
 
-          <!-- <p class="ref-text">Anyone has referred You? Claim the reward</p> -->
-          <!-- <button class="btn btn-light">REFERRAL CODE</button> -->
+      <!-- Email -->
+      <div class="mt-0">
+        <input type="email" name="email" placeholder="Email"
+          class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          value="<%= typeof formData !== 'undefined' ? formData.email : '' %>" />
+        <p class="text-red-500 text-xs italic mt-1"><%= errors?.email || '' %></p>
+      </div>
 
-          <p class="login-link">Already have an account? <a href="/login">Log in</a></p>
-          <button type="submit" class="primary-btn">Sign Up</button>
+      <!-- Mobile -->
+      <div>
+        <input type="text" name="mobile" placeholder="Mobile Number" maxlength="10"
+          class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          value="<%= typeof formData !== 'undefined' ? formData.mobile : '' %>" />
+        <p class="text-red-500 text-xs italic mt-1"><%= errors?.mobile || '' %></p>
+      </div>
 
-          <div class="divider">Or Register with</div>
-          <a href="/auth/google" class="google-btn btn">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" height="20px" />
-            Google
-          </a>
-        </form>
+      <!-- Password -->
+      <div>
+        <input type="password" name="password" placeholder="Password"
+          class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        <p class="text-red-500 text-xs italic mt-1"><%= errors?.password || '' %></p>
+      </div>
+
+      <!-- Confirm Password -->
+      <div>
+        <input type="password" name="confpassword" placeholder="Confirm Password"
+          class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        <p class="text-red-500 text-xs italic mt-1"><%= errors?.confpassword || '' %></p>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit"
+        class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition duration-200 font-medium">
+        Sign Up
+      </button>
+
+      <!-- Divider -->
+      <div class="text-center text-sm text-gray-500 my-4">Or register with</div>
+
+      <!-- Google Button -->
+      <a href="/auth/google"
+        class="w-full flex items-center justify-center gap-2 border py-2 rounded-md hover:bg-gray-100 transition">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" class="h-5 w-5">
+        <span>Sign up with Google</span>
+      </a>
+
+      <!-- Login Link -->
+      <p class="text-sm text-center mt-4 text-gray-600">
+        Already have an account?
+        <a href="/login" class="text-indigo-600 hover:underline font-medium">Log in</a>
+      </p>
+    </form>
   </div>
 
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"
-    crossorigin="anonymous"></script>
 </body>
 
 </html>

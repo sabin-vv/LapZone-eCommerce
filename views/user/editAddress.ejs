@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>edit-address</title>
+  <link rel="stylesheet" href="/css/profileSidebar.css" />
+  <link rel="stylesheet" href="/css/addAddress.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+  <style>
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    input,
+    select {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-top: 5px;
+    }
+
+    select {
+      width: 100%;
+      appearance: none;
+      background-color: white;
+    }
+
+    .error-field {
+      color: red;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 15px;
+      margin-top: 30px;
+    }
+
+    .add-btn,
+    .cancel-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+    }
+
+    .add-btn {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .cancel-btn {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    h2, h3 {
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+
+<body>
+  <%- include("../partials/user/header.ejs") %>
+  <div class="main-body">
+    <%- include("../partials/user/profileSidebar.ejs") %>
+
+    <div class="main-content">
+      <div class="address-form-section">
+        <h2>Edit Address</h2>
+
+        <form action="/profile/edit-address/<%= address._id %>" method="POST">
+          
+          <h3>Personal Information</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" name="fullname" value="<%= address ? address.fullname : user.fullname %>" placeholder="Full Name (required)" />
+              <p class="error-field"><%= errors?.fullname || "" %></p>
+            </div>
+            <div class="form-group">
+              <label>Mobile</label>
+              <input type="tel" name="mobile" maxlength="10" value="<%= address ? address.mobile : user.mobile %>" placeholder="Phone number (required)" />
+              <p class="error-field"><%= errors?.mobile || ''%></p>
+            </div>
+          </div>
+
+          <h3>Address</h3>
+          <div class="form-row">
+            <div class="form-group">
+              
+              <input type="text" name="addressLine" value="<%= address ? address.addressLine : '' %>" placeholder="House Name, House Number, Locality (required)" />
+              <p class="error-field"><%= errors?.addressLine || ''%></p>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+             
+              <input type="text" name="state" value="<%= address ? address.state : '' %>" placeholder="State (required)" />
+              <p class="error-field"><%= errors?.state || '' %></p>
+            </div>
+            <div class="form-group">
+             
+              <input type="text" name="district" value="<%= address ? address.district : '' %>" placeholder="District (required)" />
+              <p class="error-field"><%= errors?.district || '' %></p>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              
+              <input type="text" name="city" value="<%= address ? address.city : '' %>" placeholder="City (required)" />
+              <p class="error-field"><%= errors?.city || '' %></p>
+            </div>
+            <div class="form-group">
+              
+              <input type="text" name="pincode" value="<%= address ? address.pincode : '' %>" placeholder="Pin Code (required)" maxlength="6" />
+              <p class="error-field"><%= errors?.pincode || '' %></p>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+             
+              <input type="text" name="landmark" value="<%= address ? address.landmark : '' %>" placeholder="Landmark (optional)" />
+              <p class="error-field"><%= errors?.landmark || '' %></p>
+            </div>
+            <div class="form-group">
+              
+            <select name="addressType">
+                <option value="Home"
+                    <%= (!address || address.addresstype === 'Home') ? 'selected' : '' %>>
+                    Home
+                </option>
+                <option value="Work"
+                    <%= (address && address.addresstype === 'Work')  ? 'selected' : '' %>>
+                    Work
+                </option>
+            </select>
+              <p class="error-field"><%= errors?.addressType || '' %></p>
+            </div>
+          </div>
+
+          <div class="buttons">
+            <a href="/profile/address" class="cancel-btn">Cancel</a>
+            <button type="submit" class="add-btn">Update Address</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LapZone - Cart</title>
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/profileSidebar.css">
+    <link rel="stylesheet" href="/css/cartpage.css">
+    <link rel="stylesheet" href="/css/layout-integration.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+</head>
+
+<body>
+    <%- include("../partials/user/header.ejs") %>
+    
+    <div class="main-container">
+        <!-- Include the improved sidebar -->
+        <%- include("../partials/user/profileSidebar.ejs") %>
+        
+        <div class="content-wrapper fade-in">
+            <div class="cart-container">
+                <div class="page-header">
+                    <h1 class="page-title">Shopping Cart</h1>
+                    <% if(cart && cart.items && cart.items.length > 0) { %>
+                        <button class="btn btn-danger" onclick="confirmClearCart()">
+                            <i class="fas fa-trash-alt"></i> Empty Cart
+                        </button>
+                    <% } %>
+                </div>
+
+                <!-- Cart Items -->
+                <div class="cart-items">
+                    <% if(cart && cart.items && cart.items.length > 0) { %>
+                        <% cart.items.forEach(function(item) { %>
+                            <div class="cart-item">
+                                <div class="item-image">
+                                    <% const mainImage = item.productId.images?.find(img => img.isMain); %>
+                                    <img src="<%= mainImage?.url %>" alt="<%= item.name %>">
+                                </div>
+                                <div class="item-details">
+                                    <h3 class="item-title"><%= item.productId.name %></h3>
+                                    <div class="item-price">
+                                        <div class="current-price">₹<%= item.productId.salePrice.toLocaleString('en-IN') %></div>
+                                        <% if(item.productId.regularPrice) { %>
+                                            <div class="original-price">₹<%= item.productId.regularPrice.toLocaleString('en-IN') %></div>
+                                        <% } %>
+                                        <% if(item.savings) { %>
+                                            <div class="savings">Save ₹<%= item.savings.toLocaleString('en-IN') %></div>
+                                        <% } %>
+                                    </div>
+                                </div>
+                                <div class="item-actions">
+                                    <div class="quantity-control">
+                                        <button class="quantity-btn" onclick="updateQuantity('<%= item.id %>', -1)">−</button>
+                                        <input type="number" class="quantity-input" min="1" max="5" value="<%= item.quantity %>" readonly>
+                                        <button class="quantity-btn" onclick="updateQuantity('<%= item.id %>', 1)">+</button>
+                                    </div>
+                                    <button class="remove-btn" onclick="removeItem('<%= item.id %>')">
+                                        <i class="fas fa-times"></i> Remove
+                                    </button>
+                                </div>
+                            </div>
+                        <% }); %>
+
+                        <!-- Cart Summary -->
+                        <div class="cart-summary">
+                            <div class="summary-row">
+                                <div class="summary-label">SUBTOTAL</div>
+                                <div class="summary-value">
+                                    <% if(cart.savings > 0) { %>
+                                        <span class="original-price">₹<%= cart.originalTotal.toLocaleString('en-IN') %></span>
+                                    <% } %>
+                                    <span>₹<%= totalPrice.toLocaleString('en-IN') %></span>
+                                </div>
+                            </div>
+                            <% if(cart.savings > 0) { %>
+                                <div class="summary-row">
+                                    <div class="summary-label"></div>
+                                    <div class="summary-value savings-total">Save ₹<%= cart.savings.toLocaleString('en-IN') %></div>
+                                </div>
+                            <% } %>
+                        </div>
+
+                        <div class="shipping-info">
+                            Shipping, taxes, and discount codes calculated at checkout.
+                        </div>
+
+                        <!-- Checkout Actions -->
+                        <div class="checkout-actions">
+                            <a href="/user/checkout" class="btn btn-primary checkout-btn">
+                                <i class="fas fa-shopping-bag"></i> Proceed to Checkout
+                            </a>
+                            <a href="/shop" class="btn btn-secondary checkout-btn">
+                                <i class="fas fa-arrow-left"></i> Continue Shopping
+                            </a>
+                        </div>
+                    <% } else { %>
+                        <div class="empty-cart-message">
+                            <i class="fas fa-shopping-cart fa-3x" style="color: #e5e7eb; margin-bottom: 20px;"></i>
+                            <h3>Your Cart is Empty</h3>
+                            <p>Add items to your cart to continue shopping.</p>
+                            <div style="margin-top: 24px;">
+                                <a href="/shop" class="btn btn-primary">
+                                    <i class="fas fa-store"></i> Browse Products
+                                </a>
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include("../partials/user/footer.ejs") %>
+    
+    <script>
+        // Highlight the active sidebar item
+        document.addEventListener('DOMContentLoaded', function() {
+            // Find the cart link in the sidebar and add active class
+            const sidebarLinks = document.querySelectorAll('.sidebar ul li a');
+            sidebarLinks.forEach(link => {
+                if (link.getAttribute('href') === '/cart') {
+                    link.parentElement.classList.add('active');
+                }
+            });
+        });
+        
+        function updateQuantity(itemId, change) {
+            const inputElem = event.target.parentElement.querySelector('.quantity-input');
+            let quantity = parseInt(inputElem.value) + change;
+
+            if (quantity < 1) quantity = 1;
+            else if (quantity > 5) quantity = 5;
+
+            inputElem.value = quantity;
+
+            fetch('/cart/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    itemId: itemId,
+                    quantity: quantity
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success notification
+                    iziToast.success({
+                        title: 'Updated',
+                        message: 'Cart quantity updated',
+                        position: 'topRight',
+                        timeout: 1500
+                    });
+                    
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 800);
+                }
+            })
+            .catch(error => {
+                iziToast.error({
+                    title: 'Error',
+                    message: 'Failed to update quantity',
+                    position: 'topRight'
+                });
+            });
+        }
+
+        function removeItem(itemId) {
+            Swal.fire({
+                title: 'Remove Item',
+                text: 'Are you sure you want to remove this item?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: "#4f46e5",
+                cancelButtonColor: "#6b7280",
+                confirmButtonText: "Yes, remove it",
+                cancelButtonText: "Cancel"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch("/cart/remove-item/itemId", {
+                        method: "POST",
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ itemId: itemId })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: "Removed!",
+                                text: "Item has been removed from your cart.",
+                                icon: "success",
+                                timer: 1500,
+                                showConfirmButton: false
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                title: "Failed!",
+                                text: data.message || "Item could not be removed.",
+                                icon: "error"
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error removing item:", error);
+                        Swal.fire({
+                            title: "Error",
+                            text: "An error occurred while removing the item.",
+                            icon: "error"
+                        });
+                    });
+                }
+            });
+        }
+
+        function confirmClearCart() {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'This will remove all items from your cart.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, clear it'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/cart/clear-cart';
+                }
+            });
+        }
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoYz1HIcje39Wg7MXzU8s+dUjz/UZ5eIfJc5YyEGaLZ1Ihj" crossorigin="anonymous"></script>
+</body>
+
+</html>

@@ -5,7 +5,8 @@ const customerController = require("../controllers/admin/customerController")
 const categoryController = require("../controllers/admin/categoryController")
 const productController = require("../controllers/admin/productController")
 const upload = require("../middlewares/multer")
-
+const orderController = require("../controllers/admin/orderController");
+const Order = require("../model/order");
 
 
 router.get("/login", adminController.getadminLogin)
@@ -52,8 +53,10 @@ router.put("/products/:id", upload.fields([
 router.post("/product-toggle/:id", productController.toggleProduct)
 router.post("/product/delete/:id", productController.softDelete)
 
-
-
+router.get("/orders",orderController.listOrders)
+router.post("/update-order-status",orderController.updateOrderStatus )
+router.get("/view-order/:id",orderController.viewOrder)
+router.post("/orders/item/:id/update-status",orderController.updateItemStatus)
 
 
 

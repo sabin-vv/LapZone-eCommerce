@@ -82,16 +82,16 @@ const newProduct = async (req, res) => {
   if (!req.session.admin) return res.redirect("/admin");
 
   const categories = await Category.find()
-  console.log(categories)
+
 
   res.render("admin/addProduct", { categories, errors: null })
 }
 
 const addProduct = async (req, res) => {
-
   if (!req.session.admin) return res.redirect("/admin");
 
-  const errors = {}
+  const errors = {};
+
 
   const requiredFields = [
     'name', 'modelNumber', 'category', 'color', 'description',
@@ -104,7 +104,6 @@ const addProduct = async (req, res) => {
       errors[field] = `${field} is required`;
     }
   });
-
 
   if (req.body.rating && (isNaN(req.body.rating) || req.body.rating < 0 || req.body.rating > 5)) {
     errors.rating = 'Rating must be between 0 and 5';
@@ -124,66 +123,80 @@ const addProduct = async (req, res) => {
 
   if (req.body.offer && (isNaN(req.body.offer) || req.body.offer < 0 || req.body.offer > 100)) {
     errors.offer = 'Offer must be between 0 and 100';
-
   }
 
-
-  let variantsArray = req.body.variants;
-  if (!variantsArray || (typeof variantsArray === 'object' && !Array.isArray(variantsArray))) {
-    variantsArray = Object.values(variantsArray || {});
+  let variantsArray = req.body.variants || [];
+  if (!Array.isArray(variantsArray)) {
+    variantsArray = Object.keys(variantsArray).map(key => variantsArray[key]);
   }
 
-  if (!variantsArray || !Array.isArray(variantsArray) || variantsArray.length === 0) {
+  if (variantsArray.length === 0) {
     errors.variants = 'At least one variant is required';
   } else {
     errors.variants = [];
     variantsArray.forEach((variant, index) => {
-      const variantErrors = {};
-
       if (!variant || typeof variant !== 'object') {
-        variantErrors.general = 'Invalid variant data';
-      } else {
+        return;
+      }
 
-        if (!variant.RAM || typeof variant.RAM !== 'string' || variant.RAM.trim() === '') {
-          variantErrors.RAM = 'RAM is required';
-        } else if (!/^\d+\s*(GB|TB)$/i.test(variant.RAM.trim())) {
-          variantErrors.RAM = 'RAM must be in format "number GB" or "number TB"';
-        }
+      const variantErrors = {};
+      
 
-        // Check Storage
-        if (!variant.Storage || typeof variant.Storage !== 'string' || variant.Storage.trim() === '') {
-          variantErrors.Storage = 'Storage is required';
-        } else if (!/^\d+\s*(GB|TB)$/i.test(variant.Storage.trim())) {
-          variantErrors.Storage = 'Storage must be in format "number GB" or "number TB"';
-        }
+      if (!variant.RAM || typeof variant.RAM !== 'string' || variant.RAM.trim() === '') {
+        variantErrors.RAM = 'RAM is required';
+      } else if (!/^\d+\s*(GB|TB)$/i.test(variant.RAM.trim())) {
+        variantErrors.RAM = 'RAM must be in format "number GB" or "number TB"';
+      }
 
-        // Check priceAdjustment
-        if (variant.priceAdjustment && isNaN(variant.priceAdjustment)) {
-          variantErrors.priceAdjustment = 'Price adjustment must be a number';
-        }
+      if (!variant.Storage || typeof variant.Storage !== 'string' || variant.Storage.trim() === '') {
+        variantErrors.Storage = 'Storage is required';
+      } else if (!/^\d+\s*(GB|TB)$/i.test(variant.Storage.trim())) {
+        variantErrors.Storage = 'Storage must be in format "number GB" or "number TB"';
+      }
+
+      if (variant.priceAdjustment && isNaN(variant.priceAdjustment)) {
+        variantErrors.priceAdjustment = 'Price adjustment must be a number';
       }
 
       if (Object.keys(variantErrors).length > 0) {
         errors.variants[index] = variantErrors;
       }
     });
+
+    if (errors.variants.length === 0) {
+      delete errors.variants;
+    } else {
+      errors.variants = errors.variants.filter(Boolean);
+    }
   }
 
+  const portErrors = {};
+  const ports = req.body.ports || [{}];
+  const portFields = ["USB Type-A", "USB Type-C", "HDMI", "AudioJack", "LAN", "Card Reader"];
+  const firstPort = ports[0] || {};
 
-      
-  
+  portFields.forEach((field) => {
+    const value = firstPort[field];
+    if (value && value.toString().trim() === '') {
+      portErrors[field] = `${field} cannot be empty if provided`;
+    }
+  });
+
   if (Object.keys(portErrors).length > 0) {
     errors.ports = [portErrors];
   }
-  // Remove empty ports errors object if no errors
+
   if (errors.ports && Object.keys(errors.ports[0]).length === 0) {
     delete errors.ports;
   }
 
   if (Object.keys(errors).length > 0) {
+    console.log('Validation errors:', errors);
     const categories = await Category.find();
     return res.render("admin/addProduct", { categories, errors });
-  }  
+  }
+
+  
 
   const fileFields = [
     "images[0].file",
@@ -194,47 +207,121 @@ const addProduct = async (req, res) => {
   ];
 
   const images = [];
-  const uploadPromises = []
+  const uploadPromises = [];
+  const processedFiles = new Set();
+  const uploadErrors = [];
 
-    for (let i = 0; i < 5; i++) {
-      const fieldName = `images[${i}].file`
-      const fileArray = req.files?.[fieldName]
+  for (let i = 0; i < 5; i++) {
+    const fieldName = fileFields[i];
+    const fileArray = req.files?.[fieldName];
 
-      if (fileArray && fileArray[0]) {
-        const file = fileArray[0]
-
-        
-          const uploadPromise =  cloudinary.uploader.upload(file.path, {
-            folder: "products",
-            transformation: [
-              { width: 800, height: 600, crop: "limit" },
-              { quality: "auto", fetch_format: "auto" },
-            ],
-          }).then(result =>{
-
-            images.push( {
-              url: result.secure_url,
-              isMain: i === 0,
-            });
-            fs.unlinkSync(file.path);
-
-          }).catch(err => {
-            console.error(`error uploading ${fieldName} :`, err)
-          })
-
-          uploadPromises.push(uploadPromise)
-      }
+    if (!fileArray || !fileArray[0]) {
+      console.log(`No file provided for ${fieldName}`);
+      continue;
     }
-    await Promise.all(uploadPromises)
-  
 
-  if (images.length > 0 && !images.some((img) => img.isMain)) {
-    images[0].isMain = true;
+    const file = fileArray[0];
+    const fileIdentifier = `${fieldName}-${file.originalname || `buffer-${i}`}`;
+    console.log(`Processing file: ${fileIdentifier} (path: ${file.path || 'buffer'}, field: ${fieldName})`);
+
+    if (processedFiles.has(fileIdentifier)) {
+      console.warn(`Skipping duplicate file: ${fileIdentifier} (field: ${fieldName})`);
+      continue;
+    }
+
+    processedFiles.add(fileIdentifier);
+
+    const uploadOptions = {
+      folder: "products",
+      transformation: [
+        { width: 800, height: 600, crop: "limit" },
+        { quality: "auto", fetch_format: "auto" },
+      ],
+    };
+
+    let uploadPromise;
+    if (file.buffer && !file.path) {
+      if (!Buffer.isBuffer(file.buffer)) {
+        console.error(`Invalid buffer for ${fieldName}`);
+        uploadErrors.push(`Invalid buffer for image ${i + 1}`);
+        continue;
+      }
+      console.log(`Uploading ${fieldName} as buffer`);
+      uploadPromise = new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(uploadOptions, (err, result) => {
+          if (err) reject(err);
+          else resolve(result);
+        });
+        stream.end(file.buffer);
+      });
+    } else {
+      if (!fs.existsSync(file.path)) {
+        console.error(`File does not exist: ${file.path} (field: ${fieldName})`);
+        uploadErrors.push(`File not found for image ${i + 1}`);
+        continue;
+      }
+      console.log(`Uploading file from disk: ${file.path}`);
+      uploadPromise = cloudinary.uploader.upload(file.path, uploadOptions);
+    }
+
+    uploadPromise = uploadPromise.then(result => {
+      console.log(`Uploaded image URL: ${result.secure_url} (field: ${fieldName})`);
+      images.push({
+        url: result.secure_url,
+        isMain: i === 0,
+      });
+      if (file.path) {
+        try {
+          fs.unlinkSync(file.path);
+          console.log(`Deleted temporary file: ${file.path}`);
+        } catch (unlinkErr) {
+          console.warn(`Warning: Could not delete temporary file ${file.path}:`, unlinkErr.message);
+        }
+      }
+    }).catch(err => {
+      console.error(`Error uploading ${fieldName}:`, err);
+      uploadErrors.push(`Failed to upload image ${i + 1}: ${err.message}`);
+    });
+
+    uploadPromises.push(uploadPromise);
   }
 
+  await Promise.all(uploadPromises);
 
+  // Deduplicate images by URL, keeping the first occurrence
+  const uniqueImages = [];
+  const seenUrls = new Set();
+  for (const img of images) {
+    if (!seenUrls.has(img.url)) {
+      seenUrls.add(img.url);
+      uniqueImages.push(img);
+    } else {
+      console.warn(`Skipping duplicate image URL: ${img.url}`);
+    }
+  }
 
-  // Prepare product data
+  if (uniqueImages.length === 0) {
+    errors.images = 'At least one image is required';
+    if (uploadErrors.length > 0) {
+      errors.imageUpload = uploadErrors.join('; ');
+    }
+    console.log('Image validation error:', errors);
+    const categories = await Category.find();
+    return res.render("admin/addProduct", { categories, errors });
+  }
+
+  // Ensure the first image is marked as main
+  uniqueImages[0].isMain = true;
+  for (let i = 1; i < uniqueImages.length; i++) {
+    uniqueImages[i].isMain = false;
+  }
+
+  if (uploadErrors.length > 0) {
+    console.log('Image upload errors:', uploadErrors);
+    errors.imageUpload = uploadErrors.join('; ');
+  }
+
+  console.log("Validation success");
   const productData = {
     name: req.body.name,
     modelNumber: req.body.modelNumber,
@@ -254,17 +341,26 @@ const addProduct = async (req, res) => {
     salePrice: req.body.salePrice,
     warranty: req.body.warranty,
     webcam: req.body.webcam,
-    variants: req.body.variants || [],
-    ports: req.body.ports || [{}],
-    images: images,
+    variants: variantsArray.filter(v => v && typeof v === 'object'),
+    ports: ports,
+    images: uniqueImages,
     isExisting: true
   };
-  const product = new Product(productData);
-  await product.save();
 
-  res.redirect('/admin/products');
-
-}
+  try {
+    const product = new Product(productData);
+    await product.save();
+    console.log('Product saved successfully');
+    res.redirect('/admin/products');
+  } catch (err) {
+    console.error('Error saving product:', err);
+    const categories = await Category.find();
+    res.render('admin/addProduct', {
+      categories,
+      errors: { database: 'Failed to save product' }
+    });
+  }
+};
 
 const editProduct = async (req, res) => {
   if (!req.session.admin) return res.redirect("/admin/login")
@@ -289,11 +385,11 @@ const updateProduct = async (req, res) => {
     if (!req.session.admin) return res.redirect("/admin");
 
 
-    
+
     const productId = req.params.id;
     const images = [];
 
-    // Validate required fields
+
     const requiredFields = [
       "name",
       "modelNumber",
@@ -317,7 +413,7 @@ const updateProduct = async (req, res) => {
       }
     });
 
-    // Validate numeric fields
+
     const numericFields = ["regularPrice", "salePrice", "rating", "count", "offer"];
     numericFields.forEach((field) => {
       if (req.body[field] && isNaN(Number(req.body[field]))) {
@@ -336,11 +432,11 @@ const updateProduct = async (req, res) => {
       });
     }
 
-    // Handle image uploads and existing images
+
     const existingProduct = await Product.findById(productId).select("images");
     const fileFields = ["images[0].file", "images[1].file", "images[2].file", "images[3].file", "images[4].file"];
 
-    // Initialize images array with existing images
+
     if (existingProduct && existingProduct.images && existingProduct.images.length > 0) {
       images.push(...existingProduct.images.map((img) => ({
         url: img.url,
@@ -348,7 +444,7 @@ const updateProduct = async (req, res) => {
       })));
     }
 
-    // Process new images
+
     if (req.files && Object.keys(req.files).length > 0) {
       for (let i = 0; i < fileFields.length; i++) {
         const field = fileFields[i];
@@ -361,7 +457,7 @@ const updateProduct = async (req, res) => {
               { quality: "auto", fetch_format: "auto" },
             ],
           });
-          // Replace or add the image at the corresponding index
+
           images[i] = {
             url: result.secure_url,
             isMain: i === 0,
@@ -371,12 +467,12 @@ const updateProduct = async (req, res) => {
       }
     }
 
-    // Ensure at least one image is marked as main
+
     if (images.length > 0 && !images.some((img) => img.isMain)) {
       images[0].isMain = true;
     }
 
-    // Parse and validate variants
+
     const variants = [];
     if (req.body.variants && typeof req.body.variants === "object") {
       Object.values(req.body.variants).forEach((variant) => {
@@ -390,7 +486,7 @@ const updateProduct = async (req, res) => {
       });
     }
 
-    // Parse and validate ports
+
     const ports = [];
     if (req.body.ports && req.body.ports[0]) {
       const portData = req.body.ports[0];
@@ -404,7 +500,7 @@ const updateProduct = async (req, res) => {
       if (Object.keys(portObj).length > 0) ports.push(portObj);
     }
 
-    // Prepare product data
+
     const productData = {
       name: req.body.name,
       modelNumber: req.body.modelNumber,
@@ -430,10 +526,6 @@ const updateProduct = async (req, res) => {
       ports,
     };
 
-    // Log the final product data
-    console.log("Product Data to Update:", JSON.stringify(productData, null, 2));
-
-    // Update product
     const updatedProduct = await Product.findByIdAndUpdate(productId, productData, {
       new: true,
       runValidators: true,

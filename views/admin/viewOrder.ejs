@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Order | LapZone</title>
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/view-order.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <%- include("../partials/admin/sidebar.ejs") %>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Order Details</h1>
+            <div class="action-buttons">
+                <a href="/admin/orders" class="btn btn-outline">
+                    <i class="bi bi-arrow-left"></i> Back to Orders
+                </a>
+            </div>
+        </div>
+
+        <div class="order-details-container">
+            <!-- Order Summary -->
+            <div class="order-summary card">
+                <h2>Order #<%= order.orderId %></h2>
+                <div class="order-meta">
+                    <div class="meta-item">
+                        <i class="bi bi-calendar3"></i>
+                        <span><strong>Date:</strong> <%= order.orderDate.toLocaleDateString() %></span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="bi bi-tag"></i>
+                        <span><strong>Status:</strong>
+                            <span class="status-badge status-<%= order.orderStatus.toLowerCase() %>">
+                                <%= order.orderStatus %>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="bi bi-credit-card"></i>
+                        <span><strong>Payment Method:</strong> <%= order.paymentMethod %></span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="bi bi-wallet2"></i>
+                        <span><strong>Payment Status:</strong> 
+                            <span class="payment-status <%= order.paymentStatus.toLowerCase() %>">
+                                <%= order.paymentStatus %>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customer and Shipping Info -->
+            <div class="info-cards-container">
+                <div class="customer-shipping card">
+                    <div class="customer-info">
+                        <h3><i class="bi bi-person-circle"></i> Customer</h3>
+                        <div class="info-content">
+                            <p><strong>Name:</strong> <%= order.user.fullname || "N/A" %></p>
+                            <p><strong>Email:</strong> <%= order.user.email %></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="customer-shipping card">
+                    <div class="shipping-info">
+                        <h3><i class="bi bi-truck"></i> Shipping Address</h3>
+                        <div class="info-content">
+                            <p><strong>Name:</strong> <%= order.shippingAddress.fullName %></p>
+                            <p><strong>Address:</strong> <%= order.shippingAddress.addressLine %>, <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %>, <%= order.shippingAddress.postCode %></p>
+                            <p><strong>Phone:</strong> <%= order.shippingAddress.phone %></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Items Table -->
+            <div class="items-table-container card">
+                <h3><i class="bi bi-box-seam"></i> Items</h3>
+                <div class="table-responsive">
+                    <table class="items-table">
+                        <thead>
+                            <tr>
+                                <th class="th-image">Image</th>
+                                <th class="th-product">Product</th>
+                                <th class="th-quantity">Quantity</th>
+                                <th class="th-price">Price</th>
+                                <th class="th-status">Status</th>
+                                <th class="th-status-update">Update Status</th>
+                                <th class="th-total">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% order.items.forEach(item => { 
+                                const mainImage = item.productId?.images?.find(img => img.isMain === true);
+                            %>
+                                <tr>
+                                    <td class="td-image">
+                                        <% if (mainImage) { %>
+                                            <div class="img-container">
+                                                <img src="<%= mainImage.url %>" alt="<%= item.productName %>" class="product-image">
+                                            </div>
+                                        <% } else { %>
+                                            <div class="img-container no-img">
+                                                <i class="bi bi-image"></i>
+                                            </div>
+                                        <% } %>
+                                    </td>
+                                    <td class="td-product"><%= item.productName %></td>
+                                    <td class="td-quantity"><%= item.quantity %></td>
+                                    <td class="td-price">₹<%= item.price.toLocaleString('en-IN') %></td>
+                                    <td class="td-status">
+                                        <span class="status-badge status-<%= item.status.toLowerCase() %>">
+                                            <%= item.status %>
+                                        </span>
+                                    </td>
+                                    <td class="td-status-update">
+                                        <form action="/admin/orders/item/<%= item._id %>/update-status" method="POST" class="item-status-form">
+                                            <select  name="itemStatus" class="form-control item-status-select" data-item-id="<%= item._id %>" <%= item.status === 'Cancelled' || item.status === 'Delivered' ? 'disabled' : '' %>>
+                                                <option value="Ordered" <%= item.status === 'Ordered' ? 'selected' : '' %>>Ordered</option>
+                                                <option value="Processing" <%= item.status === 'Processing' ? 'selected' : '' %>>Processing</option>
+                                                <option value="Delivered" <%= item.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
+                                                <option value="Returned" <%= item.status === 'Returned' ? 'selected' : '' %>>Returned</option>
+                                                <option value="Cancelled" <%= item.status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
+                                                
+                                            </select>
+                                            
+                                        </form>
+                                    </td>
+                                    <td class="td-total">₹<%= (item.quantity * item.price).toLocaleString('en-IN') %></td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="bottom-section">
+                <!-- Order Totals -->
+                <div class="order-totals card">
+                    <h3><i class="bi bi-calculator"></i> Order Summary</h3>
+                    <div class="totals-breakdown">
+                        <div class="total-row">
+                            <span>Subtotal:</span>
+                            <span>₹<%= order.subtotal.toLocaleString('en-IN') %></span>
+                        </div>
+                        <div class="total-row">
+                            <span>Shipping Fee:</span>
+                            <span>₹<%= order.shippingFee.toLocaleString('en-IN') %></span>
+                        </div>
+                        <div class="total-row">
+                            <span>Tax:</span>
+                            <span>₹<%= order.tax.toLocaleString('en-IN') %></span>
+                        </div>
+                        <div class="total-row grand-total">
+                            <span>Total:</span>
+                            <span>₹<%= order.totalAmount.toLocaleString('en-IN') %></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status History -->
+                <div class="status-history card">
+                    <h3><i class="bi bi-clock-history"></i> Status History</h3>
+                    <ul class="timeline">
+                        <% order.statusHistory.forEach(history => { %>
+                            <li class="timeline-item <%= history.current ? 'current' : '' %>">
+                                <div class="timeline-marker"></div>
+                                <div class="timeline-content">
+                                    <span class="status-badge status-<%= history.status.toLowerCase() %>">
+                                        <%= history.status %>
+                                    </span>
+                                    <span class="timeline-date"><%= history.date.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'medium' }) %></span>
+                                    <% if (history.current) { %>
+                                        <span class="current-badge">Current</span>
+                                    <% } %>
+                                </div>
+                            </li>
+                        <% }) %>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Toggle sidebar for mobile
+        document.getElementById('toggle-sidebar').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('active');
+        });
+
+        // Ensure sidebar link is active
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const status = urlParams.get('status');
+
+            if (status === 'updated') {
+                iziToast.success({
+                    
+                    message: 'Item status updated successfully',
+                    position: 'topRight'
+                });
+            } else if (status === 'error') {
+                iziToast.error({
+                    
+                    message: 'Failed to update item status',
+                    position: 'topRight'
+                });
+            }
+                document.querySelectorAll('.item-status-select').forEach(select => {
+                select.addEventListener('change', (e) => {
+
+                    e.target.closest('form').submit();
+                });
+            });
+            
+            if (status) {
+                const newUrl = window.location.pathname;
+                window.history.replaceState({}, document.title, newUrl);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,56 +1,228 @@
+/* Enhanced Header Styling for LapZone */
 header {
-    background: #000;
-    color: white;
+    background: linear-gradient(to right, #2c3e50, #4a6785);
+    color: #ecf0f1;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
 .navbar-dark {
-    padding: 1rem 1.5rem;
+    padding: 0.8rem 1.5rem;
 }
 
+/* Logo Styling */
 .navbar-brand {
     font-weight: 800;
     font-style: italic;
-    font-size: 2rem;
-    color: white !important;
+    font-size: 2.2rem;
+    color: #ecf0f1 !important;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    margin-right: 2rem;
+    transition: transform 0.3s ease;
 }
 
+.navbar-brand:hover {
+    transform: scale(1.05);
+    color: #ff6f61 !important;
+}
+
+/* Navigation Links */
 .nav-link {
-    color: white;
-    font-size: 1.125rem;
+    color: #ecf0f1 !important;
+    font-size: 1.1rem;
+    font-weight: 500;
     margin: 0 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    transition: all 0.3s ease;
 }
 
 .nav-link:hover {
-    color: #ccc;
+    color: #ffffff !important;
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
 }
 
+/* Search Bar */
 .search-bar {
-    border-radius: 8px;
-    border: none;
-    padding: 0.5rem 0.75rem;
-    width: 200px;
-    max-width: 100%;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.5rem 1rem;
+    width: 240px;
+    background-color: rgba(255, 255, 255, 0.9);
+    transition: all 0.3s ease;
+}
+
+.search-bar:focus {
+    width: 270px;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+    border-color: #ff6f61;
+    outline: none;
+}
+
+/* Search Button */
+.btn-outline-light {
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 2px solid #ecf0f1;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-light:hover {
+    background-color: #ff6f61;
+    border-color: #ff6f61;
+    transform: rotate(5deg);
 }
 
 .btn-outline-light i {
-    font-size: 1rem;
+    font-size: 1.1rem;
 }
 
+/* Icons (Cart, Wishlist) */
+.navbar a.text-light {
+    position: relative;
+    margin: 0 0.8rem;
+    transition: all 0.2s ease;
+}
+
+.navbar a.text-light:hover {
+    color: #ff6f61 !important;
+    transform: scale(1.15);
+}
+
+/* User Dropdown */
+.user {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.user:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
 
 .dropdown-menu {
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-    min-width: 160px;
-    padding: 0.5rem 0;
+    background-color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    margin-top: 0.5rem;
+    overflow: hidden;
+    min-width: 180px;
 }
 
 .dropdown-item {
-    font-size: 0.9rem;
-    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    padding: 0.7rem 1.2rem;
+    transition: all 0.3s ease;
+    color: #2c3e50;
 }
 
 .dropdown-item:hover {
-    background-color: #f5f5f5;
+    background-color: #f8f9fa;
+    color: #ff6f61;
+    padding-left: 1.5rem;
+}
+
+.logout-item {
+    color: #e74c3c;
+    font-weight: 500;
+}
+
+.logout-item:hover {
+    background-color: #fff1f0;
+}
+
+/* Login Button */
+a.btn-outline-light {
+    border-radius: 25px;
+    height: auto;
+    width: auto;
+    padding: 0.5rem 1.5rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+a.btn-outline-light:hover {
+    background-color: #ff6f61;
+    border-color: #ff6f61;
+    transform: none;
+}
+
+/* Fixing navbar collapse in mobile */
+#navbarContent {
+    transition: all 0.3s ease-in-out;
+}
+
+/* Responsive Design */
+@media (max-width: 991px) {
+    .search-bar {
+        width: 180px;
+    }
+    
+    .search-bar:focus {
+        width: 200px;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Mobile navigation improvements */
+    .navbar-collapse {
+        background-color: #34495e;
+        border-radius: 0 0 8px 8px;
+        padding: 1rem;
+        margin-top: 0.5rem;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .navbar-nav {
+        margin-bottom: 1rem !important;
+    }
+    
+    .nav-item {
+        margin: 0.3rem 0;
+    }
+    
+    .nav-link {
+        display: inline-block;
+        padding: 0.6rem 1rem;
+        margin: 0.2rem 0;
+        width: 100%;
+        text-align: left;
+    }
+    
+    /* Centered search in mobile */
+    form.d-flex {
+        justify-content: center !important;
+        margin: 1rem 0;
+        width: 100%;
+    }
+    
+    .search-bar {
+        width: 100%;
+    }
+    
+    /* Icon spacing in mobile */
+    .navbar a.text-light {
+        margin: 0 1rem;
+        padding: 0.5rem;
+    }
+    
+    /* User dropdown in mobile */
+    .dropdown {
+        text-align: center;
+        margin-top: 0.7rem;
+    }
+    
+    .user {
+        justify-content: center;
+    }
 }

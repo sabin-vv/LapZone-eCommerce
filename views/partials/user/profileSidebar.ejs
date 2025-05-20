@@ -1,25 +1,71 @@
 <div class="sidebar">
-                <div class="profile-header">
-                    <div class="profile-pic"><svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 122.88 122.88">
-                            <title>person-profile-image</title>
-                            <path
-                                d="M61.44,0A61.46,61.46,0,1,1,18,18,61.21,61.21,0,0,1,61.44,0ZM49.28,71.35c.26-2.18-6.23-10.54-7.41-14.54-2.54-4-3.44-10.46-.68-14.73,1.11-1.69.63-3.16.63-5.51,0-23.24,40.7-23.24,40.7,0,0,2.94-.67,3.63.92,6,2.66,3.86,1.29,10.72-1,14.3C81,61,74.24,69,74.71,71.37c.42,11.92-25.5,11.53-25.43,0v0Zm-31,20.07c3.25-3.6,9.09-3.76,16.17-7.36a74.7,74.7,0,0,0,7.75-4.53c8.22,10.08,15,21.16,12.78,34.05a52.65,52.65,0,0,0,6.44.4c.55,0,1.09,0,1.64,0-.5-15.14,8.38-26.21,17.79-35.63A68.55,68.55,0,0,0,96.33,86c4.62,1.54,7.39,2.53,9,4.3a52.54,52.54,0,1,0-87,1.08Z" />
-                        </svg></div>
-                    <div class="profile-name" id="sidebar-name">
-                        <%= user.fullname %>
-                    </div>
-                </div>
-                <ul>
-                    <li><a href="/profile"><i class="fa-solid fa-id-badge"></i> My Profile</a></li>
-                    <li><a href="/profile/address"><i class="fa-solid fa-location-arrow"></i> My Address</a></li>
-                    <li><a href="/profile/order"><i class="fa-solid fa-cart-shopping"></i> My Order</a></li>
-                    <li><a href="/profile/wishlist"><i class="fa-solid fa-heart"></i> My Wishlist (4)</a></li>
-                    <li><a href="/profile/wallet"><i class="fa-solid fa-wallet"></i> My Wallet</a></li>
-                    <li><a href="/profile/coupon"><i class="fa-solid fa-ticket-simple"></i> My Coupon</a></li>
-                    <li><a href="/profile/change-password"><i class="fa-solid fa-lock"></i> Change password</a></li>
-                    <li><a href="/profile/logout"><i class="fa-solid fa-right-from-bracket"></i> Log out</a></li>
-                    <li><a href="/profile/referral"><i class="fa-solid fa-users-line"></i> Referral Code</a></li>
-                        
-                </ul>
-            </div>
+    <div class="profile-header">
+        <div class="profile-pic">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.88 122.88">
+                <title>Profile Image</title>
+                <path d="M61.44,0A61.46,61.46,0,1,1,18,18,61.21,61.21,0,0,1,61.44,0ZM49.28,71.35c.26-2.18-6.23-10.54-7.41-14.54-2.54-4-3.44-10.46-.68-14.73,1.11-1.69.63-3.16.63-5.51,0-23.24,40.7-23.24,40.7,0,0,2.94-.67,3.63.92,6,2.66,3.86,1.29,10.72-1,14.3C81,61,74.24,69,74.71,71.37c.42,11.92-25.5,11.53-25.43,0v0Zm-31,20.07c3.25-3.6,9.09-3.76,16.17-7.36a74.7,74.7,0,0,0,7.75-4.53c8.22,10.08,15,21.16,12.78,34.05a52.65,52.65,0,0,0,6.44.4c.55,0,1.09,0,1.64,0-.5-15.14,8.38-26.21,17.79-35.63A68.55,68.55,0,0,0,96.33,86c4.62,1.54,7.39,2.53,9,4.3a52.54,52.54,0,1,0-87,1.08Z" />
+            </svg>
+        </div>
+        <div class="profile-name">
+            <%= user.fullname %>
+        </div>
+    </div>
+    
+    <div class="sidebar-section">
+        <h4>My Profile</h4>
+        <ul>
+            <li><a href="/profile/address">My Address</a></li>
+            <li ><a href="/profile/order">My Order</a></li>
+            <li><a href="/wishlist">My Wishlist</a></li>
+        </ul>
+    </div>
+    
+    <div class="sidebar-section">
+        <ul>
+            <li><a href="/profile/wallet">My Wallet</a></li>
+            <li><a href="/profile/coupon">My Coupen</a></li>
+            <li><a href="/profile/change-password">Change password</a></li>
+            <li><a href="/profile/logout">Log out</a></li>
+            <li><a href="/profile/referral">Referral Code</a></li>
+        </ul>
+    </div>
+</div>
+
+<button class="toggle-sidebar d-md-none">
+    <i class="fa-solid fa-bars"></i>
+</button>
+
+<div class="sidebar-overlay"></div>
+
+<script>
+   
+    document.addEventListener('DOMContentLoaded', function() {
+        const currentPath = window.location.pathname;
+        const menuItems = document.querySelectorAll('.sidebar ul li a');
+        
+        menuItems.forEach(item => {
+            if (item.getAttribute('href') === currentPath) {
+                item.parentElement.classList.add('active');
+            }
+        });
+        
+        
+        const toggleBtn = document.querySelector('.toggle-sidebar');
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.querySelector('.sidebar-overlay');
+        
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            });
+        }
+        
+        if (overlay) {
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+            });
+        }
+    });
+</script>

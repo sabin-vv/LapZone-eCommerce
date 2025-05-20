@@ -3,23 +3,23 @@ require("dotenv").config()
 const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer")
 const Product = require("../../model/products")
-
+const Wishlist = require("../../model/wishlist")
 
 
 
 const landingPage = async (req, res) => {
 
     const products = await Product.find({ isActive: true, isExisting: true }).sort({ updatedAt: -1 }).limit(4)
-    const gamingProducts = await Product.find({isActive:true,isExisting:true,category:"Gaming Laptop"}).sort({updatedAt:-1}).limit(4)
-    
+    const gamingProducts = await Product.find({ isActive: true, isExisting: true, category: "Gaming Laptop" }).sort({ updatedAt: -1 }).limit(4)
+
 
     if (req.session.user) {
         return res.redirect("/home")
     }
 
-   
+
     const user = req.session.user
-    res.render("user/landingPage", { products, user ,gamingProducts});
+    res.render("user/landingPage", { products, user, gamingProducts, wishlistIds: null });
 };
 
 const loginPage = (req, res) => {
@@ -33,9 +33,8 @@ const signupPage = (req, res) => {
     if (req.session.user)
         return res.redirect("/home")
 
-    res.render("user/userSignup", { message: null });
+    return res.render("user/userSignup", { errors: null ,message :null});
 };
-
 
 
 function generateOtp() {
@@ -65,54 +64,53 @@ async function sendverificationEmail(email, otp) {
 }
 
 const postSignUp = async (req, res) => {
-    const { fname, email, mobile, password, confpassword } = req.body;
+    const { fullname, email, mobile, password, confpassword } = req.body;
 
-    if (!fname || !email || !mobile || !password || !confpassword)
-        return res.render("user/userSignup", { message: "all fields are required" });
+    const fields = [
+        'fullname', 'email', 'mobile', 'password', 'confpassword'
+    ]
 
-    if (!/^[A-Za-z\s]+$/.test(fname))
-        return res.render("user/userSignup", {
-            message: "only letters and spaces are allowed",
-        });
+    const errors = {}
+
+    fields.forEach(item => {
+        if (!req.body[item])
+            errors[item] = `${item} is required`;
+    })
+
+
+    if (!/^[A-Za-z\s]+$/.test(fullname))
+        errors['fullname'] = "only letters and spaces are allowed"
 
     if (!/(^\d+$)/.test(mobile))
-        return res.render("user/userSignup", {
-            mesage: "Phone Number should be Number",
-        });
+        errors['mobile'] = "Phone Number should be Number";
+
     if (mobile.length != 10)
-        return res.render("user/userSignup", {
-            message: "Phone number should be 10 digit",
-        });
+        errors['mobile'] = "Phone number should be 10 digit";
 
     if (!/(?=.*[a-z])/.test(password))
-        return res.render("user/userSignup", {
-            message: "Password should contain minimum 1 lower case letter",
-        });
+        errors['password'] = "Password should contain minimum 1 lower case letter";
     if (!/(?=.*[A-Z])/.test(password))
-        return res.render("user/userSignup", {
-            message: "Password contain minimum 1 Uppercase letter",
-        });
+        errors['password'] = "Password contain minimum 1 Uppercase letter";
     if (!/(?=.*\d)/.test(password))
-        return res.render("user/userSignup", {
-            message: "Password contain minimum 1 Digit",
-        });
+        errors['password'] = "Password contain minimum 1 Digit";
     if (!/(?=.*[@$!%*?&])/.test(password))
-        return res.render("user/userSignup", {
-            message: "Password contain minimum 1 special character",
-        });
+        errors['password'] = "Password contain minimum 1 special character";
     if (!/^[A-Za-z\d@$!%*?&]{8,}$/.test(password))
-        return res.render("user/userSignup", {
-            message: "Password should be minimum 8 character long",
-        });
+        errors['password'] = "Password should be minimum 8 character long";
+
+    
 
     if (password !== confpassword)
-        return res.render("user/userSignup", { message: "passwords Missmatch" });
+        errors['confpassword'] = "passwords Missmatch";
+
+    if (Object.keys(errors > 0))
+        return res.render("user/userSignup", { errors, message: null });
 
     const existingUser = await User.findOne({ $or: [{ email: email }, { mobile: mobile }] });
     if (existingUser) {
+        console.log("user exist")
         return res.render("user/userSignup", { message: "User already exists" });
     }
-
 
     const otp = generateOtp()
     const emailsend = await sendverificationEmail(email, otp)
@@ -172,7 +170,6 @@ const resendOtp = async (req, res) => {
 }
 
 
-
 const postLoginPage = async (req, res) => {
 
     const { email, password } = req.body;
@@ -192,7 +189,7 @@ const postLoginPage = async (req, res) => {
 
     req.session.user = user._id
     req.session.username = user.fullname
-    
+
 
     res.redirect("/home")
 
@@ -200,21 +197,22 @@ const postLoginPage = async (req, res) => {
 }
 
 
-
 const homePage = async (req, res) => {
 
     if (req.session.user) {
         const user = req.session.user
-        const username = req.session.username  || user.fullname
-        
+        const username = req.session.username
+
         const products = await Product.find({ isActive: true, isExisting: true }).sort({ updatedAt: -1 }).limit(4)
-        const gamingProducts = await Product.find({isActive:true,isExisting:true,category:"Gaming Laptop"}).sort({updatedAt:-1}).limit(4)
-        return res.render("user/landingPage", { user, products,gamingProducts,username })
+        const wishlist = await Wishlist.findOne({ userId: user })
+        const wishlistIds = wishlist?.items.map(item => item.productId.toString())
+
+        const gamingProducts = await Product.find({ isActive: true, isExisting: true, category: "Gaming Laptop" }).sort({ updatedAt: -1 }).limit(4)
+        return res.render("user/landingPage", { user, products, gamingProducts, username, wishlistIds })
     }
     else
-        res.render("user/userLogin", { error: null })
+        res.render("user/userLogin", { error: null, })
 }
-
 
 
 const forgotPassword = (req, res) => {
@@ -303,12 +301,10 @@ const resetPassword = async (req, res) => {
     const { email } = req.session.userData
     const hashedPassword = await bcrypt.hash(password, 10)
     const user = await User.updateOne({ email: email }, { $set: { password: hashedPassword } })
-    
+
 
     res.redirect("/login")
 }
-
-
 
 const userLogout = (req, res) => {
 

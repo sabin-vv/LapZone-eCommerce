@@ -1,11 +1,11 @@
 const Product = require("../../model/products");
-const { off } = require("../../model/user");
-const mongoose = require('mongoose')
+const Wishlist = require("../../model/wishlist")
 
 const listProducts = async (req, res) => {
   if (!req.session.user) {
     return res.redirect("/login");
   }
+  
 
   const user = req.session.user;
   const username = req.session.username
@@ -23,7 +23,7 @@ const listProducts = async (req, res) => {
 
 
 
-  // Build query
+  
   const query = { isActive: true, isExisting: true };
   if (searchQuery) {
     query.name = { $regex: searchQuery, $options: "i" };
@@ -53,7 +53,7 @@ const listProducts = async (req, res) => {
     query.salePrice = { $lte: maxPrice };
   }
 
-  // Build sort
+  
   const sort = {};
   if (sortOption === "popularity") {
     sort.rating = -1;
@@ -67,11 +67,15 @@ const listProducts = async (req, res) => {
     sort.name = 1
   }
 
+  
   try {
-    // Fetch products
+      
+    const wishlist = await Wishlist.findOne({ userId: req.session.user})
+    const wishlistIds = wishlist ?  wishlist.items.map(item => item.productId.toString()) : []
+    
     const products = await Product.find(query).sort(sort).skip(skip).limit(limit);
-
-    // Fetch filter options
+    
+    
     const brands = await Product.distinct("brand");
     const ramvariants = await Product.distinct("variants.RAM");
     const rams = [...new Set(ramvariants.map(ram => ram.split(" ")[0]))];
@@ -79,7 +83,7 @@ const listProducts = async (req, res) => {
     const ssds = [...new Set(ssdvariants.map(ssd => ssd.split(" ")[0]))];
     const graphics = await Product.distinct("graphics");
 
-    // Pagination
+    
     const totalProducts = await Product.countDocuments(query);
     const totalPages = Math.ceil(totalProducts / limit);
 
@@ -103,6 +107,7 @@ const listProducts = async (req, res) => {
       currentPage: page,
       totalPages,
       totalProducts,
+      wishlistIds
     });
   } catch (error) {
     res.render("user/shoppingPage", {
@@ -120,7 +125,8 @@ const listProducts = async (req, res) => {
         ssd: [],
         graphics: [],
         sort: "popularity",
-        maxPrice: null
+        maxPrice: null,
+        
       },
       currentPage: 1,
       totalPages: 0,
@@ -133,21 +139,31 @@ const listProducts = async (req, res) => {
 
 
 const viewProduct = async (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
 
-  if (!req.session.user)
-    return res.redirect("/login")
-  
-  const user = req.session.user
-  const username = req.session.username
-  const productId = req.params.id
-  const product = await Product.findById(productId)
+  const user = req.session.user;
+  const username = user.fullname
+  const productId = req.params.id;
+  const product = await Product.findById(productId);
+  const suggesionCategory = product.category;
 
-  const suggesionCategory = product.category
-  
-  productSuggesions = await Product.find({category:suggesionCategory,_id:{$ne:productId}})
-  
+  const productSuggesions = await Product.find({ category: suggesionCategory, _id: { $ne: productId } });
 
-  res.render("user/productPage", { product, user ,username,productSuggesions })
+
+  const wishlist = await Wishlist.findOne({ userId: user });
+
+  let isWishlisted = false;
+  if (wishlist && wishlist.items) {
+    isWishlisted = wishlist.items.some(item => item.productId.toString() === productId.toString());
+  }
+
+  res.render("user/productPage", {
+    product,
+    user,
+    username,
+    productSuggesions,
+    isWishlisted
+  });
 }
 
 module.exports = {

@@ -63,8 +63,12 @@ const newCategory = async (req, res) => {
     if (!name)
         return res.render("admin/addCategory", { error: "Name cannot be Empty" })
 
+    const escapeRegex = (text) => text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 
-    const existcategory = await Category.findOne({ name:{$regex:`^${name}`,$options:"i"} })
+        const existcategory = await Category.findOne({
+            name: { $regex: `^${escapeRegex(name)}$`, $options: 'i' }
+        });
+
     if (existcategory)
         return res.render("admin/addCategory", { error: "Category Already Exist", category: null })
 

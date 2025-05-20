@@ -9,8 +9,8 @@
     
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+    <header class="">
+        <nav class="navbar navbar-expand-md navbar-dark ">
             <div class="container-fluid">
                 <!-- Logo and Toggler -->
                 <div class="d-flex align-items-center">
@@ -21,11 +21,10 @@
                         data-bs-target="#navbarContent" 
                         aria-controls="navbarContent" 
                         aria-expanded="false" 
-                        aria-label="Toggle navigation"
-                    >
+                        aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
-                    <a class="navbar-brand fw-bold fst-italic fs-2" href="/">LapZone</a>
+                    <a class="navbar-brand fw-bold fst-italic fs-2 text-light" href="/">LapZone</a>
                 </div>
 
                 <!-- Navbar Content -->
@@ -33,10 +32,10 @@
                     <!-- Left: Navigation -->
                     <ul class="navbar-nav me-auto mb-2 mb-md-0">
                         <li class="nav-item">
-                            <a class="nav-link" href="/">Home</a>
+                            <a class="nav-link text-light" href="/">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/shop">Shop</a>
+                            <a class="nav-link text-light" href="/shop">Shop</a>
                         </li>
                     </ul>
 
@@ -54,31 +53,30 @@
                                 <i class="bi bi-search"></i>
                             </button>
                         </form>
-                        <a href="#" class="text-white mx-2" aria-label="Wishlist">
+                        <a href="/wishlist" class="text-light mx-2" aria-label="Wishlist">
                             <i class="bi bi-heart fs-5"></i>
                         </a>
-                        <a href="#" class="text-white mx-2" aria-label="Cart">
+                        <a href="/cart" class="text-light mx-2" aria-label="Cart">
                             <i class="bi bi-cart2 fs-5"></i>
                         </a>
                         <% if (user) { %>
                             <div class="dropdown ms-2">
                                 <button 
-                                    class="btn  text-white p-0" 
+                                    class="btn text-light p-0" 
                                     type="button" 
                                     id="userDropdown" 
                                     data-bs-toggle="dropdown" 
                                     aria-expanded="false"
-                                    aria-label="User menu"
-                                >
-                                <span class="d-flex align-items-center gap-2 fs-5 user ">
-                                    <i class="bi bi-person-circle fs-5"></i>
-                                    <%= username || user.name %>
-                                </span>
+                                    aria-label="User menu">
+                                    <span class="d-flex align-items-center gap-2 fs-5 user ">
+                                        <i class="bi bi-person-circle fs-5"></i>
+                                        <%= username || user.name %>
+                                    </span>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                     <li><a class="dropdown-item" href="/profile/<%= user._id%>">Profile</a></li>
                                     <li><a class="dropdown-item" href="/settings">Settings</a></li>
-                                    <li><a class="dropdown-item logout-item" href="#">Logout</a></li>
+                                    <li><a class="dropdown-item logout-item" href="/logout">Logout</a></li>
                                 </ul>
                             </div>
                         <% } else { %>

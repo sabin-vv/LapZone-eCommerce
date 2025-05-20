@@ -1,370 +1,269 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Laptop Store</title>
-    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
     <link rel="stylesheet" href="/css/shoppingPage.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .product-card {
-            transition: transform 0.3s, box-shadow 0.3s;
-            position: relative;
-            padding-bottom: 2.5rem;
-            display: flex;
-            flex-direction: column;
-            min-height: 400px; /* Fixed height for uniformity */
-            border: none; /* Remove default button border */
-            background: none; /* Remove default button background */
-            cursor: pointer; /* Indicate clickability */
-            width: 100%; /* Ensure full width */
-        }
-
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .product-card img {
-            width: 100%;
-            height: 192px; /* Fixed height for images */
-            object-fit: cover;
-        }
-
-        .product-card:focus {
-            outline: none; /* Remove focus outline */
-        }
-
-        main .product-card {
-            background: white; /* Ensure card background is white */
-            border-radius: 0.5rem; /* Match rounded-lg from Tailwind */
-            overflow: hidden; /* Ensure content stays within bounds */
-        }
-
-        a {
-            text-decoration: none;
-        }
-
-        .pagination a {
-            text-decoration: underline;
-        }
-
-        .filter-section {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-        }
-
-        .filter-section.open {
-            max-height: 500px;
-        }
-
-        .rating-stars {
-            color: #facc15;
-        }
-
-        .card-content {
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-            justify-content: space-between;
-        }
-
-        .search-container {
-            position: relative;
-        }
-
-        .clear-search {
-            position: absolute;
-            right: 0.5rem;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: #6b7280;
-            cursor: pointer;
-            display: none;
-        }
-
-        .clear-search.show {
-            display: block;
-        }
-
-        .range-slider {
-            position: relative;
-            width: 100%;
-            margin: 1rem 0;
-        }
-
-        input[type="range"] {
-            width: 100%;
-            background: #e5e7eb;
-            height: 4px;
-            border-radius: 2px;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 16px;
-            height: 16px;
-            background: #4f46e5;
-            border-radius: 50%;
-            cursor: pointer;
-            margin-top: -6px;
-        }
-
-        input[type="range"]::-webkit-slider-runnable-track {
-            height: 4px;
-            background: transparent;
-        }
-
-        .fixed-price {
-            position: absolute;
-            bottom: 0.5rem;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            text-align: center;
-        }
-    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
 </head>
-<body class="bg-gray-100 font-sans">
+<body class="bg-gray-100 font-sans antialiased">
     <%- include("../partials/user/header.ejs") %>
 
-    <div class="d-flex flex-column flex-md-row container-fluid px-4 py-4 gap-4">
-        <!-- Filter Sidebar -->
-        <aside class="col-12 col-md-3 bg-white rounded-lg shadow-md p-4 mb-4 mb-md-0">
-            <h2 class="text-xl font-bold mb-4">Filter By</h2>
-            <form id="filter-form" action="/shop" method="GET">
-                <!-- Search Bar -->
-                <div class="mb-6 search-container">
-                    <label for="search" class="block text-sm font-medium text-gray-700">Search</label>
-                    <input type="text" id="search" name="search" value="<%= searchQuery || '' %>"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm pr-8"
-                        placeholder="Search products..." aria-label="Search products">
-                    <button type="button" class="clear-search <%= searchQuery ? 'show' : '' %>"
-                        onclick="clearSearch()" aria-label="Clear search">
-                        <i class="bi bi-x text-lg"></i>
+    <div class="container-fluid px-4 py-6 mx-auto">
+        <div class="flex flex-col lg:flex-row gap-6">
+            <!-- Filter Sidebar -->
+            <aside class="lg:w-1/4 bg-white rounded-xl shadow-lg p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">Filter By</h2>
+                    <button class="lg:hidden text-indigo-600" onclick="toggleSidebar()">
+                        <i class="bi bi-funnel text-xl"></i>
                     </button>
                 </div>
+                <form id="filter-form" action="/shop" method="GET" class="filter-content hidden lg:block">
+                    <!-- Search Bar -->
+                    <div class="mb-6 relative">
+                        <label for="search" class="block text-sm font-medium text-gray-700 mb-2">Search</label>
+                        <input type="text" id="search" name="search" value="<%= searchQuery || '' %>"
+                            class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm py-2 px-3 pr-10"
+                            placeholder="Search products..." aria-label="Search products">
+                        <button type="button" class="absolute right-2 top-9 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 <%= searchQuery ? 'block' : 'hidden' %> clear-search"
+                            onclick="clearSearch()" aria-label="Clear search">
+                            <i class="bi bi-x text-lg"></i>
+                        </button>
+                    </div>
 
-                <!-- Price Selector -->
-                <div class="mb-4">
-                    <button type="button"
-                        class="w-full text-left font-semibold text-gray-700 flex justify-between items-center"
-                        onclick="toggleFilter('price')">
-                        Max Price
-                        <svg class="w-4 h-4 transform transition-transform" id="price-toggle" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                    </button>
-                    <div id="price-section" class="filter-section open">
-                        <div class="range-slider">
-                            <input type="range" id="maxPrice" name="maxPrice" min="0" max="500000" step="1000"
-                                value="<%= query.maxPrice || 500000 %>" class="w-full">
+                    <!-- Price Selector -->
+                    <div class="mb-6">
+                        <button type="button" class="w-full text-left font-semibold text-gray-800 flex justify-between items-center py-2"
+                            onclick="toggleFilter('price')">
+                            Max Price
+                            <svg class="w-5 h-5 transform transition-transform" id="price-toggle" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div id="price-section" class="filter-section pt-2">
+                            <div class="range-slider">
+                                <input type="range" id="maxPrice" name="maxPrice" min="0" max="500000" step="1000"
+                                    value="<%= query.maxPrice || 500000 %>" class="w-full">
+                            </div>
+                            <div class="text-sm text-gray-600 mt-2">
+                                Up to ₹<span id="maxPriceValue">
+                                    <%= query.maxPrice ? parseFloat(query.maxPrice).toLocaleString('en-IN') : '500,000' %>
+                                </span>
+                            </div>
                         </div>
-                        <div class="text-sm text-gray-600">
-                            Up to ₹<span id="maxPriceValue">
-                                <%= query.maxPrice ? parseFloat(query.maxPrice).toLocaleString('en-IN') : '500,000' %>
-                            </span>
+                    </div>
+
+                    <!-- Brand Filter -->
+                    <div class="mb-6">
+                        <button type="button" class="w-full text-left font-semibold text-gray-800 flex justify-between items-center py-2"
+                            onclick="toggleFilter('brand')">
+                            Brand
+                            <svg class="w-5 h-5 transform transition-transform" id="brand-toggle" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div id="brand-section" class="filter-section pt-2">
+                            <% brands.forEach(brand => { %>
+                                <label class="flex items-center mt-2">
+                                    <input type="checkbox" name="brand" value="<%= brand %>" <%= query.brand && query.brand.includes(brand) ? 'checked' : '' %>
+                                        class="rounded text-indigo-600 focus:ring-indigo-500">
+                                    <span class="ml-2 text-sm text-gray-600"><%= brand %></span>
+                                </label>
+                            <% }) %>
                         </div>
                     </div>
-                </div>
 
-                <!-- Brand Filter -->
-                <div class="mb-4">
-                    <button type="button"
-                        class="w-full text-left font-semibold text-gray-700 flex justify-between items-center"
-                        onclick="toggleFilter('brand')">
-                        Brand
-                        <svg class="w-4 h-4 transform transition-transform" id="brand-toggle" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M19 9l-7 7-7-7"></path>
-                        </svg>
+                    <!-- RAM Filter -->
+                    <div class="mb-6">
+                        <button type="button" class="w-full text-left font-semibold text-gray-800 flex justify-between items-center py-2"
+                            onclick="toggleFilter('ram')">
+                            RAM Capacity
+                            <svg class="w-5 h-5 transform transition-transform" id="ram-toggle" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div id="ram-section" class="filter-section pt-2">
+                            <% rams.forEach(ram => { %>
+                                <label class="flex items-center mt-2">
+                                    <input type="checkbox" name="ram" value="<%= ram %>" <%= query.ram && query.ram.includes(ram) ? 'checked' : '' %>
+                                        class="rounded text-indigo-600 focus:ring-indigo-500">
+                                    <span class="ml-2 text-sm text-gray-600"><%= ram %></span>
+                                </label>
+                            <% }) %>
+                        </div>
+                    </div>
+
+                    <!-- SSD Filter -->
+                    <div class="mb-6">
+                        <button type="button" class="w-full text-left font-semibold text-gray-800 flex justify-between items-center py-2"
+                            onclick="toggleFilter('ssd')">
+                            SSD Capacity
+                            <svg class="w-5 h-5 transform transition-transform" id="ssd-toggle" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div id="ssd-section" class="filter-section pt-2">
+                            <% ssds.forEach(ssd => { %>
+                                <label class="flex items-center mt-2">
+                                    <input type="checkbox" name="ssd" value="<%= ssd %>" <%= query.ssd && query.ssd.includes(ssd) ? 'checked' : '' %>
+                                        class="rounded text-indigo-600 focus:ring-indigo-500">
+                                    <span class="ml-2 text-sm text-gray-600"><%= ssd %></span>
+                                </label>
+                            <% }) %>
+                        </div>
+                    </div>
+
+                    <!-- Graphics Filter -->
+                    <div class="mb-6">
+                        <button type="button" class="w-full text-left font-semibold text-gray-800 flex justify-between items-center py-2"
+                            onclick="toggleFilter('graphics')">
+                            Graphics Processor
+                            <svg class="w-5 h-5 transform transition-transform" id="graphics-toggle" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div id="graphics-section" class="filter-section pt-2">
+                            <% graphics.forEach(graphic => { %>
+                                <label class="flex items-center mt-2">
+                                    <input type="checkbox" name="graphics" value="<%= graphic %>"
+                                        <%= query.graphics && query.graphics.includes(graphic) ? 'checked' : '' %>
+                                        class="rounded text-indigo-600 focus:ring-indigo-500">
+                                    <span class="ml-2 text-sm text-gray-600"><%= graphic %></span>
+                                </label>
+                            <% }) %>
+                        </div>
+                    </div>
+
+                    <button type="submit"
+                        class="w-full bg-indigo-600 text-white py-2.5 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200">
+                        Apply Filters
                     </button>
-                    <div id="brand-section" class="filter-section open">
-                        <% brands.forEach(brand => { %>
-                            <label class="block mt-2">
-                                <input type="checkbox" name="brand" value="<%= brand %>" <%= query.brand && query.brand.includes(brand) ? 'checked' : '' %>
-                                    class="rounded text-indigo-600 focus:ring-indigo-500">
-                                <span class="ml-2 text-sm text-gray-600"><%= brand %></span>
-                            </label>
-                        <% }) %>
+                </form>
+            </aside>
+
+            <!-- Product Grid -->
+            <main class="lg:w-3/4">
+                <div class="flex flex-col sm:flex-row justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">Products (<%= totalProducts %>)</h2>
+                    <div class="flex items-center gap-4 mt-4 sm:mt-0">
+                        <label for="sort" class="text-sm font-medium text-gray-700">Sort By:</label>
+                        <select id="sort" name="sort" onchange="this.form.submit()" form="filter-form"
+                            class="rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm py-2 px-3">
+                            <option value="popularity" <%= query.sort === 'popularity' ? 'selected' : '' %>>Popularity</option>
+                            <option value="newest" <%= query.sort === 'newest' ? 'selected' : '' %>>Newest First</option>
+                            <option value="price-asc" <%= query.sort === 'price-asc' ? 'selected' : '' %>>Price Low-High</option>
+                            <option value="price-desc" <%= query.sort === 'price-desc' ? 'selected' : '' %>>Price High-Low</option>
+                            <option value="name-asc" <%= query.sort === 'name-asc' ? 'selected' : '' %>>A-Z</option>
+                        </select>
                     </div>
                 </div>
 
-                <!-- RAM Filter -->
-                <div class="mb-4">
-                    <button type="button"
-                        class="w-full text-left font-semibold text-gray-700 flex justify-between items-center"
-                        onclick="toggleFilter('ram')">
-                        RAM Capacity
-                        <svg class="w-4 h-4 transform transition-transform" id="ram-toggle" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                    </button>
-                    <div id="ram-section" class="filter-section open">
-                        <% rams.forEach(ram => { %>
-                            <label class="block mt-2">
-                                <input type="checkbox" name="ram" value="<%= ram %>" <%= query.ram && query.ram.includes(ram) ? 'checked' : '' %>
-                                    class="rounded text-indigo-600 focus:ring-indigo-500">
-                                <span class="ml-2 text-sm text-gray-600"><%= ram %></span>
-                            </label>
-                        <% }) %>
-                    </div>
-                </div>
-
-                <!-- SSD Filter -->
-                <div class="mb-4">
-                    <button type="button"
-                        class="w-full text-left font-semibold text-gray-700 flex justify-between items-center"
-                        onclick="toggleFilter('ssd')">
-                        SSD Capacity
-                        <svg class="w-4 h-4 transform transition-transform" id="ssd-toggle" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                    </button>
-                    <div id="ssd-section" class="filter-section open">
-                        <% ssds.forEach(ssd => { %>
-                            <label class="block mt-2">
-                                <input type="checkbox" name="ssd" value="<%= ssd %>" <%= query.ssd && query.ssd.includes(ssd) ? 'checked' : '' %>
-                                    class="rounded text-indigo-600 focus:ring-indigo-500">
-                                <span class="ml-2 text-sm text-gray-600"><%= ssd %></span>
-                            </label>
-                        <% }) %>
-                    </div>
-                </div>
-
-                <!-- Graphics Filter -->
-                <div class="mb-4">
-                    <button type="button"
-                        class="w-full text-left font-semibold text-gray-700 flex justify-between items-center"
-                        onclick="toggleFilter('graphics')">
-                        Graphics Processor
-                        <svg class="w-4 h-4 transform transition-transform" id="graphics-toggle" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                    </button>
-                    <div id="graphics-section" class="filter-section open">
-                        <% graphics.forEach(graphic => { %>
-                            <label class="block mt-2">
-                                <input type="checkbox" name="graphics" value="<%= graphic %>"
-                                    <%= query.graphics && query.graphics.includes(graphic) ? 'checked' : '' %>
-                                    class="rounded text-indigo-600 focus:ring-indigo-500">
-                                <span class="ml-2 text-sm text-gray-600"><%= graphic %></span>
-                            </label>
-                        <% }) %>
-                    </div>
-                </div>
-
-                <button type="submit"
-                    class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Apply
-                    Filters</button>
-            </form>
-        </aside>
-
-        <!-- Product Grid -->
-        
-        <main class="col-12 col-md-9 ">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-bold">Products (<%= totalProducts %>)</h2>
-                <div class="flex items-center gap-4">
-                    <label for="sort" class="text-sm font-medium text-gray-700">Sort By:</label>
-                    <select id="sort" name="sort" onchange="this.form.submit()" form="filter-form"
-                        class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                        <option value="popularity" <%= query.sort === 'popularity' ? 'selected' : '' %>>Popularity
-                        </option>
-                        <option value="newest" <%= query.sort === 'newest' ? 'selected' : '' %>>Newest First</option>
-                        <option value="price-asc" <%= query.sort === 'price-asc' ? 'selected' : '' %>>Price Low-High
-                        </option>
-                        <option value="price-desc" <%= query.sort === 'price-desc' ? 'selected' : '' %>>Price High-Low
-                        </option>
-                        <option value="name-asc" <%= query.sort === 'name-asc ' ? 'selected ': '' %>>A-Z (a-z)</option>                       
-                    </select>
-                </div>
-            </div>
-
-            <% if (products.length === 0) { %>
-                <p class="text-gray-600">No products found.</p>
-            <% } else { %>
-                <div class="row gy-4">
-                    <% products.forEach(product => { %>
-                        <div class="col-12 col-sm-6 col-md-4 col-lg-4 d-flex">
-                            <button onclick="window.location.href='/shop/product/<%= product._id %>'"
-                                    class="product-card bg-white rounded-lg shadow-sm w-100 h-100 text-start border-0">
-                                <img src="<%= product.images.find(img => img.isMain)?.url || 'https://placehold.co/200x150' %>"
-                                     alt="<%= product.name %> laptop"
-                                     class="w-100 mb-2" style="height: 180px; object-fit: cover;">
-                                <div class="card-content px-2 pb-2 d-flex flex-column justify-content-between h-100">
-                                    <div>
-                                        <div class="rating-stars text-warning mb-2">
-                                            <% for (let i = 1; i <= 5; i++) { %>
-                                                <span><%= i <= Math.floor(product.rating) ? '★' : '☆' %></span>
-                                            <% } %>
-                                            <span class="text-sm text-gray-600 ms-2">(<%= product.rating.toFixed(1) %>)</span>
+                <% if (products.length === 0) { %>
+                    <p class="text-gray-600 text-center py-10">No products found.</p>
+                <% } else { %>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <% products.forEach(product => { %>
+                            <div class="product-card bg-white rounded-xl shadow-md overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1 <%= product.count === 0 ? 'out-of-stock' : '' %>">
+                                <a href="/shop/product/<%= product._id %>" class="block">
+                                    <img src="<%= product.images.find(img => img.isMain)?.url || 'https://placehold.co/200x150' %>"
+                                         alt="<%= product.name %> laptop"
+                                         class="w-full h-48 object-cover">
+                                    <div class="p-4 flex flex-col flex-grow">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <div class="rating-stars text-yellow-400">
+                                                <% for (let i = 1; i <= 5; i++) { %>
+                                                    <span><%= i <= Math.floor(product.rating) ? '★' : '☆' %></span>
+                                                <% } %>
+                                                <span class="text-sm text-gray-600 ml-1">(<%= product.rating.toFixed(1) %>)</span>
+                                            </div>
                                         </div>
-                                        <h3 class="fw-semibold text-dark fs-6"><%= product.name %></h3>
-                                        <ul class="list-unstyled small text-muted mb-2">
+                                        <h3 class="text-lg font-semibold text-gray-800 mb-2 line-clamp-2"><%= product.name %></h3>
+                                        <ul class="text-sm text-gray-600 mb-4">
                                             <li><%= product.CPU %></li>
                                             <li><%= product.variants[0]?.RAM || 'N/A' %> RAM</li>
                                             <li><%= product.variants[0]?.Storage || 'N/A' %> Storage</li>
                                             <li><%= product.screen %></li>
                                         </ul>
+                                        <p class="align-self-center text-lg font-bold text-indigo-600 ">₹<%= product.salePrice.toLocaleString('en-IN') %></p>
                                     </div>
-                                    <p class="fw-bold text-primary fs-6 mb-0 mt-auto">₹<%= product.salePrice.toFixed(2) %></p>
+                                </a>
+                                <div class="action-buttons flex justify-center gap-2 p-4 pt-0">
+                                    <button class="d-flex align-items-center gap-2 px-2 py-2 btn btn-secondary wishlist-btn text-gray-600 hover:text-red-500 transition-colors"
+                                            data-product-id="<%= product._id %>"
+                                            title="Add to wishlist" aria-label="Add to wishlist"
+                                            onclick="event.stopPropagation(); toggleWishlist(this)">
+                                         <% let isWishlisted=false; 
+                                            if (typeof wishlistIds !=='undefined' ){
+                                                isWishlisted=wishlistIds?.includes(product._id.toString()) } %>
+                                        <i class="bi <%= isWishlisted ?  'bi-heart-fill' : 'bi-heart' %> text-xl"></i> <h6 class="m-0">WishList</h6> 
+                                    </button>
+                                    <button class="d-flex align-items-center gap-2 px-2 py-2 btn btn-warning cart-btn text-gray-600 hover:text-indigo-500 transition-colors"
+                                            data-product-id="<%= product._id %>"
+                                            title="Add to cart" aria-label="Add to cart"
+                                            onclick="event.stopPropagation(); addToCart(this)">
+                                        <i class="bi bi-cart-plus text-xl"></i><h6 class="m-0">Add to Cart</h6> 
+                                    </button>
                                 </div>
-                            </button>
-                        </div>
-                    <% }) %>
-                </div>                
+                            </div>
+                        <% }) %>
+                    </div>
 
-                <!-- Pagination -->
-                <div class="mt-8 flex justify-center">
-                    <nav class="pagination" aria-label="Page navigation">
-                        <ul class="inline-flex items-center -space-x-px">
-                            <% if (currentPage > 1) { %>
-                                <li>
-                                    <a href="/shop?page=<%= currentPage - 1 %>&search=<%= encodeURIComponent(searchQuery || '') %>&brand=<%= query.brand ? query.brand.join(',') : '' %>&ram=<%= query.ram ? query.ram.join(',') : '' %>&ssd=<%= query.ssd ? query.ssd.join(',') : '' %>&graphics=<%= query.graphics ? query.graphics.join(',') : '' %>&maxPrice=<%= query.maxPrice || '' %>&sort=<%= query.sort || 'popularity' %>"
-                                        class="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700">Previous</a>
-                                </li>
-                            <% } %>
-                            <% for (let i = 1; i <= totalPages; i++) { %>
-                                <li>
-                                    <a href="/shop?page=<%= i %>&search=<%= encodeURIComponent(searchQuery || '') %>&brand=<%= query.brand ? query.brand.join(',') : '' %>&ram=<%= query.ram ? query.ram.join(',') : '' %>&ssd=<%= query.ssd ? query.ssd.join(',') : '' %>&graphics=<%= query.graphics ? query.graphics.join(',') : '' %>&maxPrice=<%= query.maxPrice || '' %>&sort=<%= query.sort || 'popularity' %>"
-                                        class="px-3 py-2 leading-tight <%= currentPage === i ? 'text-indigo-600 bg-indigo-50 border-indigo-300' : 'text-gray-500 bg-white border-gray-300' %> hover:bg-gray-100 hover:text-gray-700">
-                                        <%= i %>
-                                    </a>
-                                </li>
-                            <% } %>
-                            <% if (currentPage < totalPages) { %>
-                                <li>
-                                    <a href="/shop?page=<%= currentPage + 1 %>&search=<%= encodeURIComponent(searchQuery || '') %>&brand=<%= query.brand ? query.brand.join(',') : '' %>&ram=<%= query.ram ? query.ram.join(',') : '' %>&ssd=<%= query.ssd ? query.ssd.join(',') : '' %>&graphics=<%= query.graphics ? query.graphics.join(',') : '' %>&maxPrice=<%= query.maxPrice || '' %>&sort=<%= query.sort || 'popularity' %>"
-                                        class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700">Next</a>
-                                </li>
-                            <% } %>
-                        </ul>
-                    </nav>
-                </div>
-            <% } %>
-        </main>
+                    <!-- Pagination -->
+                    <div class="mt-8 flex justify-center">
+                        <nav class="pagination" aria-label="Page navigation">
+                            <ul class="inline-flex items-center -space-x-px text-sm">
+                                <% if (currentPage > 1) { %>
+                                    <li>
+                                        <a href="/shop?page=<%= currentPage - 1 %>&search=<%= encodeURIComponent(searchQuery || '') %>&brand=<%= query.brand ? query.brand.join(',') : '' %>&ram=<%= query.ram ? query.ram.join(',') : '' %>&ssd=<%= query.ssd ? query.ssd.join(',') : '' %>&graphics=<%= query.graphics ? query.graphics.join(',') : '' %>&maxPrice=<%= query.maxPrice || '' %>&sort=<%= query.sort || 'popularity' %>"
+                                            class="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700">
+                                            Previous
+                                        </a>
+                                    </li>
+                                <% } %>
+                                <% for (let i = 1; i <= totalPages; i++) { %>
+                                    <li>
+                                        <a href="/shop?page=<%= i %>&search=<%= encodeURIComponent(searchQuery || '') %>&brand=<%= query.brand ? query.brand.join(',') : '' %>&ram=<%= query.ram ? query.ram.join(',') : '' %>&ssd=<%= query.ssd ? query.ssd.join(',') : '' %>&graphics=<%= query.graphics ? query.graphics.join(',') : '' %>&maxPrice=<%= query.maxPrice || '' %>&sort=<%= query.sort || 'popularity' %>"
+                                            class="px-3 py-2 leading-tight <%= currentPage === i ? 'text-indigo-600 bg-indigo-50 border-indigo-300' : 'text-gray-500 bg-white border-gray-300' %> hover:bg-gray-100 hover:text-gray-700">
+                                            <%= i %>
+                                        </a>
+                                    </li>
+                                <% } %>
+                                <% if (currentPage < totalPages) { %>
+                                    <li>
+                                        <a href="/shop?page=<%= currentPage + 1 %>&search=<%= encodeURIComponent(searchQuery || '') %>&brand=<%= query.brand ? query.brand.join(',') : '' %>&ram=<%= query.ram ? query.ram.join(',') : '' %>&ssd=<%= query.ssd ? query.ssd.join(',') : '' %>&graphics=<%= query.graphics ? query.graphics.join(',') : '' %>&maxPrice=<%= query.maxPrice || '' %>&sort=<%= query.sort || 'popularity' %>"
+                                            class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700">
+                                            Next
+                                        </a>
+                                    </li>
+                                <% } %>
+                            </ul>
+                        </nav>
+                    </div>
+                <% } %>
+            </main>
         </div>
     </div>
+
+    <%- include("../partials/user/footer.ejs") %>
 
     <script src="/js/header.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Toggle filter sidebar on mobile
+        function toggleSidebar() {
+            const filterContent = document.querySelector('.filter-content');
+            filterContent.classList.toggle('hidden');
+        }
+
+        // Toggle filter sections
         function toggleFilter(section) {
             const sectionElement = document.getElementById(`${section}-section`);
             const toggleIcon = document.getElementById(`${section}-toggle`);
@@ -372,19 +271,20 @@
             toggleIcon.classList.toggle('rotate-180');
         }
 
+        // Clear search input
         function clearSearch() {
             const searchInput = document.getElementById('search');
             searchInput.value = '';
             document.getElementById('filter-form').submit();
         }
 
-        // Handle search input to show/hide clear button
+        // Show/hide clear search button
         document.getElementById('search').addEventListener('input', (e) => {
             const clearButton = document.querySelector('.clear-search');
-            clearButton.classList.toggle('show', e.target.value !== '');
+            clearButton.classList.toggle('hidden', e.target.value === '');
         });
 
-        // Submit form on search input change (debounced)
+        // Debounced search form submission
         let searchTimeout;
         document.getElementById('search').addEventListener('input', () => {
             clearTimeout(searchTimeout);
@@ -403,14 +303,117 @@
         }
 
         maxPriceInput.addEventListener('input', updatePriceValue);
-
-        // Initialize price value
         updatePriceValue();
 
-        // Debug header rendering
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('Header element:', document.querySelector('header'));
-        });
+        // Wishlist toggle
+        async function toggleWishlist(button) {
+            const productId = button.dataset.productId;
+            const icon = button.querySelector('i');
+            try {
+                const response = await fetch('/wishlist/toggle', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ productId })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    
+                    if (result.action == 'added') {
+                                iziToast.success({
+                                title: '',
+                                message: 'Product added to Wishlist',
+                                position: 'topRight',
+                                timeout: 2000
+                            });
+                                icon.classList.remove('bi-heart');
+                                icon.classList.add('bi-heart-fill');
+                            } else {
+                                iziToast.success({
+                                title: '',
+                                message: 'Product removed from wishlst',
+                                position: 'topRight',
+                                timeout: 2000
+                            });
+                                icon.classList.remove('bi-heart-fill');
+                                icon.classList.add('bi-heart');
+                            }
+
+                } else {
+                    $.toast({
+                        title: 'Error',
+                        message: result.message || 'Failed to update wishlist.',
+                        type: 'error',
+                        duration: 3000,
+                        position: 'top-right'
+                    });
+                        window.location.href = '/login';
+                }
+
+            } catch (error) {
+                console.error('Wishlist error:', error);
+                $.toast({
+                    title: 'Error',
+                    message: 'An error occurred while updating wishlist.',
+                    type: 'error',
+                    duration: 3000,
+                    position: 'top-right'
+                });
+            }
+        }
+
+        // Add to cart
+        async function addToCart(button) {
+            const productId = button.dataset.productId;
+            try {
+                const response = await fetch('/cart/add-to-cart', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ productId })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    
+                    if(result.success === 'true'){
+                                iziToast.success({
+                                title: '',
+                                message: 'Product added to cart',
+                                position: 'topRight',
+                                timeout: 2000
+                            });
+                            }else if(result.success === 'false'){
+                                iziToast.warning({
+                                title: '',
+                                message: "Cart limit Reached",
+                                position: 'topRight',
+                                timeout: 2000
+                            });
+                            }
+                } else {
+                    iziToast.error({
+                            title: 'Error',
+                            message: 'Product Out of Stock',
+                            position: 'topRight',
+                            timeout: 2000
+                            });
+                    if (result.message === 'Please log in') {
+                        window.location.href = '/login';
+                    }
+                }
+            } catch (error) {
+                console.error('Cart error:', error);
+                $.toast({
+                    title: 'Error',
+                    message: 'An error occurred while adding to cart.',
+                    type: 'error',
+                    duration: 2000,
+                    position: 'top-right'
+                });
+            }
+        }
     </script>
 </body>
 </html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmed | LapZone</title>
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/profileSidebar.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .main-content{
+            display: flex;
+        }
+        
+        .order-success-container {
+            padding: 30px 0;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .success-card {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .success-icon {
+            font-size: 5rem;
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+        
+        .success-title {
+            color: #2c3e50;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+        
+        .success-message {
+            color: #64748b;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .order-details {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+            text-align: left;
+        }
+        
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .detail-label {
+            color: #64748b;
+            font-weight: 500;
+        }
+        
+        .detail-value {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn-primary {
+            background-color: #3498db;
+            border-color: #3498db;
+            padding: 12px 25px;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+            border-color: #2980b9;
+        }
+        
+        .btn-outline-primary {
+            color: #3498db;
+            border-color: #3498db;
+            padding: 12px 25px;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .illustration {
+            max-width: 300px;
+            margin: 0 auto 30px;
+        }
+        
+        .illustration img {
+            width: 100%;
+            height: auto;
+        }
+        
+        .checkout-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .checkout-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 1;
+        }
+        
+        .step-number {
+            width: 35px;
+            height: 35px;
+            background-color: #cbd5e1;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .step-number.active {
+            background-color: #3498db;
+        }
+        
+        .step-number.completed {
+            background-color: #28a745;
+        }
+        
+        .step-name {
+            font-size: 0.85rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+        
+        .step-name.active, .step-name.completed {
+            color: #3498db;
+            font-weight: 600;
+        }
+        
+        .steps-line {
+            position: absolute;
+            top: 17px;
+            left: 40px;
+            right: 40px;
+            height: 2px;
+            background-color: #cbd5e1;
+            z-index: 0;
+        }
+        
+        .steps-progress {
+            position: absolute;
+            top: 17px;
+            left: 40px;
+            width: 100%;
+            height: 2px;
+            background-color: #28a745;
+            z-index: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn-primary, .btn-outline-primary {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <%- include("../partials/user/header.ejs") %>
+    <div class="main-content">
+         <%- include("../partials/user/profileSidebar.ejs") %>
+
+         <div class="container order-success-container">
+            <div class="checkout-card mb-4">
+                <div class="checkout-steps">
+                    <div class="steps-line"></div>
+                    <div class="steps-progress"></div>
+                    
+                    <div class="checkout-step">
+                        <div class="step-number completed">✓</div>
+                        <div class="step-name completed">Cart</div>
+                    </div>
+                    
+                    <div class="checkout-step">
+                        <div class="step-number completed">✓</div>
+                        <div class="step-name completed">Checkout</div>
+                    </div>
+                    
+                    <div class="checkout-step">
+                        <div class="step-number completed">✓</div>
+                        <div class="step-name completed">Payment</div>
+                    </div>
+                    
+                    <div class="checkout-step">
+                        <div class="step-number completed">✓</div>
+                        <div class="step-name completed">Confirmation</div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="success-card">
+                <div class="success-icon">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+                
+                <h1 class="success-title">Order Confirmed!</h1>
+                
+                <p class="success-message">
+                    Thank you for your purchase! Your order has been received and is being processed. 
+                    We've sent a confirmation email with your order details.
+                </p>
+                
+                <div class="illustration">
+                </div>
+                
+                <div class="order-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Order Number:</span>
+                        <span class="detail-value">#<%= order.orderId %></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Date:</span>
+                        <span class="detail-value"><%= new Date(order.createdAt).toLocaleDateString() %></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Total:</span>
+                        <span class="detail-value">₹<%= order.totalAmount %></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Payment Method:</span>
+                        <span class="detail-value"><%= order.paymentMethod %></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Delivery Address:</span>
+                        <span class="detail-value"><%= order.shippingAddress.addressLine %>, <%= order.shippingAddress.city %></span>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <a href="/profile/order" class="btn btn-primary">
+                        <i class="bi bi-receipt me-2"></i> View Order Details
+                    </a>
+                    <a href="/shop" class="btn btn-outline-primary">
+                        <i class="bi bi-bag me-2"></i> Continue Shopping
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

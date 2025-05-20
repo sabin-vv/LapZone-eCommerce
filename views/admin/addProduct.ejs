@@ -18,6 +18,7 @@
         <%- include("../partials/admin/sidebar.ejs") %>
 
             <!-- Main Content -->
+             
             <main class="main-content flex-1 p-6 md:ml-64">
                 <h1 class="text-2xl font-bold mb-6">Add New Product</h1>
                 <form class="bg-white p-6 rounded-lg shadow-md" enctype="multipart/form-data"
@@ -631,26 +632,40 @@
         updateRemoveButtons();
 
   //Form validation
-  let form = document.querySelector('form')
-        let inputs = form.querySelectorAll('input')
+  
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.querySelector('form');
 
-        form.addEventListener('submit', (e) => {
-            let hasError = false
+  // Remove this line — it's clearing all file inputs on load and may confuse users
+  // document.querySelectorAll("input[type='file']").forEach(input => input.value = '');
 
-            inputs.forEach(input => {
-                let errorMessage = querySelector(`[data-error='${input.name}']`)
-                if (input.value.trim() === "") {
-                    errorMsg.textContent = `${input.name} is required`;
-                    errorMsg.classList.remove('hidden');
-                    hasError = true;
-                } else {
-                    errorMsg.textContent = "";
-                    errorMsg.classList.add('hidden');
-                }
+  form.addEventListener('submit', (e) => {
+    let hasError = false;
 
-            });
-            if (!hasError) form.submit();
-        })
+    const inputs = form.querySelectorAll('input, textarea, select');
+
+    inputs.forEach(input => {
+      const errorMsg = document.querySelector(`[data-error='${input.name}']`);
+      if (!input.disabled && input.hasAttribute('required') && input.value.trim() === '') {
+        if (errorMsg) {
+          errorMsg.textContent = `${input.name} is required`;
+          errorMsg.classList.remove('hidden');
+        }
+        hasError = true;
+      } else {
+        if (errorMsg) {
+          errorMsg.textContent = '';
+          errorMsg.classList.add('hidden');
+        }
+      }
+    });
+
+    if (hasError) {
+      e.preventDefault(); 
+    }
+  });
+});
+
 
     </script>
 </body>

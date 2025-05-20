@@ -1,54 +1,184 @@
+.sidebar {
+    width: 280px;
+    background-color: #ffffff;
+    padding: 24px 0;
+    border-right: 1px solid #e5e7eb;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    transition: all 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.03);
+    overflow-y: auto;
+    z-index: 100;
+}
 
-        .sidebar {
-            width: 250px;
-            background-color: #fff;
-            padding: 20px;
-            border-right: 1px solid #ddd;
-            height: 90vh;
-        }
+.profile-header {
+    display: flex;
+    align-items: center;
+    padding: 0 24px 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #f3f4f6;
+}
 
-        .profile-header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
+.profile-pic {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    margin-right: 14px;
+    overflow: hidden;
+    background-color: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #e5e7eb;
+}
 
-        .profile-pic {
-            width: 50px;
-            height: 50px;
-            background-color: transparent;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
+.profile-pic svg {
+    width: 100%;
+    height: 100%;
+    fill: #6b7280;
+}
 
-        .profile-name {
-            font-size: 18px;
-            font-weight: bold;
-        }
+.profile-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+    letter-spacing: 0.3px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 170px;
+}
 
-        .main-body {
-            display: flex;
-        }
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
 
-        .sidebar ul a {
-            list-style: none;
-            text-decoration: none;
-            color: black;
-        }
+.sidebar ul a {
+    text-decoration: none;
+    color: #4b5563;
+    display: block;
+    transition: all 0.2s ease;
+}
 
-        .sidebar ul li {
-            padding: 10px 0;
-            display: flex;
-            align-items: center;
-            cursor: pointer;  
-        }
+.sidebar ul li {
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+}
 
-        .sidebar ul li:hover {
-            background-color: #f0f0f0;
-        }
+.sidebar ul li:hover {
+    background-color: #f9fafb;
+    border-left: 3px solid #e5e7eb;
+}
 
-        .sidebar ul li i {
-            margin-right: 10px;
-            font-size: 18px;
-        }
+.sidebar ul li.active {
+    background-color: #f3f4f6;
+    border-left: 3px solid #4f46e5;
+}
+
+.sidebar ul li.active a {
+    color: #4f46e5;
+    font-weight: 600;
+}
+
+.sidebar ul li i {
+    margin-right: 12px;
+    font-size: 18px;
+    width: 24px;
+    text-align: center;
+    color: #6b7280;
+    transition: all 0.2s ease;
+}
+
+.sidebar ul li:hover i,
+.sidebar ul li.active i {
+    color: #4f46e5;
+}
+
+.sidebar ul li a {
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+/* Separator for profile and account sections */
+.sidebar ul li.separator {
+    margin-top: 10px;
+    padding: 0;
+    height: 1px;
+    background-color: #f3f4f6;
+    pointer-events: none;
+}
+
+.sidebar ul li.separator:hover {
+    background-color: #f3f4f6;
+    border-left: 3px solid transparent;
+}
+
+/* Logout specific style */
+.sidebar ul li.logout a {
+    color: #ef4444;
+}
+
+.sidebar ul li.logout i {
+    color: #ef4444;
+}
+
+/* Responsive style for sidebar */
+@media (max-width: 992px) {
+    .sidebar {
+        width: 240px;
+    }
+}
+
+
+@media (max-width: 768px) {
+    .sidebar {
+        position: fixed;
+        left: -280px;
+        width: 280px;
+        z-index: 1000;
+        box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .sidebar.active {
+        left: 0;
+    }
+    
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 999;
+        opacity: 0;
+        transition: all 0.5s ease;
+    }
+    
+    .sidebar-overlay.active {
+        display: block;
+        opacity: 1;
+    }
+    
+    .toggle-sidebar {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background-color: #4f46e5;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 8px 12px;
+        font-size: 20px;
+        cursor: pointer;
+        z-index: 1001;
+        display: block;
+    }
+}

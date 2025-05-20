@@ -1,0 +1,87 @@
+.main-container {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+    position: relative;
+    background-color: transparent;
+}
+
+.content-wrapper {
+    flex: 1;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+/* Cart Container Updated to Work with Sidebar */
+.cart-container {
+    max-width: 900px;
+    width: 100%;
+    padding: 32px;
+    margin: 32px auto;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+/* Responsive Layout */
+@media (max-width: 992px) {
+    .content-wrapper {
+        padding: 16px;
+    }
+    
+    .cart-container {
+        padding: 24px;
+        margin: 24px auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .content-wrapper {
+        width: 100%;
+        padding: 12px;
+    }
+    
+    .main-container.sidebar-active .content-wrapper {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+    
+    .cart-container {
+        margin: 16px auto;
+        padding: 20px;
+    }
+}
+
+/* Page Title/Header Styling */
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.page-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+}
+
+/* Extra Animation for Smooth Transitions */
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
