@@ -172,6 +172,9 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         <% products.forEach(product => { %>
                             <div class="product-card bg-white rounded-xl shadow-md overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1 <%= product.count === 0 ? 'out-of-stock' : '' %>">
+                                <% if (product.offer && product.offer > 0) { %>
+                                    <span class="offer-badge"><%= product.offer %>% OFF</span>
+                                <% } %>
                                 <a href="/shop/product/<%= product._id %>" class="block">
                                     <img src="<%= product.images.find(img => img.isMain)?.url || 'https://placehold.co/200x150' %>"
                                          alt="<%= product.name %> laptop"
@@ -381,14 +384,14 @@
                                 iziToast.success({
                                 title: '',
                                 message: 'Product added to cart',
-                                position: 'topRight',
+                                position: 'bottomRight',
                                 timeout: 2000
                             });
                             }else if(result.success === 'false'){
                                 iziToast.warning({
                                 title: '',
                                 message: "Cart limit Reached",
-                                position: 'topRight',
+                                position: 'bottomRight',
                                 timeout: 2000
                             });
                             }

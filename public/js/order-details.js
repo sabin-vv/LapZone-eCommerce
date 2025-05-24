@@ -43,132 +43,157 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Handle cancel item confirmation
     document.getElementById('confirmCancelItem').addEventListener('click', function() {
-        const itemId = document.getElementById('cancelItemId').value;
-        const reason = document.getElementById('cancelReason').value;
-        const comment = document.getElementById('cancelComment').value;
+    const itemId = document.getElementById('cancelItemId').value;
+    const reason = document.getElementById('cancelReason').value;
+    const comment = document.getElementById('cancelComment').value;
         
-        if (!reason) {
-            alert('Please select a reason for cancellation');
-            return;
-        }
-        
-        
-        fetch('/profile/order/cancel-item', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                itemId: itemId,
-                reason: reason,
-                comment: comment
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            } else {
-                alert(data.message || 'Failed to cancel item');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred. Please try again later.');
+    if (!reason) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Missing Reason',
+            text: 'Please select a reason for cancellation'
         });
-        
-        const modal = bootstrap.Modal.getInstance(document.getElementById('cancelItemModal'));
-        modal.hide();
+        return;
+    }
+
+    fetch('/profile/order/cancel-item', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itemId, reason, comment })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Item Cancelled',
+                text: 'The item was cancelled successfully.',
+                timer: 2000,
+                showConfirmButton: false
+            }).then(() => location.reload());
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message || 'Failed to cancel item'
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred. Please try again later.'
+        });
     });
+
+    const modal = bootstrap.Modal.getInstance(document.getElementById('cancelItemModal'));
+    modal.hide();
+});
     
     // Handle return item confirmation
     document.getElementById('confirmReturnItem').addEventListener('click', function() {
-        const itemId = document.getElementById('returnItemId').value;
-        const reason = document.getElementById('returnReason').value;
-        const condition = document.getElementById('returnCondition').value;
-        const comment = document.getElementById('returnComment').value;
-        
-        if (!reason || !condition) {
-            alert('Please fill in all required fields');
-            return;
-        }
-        
-        // Send return request to server
-        fetch('/api/order/return-item', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                itemId: itemId,
-                reason: reason,
-                condition: condition,
-                comment: comment
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            } else {
-                alert(data.message || 'Failed to submit return request');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred. Please try again later.');
+    const itemId = document.getElementById('returnItemId').value;
+    const reason = document.getElementById('returnReason').value;
+    const comment = document.getElementById('returnComment').value;
+
+    if (!reason) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Missing Information',
+            text: 'Please fill in all required fields'
         });
-        
-        const modal = bootstrap.Modal.getInstance(document.getElementById('returnItemModal'));
-        modal.hide();
+        return;
+    }
+
+    fetch('/profile/order/return-item', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itemId, reason, comment })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Return Requested',
+                text: 'Your return request was submitted.',
+                timer: 2000,
+                showConfirmButton: false
+            }).then(() => location.reload());
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message || 'Failed to submit return request'
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred. Please try again later.'
+        });
     });
+
+    const modal = bootstrap.Modal.getInstance(document.getElementById('returnItemModal'));
+    modal.hide();
+});
     
     // Handle cancel order confirmation
     document.getElementById('confirmCancelOrder').addEventListener('click', function() {
-        const orderId = document.getElementById('cancelOrderId').value;
-        const reason = document.getElementById('orderCancelReason').value;
-        const comment = document.getElementById('orderCancelComment').value;
-        
-        if (!reason) {
-            alert('Please select a reason for cancellation');
-            return;
-        }
-        
-        // Send cancel order request to server
-        fetch('/profile/order/cancel', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                orderId: orderId,
-                reason: reason,
-                comment: comment
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            } else {
-                alert(data.message || 'Failed to cancel order');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred. Please try again later.');
+    const orderId = document.getElementById('cancelOrderId').value;
+    const reason = document.getElementById('orderCancelReason').value;
+    const comment = document.getElementById('orderCancelComment').value;
+
+    if (!reason) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Missing Reason',
+            text: 'Please select a reason for cancellation'
         });
-        
-        const modal = bootstrap.Modal.getInstance(document.getElementById('cancelOrderModal'));
-        modal.hide();
+        return;
+    }
+
+    fetch('/profile/order/cancel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId, reason, comment })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Order Cancelled',
+                text: 'The order was cancelled successfully.',
+                timer: 2000,
+                showConfirmButton: false
+            }).then(() => location.reload());
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message || 'Failed to cancel order'
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred. Please try again later.'
+        });
     });
+
+    const modal = bootstrap.Modal.getInstance(document.getElementById('cancelOrderModal'));
+    modal.hide();
+});
     
-    // Print order details
-    window.printOrder = function() {
-        window.print();
-    };
-    
-    // Expose the functions to global scope
     window.cancelItem = cancelItem;
     window.returnItem = returnItem;
     window.cancelOrder = cancelOrder;

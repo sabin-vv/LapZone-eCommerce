@@ -6,7 +6,7 @@ const categoryController = require("../controllers/admin/categoryController")
 const productController = require("../controllers/admin/productController")
 const upload = require("../middlewares/multer")
 const orderController = require("../controllers/admin/orderController");
-const Order = require("../model/order");
+const offerController = require("../controllers/admin/offerController")
 
 
 router.get("/login", adminController.getadminLogin)
@@ -57,8 +57,14 @@ router.get("/orders",orderController.listOrders)
 router.post("/update-order-status",orderController.updateOrderStatus )
 router.get("/view-order/:id",orderController.viewOrder)
 router.post("/orders/item/:id/update-status",orderController.updateItemStatus)
+router.get("/orders/cancel-return-request",orderController.cancelReturnRequest)
+router.post('/return-request/approve',orderController.returnApprove)
+router.post('/return-request/reject',orderController.returnReject)
+router.post('/cancel-request/approve',orderController.cancelApprove)
+router.post('/cancel-request/reject',orderController.cancelReject)
 
-
+router.post("/product/add-offer/:id",offerController.addProductOffer )
+router.post("/product/remove-offer/:id",offerController.removeProductOffer)
 
 
 module.exports = router

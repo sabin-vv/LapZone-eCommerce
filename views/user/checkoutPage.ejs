@@ -11,18 +11,17 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <style>
         body {
             background-color: #f8f9fa;
         }
-        .main-content{
+        .main-content {
             display: flex;
         }
-        
         .checkout-container {
             padding: 30px 0;
         }
-        
         .checkout-card {
             background-color: #fff;
             border-radius: 10px;
@@ -30,7 +29,6 @@
             padding: 25px;
             margin-bottom: 20px;
         }
-        
         .checkout-title {
             color: #2c3e50;
             font-size: 1.5rem;
@@ -39,11 +37,9 @@
             padding-bottom: 10px;
             border-bottom: 2px solid #ecf0f1;
         }
-        
         .checkout-section {
             margin-bottom: 25px;
         }
-        
         .address-card {
             border: 1px solid #ddd;
             border-radius: 8px;
@@ -52,21 +48,17 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        
         .address-card:hover {
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        
         .address-card.selected {
             border: 2px solid #3498db;
             box-shadow: 0 4px 8px rgba(52, 152, 219, 0.2);
         }
-        
         .address-name {
             font-weight: 600;
             font-size: 1.1rem;
         }
-        
         .address-type {
             background-color: #e0f2fe;
             color: #0369a1;
@@ -75,13 +67,11 @@
             border-radius: 4px;
             margin-left: 8px;
         }
-        
         .address-details {
             color: #64748b;
             font-size: 0.9rem;
             margin-top: 5px;
         }
-        
         .payment-option {
             border: 1px solid #ddd;
             border-radius: 8px;
@@ -92,22 +82,18 @@
             align-items: center;
             transition: all 0.3s ease;
         }
-        
         .payment-option:hover {
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        
         .payment-option.selected {
             border: 2px solid #3498db;
             box-shadow: 0 4px 8px rgba(52, 152, 219, 0.2);
         }
-        
         .payment-icon {
             font-size: 1.5rem;
             margin-right: 15px;
             color: #334155;
         }
-        
         .order-summary-item {
             display: flex;
             justify-content: space-between;
@@ -115,19 +101,16 @@
             padding-bottom: 10px;
             border-bottom: 1px dashed #e2e8f0;
         }
-        
         .order-total {
             display: flex;
-             justify-content: space-between;
+            justify-content: space-between;
             font-weight: 700;
             font-size: 1.2rem;
             color: #2c3e50;
             margin-top: 15px;
             padding-top: 15px;
             border-top: 2px solid #e2e8f0;
-            
         }
-        
         .btn-primary {
             background-color: #3498db;
             border-color: #3498db;
@@ -136,12 +119,10 @@
             border-radius: 8px;
             transition: all 0.3s ease;
         }
-        
         .btn-primary:hover {
             background-color: #2980b9;
             border-color: #2980b9;
         }
-        
         .btn-outline-primary {
             color: #3498db;
             border-color: #3498db;
@@ -150,19 +131,16 @@
             border-radius: 8px;
             transition: all 0.3s ease;
         }
-        
         .btn-outline-primary:hover {
             background-color: #3498db;
             color: white;
         }
-        
         .product-item {
             display: flex;
             margin-bottom: 15px;
             padding-bottom: 15px;
             border-bottom: 1px solid #e2e8f0;
         }
-        
         .product-image {
             width: 80px;
             height: 80px;
@@ -170,40 +148,33 @@
             border-radius: 6px;
             margin-right: 15px;
         }
-        
         .product-details {
             flex-grow: 1;
         }
-        
         .product-name {
             font-weight: 600;
             margin-bottom: 5px;
         }
-        
         .product-price {
             color: #2c3e50;
             font-weight: 600;
         }
-        
         .product-quantity {
             color: #64748b;
             font-size: 0.9rem;
         }
-        
         .checkout-steps {
             display: flex;
             justify-content: space-between;
             margin-bottom: 30px;
             position: relative;
         }
-        
         .checkout-step {
             display: flex;
             flex-direction: column;
             align-items: center;
             z-index: 1;
         }
-        
         .step-number {
             width: 35px;
             height: 35px;
@@ -216,22 +187,18 @@
             font-weight: 600;
             margin-bottom: 8px;
         }
-        
         .step-number.active {
             background-color: #3498db;
         }
-        
         .step-name {
             font-size: 0.85rem;
             color: #64748b;
             font-weight: 500;
         }
-        
         .step-name.active {
             color: #3498db;
             font-weight: 600;
         }
-        
         .steps-line {
             position: absolute;
             top: 17px;
@@ -241,7 +208,6 @@
             background-color: #cbd5e1;
             z-index: 0;
         }
-        
         .steps-progress {
             position: absolute;
             top: 17px;
@@ -251,17 +217,14 @@
             background-color: #3498db;
             z-index: 0;
         }
-        
         .apply-coupon {
             margin-top: 15px;
         }
-        
         .coupon-input {
             border-radius: 8px 0 0 8px;
             border: 1px solid #cbd5e1;
             padding: 10px 15px;
         }
-        
         .coupon-button {
             border-radius: 0 8px 8px 0;
             background-color: #3498db;
@@ -269,11 +232,9 @@
             border: none;
             padding: 10px 15px;
         }
-        
         .order-note {
             margin-top: 15px;
         }
-        
         .order-note textarea {
             border-radius: 8px;
             border: 1px solid #cbd5e1;
@@ -281,17 +242,60 @@
             width: 100%;
             resize: none;
         }
-        
-        /* Add responsive styles */
+        /* Styles for collapsible address section */
+        .other-addresses-toggle {
+            cursor: pointer;
+            color: #3498db;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .other-addresses-toggle:hover {
+            text-decoration: underline;
+        }
+        .other-addresses {
+            margin-top: 15px;
+        }
+        .other-addresses .address-card {
+            padding: 10px;
+            font-size: 0.85rem;
+        }
+        .other-addresses .address-details {
+            font-size: 0.8rem;
+        }
+        /* Styles for address actions */
+        .address-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .address-actions .btn-outline-primary {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+        }
         @media (max-width: 768px) {
             .checkout-steps {
                 overflow-x: auto;
                 padding-bottom: 10px;
             }
-            
             .product-image {
                 width: 60px;
                 height: 60px;
+            }
+            .other-addresses .address-card {
+                padding: 8px;
+            }
+            .address-actions {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .address-actions .btn-outline-primary {
+                width: 100%;
+                text-align: center;
             }
         }
     </style>
@@ -299,246 +303,221 @@
 <body>
     <%- include("../partials/user/header.ejs") %>
     <div class="main-content">
-         <%- include("../partials/user/profileSidebar.ejs") %>
-
-         <div class="container checkout-container">
-       
-        <div class="checkout-card">
-            <div class="checkout-steps">
-                <div class="steps-line"></div>
-                <div class="steps-progress"></div>
-                
-                <div class="checkout-step">
-                    <div class="step-number active">1</div>
-                    <div class="step-name active">Cart</div>
-                </div>
-                
-                <div class="checkout-step">
-                    <div class="step-number active">2</div>
-                    <div class="step-name active">Checkout</div>
-                </div>
-                
-                <div class="checkout-step">
-                    <div class="step-number">3</div>
-                    <div class="step-name">Payment</div>
-                </div>
-                
-                <div class="checkout-step">
-                    <div class="step-number">4</div>
-                    <div class="step-name">Confirmation</div>
+        <%- include("../partials/user/profileSidebar.ejs") %>
+        <div class="container checkout-container">
+            <div class="checkout-card">
+                <div class="checkout-steps">
+                    <div class="steps-line"></div>
+                    <div class="steps-progress"></div>
+                    <div class="checkout-step">
+                        <div class="step-number active">1</div>
+                        <div class="step-name active">Cart</div>
+                    </div>
+                    <div class="checkout-step">
+                        <div class="step-number active">2</div>
+                        <div class="step-name active">Checkout</div>
+                    </div>
+                    <div class="checkout-step">
+                        <div class="step-number">3</div>
+                        <div class="step-name">Payment</div>
+                    </div>
+                    <div class="checkout-step">
+                        <div class="step-number">4</div>
+                        <div class="step-name">Confirmation</div>
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <div class="row">
-            <div class="col-lg-8">
-                <!-- Shipping Address -->
-                <div class="checkout-card">
-                    <h3 class="checkout-title">Shipping Address</h3>
-                    
-                    <% if(addresses){
-                            addresses.forEach(address =>{ %>
-                    <div class="address-card <%= address.isdefault ? 'selected' : '' %>">
-                        
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <span class="address-name"><%= address.addresstype%></span>
-                                <% if(address.isdefault){ %>
-                                <span class="address-type">Default</span>
-                                <% } %>
-                            </div>
-                            <div>
-                                <button class="btn btn-sm btn-outline-secondary">Edit</button>
-                            </div>
-                        </div>
-                        <div class="address-details">
-                            <p class="mb-1"><%= address.fullname %></p>
-                            <p class="mb-1"><%= address.addressLine %></p>
-                            <p class="mb-1"><%= address.city %>,<%= address.district %></p>
-                            <p class="mb-1"><%= address.state %> - <%= address.pincode%></p>
-                            <p class="mb-0">Phone: (+91) <%= address.mobile %></p>
-                        </div>
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Shipping Address -->
+                    <div class="checkout-card">
+                        <h3 class="checkout-title">Shipping Address</h3>
+                        <% if (addresses) { %>
+                            <% const defaultAddress = addresses.find(address => address.isdefault); %>
+                            <% if (defaultAddress) { %>
+                                <div class="address-card selected">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <span class="address-name"><%= defaultAddress.addresstype %></span>
+                                            <span class="address-type">Default</span>
+                                        </div>
+                                        <div>
+                                            <button class="btn btn-sm btn-outline-secondary">Edit</button>
+                                        </div>
+                                    </div>
+                                    <div class="address-details">
+                                        <p class="mb-1"><%= defaultAddress.fullname %></p>
+                                        <p class="mb-1"><%= defaultAddress.addressLine %></p>
+                                        <p class="mb-1"><%= defaultAddress.city %>, <%= defaultAddress.district %></p>
+                                        <p class="mb-1"><%= defaultAddress.state %> - <%= defaultAddress.pincode %></p>
+                                        <p class="mb-0">Phone: (+91) <%= defaultAddress.mobile %></p>
+                                    </div>
+                                </div>
+                            <% } %>
+                            <% const otherAddresses = addresses.filter(address => !address.isdefault); %>
+                            <% if (otherAddresses.length > 0) { %>
+                                <div class="address-actions">
+                                    <a class="other-addresses-toggle" data-bs-toggle="collapse" href="#otherAddresses" role="button" aria-expanded="false" aria-controls="otherAddresses">
+                                        <i class="bi bi-chevron-down me-2"></i> View Other Addresses
+                                    </a>
+                                    <button class="btn btn-outline-primary">
+                                        <i class="bi bi-plus-circle me-2"></i> Add New Address
+                                    </button>
+                                </div>
+                                <div class="collapse other-addresses" id="otherAddresses">
+                                    <% otherAddresses.forEach(address => { %>
+                                        <div class="address-card">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <span class="address-name"><%= address.addresstype %></span>
+                                                </div>
+                                                <div>
+                                                    <button class="btn btn-sm btn-outline-secondary">Edit</button>
+                                                </div>
+                                            </div>
+                                            <div class="address-details">
+                                                <p class="mb-1"><%= address.fullname %></p>
+                                                <p class="mb-1"><%= address.addressLine %></p>
+                                                <p class="mb-1"><%= address.city %>, <%= address.district %></p>
+                                                <p class="mb-1"><%= address.state %> - <%= address.pincode %></p>
+                                                <p class="mb-0">Phone: (+91) <%= address.mobile %></p>
+                                            </div>
+                                        </div>
+                                    <% }) %>
+                                </div>
+                            <% } else { %>
+                                <div class="address-actions">
+                                    <span></span> <!-- Empty span to maintain layout -->
+                                    <button class="btn btn-outline-primary">
+                                        <i class="bi bi-plus-circle me-2"></i> Add New Address
+                                    </button>
+                                </div>
+                            <% } %>
+                        <% } %>
                     </div>
-                    <% }) %>
+                    <!-- Payment Method -->
+                    <div class="checkout-card">
+                        <h3 class="checkout-title">Payment Method</h3>
+                        <div class="payment-option">
+                            <input type="radio" name="payment-method" id="Wallet" value="Wallet" checked class="me-2">
+                            <i class="bi bi-wallet payment-icon"></i>
+                            <label for="Wallet" class="mb-0">LapZone Wallet</label>
+                            <span class="ms-auto badge bg-secondary">₹<%= wallet ? wallet.balance.toLocaleString('en-IN') : 0 %> Available</span>
+                        </div>
+                        
+                        <div class="payment-option">
+                            <input type="radio" name="payment-method" id="paypal" value="Online" class="me-2">
+                            <div id="paypal-button-container"></div>
+                                <p id="result-message"></p>
+                                <img src="https://cdn.razorpay.com/logo.svg" alt="Razorpay" style="height: 24px; margin-right: 10px;">
+                            <label for="Online" class="mb-0"></label>
+                        </div>
+                        <div class="payment-option">
+                            <input type="radio" name="payment-method" id="cod" value="COD" class="me-2">
+                            <i class="bi bi-cash payment-icon"></i>
+                            <label for="COD" class="mb-0">Cash on Delivery</label>
+                        </div> 
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <!-- Order Summary -->
+                    <% if (orders) { %>
+                        <% orders.forEach(order => { %>
+                            <div class="checkout-card">
+                                <h3 class="checkout-title">Order Summary</h3>
+                                <!-- Product List -->
+                                <div class="checkout-section">
+                                    <% if (cart) { %>
+                                        <% cart.forEach(item => { %>
+                                            <div class="product-item">
+                                                <% const mainImage = item.productId.images.find(img => img.isMain === true) %>
+                                                <img src="<%= mainImage?.url %>" alt="MacBook Pro" class="product-image">
+                                                <div class="product-details">
+                                                    <div class="product-name"><%= item.productId.name %></div>
+                                                    <div class="product-price">₹<%= item.productId.salePrice %></div>
+                                                    <div class="product-quantity">Qty: <%= item.quantity %></div>
+                                                </div>
+                                            </div>
+                                        <% }) %>
+                                    <% } %>
+                                </div>
+                                <!-- Apply Coupon -->
+                                <div class="apply-coupon">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control coupon-input" placeholder="Enter coupon code">
+                                        <button class="btn coupon-button">Apply</button>
+                                    </div>
+                                </div>
+                                <!-- Price Summary -->
+                                <div class="checkout-section mt-4">
+                                    <div class="order-summary-item">
+                                        <span>Subtotal</span>
+                                        <span>₹<%= order.subtotal.toLocaleString('en-IN') %></span>
+                                    </div>
+                                    <div class="order-summary-item">
+                                        <span>Shipping</span>
+                                        <span>₹<%= order.shippingFee.toLocaleString('en-IN') %></span>
+                                    </div>
+                                    <div class="order-summary-item">
+                                        <span>Tax</span>
+                                        <span>₹<%= order.tax.toLocaleString('en-IN') %></span>
+                                    </div>
+                                    <div class="order-total">
+                                        <span>Total</span>
+                                        <span id="orderTotalValue">₹<%= order.totalAmount.toLocaleString('en-IN') %></span>
+                                    </div>
+                                </div>
+                                <!-- Place Order Button -->
+                                <button class="btn btn-primary w-100 mt-4" onclick="placeOrder();">
+                                    <i class="bi bi-lock-fill me-2"></i> Place Order
+                                </button>
+                                <!-- Return to Cart -->
+                                <div class="text-center mt-3">
+                                    <a href="/cart" class="text-decoration-none">
+                                        <i class="bi bi-arrow-left me-1"></i> Return to Cart
+                                    </a>
+                                </div>
+                            </div>
+                        <% }) %>
                     <% } %>
-                    
-                    
-                    <button class="btn btn-outline-primary mt-3">
-                        <i class="bi bi-plus-circle me-2"></i> Add New Address
-                    </button>
-                </div>
-                
-                <!-- Payment Method -->
-                <div class="checkout-card">
-                    <h3 class="checkout-title">Payment Method</h3>
-                    
-                    <div class="payment-option">
-                        <input type="radio" name="payment-method" id="credit-card" value="Online" checked class="me-2">
-                        <i class="bi bi-credit-card payment-icon"></i>
-                        <label for="credit-card" class="mb-0">Credit/Debit Card</label>
-                    </div>
-                    
-                    <div class="payment-option">
-                        <input type="radio" name="payment-method" id="paypal" value="paypal" class="me-2">
-                        <i class="bi bi-paypal payment-icon"></i>
-                        <label for="paypal" class="mb-0">PayPal</label>
-                    </div>
-                    
-                    <div class="payment-option">
-                        <input type="radio" name="payment-method" id="wallet" value="wallet" class="me-2">
-                        <i class="bi bi-wallet payment-icon"></i>
-                        <label for="wallet" class="mb-0">LapZone Wallet</label>
-                        <span class="ms-auto badge bg-secondary">$245.00 available</span>
-                    </div>
-                    
-                    <div class="payment-option">
-                        <input type="radio" name="payment-method" id="cod" value="COD" class="me-2" >
-                        <i class="bi bi-cash payment-icon"></i>
-                        <label for="cod" class="mb-0">Cash on Delivery</label>
-                    </div>
-                    
-                    <!-- Credit Card Form (Initially Shown) -->
-                    <div id="credit-card-form" class="mt-4">
-                        <div class="row">
-                            <div class="col-12 mb-3">
-                                <label for="card-name" class="form-label">Name on Card</label>
-                                <input type="text" class="form-control" id="card-name" placeholder="John Doe">
-                            </div>
-                            <div class="col-12 mb-3">
-                                <label for="card-number" class="form-label">Card Number</label>
-                                <input type="text" class="form-control" id="card-number" placeholder="1234 5678 9012 3456">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="expiry-date" class="form-label">Expiry Date</label>
-                                <input type="text" class="form-control" id="expiry-date" placeholder="MM/YY">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="cvv" class="form-label">CVV</label>
-                                <input type="text" class="form-control" id="cvv" placeholder="123">
-                            </div>
+                    <!-- Secure Checkout Notice -->
+                    <div class="checkout-card text-center">
+                        <div class="d-flex align-items-center justify-content-center mb-2">
+                            <i class="bi bi-shield-lock-fill me-2" style="font-size: 1.5rem; color: #3498db;"></i>
+                            <span class="fw-bold">Secure Checkout</span>
                         </div>
+                        <p class="text-muted small mb-0">Your payment information is encrypted and secure. We never store your full credit card details.</p>
                     </div>
-                </div>
-                
-                <!-- Order Notes -->
-                <div class="checkout-card">
-                    <h3 class="checkout-title">Order Notes (Optional)</h3>
-                    <textarea class="form-control" rows="3" placeholder="Special instructions for delivery or product handling..."></textarea>
-                </div>
-            </div>
-            
-            <div class="col-lg-4">
-                <!-- Order Summary -->
-                <% if(orders){ 
-                    orders.forEach(order =>{ %>
-
-                <div class="checkout-card">
-                    <h3 class="checkout-title">Order Summary</h3>
-                    
-                    <!-- Product List -->
-                    <div class="checkout-section">
-                       <% if(cart){ 
-                        
-                        cart.forEach(item=>{ %>
-                       
-                        <div class="product-item">
-                            <% const mainImage = item.productId.images.find(img => img.isMain === true) %>
-                            <img src="<%= mainImage?.url %>" alt="MacBook Pro" class="product-image">
-                            <div class="product-details">
-                                <div class="product-name"><%= item.productId.name %></div>
-                                <div class="product-price">₹<%= item.productId.salePrice%></div>
-                                <div class="product-quantity">Qty: <%= item.quantity%></div>
-                            </div>
-                        </div>
-                       <%  }) %>  
-                    <% } %>
-                        
-                    </div>
-                    
-                    <!-- Apply Coupon -->
-                    <div class="apply-coupon">
-                        <div class="input-group">
-                            <input type="text" class="form-control coupon-input" placeholder="Enter coupon code">
-                            <button class="btn coupon-button">Apply</button>
-                        </div>
-                    </div>
-                    
-                    <!-- Price Summary -->
-                    <div class="checkout-section mt-4">
-                        <div class="order-summary-item">
-                            <span>Subtotal</span>
-                            <span>₹<%= order.subtotal.toLocaleString('en-IN')%></span>
-                        </div>
-                        <div class="order-summary-item">
-                            <span>Shipping</span>
-                            <span>₹<%= order.shippingFee.toLocaleString('en-IN')%></span>
-                        </div>
-                        <div class="order-summary-item">
-                            <span>Tax</span>
-                            <span>₹<%= order.tax.toLocaleString('en-IN')%></span>
-                        </div>
-                        <div class="order-total">
-                            <span>Total</span>
-                            <span>₹<%= order.totalAmount.toLocaleString('en-IN')%></span>
-                        </div>
-                    </div>
-                    
-                    <!-- Place Order Button -->
-                    <button class="btn btn-primary w-100 mt-4" onclick="placeOrder();">
-                        <i class="bi bi-lock-fill me-2"></i> Place Order
-                    </button>
-                    
-                    <!-- Return to Cart -->
-                    <div class="text-center mt-3">
-                        <a href="/cart" class="text-decoration-none">
-                            <i class="bi bi-arrow-left me-1"></i> Return to Cart
-                        </a>
-                    </div>
-                </div>
-                <% }) %>
-            <% } %>
-                
-                <!-- Secure Checkout Notice -->
-                <div class="checkout-card text-center">
-                    <div class="d-flex align-items-center justify-content-center mb-2">
-                        <i class="bi bi-shield-lock-fill me-2" style="font-size: 1.5rem; color: #3498db;"></i>
-                        <span class="fw-bold">Secure Checkout</span>
-                    </div>
-                    <p class="text-muted small mb-0">Your payment information is encrypted and secure. We never store your full credit card details.</p>
                 </div>
             </div>
         </div>
     </div>
-
-    </div>
-    
-    
+    <script src="https://www.paypal.com/sdk/js?client-id=Ad-rLPHVwnJdrYS1jxkmYAgFYk4LLLJ7jNjqIG9yuyhYUr1YRasT_Y48mbI3IXBYPwysND7j690iO7pF&buyer-country=US&currency=USD&components=buttons&enable-funding=venmo,paylater,card"
+            data-sdk-integration-source="developer-studio"></script>
+            <script src="app.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Handle address card selection
             const addressCards = document.querySelectorAll('.address-card');
             addressCards.forEach(card => {
-                card.addEventListener('click', function() {
-                    addressCards.forEach(c => c.classList.remove('selected'));
-                    this.classList.add('selected');
+                card.addEventListener('click', function(e) {
+                    // Prevent triggering when clicking the Edit button
+                    if (e.target.tagName !== 'BUTTON' && !e.target.closest('button')) {
+                        addressCards.forEach(c => c.classList.remove('selected'));
+                        this.classList.add('selected');
+                    }
                 });
             });
-            
+
             // Handle payment method selection
             const paymentOptions = document.querySelectorAll('.payment-option');
             const creditCardForm = document.getElementById('credit-card-form');
-            
             paymentOptions.forEach(option => {
                 option.addEventListener('click', function() {
-                    // Select the radio button
                     const radio = this.querySelector('input[type="radio"]');
                     radio.checked = true;
-                    
-                    // Update visual selection
                     paymentOptions.forEach(o => o.classList.remove('selected'));
                     this.classList.add('selected');
-                    
-                    // Show/hide credit card form
                     if (radio.id === 'credit-card') {
                         creditCardForm.style.display = 'block';
                     } else {
@@ -546,105 +525,80 @@
                     }
                 });
             });
-            
-            // Format credit card number with spaces
-            const cardNumberInput = document.getElementById('card-number');
-            if (cardNumberInput) {
-                cardNumberInput.addEventListener('input', function(e) {
-                    let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
-                    let formattedValue = '';
-                    
-                    for (let i = 0; i < value.length; i++) {
-                        if (i > 0 && i % 4 === 0) {
-                            formattedValue += ' ';
-                        }
-                        formattedValue += value[i];
-                    }
-                    
-                    e.target.value = formattedValue.substring(0, 19); // Limit to 16 digits + 3 spaces
-                });
-            }
-            
-            // Format expiry date with slash
-            const expiryInput = document.getElementById('expiry-date');
-            if (expiryInput) {
-                expiryInput.addEventListener('input', function(e) {
-                    let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
-                    
-                    if (value.length > 2) {
-                        value = value.substring(0, 2) + '/' + value.substring(2, 4);
-                    }
-                    
-                    e.target.value = value.substring(0, 5); // Limit to MM/YY format
-                });
-            }
-            
-            // Limit CVV to 3 or 4 digits
-            const cvvInput = document.getElementById('cvv');
-            if (cvvInput) {
-                cvvInput.addEventListener('input', function(e) {
-                    let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
-                    e.target.value = value.substring(0, 4);
+
+               
+
+            // Ensure collapse toggle updates icon
+            const toggleLink = document.querySelector('.other-addresses-toggle');
+            if (toggleLink) {
+                toggleLink.addEventListener('click', function() {
+                    const icon = this.querySelector('i');
+                    const isExpanded = this.getAttribute('aria-expanded') === 'true';
+                    icon.classList.toggle('bi-chevron-down', !isExpanded);
+                    icon.classList.toggle('bi-chevron-up', isExpanded);
                 });
             }
         });
 
-
-        async function placeOrder(){
-            try{
-            const selectedAddressCard = document.querySelector('.address-card.selected');
-            const addressLines = selectedAddressCard.querySelectorAll('.address-details p')
-
-            const shippingAddress = {
-                fullName: addressLines[0].innerText.trim(),
-                addressLine: addressLines[1].innerText.trim(),
-                city: addressLines[2].innerText.split(',')[0]?.trim(),
-                district: addressLines[2].innerText.split(',')[1]?.trim(),
-                state: addressLines[3].innerText.split('-')[0].trim(),
-                postCode: addressLines[3].innerText.split('-')[1].trim(),
-                phone: addressLines[4].innerText.replace('Phone: (+91) ', '').trim()
+        async function placeOrder() {
+            try {
+                const selectedAddressCard = document.querySelector('.address-card.selected');
+                if (!selectedAddressCard) {
+                    await Swal.fire({
+                        icon: 'error',
+                        title: 'No Address Selected',
+                        text: 'Please select a shipping address.'
+                    });
+                    return;
+                }
+                const addressLines = selectedAddressCard.querySelectorAll('.address-details p');
+                const shippingAddress = {
+                    fullName: addressLines[0].innerText.trim(),
+                    addressLine: addressLines[1].innerText.trim(),
+                    city: addressLines[2].innerText.split(',')[0]?.trim(),
+                    district: addressLines[2].innerText.split(',')[1]?.trim(),
+                    state: addressLines[3].innerText.split('-')[0].trim(),
+                    postCode: addressLines[3].innerText.split('-')[1].trim(),
+                    phone: addressLines[4].innerText.replace('Phone: (+91) ', '').trim()
                 };
 
+                const total = document.getElementById('orderTotalValue').innerText
                 const paymentMethod = document.querySelector('input[name="payment-method"]:checked')?.value;
-                
-
-           const response =  await fetch("/user/order",{
-                method:"POST",
-                headers:{
-                    'Content-Type' : 'application/json'
-                },
-                body: JSON.stringify({
-                    shippingAddress,
-                    paymentMethod
-                })
-            })
-
-            const result = await response.json()
-
-            if (result.success === true) {
-      await Swal.fire({
-        icon: 'success',
-        title: 'Order Placed',
-        timer: 1500,
-        showConfirmButton: false
-      });
-      window.location.href = "/user/order-page";
-    } else {
-      await Swal.fire({
-        icon: 'error',
-        title: 'Order Failed',
-        text: result.message || "Product out of stock"
-      });
-    }
-  } catch (err) {
-    console.error("Order Error:", err);
-    await Swal.fire({
-      icon: 'error',
-      title: 'Something went wrong'
-    });
+                const response = await fetch("/user/order", {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        shippingAddress,
+                        paymentMethod,
+                        total
+                    })
+                });
+                const result = await response.json();
+                if (result.success === true) {
+                    await Swal.fire({
+                        icon: 'success',
+                        title: 'Order Placed',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                    window.location.href = "/user/order-page";
+                } else {
+                    await Swal.fire({
+                        icon: 'error',
+                        title: 'Order Failed',
+                        text: result.message || "Product out of stock"
+                    });
+                }
+            } catch (err) {
+                console.error("Order Error:", err);
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Something went wrong'
+                });
+            }
         }
-    }
-
     </script>
 </body>
 </html>

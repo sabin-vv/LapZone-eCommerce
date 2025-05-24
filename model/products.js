@@ -24,7 +24,7 @@ const productSchema = new mongoose.Schema({
     },
     categoryId: {
         type: mongoose.Schema.Types.ObjectId,
-        required: false
+        required: true
     },
     brand: {
         type: String,

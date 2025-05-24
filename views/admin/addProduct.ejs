@@ -26,7 +26,7 @@
                         <div class="form-grid">
                             <div>
                                 <label for="name" class="block text-sm font-medium text-gray-700">Product Name</label>
-                                <input type="text" id="name" name="name" class="mt-1 block w-full custom-input">
+                                <input type="text" id="name" name="name" class="mt-1 block w-full custom-input" value="<%= formData?.name ||'' %>">
                                 <p data-error="name" class="text-red-500 text-xs italic">
                                     <%= errors? errors.name: "" %>
                                 </p>
@@ -35,7 +35,7 @@
                                 <label for="modelNumber" class="block text-sm font-medium text-gray-700">Model
                                     Number</label>
                                 <input type="text" id="modelNumber" name="modelNumber"
-                                    class="mt-1 block w-full custom-input">
+                                    class="mt-1 block w-full custom-input" value="<%= formData?.modelNumber ||'' %>">
                                 <p data-error="modelNumber" class="text-red-500 text-xs italic">
                                     <%=errors? errors.modelNumber : '' %>
                                 </p>
@@ -53,7 +53,7 @@
                             </div>
                             <div>
                                 <label for="color" class="block text-sm font-medium text-gray-700">Color</label>
-                                <input type="text" id="color" name="color" class="mt-1 block w-full custom-input">
+                                <input type="text" id="color" name="color" class="mt-1 block w-full custom-input" value="<%= formData?.color ||'' %>">
                                 <p data-error="color" class="text-red-500 text-xs italic">
                                     <%=errors? errors.color : '' %>
                                 </p>
@@ -62,61 +62,61 @@
                                 <label for="description"
                                     class="block text-sm font-medium text-gray-700">Description</label>
                                 <textarea id="description" name="description" class="mt-1 block w-full custom-textarea"
-                                    rows="4"></textarea>
+                                    rows="4" value="<%= formData?.description ||'' %>"></textarea>
                                 <p data-error="description" class="text-red-500 text-xs italic">
                                     <%=errors? errors.description : '' %>
                                 </p>
                             </div>
                             <div>
                                 <label for="brand" class="block text-sm font-medium text-gray-700">Brand</label>
-                                <input type="text" id="brand" name="brand" class="mt-1 block w-full custom-input">
+                                <input type="text" id="brand" name="brand" class="mt-1 block w-full custom-input" value="<%= formData?.brand ||'' %>">
                                 <p data-error="brand" class="text-red-500 text-xs italic">
                                     <%=errors? errors.brand :'' %>
                                 </p>
                             </div>
                             <div>
                                 <label for="CPU" class="block text-sm font-medium text-gray-700">CPU</label>
-                                <input type="text" id="CPU" name="CPU" class="mt-1 block w-full custom-input">
+                                <input type="text" id="CPU" name="CPU" class="mt-1 block w-full custom-input" value="<%= formData?.CPU ||'' %>">
                                 <p data-error="CPU" class="text-red-500 text-xs italic">
                                     <%=errors? errors.CPU : "" %>
                                 </p>
                             </div>
                             <div>
                                 <label for="os" class="block text-sm font-medium text-gray-700">OS</label>
-                                <input type="text" id="os" name="os" class="mt-1 block w-full custom-input">
+                                <input type="text" id="os" name="os" class="mt-1 block w-full custom-input" value="<%= formData?.os ||'' %>">
                                 <p data-error="os" class="text-red-500 text-xs italic">
                                     <%=errors? errors.os : '' %>
                                 </p>
                             </div>
                             <div>
                                 <label for="screen" class="block text-sm font-medium text-gray-700">Screen</label>
-                                <input type="text" id="screen" name="screen" class="mt-1 block w-full custom-input">
+                                <input type="text" id="screen" name="screen" class="mt-1 block w-full custom-input" value="<%= formData?.screen ||'' %>">
                                 <p data-error="screen" class="text-red-500 text-xs italic">
                                     <%=errors? errors.screen : '' %>
                                 </p>
                             </div>
                             <div>
                                 <label for="graphics" class="block text-sm font-medium text-gray-700">Graphics</label>
-                                <input type="text" id="graphics" name="graphics" class="mt-1 block w-full custom-input">
+                                <input type="text" id="graphics" name="graphics" class="mt-1 block w-full custom-input" value="<%= formData?.graphics ||'' %>">
                                 <p data-error="graphics" class="text-red-500 text-xs italic">
                                     <%=errors? errors.graphics : '' %>
                                 </p>
                             </div>
                             <div>
                                 <label for="offer" class="block text-sm font-medium text-gray-700">Offer (%)</label>
-                                <input type="number" id="offer" name="offer" class="mt-1 block w-full custom-input">
+                                <input type="number" id="offer" name="offer" class="mt-1 block w-full custom-input" value="<%= formData?.offer ||'' %>">
                             </div>
                             <div>
                                 <label for="rating" class="block text-sm font-medium text-gray-700">Rating</label>
                                 <input type="number" id="rating" name="rating" class="mt-1 block w-full custom-input"
-                                    step="0.1" min="0" max="5">
+                                    step="0.1" min="0" max="5" value="<%= formData?.rating ||'' %>">
                                 <p data-error="rating" class="text-red-500 text-xs italic">
                                     <%=errors? errors.rating : '' %>
                                 </p>
                             </div>
                             <div>
                                 <label for="count" class="block text-sm font-medium text-gray-700">Stock Count</label>
-                                <input type="number" id="count" name="count" class="mt-1 block w-full custom-input">
+                                <input type="number" id="count" name="count" class="mt-1 block w-full custom-input" value="<%= formData?.count ||'' %>">
                                 <p data-error="count" class="text-red-500 text-xs italic">
                                     <%=errors? errors.count : '' %>
                                 </p>
@@ -125,7 +125,7 @@
                                 <label for="regularPrice" class="block text-sm font-medium text-gray-700">Regular
                                     Price</label>
                                 <input type="number" id="regularPrice" name="regularPrice"
-                                    class="mt-1 block w-full custom-input">
+                                    class="mt-1 block w-full custom-input" value="<%= formData?.regularPrice ||'' %>">
                                 <p data-error="regularPrice" class="text-red-500 text-xs italic">
                                     <%=errors? errors.regularPrice : '' %>
                                 </p>
@@ -134,21 +134,21 @@
                                 <label for="salePrice" class="block text-sm font-medium text-gray-700">Sale
                                     Price</label>
                                 <input type="number" id="salePrice" name="salePrice"
-                                    class="mt-1 block w-full custom-input">
+                                    class="mt-1 block w-full custom-input" value="<%= formData?.salePrice ||'' %>">
                                 <p data-error="salePrice" class="text-red-500 text-xs italic">
                                     <%=errors? errors.salePrice : '' %>
                                 </p>
                             </div>
                             <div>
                                 <label for="warranty" class="block text-sm font-medium text-gray-700">Warranty</label>
-                                <input type="text" id="warranty" name="warranty" class="mt-1 block w-full custom-input">
+                                <input type="text" id="warranty" name="warranty" class="mt-1 block w-full custom-input" value="<%= formData?.warranty ||'' %>">
                                 <p data-error="warranty" class="text-red-500 text-xs italic">
                                     <%=errors? errors.warranty : '' %>
                                 </p>
                             </div>
                             <div>
                                 <label for="webcam" class="block text-sm font-medium text-gray-700">Webcam</label>
-                                <input type="text" id="webcam" name="webcam" class="mt-1 block w-full custom-input">
+                                <input type="text" id="webcam" name="webcam" class="mt-1 block w-full custom-input" value="<%= formData?.webcam ||'' %>">
                                 <p data-error="webcam" class="text-red-500 text-xs italic">
                                     <%=errors? errors.webcam : '' %>
                                 </p>
@@ -164,7 +164,7 @@
                                         <label for="variant-ram-0"
                                             class="block text-sm font-medium text-gray-700">RAM</label>
                                         <input type="text" id="variant-ram-0" name="variants[0][RAM]"
-                                            class="mt-1 block w-full custom-input">
+                                            class="mt-1 block w-full custom-input" value="<%= formData?.variants[0]['RAM'] ||'' %>">
                                         <p data-error="variants[0][RAM]" class="text-red-500 text-xs italic">
                                             <%= errors?.variants?.[0]?.["RAM"] || '' %>
                                         </p>
@@ -173,7 +173,7 @@
                                         <label for="variant-storage-0"
                                             class="block text-sm font-medium text-gray-700">Storage</label>
                                         <input type="text" id="variant-storage-0" name="variants[0][Storage]"
-                                            class="mt-1 block w-full custom-input">
+                                            class="mt-1 block w-full custom-input" value="<%= formData?.variants[0]['Storage'] ||'' %>">
                                         <p data-error="variants[0][Storage]" class="text-red-500 text-xs italic">
                                             <%= errors?.variants?.[0]?.['Storage'] || '' %>
                                         </p>
@@ -182,7 +182,7 @@
                                         <label for="variant-priceAdjustment-0"
                                             class="block text-sm font-medium text-gray-700">Price Adjustment</label>
                                         <input type="number" id="variant-priceAdjustment-0"
-                                            name="variants[0][priceAdjustment]" class="mt-1 block w-full custom-input">
+                                            name="variants[0][priceAdjustment]" class="mt-1 block w-full custom-input" value="<%= formData?.variants[0]['priceAdjustment'] ||'' %>">
                                     </div>
                                     <div class="flex items-end">
                                         <button type="button"
@@ -203,7 +203,7 @@
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">USB Type-A</label>
                                     <input type="text" name="ports[0][USB Type-A]"
-                                        class="mt-1 block w-full custom-input">
+                                        class="mt-1 block w-full custom-input" value="<%= formData?.ports[0]['USB Type-A'] ||'' %>">
                                     <p data-error="ports[0][USB Type-A]" class="text-red-500 text-xs italic">
                                         <%= errors?.ports?.[0]?.["USB Type-A"] || '' %>
                                     </p>
@@ -211,14 +211,14 @@
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">USB Type-C</label>
                                     <input type="text" name="ports[0][USB Type-C]"
-                                        class="mt-1 block w-full custom-input">
+                                        class="mt-1 block w-full custom-input" value="<%= formData?.ports[0]['USB Type-C'] ||'' %>">
                                     <p data-error="ports[0][USB Type-C]" class="text-red-500 text-xs italic">
                                         <%= errors?.ports?.[0]?.["USB Type-C"] || '' %>
                                     </p>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">HDMI</label>
-                                    <input type="text" name="ports[0][HDMI]" class="mt-1 block w-full custom-input">
+                                    <input type="text" name="ports[0][HDMI]" class="mt-1 block w-full custom-input" value="<%= formData?.ports[0]['HDMI'] ||'' %>">
                                     <p data-error="ports[0][HDMI]" class="text-red-500 text-xs italic">
                                         <%= errors?.ports?.[0]?.["HDMI"] || '' %>
                                     </p>
@@ -226,14 +226,14 @@
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Audio Jack</label>
                                     <input type="text" name="ports[0][AudioJack]"
-                                        class="mt-1 block w-full custom-input">
+                                        class="mt-1 block w-full custom-input" value="<%= formData?.ports[0]['AudioJack'] ||'' %>">
                                     <p data-error="ports[0][AudioJack]" class="text-red-500 text-xs italic">
                                         <%= errors?.ports?.[0]?.["AudioJack"] || '' %>
                                     </p>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">LAN</label>
-                                    <input type="text" name="ports[0][LAN]" class="mt-1 block w-full custom-input">
+                                    <input type="text" name="ports[0][LAN]" class="mt-1 block w-full custom-input" value="<%= formData?.ports[0]['LAN'] ||'' %>">
                                     <p data-error="ports[0][LAN]" class="text-red-500 text-xs italic">
                                         <%= errors?.ports?.[0]?.["LAN"] || '' %>
                                     </p>
@@ -241,7 +241,7 @@
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Card Reader</label>
                                     <input type="text" name="ports[0][Card Reader]"
-                                        class="mt-1 block w-full custom-input">
+                                        class="mt-1 block w-full custom-input" value="<%= formData?.ports[0]['Card Reader'] ||'' %>">
                                     <p data-error="ports[0][Card Reader]" class="text-red-500 text-xs italic">
                                         <%= errors?.ports?.[0]?.["Card Reader"] || '' %>
                                     </p>
@@ -257,7 +257,7 @@
                                 <div class="image-container">
                                     <h2 class="text-lg font-medium mb-4">Main Photo</h2>
                                     <input type="file" id="main-file" name="images[0].file" accept="image/*"
-                                        class="hidden custom-file">
+                                        class="hidden custom-file" >
                                     <div class="main-photo" id="main-drop" data-index="0">
                                         <svg class="placeholder-icon" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

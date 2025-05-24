@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Wallet - <%= username %>
+    </title>
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/profileSidebar.css">
+    <link rel="stylesheet" href="/css/wallet.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
+</head>
+
+<body>
+
+    <!-- Include your header here -->
+    <%- include('../partials/user/header.ejs') %>
+
+        <div class="wallet-container">
+            <div class="wallet-wrapper">
+                <!-- Include Profile Sidebar -->
+                <%- include('../partials/user/profileSidebar.ejs') %>
+
+                    <!-- Main Wallet Content -->
+                    <div class="wallet-main-content">
+                        <div class="wallet-header">
+                            <h1 class="page-title">My Wallet</h1>
+                            <p class="page-subtitle">Welcome back, <%= username %>! Manage your wallet balance and
+                                    transactions</p>
+                        </div>
+
+                        <!-- Wallet Balance Card -->
+                        <div class="balance-card">
+                            <div class="balance-header">
+                                <div class="balance-icon">
+                                    <i class="bi bi-wallet2"></i>
+                                </div>
+                                <div class="balance-info">
+                                    <h3>Current Balance</h3>
+                                    <div class="balance-amount">₹<%= wallet.balance.toLocaleString('en-IN') %>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="balance-actions">
+                                <button class="btn btn-primary add-money-btn" data-bs-toggle="modal"
+                                    data-bs-target="#addMoneyModal">
+                                    <i class="bi bi-plus-circle"></i>
+                                    Add Money
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Recent Transactions -->
+                        <div class="transactions-section">
+                            <div class="section-header">
+                                <h3>Recent Transactions</h3>
+                                <% if (wallet.transactions.length> 0) { %>
+                                    <a href="/profile/wallet/history" class="view-all-link">View All (<%=
+                                            wallet.transactions.length %>)</a>
+                                    <% } %>
+                            </div>
+
+                            <div class="transactions-list">
+                                <% if (wallet.transactions.length===0) { %>
+                                    <!-- No Transactions -->
+                                    <div class="no-transactions">
+                                        <div class="no-transactions-icon">
+                                            <i class="bi bi-inbox"></i>
+                                        </div>
+                                        <h4>No transactions yet</h4>
+                                        <p>Start by adding money to your wallet or making a purchase</p>
+                                    </div>
+                                    <% } else { %>
+                                        <!-- Show recent transactions (last 5) -->
+                                        <% const recentTransactions=wallet.transactions .sort((a, b)=> new Date(b.date)
+                                            - new Date(a.date))
+                                            .slice(0, 5);
+                                            %>
+                                            <% recentTransactions.forEach(transaction=> { %>
+                                                <div class="transaction-item">
+                                                    <div class="transaction-icon">
+                                                        <% if (transaction.type==='credit' ) { %>
+                                                            <i class="bi bi-arrow-down-circle text-success"></i>
+                                                            <% } else { %>
+                                                                <i class="bi bi-arrow-up-circle text-danger"></i>
+                                                                <% } %>
+                                                    </div>
+                                                    <div class="transaction-details">
+                                                        <h5>
+                                                            <%= transaction.description %>
+                                                        </h5>
+                                                        <p class="transaction-date">
+                                                            <%= new Date(transaction.date).toLocaleDateString('en-IN', {
+                                                                year: 'numeric' , month: 'long' , day: 'numeric' ,
+                                                                hour: '2-digit' , minute: '2-digit' }) %>
+                                                        </p>
+                                                    </div>
+                                                    <div class="transaction-amount <%= transaction.type %>">
+                                                        <% if (transaction.type==='credit' ) { %>
+                                                            +₹<%= transaction.amount.toLocaleString('en-IN') %>
+                                                                <% } else { %>
+                                                                    -₹<%= transaction.amount.toLocaleString('en-IN') %>
+                                                                        <% } %>
+                                                    </div>
+                                                </div>
+                                                <% }); %>
+                                                    <% } %>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+
+        <!-- Add Money Modal -->
+        <div class="modal fade" id="addMoneyModal" tabindex="-1" aria-labelledby="addMoneyModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addMoneyModalLabel">Add Money to Wallet</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form id="addMoneyForm" action="/profile/wallet/add" method="POST">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="amount" class="form-label">Amount (₹)</label>
+                                <input type="number" class="form-control" id="amount" name="amount" min="1" max="50000"
+                                    required>
+                                <div class="form-text">Minimum: ₹1, Maximum: ₹50,000</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Quick Select</label>
+                                <div class="quick-amounts">
+                                    <button type="button" class="btn btn-outline-primary quick-amount"
+                                        data-amount="500">₹500</button>
+                                    <button type="button" class="btn btn-outline-primary quick-amount"
+                                        data-amount="1000">₹1000</button>
+                                    <button type="button" class="btn btn-outline-primary quick-amount"
+                                        data-amount="2000">₹2000</button>
+                                    <button type="button" class="btn btn-outline-primary quick-amount"
+                                        data-amount="5000">₹5000</button>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Description (Optional)</label>
+                                <input type="text" class="form-control" id="description" name="description"
+                                    placeholder="e.g., Wallet top-up">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-credit-card"></i>
+                                Add Money
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bootstrap CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const quickAmountBtns = document.querySelectorAll('.quick-amount');
+                const amountInput = document.getElementById('amount');
+
+                quickAmountBtns.forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        quickAmountBtns.forEach(b => b.classList.remove('selected'));
+
+                        this.classList.add('selected');
+
+                        const amount = this.getAttribute('data-amount');
+                        amountInput.value = amount;
+                    });
+                });
+
+                amountInput.addEventListener('input', function () {
+                    quickAmountBtns.forEach(btn => btn.classList.remove('selected'));
+                });
+
+                const addMoneyForm = document.getElementById('addMoneyForm');
+                addMoneyForm.addEventListener('submit', function (e) {
+                    const amount = parseInt(amountInput.value);
+
+                    if (amount < 1 || amount > 50000) {
+                        e.preventDefault();
+                        iziToast.error({
+                            title: 'Invalid Amount',
+                            message: 'Please enter an amount between ₹1 and ₹50,000',
+                            position: 'bottomRight'
+                        });
+                        return;
+                    }
+
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Processing...';
+                    submitBtn.disabled = true;
+
+                    setTimeout(() => {
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                    }, 10000);
+                });
+
+
+                const balanceAmount = document.querySelector('.balance-amount');
+                if (balanceAmount) {
+                    const balance = '<%= wallet.balance %>';
+                    balanceAmount.textContent = '₹' + parseInt(balance).toLocaleString('en-IN');
+                }
+
+                const urlParams = new URLSearchParams(window.location.search);
+                const success = urlParams.get('success');
+                const error = urlParams.get('error');
+
+                if (success) {
+                    iziToast.success({
+                        title: 'Success',
+                        message: decodeURIComponent(success),
+                        position: 'bottomRight'
+                    });
+                }
+
+                if (error) {
+                    iziToast.error({
+                        title: 'Error',
+                        message: decodeURIComponent(error),
+                        position: 'bottomRight'
+                    });
+                }
+
+            });
+        </script>
+
+</body>
+
+</html>

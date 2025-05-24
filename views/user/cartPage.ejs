@@ -57,9 +57,9 @@
                                 </div>
                                 <div class="item-actions">
                                     <div class="quantity-control">
-                                        <button class="quantity-btn" onclick="updateQuantity('<%= item.id %>', -1)">−</button>
+                                        <button class="quantity-btn" onclick="updateQuantity('<%= item._id %>', -1)">−</button>
                                         <input type="number" class="quantity-input" min="1" max="5" value="<%= item.quantity %>" readonly>
-                                        <button class="quantity-btn" onclick="updateQuantity('<%= item.id %>', 1)">+</button>
+                                        <button class="quantity-btn" onclick="updateQuantity('<%= item._id %>', 1)">+</button>
                                     </div>
                                     <button class="remove-btn" onclick="removeItem('<%= item.id %>')">
                                         <i class="fas fa-times"></i> Remove
@@ -120,9 +120,9 @@
     <%- include("../partials/user/footer.ejs") %>
     
     <script>
-        // Highlight the active sidebar item
+        
         document.addEventListener('DOMContentLoaded', function() {
-            // Find the cart link in the sidebar and add active class
+            
             const sidebarLinks = document.querySelectorAll('.sidebar ul li a');
             sidebarLinks.forEach(link => {
                 if (link.getAttribute('href') === '/cart') {
@@ -131,14 +131,38 @@
             });
         });
         
+        function updateCartSummary(cart) {
+            const subtotalElem = document.querySelector('.summary-value span:last-child');
+            const originalPriceElem = document.querySelector('.summary-value .original-price');
+            const savingsElem = document.querySelector('.savings-total');
+
+            if (subtotalElem) {
+                subtotalElem.textContent = `₹${cart.total.toLocaleString('en-IN')}`;
+            }
+
+            if (originalPriceElem) {
+                originalPriceElem.textContent = `₹${cart.originalTotal.toLocaleString('en-IN')}`;
+            }
+
+            if (savingsElem) {
+                savingsElem.textContent = `Save ₹${cart.savings.toLocaleString('en-IN')}`;
+            }
+        }
+
         function updateQuantity(itemId, change) {
             const inputElem = event.target.parentElement.querySelector('.quantity-input');
             let quantity = parseInt(inputElem.value) + change;
 
             if (quantity < 1) quantity = 1;
-            else if (quantity > 5) quantity = 5;
-
-            inputElem.value = quantity;
+            if (quantity > 5) {
+                    iziToast.warning({
+                        title: 'Limit Reached',
+                        message: 'You can only add up to 5 units of this item.',
+                        position: 'bottomRight',
+                        timeout: 2000
+                    });
+                    return;
+            }
 
             fetch('/cart/update', {
                 method: 'POST',
@@ -152,25 +176,32 @@
             })
             .then(response => response.json())
             .then(data => {
+                console.log('Cart update response:', data);
                 if (data.success) {
-                    // Show success notification
+                    const updatedItem = data.cart.items.find(item => item._id === itemId);
+                    if (updatedItem) {
+                        inputElem.value = updatedItem.quantity;
+                        updateCartSummary(data.cart);
+                    }
                     iziToast.success({
                         title: 'Updated',
                         message: 'Cart quantity updated',
-                        position: 'topRight',
+                        position: 'bottomRight',
                         timeout: 1500
                     });
-                    
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 800);
+                } else {
+                    iziToast.error({
+                        title: 'Error',
+                        message: data.message || 'Failed to update quantity',
+                        position: 'bottomRight'
+                    });
                 }
             })
             .catch(error => {
                 iziToast.error({
                     title: 'Error',
                     message: 'Failed to update quantity',
-                    position: 'topRight'
+                    position: 'bottomRight'
                 });
             });
         }

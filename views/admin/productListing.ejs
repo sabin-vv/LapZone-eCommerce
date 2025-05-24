@@ -21,7 +21,6 @@
                 </div>
             </header>
             <div class="action-bar">
-                
                 <button class="add-product-btn" onclick="window.location.href='/admin/product/add'">
                     <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                         <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
@@ -76,6 +75,7 @@
                             <th>List</th>
                             <th>Action</th>
                             <th>Offer</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -110,8 +110,13 @@
                                     </div>
                                 </td>
                                 <td class="offer">
-                                    <span><%= product.offer ? `${product.offer}% OFF` : '200₹ OFF' %></span>
-                                    <button onclick="addOffer('<%= product._id %>')">Add Offer</button>
+                                    <span><%= product.offer ? `${product.offer}% OFF` : '' %></span>
+                                    
+                                    <% if (product.offer) { %>
+                                        <button class="remove" onclick="removeOffer('<%= product._id %>')">Remove Offer</button>
+                                    <% } else { %>
+                                        <button class="add" onclick="addOffer('<%= product._id %>')">Add Offer</button>
+                                    <% } %>
                                 </td>
                             </tr>
                         <% }) %>
@@ -181,8 +186,110 @@
         }
 
         function addOffer(productId) {
-            console.log(`Add offer for product: ${productId}`);
-            window.location.href = `/admin/product/add-offer/${productId}`;
+            Swal.fire({
+                title: 'Add Offer',
+                text: 'Enter offer percentage (0-100):',
+                input: 'number',
+                inputAttributes: {
+                    min: 0,
+                    max: 100,
+                    step: 1
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Add Offer',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                inputValidator: (value) => {
+                    if (!value || value < 0 || value > 100) {
+                        return 'Please enter a valid percentage (0-100)';
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const offerPercentage = parseInt(result.value);
+                    fetch(`/admin/product/add-offer/${productId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ offer: offerPercentage })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire(
+                                'Success!',
+                                `Offer of ${offerPercentage}% added.`,
+                                'success'
+                            ).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire(
+                                'Error!',
+                                'Failed to add offer.',
+                                'error'
+                            );
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error adding offer:', error);
+                        Swal.fire(
+                            'Error!',
+                            'An error occurred while adding the offer.',
+                            'error'
+                        );
+                    });
+                }
+            });
+        }
+
+        function removeOffer(productId) {
+            Swal.fire({
+                title: 'Remove Offer',
+                text: 'Are you sure you want to remove the offer?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, remove it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/admin/product/remove-offer/${productId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire(
+                                'Success!',
+                                'Offer has been removed.',
+                                'success'
+                            ).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire(
+                                'Error!',
+                                'Failed to remove offer.',
+                                'error'
+                            );
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error removing offer:', error);
+                        Swal.fire(
+                            'Error!',
+                            'An error occurred while removing the offer.',
+                            'error'
+                        );
+                    });
+                }
+            });
         }
 
         function toggleProduct(productId, checkbox) {

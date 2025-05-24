@@ -15,16 +15,7 @@
     position: relative;
 }
 
-/* Sidebar Styling */
-.sidebar {
-    flex: 0 0 280px;
-    background: white;
-    border-radius: 12px;
-    padding: 25px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    height: fit-content;
-    transition: all 0.3s ease;
-}
+
 
 .profile-section {
     display: flex;

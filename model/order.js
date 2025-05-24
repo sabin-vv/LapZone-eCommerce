@@ -34,11 +34,14 @@ const orderSchema = new mongoose.Schema({
         },
         status: {
             type: String,
-            enum: ['Ordered', 'Processing', 'Delivered', 'Returned', 'Cancelled', 'CancelRequested', 'ReturnRequested'],
+            enum: ['Ordered', 'Processing', 'Delivered', 'Returned', 'Cancelled', 'Cancel Requested', 'Return Requested'],
             default: 'Ordered'
         },
         returnReason: {
             type: String,      
+        },
+        returnComment :{
+            type: String
         },
         returnDate: {
             type: Date
@@ -93,7 +96,7 @@ const orderSchema = new mongoose.Schema({
     paymentMethod: {
         type: String,
         required: true,
-        enum: ['COD', 'Online', 'Wallet', 'Credit-Card']
+        enum: ['COD', 'Online', 'Wallet']
     },
     paymentStatus: {
         type: String,
@@ -111,7 +114,7 @@ const orderSchema = new mongoose.Schema({
         status: {
             type: String,
             required: true,
-            enum: ['Ordered', 'Processing', 'Delivered', 'Cancelled', 'Returned', 'CancelRequested', 'ReturnRequested','Shipped']
+            enum: ['Ordered', 'Processing', 'Delivered', 'Cancelled', 'Returned', 'Cancel Requested', 'Return Requested','Shipped' ,'Cancel Rejected','Return Rejected' ]
         },
         date: {
             type: Date,

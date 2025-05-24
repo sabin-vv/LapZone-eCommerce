@@ -142,6 +142,13 @@ body {
     color: #6b7280;
     font-weight: 400;
 }
+.price i {
+    color: green;
+}
+.price span{
+    color: green;
+    font-size: 15px;
+}
 
 .description {
     font-size: 0.875rem;

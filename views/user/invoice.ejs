@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LapZone Order Invoice</title>
+    <link rel="stylesheet" href="/css/invoice.css">
+</head>
+<body>
+    <div class="invoice-container">
+        <div class="invoice-header">
+            <div class="logo">Lap<span>Zone</span></div>
+            <div>INVOICE</div>
+        </div>
+        
+        <div class="thank-you-message">
+            Thank you for shopping with LapZone! Your order has been delivered.
+        </div>
+
+        <div class="order-summary">
+            <div class="order-number">Order #<span id="orderId">ORD12345</span></div>
+            <div class="order-date">Placed on <span id="orderDate">May 15, 2025</span></div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">DELIVERY ADDRESS</div>
+            <div class="address-container">
+                <div class="address-box" style="width: 100%">
+                    <div class="address-content">
+                        <div id="shippingName">John Doe</div>
+                        <div id="shippingAddress">123 Main Street</div>
+                        <div><span id="shippingCity">Anytown</span>, <span id="shippingState">ST</span> <span id="shippingZip">12345</span></div>
+                        <div>Phone: <span id="shippingPhone">555-123-4567</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">PAYMENT INFORMATION</div>
+            <div id="paymentMethod">Credit Card</div>
+            <div class="payment-method">
+                <div>Payment Method: <span id="paymentMethodText">Credit-Card</span></div>
+                <div>Payment Status: <span id="paymentStatusBadge" class="payment-badge payment-completed">Completed</span></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">ORDER DETAILS</div>
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th class="product-name">Product</th>
+                        <th>Quantity</th>
+                        <th class="product-price">Price</th>
+                        <th class="product-price">Total</th>
+                    </tr>
+                </thead>
+                <tbody id="itemsTableBody">
+                    <tr>
+                        <td class="product-name">Wireless Headphones</td>
+                        <td>1</td>
+                        <td class="product-price">$99.99</td>
+                        <td class="product-price">$99.99</td>
+                    </tr>
+                    <tr>
+                        <td class="product-name">Phone Case</td>
+                        <td>2</td>
+                        <td class="product-price">$19.99</td>
+                        <td class="product-price">$39.98</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="subtotal-section">
+            <div class="price-details">
+                <div class="price-row">
+                    <div>Subtotal</div>
+                    <div id="subtotal">$139.97</div>
+                </div>
+                <div class="price-row">
+                    <div>Shipping Fee</div>
+                    <div id="shipping">$10.00</div>
+                </div>
+                <div class="price-row">
+                    <div>Tax</div>
+                    <div id="tax">$11.20</div>
+                </div>
+                <div class="total-row">
+                    <div>Total</div>
+                    <div id="total">$161.17</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="delivery-info">
+                <div class="section-title" style="margin-top: 0;">DELIVERY INFORMATION</div>
+                <div>Delivery Date: <span id="deliveryDate" class="delivery-date">May 18, 2025</span></div>
+                <div>Status: <span class="status-badge status-delivered">Delivered</span></div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div>© 2025 LapZone. All rights reserved.</div>
+            <div class="contact-info">
+                If you have any questions about this invoice, please contact our customer support at support@lapzone.com
+            </div>
+        </div>
+    </div>
+</body>
+</html>

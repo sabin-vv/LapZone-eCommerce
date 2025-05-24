@@ -11,65 +11,6 @@
             min-height: 100vh;
         }
 
-        /* Sidebar Styles */
-        
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-            padding: 0 20px 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .logo-container img {
-            width: 40px;
-            height: 40px;
-            margin-right: 10px;
-        }
-
-        
-
-        .account-btn, .logout-btn {
-            display: block;
-            width: 80%;
-            margin: 10px auto;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-
-        .account-btn {
-            background-color: #3498db;
-            color: white;
-        }
-
-        .logout-btn {
-            background-color: #e74c3c;
-            color: white;
-        }
-
-        .account-btn:hover {
-            background-color: #2980b9;
-        }
-
-        .logout-btn:hover {
-            background-color: #c0392b;
-        }
-
-        /* Hamburger Menu */
-        
-
-        /* Main Content Area */
-        .main-content {
-            flex: 1;
-            margin-left: 250px;
-            padding: 20px;
-            transition: all 0.3s ease;
-        }
-
         .page-header {
             display: flex;
             justify-content: space-between;

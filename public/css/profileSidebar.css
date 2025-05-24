@@ -1,12 +1,13 @@
 .sidebar {
     width: 280px;
     background-color: #ffffff;
-    padding: 24px 0;
+    padding: 24px 15px;
     border-right: 1px solid #e5e7eb;
-    height: 100vh;
+    height: fit-content;
     position: sticky;
-    top: 0;
+    top:0;
     transition: all 0.3s ease;
+    border-radius: 60px;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.03);
     overflow-y: auto;
     z-index: 100;
@@ -48,6 +49,9 @@
     overflow: hidden;
     white-space: nowrap;
     max-width: 170px;
+}
+.sidebar-section h4 {
+    padding-left: 5px;
 }
 
 .sidebar ul {

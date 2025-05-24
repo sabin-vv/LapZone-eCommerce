@@ -9,6 +9,8 @@ const wishListController = require("../controllers/user/wishListController")
 const cartController = require ("../controllers/user/cartController.js")
 const checkoutController = require('../controllers/user/checkoutController')
 const OrderController = require("../controllers/user/orderController.js")
+const walletController = require("../controllers/user/walletController.js")
+
 
 router.get('/', userController.landingPage)
 router.get("/login", userController.loginPage)
@@ -76,6 +78,11 @@ router.get("/user/order-page",checkoutController.orderPage)
 router.get("/profile/order",OrderController.viewOrders)
 router.post("/profile/order/cancel-item",OrderController.cancelitem)
 router.post("/profile/order/cancel",OrderController.cancelProduct)
+router.get("/profile/order/invoice/:id" ,OrderController.downloadInvoice)
+router.post("/profile/order/return-item",OrderController.returnProduct)
+
+router.get("/profile/wallet" ,walletController.viewWalletPage)
+router.post ("/profile/wallet/add",walletController.addMoneyToWallet)
 
 
 module.exports = router

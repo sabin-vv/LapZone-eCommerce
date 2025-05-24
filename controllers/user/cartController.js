@@ -76,19 +76,21 @@ const addtoCart = async (req, res) => {
 
 
 const cartUpdate = async (req, res) => {
-    try {
+     try {
         const userId = req.session.user;
         const { itemId, quantity } = req.body;
+        
 
-
-        const cartList = await Cart.findOne({ userId });
+        const cartList = await Cart.findOne({ userId }).populate('items.productId');
+        
 
         if (!cartList) {
             return res.json({ success: false, message: "Cart not found" });
         }
 
         const productIndex = cartList.items.findIndex(item => item._id.toString() === itemId.toString());
-
+        
+        
         if (productIndex === -1) {
             return res.json({ success: false, message: "Product not found in cart" });
         }
@@ -97,8 +99,34 @@ const cartUpdate = async (req, res) => {
 
         await cartList.save();
 
+        
+        let total = 0;
+        let originalTotal = 0;
 
-        res.json({ success: true, message: "Cart updated successfully", cart: cartList });
+        cartList.items.forEach(item => {
+            const sale = item.productId.salePrice;
+            const regular = item.productId.regularPrice || sale;
+
+            total += sale * item.quantity;
+            originalTotal += regular * item.quantity;
+        });
+
+        const savings = originalTotal - total;
+
+        res.json({
+            success: true,
+            message: "Cart updated successfully",
+            cart: {
+                items: cartList.items.map(item => ({
+                    _id: item._id,
+                    quantity: item.quantity,
+                    productId: item.productId._id
+                })),
+                total,
+                originalTotal,
+                savings
+            }
+        });
 
     } catch (error) {
         console.error("Error updating cart:", error);

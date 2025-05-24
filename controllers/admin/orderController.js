@@ -1,5 +1,6 @@
 const Order = require("../../model/order")
 const Product = (require("../../model/products"))
+const Wallet = require("../../model/wallet")
 
 
 
@@ -68,8 +69,14 @@ const updateOrderStatus = async (req, res) => {
 
         if (status === 'Cancelled') {
             order.paymentStatus = 'Cancelled';
+            order.items.forEach(item => {
+                item.status = 'Cancelled';
+            });
         } else if (status === 'Delivered') {
             order.paymentStatus = 'Completed';
+            order.items.forEach(item => {
+                item.status = 'Delivered';
+            });
         }
 
         await order.save();
@@ -123,16 +130,16 @@ const updateItemStatus = async (req, res) => {
 
     item.status = newStatus;
 
-    if(order.items.every(item => item.status === 'Cancelled')){
-         order.orderStatus = 'Cancelled'
-         const product = await Product.findById(item.productId);
+    if (order.items.every(item => item.status === 'Cancelled')) {
+        order.orderStatus = 'Cancelled'
+        const product = await Product.findById(item.productId);
         if (product) {
             product.count += item.quantity;
             await product.save();
         }
     }
-       
-    else if(order.items.every(item => item.status === 'Delivered')){
+
+    else if (order.items.every(item => item.status === 'Delivered')) {
         order.orderStatus = 'Delivered'
         const product = await Product.findById(item.productId);
         if (product) {
@@ -140,7 +147,7 @@ const updateItemStatus = async (req, res) => {
             await product.save();
         }
     }
-        
+
     else
         order.orderStatus = 'Processing'
 
@@ -164,9 +171,255 @@ const updateItemStatus = async (req, res) => {
 
 }
 
+const cancelReturnRequest = async (req, res) => {
+
+    try {
+        if (!req.session.admin) return res.redirect("/admin")
+
+        const returnRequests = await Order.find({
+            'items.status': 'Return Requested'
+        })
+            .populate('user', 'fullname email')
+            .populate('items.productId', 'productName images')
+            .sort({ 'items.returnRequestDate': -1 });
+
+
+        const cancelRequests = await Order.find({
+            'items.status': 'Cancel Requested'
+        })
+            .populate('user', 'fullname email')
+            .populate('items.productId', 'productName images')
+            .sort({ 'items.cancelRequestDate': -1 });
+
+        res.render('admin/returnCancelRequests', {
+            returnRequests,
+            cancelRequests,
+            title: 'Return & Cancel Requests'
+        });
+
+    } catch (error) {
+        console.error('Error fetching return/cancel requests:', error);
+        res.status(500).render('error', {
+            message: 'Error loading return/cancel requests'
+        });
+    }
+}
+
+const returnApprove = async (req, res) => {
+    try {
+        const { orderId, itemId } = req.body;
+
+        const order = await Order.findById(orderId).populate('items.productId')
+        if (!order) {
+            return res.status(404).json({ error: 'Order not found' });
+        }
+
+        const item = order.items.id(itemId);
+        if (!item) {
+            return res.status(404).json({ error: 'Item not found' });
+        }
+
+        let wallet = await Wallet.findOne({ userId: order.user })
+
+        item.status = 'Returned';
+        item.returnDate = new Date();
+
+
+        order.statusHistory.push({
+            status: 'Returned',
+            date: new Date(),
+            current: false
+        });
+
+        if (order.paymentStatus == 'Completed') {
+            wallet.balance += order.totalAmount
+
+            wallet.transactions.push({
+                type: 'credit',
+                amount: refundAmount,
+                description: `Refund for Order #${order.orderId}`,
+                date: new Date(),
+                createdAt: new Date()
+            });
+            await wallet.save()
+        }
+
+
+        const product = await Product.findById(item.productId._id);
+        if (product) {
+            product.count += item.quantity;
+            await product.save();
+        }
+
+        await order.save();
+
+        res.json({
+            success: true,
+            message: 'Return request approved and stock updated successfully'
+        });
+
+    } catch (error) {
+        console.error('Error approving return request:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+
+const returnReject = async (req, res) => {
+    try {
+        const { orderId, itemId } = req.body;
+
+        const order = await Order.findById(orderId);
+        if (!order) {
+            return res.status(404).json({ error: 'Order not found' });
+        }
+
+
+        const item = order.items.id(itemId);
+        if (!item) {
+            return res.status(404).json({ error: 'Item not found' });
+        }
+
+
+        item.status = 'Delivered';
+
+
+        item.returnReason = undefined;
+        item.returnComment = undefined;
+        item.returnRequestDate = undefined;
+
+
+        order.statusHistory.push({
+            status: 'Return Rejected',
+            date: new Date(),
+            current: false
+        });
+
+        await order.save();
+
+        res.json({
+            success: true,
+            message: 'Return request rejected successfully'
+        });
+
+    } catch (error) {
+        console.error('Error rejecting return request:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+
+const cancelApprove = async (req, res) => {
+    try {
+        const { orderId, itemId } = req.body;
+
+        const order = await Order.findById(orderId);
+        if (!order) {
+            return res.status(404).json({ error: 'Order not found' });
+        }
+
+
+        const item = order.items.id(itemId);
+        if (!item) {
+            return res.status(404).json({ error: 'Item not found' });
+        }
+
+        let wallet = await Wallet.findOne({ userId: order.user })
+        if (order.paymentStatus == 'Completed') {
+            wallet.balance += order.totalAmount
+
+            wallet.transactions.push({
+                type: 'credit',
+                amount: refundAmount,
+                description: `Refund for Order #${order.orderId}`,
+                date: new Date(),
+                createdAt: new Date()
+            });
+            await wallet.save()
+        }
+
+
+        item.status = 'Cancelled';
+        item.cancelDate = new Date();
+
+
+        const allItemsCancelled = order.items.every(item => item.status === 'Cancelled');
+        if (allItemsCancelled) {
+            order.orderStatus = 'Cancelled';
+        }
+
+
+        order.statusHistory.push({
+            status: 'Cancelled',
+            date: new Date(),
+            current: allItemsCancelled
+        });
+
+        await order.save();
+
+        res.json({
+            success: true,
+            message: 'Cancel request approved successfully'
+        });
+
+    } catch (error) {
+        console.error('Error approving cancel request:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+
+const cancelReject = async (req, res) => {
+    try {
+        const { orderId, itemId } = req.body;
+
+        const order = await Order.findById(orderId);
+        if (!order) {
+            return res.status(404).json({ error: 'Order not found' });
+        }
+
+
+        const item = order.items.id(itemId);
+        if (!item) {
+            return res.status(404).json({ error: 'Item not found' });
+        }
+        
+        item.status = order.orderStatus === 'Processing' ? 'Processing' : 'Ordered';
+
+
+        item.cancelReason = undefined;
+        item.cancelComment = undefined;
+        item.cancelRequestDate = undefined;
+
+
+        order.statusHistory.push({
+            status: 'Cancel Rejected',
+            date: new Date(),
+            current: false
+        });
+
+        await order.save();
+
+        res.json({
+            success: true,
+            message: 'Cancel request rejected successfully'
+        });
+
+    } catch (error) {
+        console.error('Error rejecting cancel request:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
 module.exports = {
     listOrders,
     updateOrderStatus,
     viewOrder,
     updateItemStatus,
+    cancelReturnRequest,
+    returnApprove,
+    returnReject,
+    cancelApprove,
+    cancelReject,
+
 }

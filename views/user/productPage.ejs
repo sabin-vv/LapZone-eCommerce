@@ -69,19 +69,19 @@
         }
         .wishlist-icon {
            font-size: 1.75rem;
-    color: #dc2626; /* red */
-    cursor: pointer;
-    transition: all 0.2s ease;
-    padding: 8px;
-    border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.8);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            color: #dc2626; /* red */
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 8px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
         .wishlist-icon:hover {
-             color: #b91c1c; /* darker red */
-    transform: scale(1.1);
-    background-color: rgba(255, 255, 255, 1);
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+            color: #b91c1c; /* darker red */
+            transform: scale(1.1);
+            background-color: rgba(255, 255, 255, 1);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
         }
     </style>
 </head>
@@ -132,6 +132,8 @@
             </div>
             <% if (product.regularPrice && product.salePrice < product.regularPrice) { %>
                 <div class="price">
+                    <i class="bi bi-arrow-down-circle fs-5 "></i>
+                    <span><%= product.offer%>% OFF</span>
                     ₹<%= product.salePrice.toLocaleString('en-IN') %>
                     <del>₹<%= product.regularPrice.toLocaleString('en-IN') %></del>
                 </div>
@@ -368,10 +370,6 @@
         });
     }
 }
-
-            
-
-
 
 
         // Buy now function

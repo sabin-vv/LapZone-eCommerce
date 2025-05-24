@@ -11,8 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="/css/order-details.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     
@@ -114,13 +113,12 @@
                                                     <span class="status-badge status-<%= item.status.toLowerCase() %>"><%= item.status %></span>
                                                 </td>
                                                 <td data-label="Action" class="product-actions">
-                                                    <% if (item.status === 'Ordered') { %>
+                                                    <% if(item.status === 'Delivered'){ %>
+                                                         <button class="btn-action btn-return" onclick="returnItem('<%= item._id %>')">Return</button>
+                                                    <% }else if (item.status === 'Ordered') { %>
                                                         <button class="btn-action btn-cancel" onclick="cancelItem('<%= item._id %>')">Cancel</button>
-                                                        <button class="btn-action btn-return" onclick="returnItem('<%= item._id %>')">Return</button>
                                                     <% } else if (item.status === 'CANCEL_REQUESTED') { %>
                                                         <span class="action-status">Cancel requested</span>
-                                                    <% } else if (item.status === 'RETURN_REQUESTED') { %>
-                                                        <span class="action-status">Return requested</span>
                                                     <% } %>
                                                 </td>
                                             </tr>
@@ -193,11 +191,10 @@
                             <!-- Action buttons -->
                             <div class="order-actions">
                                 <% if (order.orderStatus === 'Delivered') { %>
-                                    <button class="btn-order-action btn-danger" >Invoice</button>
-                                <% }else if(order.orderStatus === 'Cancelled'){
-
-                                }
-                                else { %>
+                                    <a href = '/profile/order/invoice/<%= order._id %>' class="btn-order-action btn-danger text-decoration-none" >Download Invoice</a>
+                                <% }else if(order.orderStatus === 'Cancelled'){ %>
+                                    <span class="action-status"></span>
+                               <%  }else { %>
                                 <button class="btn-order-action btn-danger" onclick="cancelOrder('<%= order.orderId %>')">Cancel Order</button>
                                 <%} %>
                             </div>
@@ -276,18 +273,9 @@
                                 <option value="other">Other</option>
                             </select>
                         </div>
+                        
                         <div class="mb-3">
-                            <label for="returnCondition" class="form-label">Product Condition</label>
-                            <select id="returnCondition" class="form-select" required>
-                                <option value="">Select condition</option>
-                                <option value="unopened">Unopened</option>
-                                <option value="opened_unused">Opened but unused</option>
-                                <option value="used">Used</option>
-                                <option value="damaged">Damaged</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="returnComment" class="form-label">Additional Comments (Optional)</label>
+                            <label for="returnComment" class="form-label">Additional Comments</label>
                             <textarea id="returnComment" class="form-control" rows="3"></textarea>
                         </div>
                     </form>

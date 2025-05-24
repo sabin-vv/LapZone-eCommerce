@@ -2,7 +2,7 @@ const Product = require("../../model/products")
 const Category = require("../../model/category")
 const cloudinary = require("../../config/cloudinary")
 const fs = require("fs")
-const mongoose = require("mongoose")
+
 
 const productListing = async (req, res) => {
 
@@ -82,154 +82,223 @@ const newProduct = async (req, res) => {
   if (!req.session.admin) return res.redirect("/admin");
 
   const categories = await Category.find()
+ 
 
 
-  res.render("admin/addProduct", { categories, errors: null })
+  res.render("admin/addProduct", { categories, errors: null ,formData : null})
 }
 
 const addProduct = async (req, res) => {
-  if (!req.session.admin) return res.redirect("/admin");
 
-  const errors = {};
-
+  if (!req.session.admin) return res.redirect("/admin")
 
   const requiredFields = [
-    'name', 'modelNumber', 'category', 'color', 'description',
-    'brand', 'CPU', 'os', 'screen', 'graphics', 'rating',
-    'count', 'regularPrice', 'salePrice', 'warranty',
-  ];
+    "name",
+    "modelNumber",
+    "category",
+    "color",
+    "description",
+    "brand",
+    "CPU",
+    "os",
+    "screen",
+    "graphics",
+    "rating",
+    "count",
+    "regularPrice",
+    "salePrice",
+    "warranty",
+  ]
 
-  requiredFields.forEach(field => {
-    if (!req.body[field] || req.body[field].toString().trim() === '') {
-      errors[field] = `${field} is required`;
+  errors= {}
+  requiredFields.forEach((field) => {
+    if (!req.body[field] || req.body[field].toString().trim() === "") {
+      errors[field] = `${field} is required`
     }
-  });
+  })
 
   if (req.body.rating && (isNaN(req.body.rating) || req.body.rating < 0 || req.body.rating > 5)) {
-    errors.rating = 'Rating must be between 0 and 5';
+    errors.rating = "Rating must be between 0 and 5"
   }
 
   if (req.body.count && (isNaN(req.body.count) || req.body.count < 0)) {
-    errors.count = 'Stock count must be a positive number';
+    errors.count = "Stock count must be a positive number"
   }
 
   if (req.body.regularPrice && (isNaN(req.body.regularPrice) || req.body.regularPrice < 0)) {
-    errors.regularPrice = 'Regular price must be a positive number';
+    errors.regularPrice = "Regular price must be a positive number"
   }
 
   if (req.body.salePrice && (isNaN(req.body.salePrice) || req.body.salePrice < 0)) {
-    errors.salePrice = 'Sale price must be a positive number';
+    errors.salePrice = "Sale price must be a positive number"
   }
 
   if (req.body.offer && (isNaN(req.body.offer) || req.body.offer < 0 || req.body.offer > 100)) {
-    errors.offer = 'Offer must be between 0 and 100';
+    errors.offer = "Offer must be between 0 and 100"
   }
 
-  let variantsArray = req.body.variants || [];
+  let variantsArray = req.body.variants || []
   if (!Array.isArray(variantsArray)) {
-    variantsArray = Object.keys(variantsArray).map(key => variantsArray[key]);
+    variantsArray = Object.keys(variantsArray).map((key) => variantsArray[key])
   }
 
   if (variantsArray.length === 0) {
-    errors.variants = 'At least one variant is required';
+    errors.variants = "At least one variant is required"
   } else {
-    errors.variants = [];
+    errors.variants = []
     variantsArray.forEach((variant, index) => {
-      if (!variant || typeof variant !== 'object') {
-        return;
+      if (!variant || typeof variant !== "object") {
+        return
       }
 
-      const variantErrors = {};
-      
+      const variantErrors = {}
 
-      if (!variant.RAM || typeof variant.RAM !== 'string' || variant.RAM.trim() === '') {
-        variantErrors.RAM = 'RAM is required';
+      if (!variant.RAM || typeof variant.RAM !== "string" || variant.RAM.trim() === "") {
+        variantErrors.RAM = "RAM is required"
       } else if (!/^\d+\s*(GB|TB)$/i.test(variant.RAM.trim())) {
-        variantErrors.RAM = 'RAM must be in format "number GB" or "number TB"';
+        variantErrors.RAM = 'RAM must be in format "number GB" or "number TB"'
       }
 
-      if (!variant.Storage || typeof variant.Storage !== 'string' || variant.Storage.trim() === '') {
-        variantErrors.Storage = 'Storage is required';
+      if (!variant.Storage || typeof variant.Storage !== "string" || variant.Storage.trim() === "") {
+        variantErrors.Storage = "Storage is required"
       } else if (!/^\d+\s*(GB|TB)$/i.test(variant.Storage.trim())) {
-        variantErrors.Storage = 'Storage must be in format "number GB" or "number TB"';
+        variantErrors.Storage = 'Storage must be in format "number GB" or "number TB"'
       }
 
       if (variant.priceAdjustment && isNaN(variant.priceAdjustment)) {
-        variantErrors.priceAdjustment = 'Price adjustment must be a number';
+        variantErrors.priceAdjustment = "Price adjustment must be a number"
       }
 
       if (Object.keys(variantErrors).length > 0) {
-        errors.variants[index] = variantErrors;
+        errors.variants[index] = variantErrors
       }
-    });
+    })
 
     if (errors.variants.length === 0) {
-      delete errors.variants;
+      delete errors.variants
     } else {
-      errors.variants = errors.variants.filter(Boolean);
+      errors.variants = errors.variants.filter(Boolean)
     }
   }
 
-  const portErrors = {};
-  const ports = req.body.ports || [{}];
-  const portFields = ["USB Type-A", "USB Type-C", "HDMI", "AudioJack", "LAN", "Card Reader"];
-  const firstPort = ports[0] || {};
+  const portErrors = {}
+  const ports = req.body.ports || [{}]
+  const portFields = ["USB Type-A", "USB Type-C", "HDMI", "AudioJack", "LAN", "Card Reader"]
+  const firstPort = ports[0] || {}
 
   portFields.forEach((field) => {
-    const value = firstPort[field];
-    if (value && value.toString().trim() === '') {
-      portErrors[field] = `${field} cannot be empty if provided`;
+    const value = firstPort[field]
+    if (value && value.toString().trim() === "") {
+      portErrors[field] = `${field} cannot be empty if provided`
     }
-  });
+  })
 
   if (Object.keys(portErrors).length > 0) {
-    errors.ports = [portErrors];
+    errors.ports = [portErrors]
   }
 
   if (errors.ports && Object.keys(errors.ports[0]).length === 0) {
-    delete errors.ports;
+    delete errors.ports
   }
 
   if (Object.keys(errors).length > 0) {
-    console.log('Validation errors:', errors);
-    const categories = await Category.find();
-    return res.render("admin/addProduct", { categories, errors });
+    const categories = await Category.find()
+    return res.render("admin/addProduct", { categories, errors, formData: req.body })
   }
 
+  const fileFields = ["images[0].file", "images[1].file", "images[2].file", "images[3].file", "images[4].file"]
+
+  const images = []
+  const uploadPromises = []
+  const processedFiles = new Map() 
+  const uploadErrors = []
+
   
+  const createBufferHash = (buffer) => {
+    if (!Buffer.isBuffer(buffer)) return null
 
-  const fileFields = [
-    "images[0].file",
-    "images[1].file",
-    "images[2].file",
-    "images[3].file",
-    "images[4].file",
-  ];
+    const length = buffer.length
+    if (length === 0) return "empty"
 
-  const images = [];
-  const uploadPromises = [];
-  const processedFiles = new Set();
-  const uploadErrors = [];
+    let hash = length.toString()
+
+    const beginSample = buffer.slice(0, Math.min(100, length))
+    for (let i = 0; i < beginSample.length; i += 10) {
+      hash += "-" + beginSample[i].toString(16)
+    }
+
+    const middleStart = Math.max(0, Math.floor(length / 2) - 50)
+    const middleSample = buffer.slice(middleStart, Math.min(middleStart + 100, length))
+    for (let i = 0; i < middleSample.length; i += 10) {
+      hash += "-" + middleSample[i].toString(16)
+    }
+
+    // Sample from end (last 100 bytes)
+    const endSample = buffer.slice(Math.max(0, length - 100), length)
+    for (let i = 0; i < endSample.length; i += 10) {
+      hash += "-" + endSample[i].toString(16)
+    }
+
+    return hash
+  }
 
   for (let i = 0; i < 5; i++) {
-    const fieldName = fileFields[i];
-    const fileArray = req.files?.[fieldName];
+    const fieldName = fileFields[i]
+    const fileArray = req.files?.[fieldName]
 
     if (!fileArray || !fileArray[0]) {
-      console.log(`No file provided for ${fieldName}`);
-      continue;
+      continue
     }
 
-    const file = fileArray[0];
-    const fileIdentifier = `${fieldName}-${file.originalname || `buffer-${i}`}`;
-    console.log(`Processing file: ${fileIdentifier} (path: ${file.path || 'buffer'}, field: ${fieldName})`);
+    const file = fileArray[0]
 
-    if (processedFiles.has(fileIdentifier)) {
-      console.warn(`Skipping duplicate file: ${fileIdentifier} (field: ${fieldName})`);
-      continue;
+    if (!file.buffer && !file.path) {
+      console.warn(`No buffer or path for file in ${fieldName}`)
+      continue
     }
 
-    processedFiles.add(fileIdentifier);
+    let fileBuffer
+    if (file.buffer) {
+      fileBuffer = file.buffer
+    } else if (file.path) {
+      try {
+        fileBuffer = fs.readFileSync(file.path)
+      } catch (err) {
+        console.error(`Error reading file ${file.path}:`, err)
+        uploadErrors.push(`Failed to read file ${i + 1}: ${err.message}`)
+        continue
+      }
+    }
+
+    const bufferHash = createBufferHash(fileBuffer)
+    if (!bufferHash) {
+      console.error(`Could not create hash for ${fieldName}`)
+      uploadErrors.push(`Invalid file data for image ${i + 1}`)
+      continue
+    }
+
+    if (processedFiles.has(bufferHash)) {
+      console.log(`Possible duplicate detected for ${fieldName}`)
+      console.log(`Hash: ${bufferHash}`)
+      console.log(`Original file name: ${file.originalname}`)
+      console.log(`File size: ${fileBuffer.length} bytes`)
+
+      // Let's temporarily disable reusing to debug the issue
+      // Instead of reusing, we'll upload again to see if they're truly different
+      /*
+      const previousIndex = processedFiles.get(bufferHash)
+      if (previousIndex !== undefined && images[previousIndex]) {
+        images.push({
+          url: images[previousIndex].url,
+          isMain: i === 0,
+        })
+      }
+      continue;
+      */
+    }
+
+   
+    processedFiles.set(bufferHash, images.length)
 
     const uploadOptions = {
       folder: "products",
@@ -237,97 +306,75 @@ const addProduct = async (req, res) => {
         { width: 800, height: 600, crop: "limit" },
         { quality: "auto", fetch_format: "auto" },
       ],
-    };
+    }
 
-    let uploadPromise;
-    if (file.buffer && !file.path) {
-      if (!Buffer.isBuffer(file.buffer)) {
-        console.error(`Invalid buffer for ${fieldName}`);
-        uploadErrors.push(`Invalid buffer for image ${i + 1}`);
-        continue;
-      }
-      console.log(`Uploading ${fieldName} as buffer`);
+    let uploadPromise
+    if (fileBuffer) {
       uploadPromise = new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(uploadOptions, (err, result) => {
-          if (err) reject(err);
-          else resolve(result);
-        });
-        stream.end(file.buffer);
-      });
+          if (err) reject(err)
+          else resolve(result)
+        })
+        stream.end(fileBuffer)
+      })
     } else {
-      if (!fs.existsSync(file.path)) {
-        console.error(`File does not exist: ${file.path} (field: ${fieldName})`);
-        uploadErrors.push(`File not found for image ${i + 1}`);
-        continue;
-      }
-      console.log(`Uploading file from disk: ${file.path}`);
-      uploadPromise = cloudinary.uploader.upload(file.path, uploadOptions);
+      console.error(`No buffer available for ${fieldName}`)
+      uploadErrors.push(`Invalid file data for image ${i + 1}`)
+      continue
     }
 
-    uploadPromise = uploadPromise.then(result => {
-      console.log(`Uploaded image URL: ${result.secure_url} (field: ${fieldName})`);
-      images.push({
-        url: result.secure_url,
-        isMain: i === 0,
-      });
-      if (file.path) {
-        try {
-          fs.unlinkSync(file.path);
-          console.log(`Deleted temporary file: ${file.path}`);
-        } catch (unlinkErr) {
-          console.warn(`Warning: Could not delete temporary file ${file.path}:`, unlinkErr.message);
+    uploadPromise = uploadPromise
+      .then((result) => {
+        images.push({
+          url: result.secure_url,
+          isMain: i === 0,
+        })
+        if (file.path) {
+          try {
+            fs.unlinkSync(file.path)
+          } catch (unlinkErr) {
+            console.warn(`Warning: Could not delete temporary file ${file.path}:`, unlinkErr.message)
+          }
         }
-      }
-    }).catch(err => {
-      console.error(`Error uploading ${fieldName}:`, err);
-      uploadErrors.push(`Failed to upload image ${i + 1}: ${err.message}`);
-    });
+      })
+      .catch((err) => {
+        console.error(`Error uploading ${fieldName}:`, err)
+        uploadErrors.push(`Failed to upload image ${i + 1}: ${err.message}`)
+      })
 
-    uploadPromises.push(uploadPromise);
+    uploadPromises.push(uploadPromise)
   }
 
-  await Promise.all(uploadPromises);
+  await Promise.all(uploadPromises)
 
-  // Deduplicate images by URL, keeping the first occurrence
-  const uniqueImages = [];
-  const seenUrls = new Set();
-  for (const img of images) {
-    if (!seenUrls.has(img.url)) {
-      seenUrls.add(img.url);
-      uniqueImages.push(img);
-    } else {
-      console.warn(`Skipping duplicate image URL: ${img.url}`);
-    }
-  }
-
-  if (uniqueImages.length === 0) {
-    errors.images = 'At least one image is required';
+  
+  if (images.length === 0) {
+    errors.images = "At least one image is required"
     if (uploadErrors.length > 0) {
-      errors.imageUpload = uploadErrors.join('; ');
+      errors.imageUpload = uploadErrors.join("; ")
     }
-    console.log('Image validation error:', errors);
-    const categories = await Category.find();
-    return res.render("admin/addProduct", { categories, errors });
+    const categories = await Category.find()
+    return res.render("admin/addProduct", { categories, errors, formData: req.body })
   }
 
-  // Ensure the first image is marked as main
-  uniqueImages[0].isMain = true;
-  for (let i = 1; i < uniqueImages.length; i++) {
-    uniqueImages[i].isMain = false;
+  images[0].isMain = true
+  for (let i = 1; i < images.length; i++) {
+    images[i].isMain = false
   }
 
   if (uploadErrors.length > 0) {
-    console.log('Image upload errors:', uploadErrors);
-    errors.imageUpload = uploadErrors.join('; ');
+    errors.imageUpload = uploadErrors.join("; ")
   }
+  const category = await Category.findOne({name: req.body.category})
+  console.log(category)
 
-  console.log("Validation success");
   const productData = {
     name: req.body.name,
     modelNumber: req.body.modelNumber,
     category: req.body.category,
     color: req.body.color,
     description: req.body.description,
+    categoryId : category._id,
     brand: req.body.brand,
     CPU: req.body.CPU,
     OS: req.body.os,
@@ -336,31 +383,30 @@ const addProduct = async (req, res) => {
     offer: req.body.offer || 0,
     rating: req.body.rating,
     count: req.body.count,
-    isActive: req.body.isActive === 'on',
+    isActive: req.body.isActive === "on",
     regularPrice: req.body.regularPrice,
     salePrice: req.body.salePrice,
     warranty: req.body.warranty,
     webcam: req.body.webcam,
-    variants: variantsArray.filter(v => v && typeof v === 'object'),
+    variants: variantsArray.filter((v) => v && typeof v === "object"),
     ports: ports,
-    images: uniqueImages,
-    isExisting: true
-  };
+    images: images,
+    isExisting: true,
+  }
 
   try {
-    const product = new Product(productData);
-    await product.save();
-    console.log('Product saved successfully');
-    res.redirect('/admin/products');
+    const product = new Product(productData)
+    await product.save()
+    res.redirect("/admin/products")
   } catch (err) {
-    console.error('Error saving product:', err);
-    const categories = await Category.find();
-    res.render('admin/addProduct', {
+    console.error("Error saving product:", err)
+    const categories = await Category.find()
+    res.render("admin/addProduct", {
       categories,
-      errors: { database: 'Failed to save product' }
-    });
+      errors: { database: "Failed to save product" },
+    })
   }
-};
+}
 
 const editProduct = async (req, res) => {
   if (!req.session.admin) return res.redirect("/admin/login")
@@ -383,7 +429,6 @@ const updateProduct = async (req, res) => {
   try {
 
     if (!req.session.admin) return res.redirect("/admin");
-
 
 
     const productId = req.params.id;
@@ -500,6 +545,8 @@ const updateProduct = async (req, res) => {
       if (Object.keys(portObj).length > 0) ports.push(portObj);
     }
 
+    const category = await Category.findOne({name:req.body.category})
+
 
     const productData = {
       name: req.body.name,
@@ -507,6 +554,7 @@ const updateProduct = async (req, res) => {
       category: req.body.category,
       color: req.body.color,
       description: req.body.description,
+      categoryId : category._id,
       brand: req.body.brand,
       CPU: req.body.CPU,
       OS: req.body.os || "",
