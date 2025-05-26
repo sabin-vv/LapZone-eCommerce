@@ -124,7 +124,14 @@ const orderSchema = new mongoose.Schema({
             type: Boolean,
             default: false
         }
-    }]
+    }],
+    coupon:{
+        code:String,
+        _id:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:'coupon'
+        }
+    }
 }, { timestamps: true });
 
 const Order = mongoose.model('Order', orderSchema);

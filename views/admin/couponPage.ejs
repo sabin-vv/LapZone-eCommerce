@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coupons - Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .breadcrumb {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .breadcrumb a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .content-wrapper {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .filters-section {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-box {
+            position: relative;
+            width: 300px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 40px 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .search-box i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .filter-btn.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .filters-toggle {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .section-title {
+            padding: 20px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 1px solid #eee;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .coupons-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .coupons-table th {
+            background: #333;
+            color: white;
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .coupons-table td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        .coupons-table tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .status-toggle {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .status-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #dc3545;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 6px 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .btn-edit {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .add-coupon-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #333;
+            color: white;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .add-coupon-btn:hover {
+            background: #555;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+                padding: 10px;
+            }
+            
+            .filters-section {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Include sidebar partial -->
+    <%- include('../partials/admin/sidebar.ejs') %>
+
+    <div class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">Coupons</h1>
+            <div class="breadcrumb">
+                <a href="/admin/dashboard">Dashboard</a> > Coupons
+            </div>
+        </div>
+
+        <!-- Main Content Wrapper -->
+        <div class="content-wrapper">
+            <!-- Filters Section -->
+            <div class="filters-section">
+                <div class="search-box">
+                    <input type="text" placeholder="Search coupon code..." id="searchInput">
+                    <i class="fas fa-search"></i>
+                </div>
+                
+                <div class="filter-buttons">
+                    <button class="filters-toggle">
+                        <i class="fas fa-filter"></i> Filters
+                    </button>
+                    <button class="filter-btn active" data-filter="all">ALL</button>
+                    <button class="filter-btn" data-filter="active">ACTIVE</button>
+                    <button class="filter-btn" data-filter="inactive">INACTIVE</button>
+                </div>
+            </div>
+
+            <!-- Table Section -->
+            <div class="section-title">Available coupons</div>
+            
+            <div class="table-container">
+                <table class="coupons-table">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Min purchase</th>
+                            
+                            <th>Discount</th>
+                            <th>max redeemable</th>
+                            <th>Active</th>
+                            <th>Expiry Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (coupons && coupons.length > 0) { %>
+                            <% coupons.forEach(coupon => { %>
+                                <tr>
+                                    <td><strong><%= coupon.code %></strong></td>
+                                    <td> <%= coupon.minPurchaseAmount.toLocaleString('en-IN') %></td>
+                                    
+                                    <td><%= coupon.discountValue.toLocaleString('en-IN') %></td>
+                                    <td><%= coupon.maxDiscountAmount.toLocaleString('en-IN') %></td>
+                                    <td>
+                                        <% if (coupon.isActive) { %>
+                                            <label class="status-toggle">
+                                                <input type="checkbox" checked data-id="<%= coupon._id %>">
+                                                <span class="slider"></span>
+                                            </label>
+                                        <% } else { %>
+                                            <span class="status-badge status-inactive">INACTIVE</span>
+                                        <% } %>
+                                    </td>
+                                    <td><%= new Date(coupon.expiryDate).toLocaleDateString('en-IN', {
+                                        year: 'numeric',
+                                        month: 'long',   
+                                        day: 'numeric'
+                                        }); %></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn btn-edit" onclick="editCoupon('<%= coupon._id %>')">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="action-btn btn-delete" onclick="deleteCoupon('<%= coupon._id %>')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="8" style="text-align: center; padding: 40px; color: #666;">
+                                    No coupons found
+                                </td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Add Coupon Button -->
+        <button class="add-coupon-btn" onclick="addCoupon()">
+            <i class="fas fa-plus"></i> Add Coupon
+        </button>
+    </div>
+
+    <script>
+        // Filter functionality
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                const filter = this.dataset.filter;
+                filterTable(filter);
+            });
+        });
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('.coupons-table tbody tr');
+            
+            rows.forEach(row => {
+                const code = row.querySelector('td:first-child').textContent.toLowerCase();
+                if (code.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // Toggle status
+        document.addEventListener('change', function(e) {
+    if (e.target.type === 'checkbox' && e.target.closest('.status-toggle')) {
+        const couponId = e.target.dataset.id;
+        const isActive = e.target.checked;
+
+        // Optional: show loading feedback
+        Swal.showLoading();
+
+        fetch('/admin/coupons/toggle-status', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id: couponId, isActive: isActive })
+        })
+        .then(response => response.json())
+        .then(data => {
+            Swal.close(); 
+
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Status Updated',
+                    text: data.message,
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            } else {
+                e.target.checked = !isActive; 
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Failed',
+                    text: data.message
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            e.target.checked = !isActive;
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Something went wrong. Please try again.'
+            });
+        });
+    }
+});
+
+        function filterTable(filter) {
+            const rows = document.querySelectorAll('.coupons-table tbody tr');
+            
+            rows.forEach(row => {
+                const statusCell = row.querySelector('td:nth-child(6)');
+                const hasToggle = statusCell.querySelector('.status-toggle input');
+                const hasInactive = statusCell.querySelector('.status-inactive');
+                
+                if (filter === 'all') {
+                    row.style.display = '';
+                } else if (filter === 'active') {
+                    if (hasToggle && hasToggle.checked) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                } else if (filter === 'inactive') {
+                    if (hasInactive || (hasToggle && !hasToggle.checked)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        function editCoupon(id) {
+            window.location.href = `/admin/coupons/edit/${id}`;
+        }
+
+        function deleteCoupon(id) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/admin/coupons/delete/${id}`, {
+                        method: 'POST'
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire(
+                                'Deleted!',
+                                'Coupon has been deleted.',
+                                'success'
+                            ).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire(
+                                'Error!',
+                                'Error deleting coupon.',
+                                'error'
+                            );
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire(
+                            'Error!',
+                            'Error deleting coupon.',
+                            'error'
+                        );
+                    });
+                }
+            });
+        }
+
+        function addCoupon() {
+            window.location.href = '/admin/coupons/add';
+        }
+    </script>
+</body>
+</html>

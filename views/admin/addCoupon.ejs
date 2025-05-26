@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add New Coupon - Dashboard</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/sidebar.css" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background-color: #f8fafc;
+        color: #1e293b;
+      }
+
+      .main-content {
+        margin-left: 260px;
+        padding: 24px;
+        background-color: #f8fafc;
+        min-height: 100vh;
+        transition: margin-left 0.3s ease;
+      }
+
+      .page-header {
+        margin-bottom: 32px;
+      }
+
+      .page-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 8px;
+      }
+
+      .breadcrumb {
+        color: #64748b;
+        font-size: 14px;
+      }
+
+      .breadcrumb a {
+        color: #06b6d4;
+        text-decoration: none;
+      }
+
+      .error-text {
+        font-size: 13px;
+        color: #e02424;
+        font-weight: 500;
+        font-style: italic;
+      }
+
+      .form-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+        overflow: hidden;
+        max-width: 800px;
+      }
+
+      .form-header {
+        background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+        color: white;
+        padding: 25px;
+        text-align: center;
+      }
+
+      .form-header h2 {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 5px;
+      }
+
+      .form-header p {
+        font-size: 14px;
+        opacity: 0.9;
+      }
+
+      .form-body {
+        padding: 30px;
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 25px;
+      }
+
+      .form-row.full-width {
+        grid-template-columns: 1fr;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .form-group label {
+        font-weight: 500;
+        color: #333;
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
+
+      .form-group label .required {
+        color: #dc3545;
+        margin-left: 3px;
+      }
+
+      .form-group input,
+      .form-group select,
+      .form-group textarea {
+        padding: 12px 15px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        background: #fff;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus,
+      .form-group textarea:focus {
+        outline: none;
+        border-color: #06b6d4;
+        box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+      }
+
+      .form-group input:invalid {
+        border-color: #dc3545;
+      }
+
+      .form-group .help-text {
+        font-size: 12px;
+        color: #666;
+        margin-top: 5px;
+      }
+
+      .form-group .error-text {
+        font-size: 12px;
+        color: #dc3545;
+        margin-top: 5px;
+      }
+
+      .input-group {
+        position: relative;
+      }
+
+      .input-group .input-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #666;
+        z-index: 1;
+      }
+
+      .input-group input {
+        padding-left: 45px;
+      }
+
+      .discount-preview {
+        background: #f8f9fa;
+        border: 2px dashed #dee2e6;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        margin-bottom: 25px;
+      }
+
+      .discount-preview h3 {
+        color: #333;
+        font-size: 16px;
+        margin-bottom: 10px;
+      }
+
+      .discount-preview .preview-value {
+        font-size: 24px;
+        font-weight: bold;
+        color: #28a745;
+        margin-bottom: 5px;
+      }
+
+      .discount-preview .preview-desc {
+        font-size: 12px;
+        color: #666;
+      }
+
+      .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .checkbox-group input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: #06b6d4;
+      }
+
+      .checkbox-group label {
+        margin: 0;
+        font-size: 14px;
+        cursor: pointer;
+      }
+
+      .form-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: flex-end;
+        padding-top: 25px;
+        border-top: 1px solid #e9ecef;
+      }
+
+      .btn {
+        padding: 12px 25px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(6, 182, 212, 0.4);
+      }
+
+      .btn-secondary {
+        background: #6c757d;
+        color: white;
+      }
+
+      .btn-secondary:hover {
+        background: #5a6268;
+      }
+
+      .alert {
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border: 1px solid transparent;
+      }
+
+      .alert-success {
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+        color: #155724;
+      }
+
+      .alert-error {
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+      }
+
+      .loading {
+        pointer-events: none;
+        opacity: 0.7;
+      }
+
+      .loading .btn-primary {
+        background: #6c757d;
+      }
+
+      @media (max-width: 768px) {
+        .main-content {
+          margin-left: 0;
+          padding: 16px;
+        }
+
+        .form-row {
+          grid-template-columns: 1fr;
+          gap: 15px;
+        }
+
+        .form-actions {
+          flex-direction: column;
+        }
+      }
+
+      .conditional-field {
+        opacity: 0.5;
+        pointer-events: none;
+        transition: all 0.3s ease;
+      }
+
+      .conditional-field.enabled {
+        opacity: 1;
+        pointer-events: auto;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Include sidebar partial -->
+    <%- include('../partials/admin/sidebar.ejs') %>
+
+    <!-- Hamburger Menu for Mobile -->
+    <button
+      class="hamburger-btn"
+      id="toggle-sidebar"
+      aria-label="Toggle sidebar"
+      style="
+        display: none;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 1001;
+        background: #1e293b;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 8px;
+        cursor: pointer;
+      "
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="main-content">
+      <!-- Page Header -->
+      <div class="page-header">
+        <h1 class="page-title">Add New Coupon</h1>
+        <div class="breadcrumb">
+          <a href="/admin/dashboard">Dashboard</a> >
+          <a href="/admin/coupon">Coupons</a> > Add New
+        </div>
+      </div>
+
+      <!-- Form Container -->
+      <div class="form-container">
+        <div class="form-header">
+          <h2><i class="fas fa-ticket-alt"></i> Create New Coupon</h2>
+          <p>Fill in the details below to create a new discount coupon</p>
+        </div>
+
+        <div class="form-body">
+          <% if (typeof error !=='undefined' && error) { %>
+          <div class="alert alert-error">
+            <i class="fas fa-exclamation-circle"></i>
+            <%= error %>
+          </div>
+          <% } %> <% if (typeof success !=='undefined' && success) { %>
+          <div class="alert alert-success">
+            <i class="fas fa-check-circle"></i>
+            <%= success %>
+          </div>
+          <% } %>
+
+          <form id="couponForm" action="/admin/coupons/add" method="POST">
+            <!-- Basic Information -->
+            <div class="form-row">
+              <div class="form-group">
+                <label for="code"
+                  >Coupon Code <span class="required">*</span></label
+                >
+                <div class="input-group">
+                  <i class="fas fa-hashtag input-icon"></i>
+                  <input
+                    type="text"
+                    id="code"
+                    name="code"
+                    placeholder="Enter coupon code (e.g., SAVE20)"
+                    style="text-transform: uppercase"
+                  />
+                </div>
+                <% if (errorfield && errorfield.code) { %>
+                <p class="error-text"><%= errorfield.code %></p>
+                <% } %>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="discountType"
+                  >Discount Type <span class="required">*</span></label
+                >
+                <select id="discountType" name="discountType">
+                  <option value="percentage">Percentage (%)</option>
+                  <option value="fixed">Fixed Amount (₹)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="discountValue"
+                  >Discount Value <span class="required">*</span></label
+                >
+                <div class="input-group">
+                  <i class="fas fa-percent input-icon" id="discountIcon"></i>
+                  <input
+                    type="number"
+                    id="discountValue"
+                    name="discountValue"
+                    min="0"
+                    step="0.01"
+                    placeholder="Enter discount value"
+                  />
+                </div>
+                <% if (errorfield && errorfield.discountValue) { %>
+                <p class="error-text"><%= errorfield.discountValue %></p>
+                <% } %>
+              </div>
+            </div>
+
+            <!-- Discount Preview -->
+            <div
+              class="discount-preview"
+              id="discountPreview"
+              style="display: none"
+            >
+              <h3>Discount Preview</h3>
+              <div class="preview-value" id="previewValue">-</div>
+              <div class="preview-desc" id="previewDesc">
+                Enter values to see preview
+              </div>
+            </div>
+
+            <!-- Purchase Requirements -->
+            <div class="form-row">
+              <div class="form-group">
+                <label for="maxDiscountAmount"
+                  >Maximum Discount Amount (₹)</label
+                >
+                <div class="input-group">
+                  <i class="fas fa-rupee-sign input-icon"></i>
+                  <input
+                    type="number"
+                    id="maxDiscountAmount"
+                    name="maxDiscountAmount"
+                    min="0"
+                    step="0.01"
+                    placeholder="Optional - Max discount cap"
+                  />
+                  <% if (errorfield && errorfield.maxDiscountAmount) { %>
+                  <p class="error-text"><%= errorfield.maxDiscountAmount %></p>
+                  <% } %>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="minPurchaseAmount"
+                  >Minimum Purchase Amount (₹)</label
+                >
+                <div class="input-group">
+                  <i class="fas fa-rupee-sign input-icon"></i>
+                  <input
+                    type="number"
+                    id="minPurchaseAmount"
+                    name="minPurchaseAmount"
+                    min="0"
+                    step="0.01"
+                    placeholder="0"
+                    value="0"
+                  />
+                  <% if (errorfield && errorfield.minPurchaseAmount) { %>
+                  <p class="error-text"><%= errorfield.minPurchaseAmount %></p>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+
+            <!-- Date Range -->
+            <div class="form-row">
+              <div class="form-group">
+                <label for="startDate"
+                  >Start Date <span class="required">*</span></label
+                >
+                <input type="datetime-local" id="startDate" name="startDate" />
+                <% if (errorfield && errorfield.startDate) { %>
+                <p class="error-text"><%= errorfield.startDate %></p>
+                <% } %>
+              </div>
+
+              <div class="form-group">
+                <label for="expiryDate"
+                  >Expiry Date <span class="required">*</span></label
+                >
+                <input
+                  type="datetime-local"
+                  id="expiryDate"
+                  name="expiryDate"
+                />
+                <% if (errorfield && errorfield.expiryDate) { %>
+                <p class="error-text"><%= errorfield.expiryDate %></p>
+                <% } %>
+              </div>
+            </div>
+
+            <!-- Usage Limits -->
+            <div class="form-row">
+              <div class="form-group">
+                <div class="checkbox-group">
+                  <input
+                    type="checkbox"
+                    id="isActive"
+                    name="isActive"
+                    checked
+                  />
+                  <label for="isActive">Activate coupon immediately</label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+              <a href="/admin/coupons" class="btn btn-secondary">
+                <i class="fas fa-times"></i> Cancel
+              </a>
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Create Coupon
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const now = new Date();
+      const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+      const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+      document.getElementById("startDate").value = now
+        .toISOString()
+        .slice(0, 16);
+      document.getElementById("expiryDate").value = nextWeek
+        .toISOString()
+        .slice(0, 16);
+
+      document
+        .getElementById("discountType")
+        .addEventListener("change", function () {
+          const icon = document.getElementById("discountIcon");
+          const maxDiscountGroup = document
+            .getElementById("maxDiscountAmount")
+            .closest(".form-group");
+
+          if (this.value === "percentage") {
+            icon.className = "fas fa-percent input-icon";
+            maxDiscountGroup.classList.add("enabled");
+            maxDiscountGroup.classList.remove("conditional-field");
+          } else if (this.value === "fixed") {
+            icon.className = "fas fa-rupee-sign input-icon";
+            maxDiscountGroup.classList.add("conditional-field");
+            maxDiscountGroup.classList.remove("enabled");
+            document.getElementById("maxDiscountAmount").value = "";
+          } else {
+            icon.className = "fas fa-percent input-icon";
+            maxDiscountGroup.classList.add("conditional-field");
+            maxDiscountGroup.classList.remove("enabled");
+          }
+          updatePreview();
+        });
+
+      // Update preview when values change
+      document
+        .getElementById("discountValue")
+        .addEventListener("input", updatePreview);
+      document
+        .getElementById("discountType")
+        .addEventListener("change", updatePreview);
+      document
+        .getElementById("maxDiscountAmount")
+        .addEventListener("input", updatePreview);
+
+      function updatePreview() {
+        const discountType = document.getElementById("discountType").value;
+        const discountValue =
+          parseFloat(document.getElementById("discountValue").value) || 0;
+        const maxDiscount =
+          parseFloat(document.getElementById("maxDiscountAmount").value) ||
+          null;
+        const preview = document.getElementById("discountPreview");
+        const previewValue = document.getElementById("previewValue");
+        const previewDesc = document.getElementById("previewDesc");
+
+        if (discountType && discountValue > 0) {
+          preview.style.display = "block";
+
+          if (discountType === "percentage") {
+            previewValue.textContent = `${discountValue}% OFF`;
+            previewDesc.textContent = maxDiscount
+              ? `Maximum discount: ₹${maxDiscount}`
+              : "No maximum limit";
+          } else if (discountType === "fixed") {
+            previewValue.textContent = `₹${discountValue} OFF`;
+            previewDesc.textContent = "Fixed amount discount";
+          }
+        } else {
+          preview.style.display = "none";
+        }
+      }
+
+      
+      document
+        .getElementById("couponForm")
+        .addEventListener("submit", function (e) {
+          const startDate = new Date(
+            document.getElementById("startDate").value
+          );
+          const expiryDate = new Date(
+            document.getElementById("expiryDate").value
+          );
+          const now = new Date();
+
+          // Show loading state
+          this.classList.add("loading");
+          document.querySelector(".btn-primary").innerHTML =
+            '<i class="fas fa-spinner fa-spin"></i> Creating...';
+        });
+
+      // Auto-uppercase coupon code
+      document.getElementById("code").addEventListener("input", function () {
+        this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+      });
+
+      // Initialize conditional fields
+      document
+        .getElementById("maxDiscountAmount")
+        .closest(".form-group")
+        .classList.add("conditional-field");
+        document.getElementById("discountType").dispatchEvent(new Event("change"));
+    </script>
+  </body>
+</html>

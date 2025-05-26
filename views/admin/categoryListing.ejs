@@ -204,12 +204,7 @@
     <div class="dashboard">
         <%- include("../partials/admin/sidebar.ejs") %>
             <main class="main-content">
-                <header class="header">
-                    <div class="user-section">
-                        <span>Admin</span>
-                        <div class="avatar"></div>
-                    </div>
-                </header>
+                
                 <div class="container mx-auto p-6">
                     <div class="flex justify-between items-center mb-4">
                         <h1 class="text-2xl font-bold">Category Management</h1>
@@ -284,10 +279,6 @@
                                             </div>
                                         </td>
                                         <td class="offer">
-                                            <span>
-                                                <%= cat.offer ? `${cat.offer}% OFF` : '' %>
-                                            </span>
-
                                             <% if (cat.offer) { %>
                                                 <button class="remove" onclick="removeOffer('<%= cat._id %>')">Remove
                                                     Offer</button>
@@ -295,6 +286,9 @@
                                                     <button class="add" onclick="addOffer('<%= cat._id %>')">Add
                                                         Offer</button>
                                                     <% } %>
+                                                    <span>
+                                                <%= cat.offer ? `${cat.offer}% OFF` : '' %>
+                                            </span>
                                         </td>
                                     </tr>
                                     <% }) %>
@@ -374,8 +368,7 @@
                         headers: {
                             'Content-Type': 'application/json'
                         }
-                    })
-                        .then(response => response.json())
+                    }).then(response => response.json())
                         .then(data => {
                             if (data.success) {
                                 Swal.fire(
@@ -383,7 +376,6 @@
                                     'Category has been deleted.',
                                     'success'
                                 ).then(() => {
-                                    // Remove the row from the table
                                     const row = document.querySelector(`tr[data-cat-id="${categoryId}"]`);
                                     if (row) {
                                         row.remove();
@@ -411,7 +403,6 @@
             });
         }
 
-        // Function to update SNOs after deletion
         function updateSNOs() {
             const rows = document.querySelectorAll('#categoryTableBody tr');
             rows.forEach((row, index) => {
@@ -420,6 +411,115 @@
                     snoCell.textContent = index + 1;
                 }
             });
+        }
+
+        function addOffer(categoryId) {
+            Swal.fire({
+                title: 'Add Offer',
+                text: 'Enter offer percentage (0-100):',
+                input: 'number',
+                inputAttributes: {
+                    min: 0,
+                    max: 100,
+                    step: 1
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Add Offer',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                inputValidator: (value) => {
+                    if (!value || value < 0 || value > 100) {
+                        return 'Please enter a valid percentage (0-100)';
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const offerPercentage = parseInt(result.value);
+                    fetch(`/admin/category/add-offer/${categoryId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ offer: offerPercentage })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire(
+                                    'Success!',
+                                    `Offer of ${offerPercentage}% added.`,
+                                    'success'
+                                ).then(() => {
+                                    window.location.reload();
+                                });
+                            } else {
+                                Swal.fire(
+                                    'Error!',
+                                    'Failed to add offer.',
+                                    'error'
+                                );
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error adding offer:', error);
+                            Swal.fire(
+                                'Error!',
+                                'An error occurred while adding the offer.',
+                                'error'
+                            );
+                        });
+                }
+            });
+        }
+
+        function removeOffer(categoryId){
+
+            Swal.fire({
+                title: 'Remove Offer',
+                text: 'Are you sure you want to remove the offer?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, remove it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/admin/category/remove-offer/${categoryId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire(
+                                'Success!',
+                                'Offer has been removed.',
+                                'success'
+                            ).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire(
+                                'Error!',
+                                'Failed to remove offer.',
+                                'error'
+                            );
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error removing offer:', error);
+                        Swal.fire(
+                            'Error!',
+                            'An error occurred while removing the offer.',
+                            'error'
+                        );
+                    });
+                }
+            });
+
         }
     </script>
 </body>

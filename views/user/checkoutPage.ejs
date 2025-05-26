@@ -445,8 +445,12 @@
                                 <div class="apply-coupon">
                                     <div class="input-group">
                                         <input type="text" class="form-control coupon-input" placeholder="Enter coupon code">
-                                        <button class="btn coupon-button">Apply</button>
+                                        
                                     </div>
+                                    <button class="btn btn-outline-primary" data-bs-toggle="offcanvas" data-bs-target="#couponSidebar">
+                                            <i class="bi bi-tags me-1"></i> View Coupons
+                                        </button>
+                                        <button class="btn btn-primary coupon-button">Apply</button>
                                 </div>
                                 <!-- Price Summary -->
                                 <div class="checkout-section mt-4">
@@ -492,6 +496,31 @@
             </div>
         </div>
     </div>
+
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="couponSidebar" aria-labelledby="couponSidebarLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="couponSidebarLabel">Available Coupons</h5>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <% if (coupons && coupons.length > 0) { %>
+      <% coupons.forEach(coupon => { %>
+        <div class="card mb-3">
+          <div class="card-body">
+            <h5 class="card-title"><%= coupon.code %></h5>
+            <p class="card-text">Discount: <%= coupon.discountValue %>%</p>
+            <p class="card-text text-muted"><small>Valid until: <%= coupon.expiryDate.toLocaleDateString() %></small></p>
+            <button class="btn btn-sm btn-primary" onclick="applyCoupon('<%= coupon.code %>')">Apply</button>
+          </div>
+        </div>
+      <% }) %>
+    <% } else { %>
+      <p class="text-muted">No available coupons.</p>
+    <% } %>
+  </div>
+</div>
+
+
     <script src="https://www.paypal.com/sdk/js?client-id=Ad-rLPHVwnJdrYS1jxkmYAgFYk4LLLJ7jNjqIG9yuyhYUr1YRasT_Y48mbI3IXBYPwysND7j690iO7pF&buyer-country=US&currency=USD&components=buttons&enable-funding=venmo,paylater,card"
             data-sdk-integration-source="developer-studio"></script>
             <script src="app.js"></script>
@@ -597,6 +626,16 @@
                     icon: 'error',
                     title: 'Something went wrong'
                 });
+            }
+        }
+
+        function applyCoupon(code) {
+            const couponInput = document.querySelector('.coupon-input');
+            if (couponInput) {
+                couponInput.value = code;
+                document.querySelector('.coupon-button').click();
+                const offcanvas = bootstrap.Offcanvas.getInstance(document.getElementById('couponSidebar'));
+                offcanvas.hide();
             }
         }
     </script>

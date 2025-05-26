@@ -5,200 +5,578 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Edit Category - LapZone</title>
   <link rel="stylesheet" href="/css/sidebar.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f5f5f5;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       margin: 0;
-      padding: 20px;
+      padding: 24px;
+      color: #1f2937;
+      
+      min-height: 100vh;
     }
 
     .container {
-      max-width: 700px;
+      max-width: 800px;
       margin: 0 auto;
-      background-color: #fff;
-      padding: 40px 30px;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      padding: 48px;
+      border-radius: 20px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      
+    }
+
+    /* Header Section with proper spacing */
+    .header-section {
+      text-align: center;
+      margin-bottom: 40px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
     }
 
     h2 {
-      font-size: 26px;
-      font-weight: bold;
-      margin-bottom: 25px;
-      text-align: center;
-      color: #222;
-      text-transform: uppercase;
+      font-size: 32px;
+      font-weight: 700;
+      margin: 0 0 12px 0;
+      color: #1f2937;
+      letter-spacing: -0.025em;
     }
 
+    .subtitle {
+      color: #6b7280;
+      font-size: 16px;
+      margin: 0;
+      font-weight: 400;
+    }
+
+    /* Form with consistent gaps */
     form {
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 32px;
+    }
+
+    .form-section {
+      padding: 32px;
+      background: rgba(248, 250, 252, 0.5);
+      border-radius: 16px;
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #374151;
+      margin: 0 0 20px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(226, 232, 240, 0.6);
     }
 
     .form-group {
       display: flex;
       flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
     }
 
     label {
       font-size: 15px;
       font-weight: 600;
-      margin-bottom: 6px;
-      color: #333;
+      color: #374151;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+    }
+
+    .label-icon {
+      width: 16px;
+      height: 16px;
+      opacity: 0.7;
+    }
+
+    .required {
+      color: #ef4444;
+      font-weight: 500;
     }
 
     input[type="text"],
     input[type="number"],
     textarea,
     select {
-      padding: 10px 12px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 14px;
+      padding: 14px 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      font-size: 15px;
       font-family: inherit;
-      transition: border-color 0.3s ease;
+      background: #ffffff;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      color: #1f2937;
     }
 
     input:focus,
-    textarea:focus {
+    textarea:focus,
+    select:focus {
       outline: none;
-      border-color: #888;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      transform: translateY(-1px);
+    }
+
+    input:hover,
+    textarea:hover,
+    select:hover {
+      border-color: #d1d5db;
     }
 
     textarea {
       resize: vertical;
-      min-height: 100px;
+      min-height: 120px;
+      line-height: 1.6;
     }
 
-    .offer-group {
+    /* Radio group with proper spacing */
+    .radio-group-container {
       display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
+      flex-direction: column;
+      gap: 12px;
     }
 
-    .offer-group .form-group {
-      flex: 1;
-      min-width: 200px;
+    .radio-group-label {
+      font-size: 15px;
+      font-weight: 600;
+      color: #374151;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .radio-group {
       display: flex;
-      gap: 30px;
-      margin-top: 10px;
+      gap: 16px;
+      flex-wrap: wrap;
     }
 
-    .radio-group label {
+    .radio-option {
       display: flex;
       align-items: center;
-      font-weight: normal;
+      padding: 12px 20px;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: #ffffff;
+      min-width: 120px;
+      justify-content: center;
+      gap: 8px;
     }
 
-    .radio-group input[type="radio"] {
-      margin-right: 6px;
+    .radio-option:hover {
+      border-color: #667eea;
+      background: #f8faff;
+    }
+
+    .radio-option.selected {
+      border-color: #667eea;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+    }
+
+    .radio-option input[type="radio"] {
+      margin: 0;
+      accent-color: #667eea;
+    }
+
+    .radio-option label {
+      margin: 0;
+      font-weight: 500;
+      cursor: pointer;
+      color: inherit;
+    }
+
+    .status-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      display: inline-block;
+    }
+
+    .status-indicator.unlisted {
+      background: #ef4444;
+    }
+
+    /* Submit button with proper spacing */
+    .submit-section {
+      padding-top: 16px;
+      border-top: 1px solid rgba(226, 232, 240, 0.8);
     }
 
     .submit-btn {
-      padding: 14px;
-      background-color: #000;
-      color: #fff;
+      padding: 16px 32px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #ffffff;
       font-size: 16px;
-      font-weight: bold;
+      font-weight: 600;
       border: none;
-      border-radius: 5px;
+      border-radius: 12px;
       cursor: pointer;
-      text-transform: uppercase;
-      transition: background-color 0.3s ease;
+      text-transform: none;
+      letter-spacing: 0.025em;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .submit-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .submit-btn:hover::before {
+      left: 100%;
     }
 
     .submit-btn:hover {
-      background-color: #333;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(102, 126, 234, 0.4);
     }
 
-    span {
-      color: red;
+    .submit-btn:active {
+      transform: translateY(-1px);
     }
 
-    @media (max-width: 600px) {
+    .submit-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Responsive design with maintained gaps */
+    @media (max-width: 768px) {
+      body {
+        padding: 16px;
+      }
+
       .container {
-        padding: 25px 20px;
+        padding: 32px 24px;
+        border-radius: 16px;
+      }
+
+      .header-section {
+        margin-bottom: 32px;
+        padding-bottom: 24px;
+      }
+
+      h2 {
+        font-size: 28px;
+      }
+
+      .form-section {
+        padding: 24px;
+        gap: 20px;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+        gap: 20px;
       }
 
       .radio-group {
         flex-direction: column;
-        gap: 15px;
+        gap: 12px;
       }
+
+      .radio-option {
+        min-width: auto;
+        justify-content: flex-start;
+      }
+
+      form {
+        gap: 24px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 24px 16px;
+      }
+
+      .form-section {
+        padding: 20px;
+        gap: 16px;
+      }
+
+      .header-section {
+        margin-bottom: 24px;
+      }
+
+      h2 {
+        font-size: 24px;
+      }
+
+      .subtitle {
+        font-size: 14px;
+      }
+    }
+
+    /* Animation keyframes */
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes success {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    .submit-btn.success {
+      animation: success 0.3s ease;
+      background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .spinning {
+      animation: spin 1s linear infinite;
     }
   </style>
 </head>
 <body>
-  <%- include("../partials/admin/sidebar.ejs") %>
+   <%- include("../partials/admin/sidebar.ejs") %> 
 
   <div class="container">
-    <h2>Edit Category</h2>
-    <form action="/admin/update-category/<%= category._id %>" method="POST">
-      <div class="form-group">
-        <label for="category">Category Name:</label>
-        <input 
-          type="text" 
-          id="category" 
-          name="name"
-          value="<%= category.name %>" 
-          placeholder="Enter category name"
-        />
-      </div>
+    <div class="header-section">
+      <h2>Edit Category</h2>
+      <p class="subtitle">Update category information and settings</p>
+    </div>
+    
+    <form action="/admin/update-category/CATEGORY_ID" method="POST" id="editForm">
+      
+      <div class="form-section">
+        
 
-      <div class="form-group">
-        <label for="description">Description:</label>
-        <textarea 
-          id="description" 
-          name="description" 
-          placeholder="Type category description here..."
-        ><%= category.description %></textarea>
-      </div>
-
-      <div class="offer-group">
         <div class="form-group">
-          <label for="offer">Category Offer (%):</label>
+          <label for="category">
+            <svg class="label-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+            </svg>
+            Category Name <span class="required">*</span>
+          </label>
           <input 
-            type="number" 
-            id="offer" 
-            name="offer" 
-            min="0" 
-            max="100"
-            value="<%= category.offer || '' %>" 
-            placeholder="Enter offer percentage"
+            type="text" 
+            id="category" 
+            name="name"
+            value="Sample Category" 
+            placeholder="Enter category name"
+            required
           />
         </div>
-      </div>
 
-      <div class="form-group">
-        <label>Status:</label>
-        <div class="radio-group">
-          <label>
-            <input 
-              type="radio" 
-              name="isListed" 
-              value="true" 
-              <%= category.isListed ? 'checked' : '' %>
-            />
-            Listed
+        <div class="form-group">
+          <label for="description">
+            <svg class="label-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path>
+            </svg>
+            Description
           </label>
-          <label>
+          <textarea 
+            id="description" 
+            name="description" 
+            placeholder="Describe your category..."
+          >This is a sample category description that explains what this category is for.</textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="offer">
+              <svg class="label-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"></path>
+              </svg>
+              Category Offer (%)
+            </label>
             <input 
-              type="radio" 
-              name="isListed" 
-              value="false" 
-              <%= !category.isListed ? 'checked' : '' %>
+              type="number" 
+              id="offer" 
+              name="offer" 
+              min="0" 
+              max="100"
+              value="10" 
+              placeholder="0"
             />
-            Unlisted
-          </label>
+          </div>
+        </div>
+
+        <div class="radio-group-container">
+          <div class="radio-group-label">
+            <svg class="label-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+            </svg>
+            Listing Status
+          </div>
+          <div class="radio-group">
+            <div class="radio-option selected" onclick="selectStatus(this, true)">
+              <input 
+                type="radio" 
+                name="isListed" 
+                value="true" 
+                checked
+                id="listed"
+              />
+              <label for="listed">Listed</label>
+              <span class="status-indicator"></span>
+            </div>
+            <div class="radio-option" onclick="selectStatus(this, false)">
+              <input 
+                type="radio" 
+                name="isListed" 
+                value="false" 
+                id="unlisted"
+              />
+              <label for="unlisted">Unlisted</label>
+              <span class="status-indicator unlisted"></span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <button type="submit" class="submit-btn">Update Category</button>
+      <div class="submit-section">
+        <button type="submit" class="submit-btn" id="submitBtn">
+          <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+          </svg>
+          Update Category
+        </button>
+      </div>
     </form>
   </div>
+
+  <script>
+    function selectStatus(element, isListed) {
+      // Remove selected class from all options
+      document.querySelectorAll('.radio-option').forEach(option => {
+        option.classList.remove('selected');
+      });
+      
+      // Add selected class to clicked option
+      element.classList.add('selected');
+      
+      // Check the corresponding radio button
+      element.querySelector('input[type="radio"]').checked = true;
+    }
+
+    // Form submission animation
+    document.getElementById('editForm').addEventListener('submit', function(e) {
+      e.preventDefault(); // Prevent actual submission for demo
+      
+      const submitBtn = document.getElementById('submitBtn');
+      const originalContent = submitBtn.innerHTML;
+      
+      submitBtn.innerHTML = `
+        <svg class="btn-icon spinning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+        </svg>
+        Updating...
+      `;
+      submitBtn.disabled = true;
+
+      // Simulate form submission
+      setTimeout(() => {
+        submitBtn.innerHTML = `
+          <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          Updated Successfully!
+        `;
+        submitBtn.classList.add('success');
+        
+        setTimeout(() => {
+          submitBtn.innerHTML = originalContent;
+          submitBtn.disabled = false;
+          submitBtn.classList.remove('success');
+        }, 2000);
+      }, 1500);
+    });
+
+    // Add input validation
+    document.querySelectorAll('input, textarea').forEach(input => {
+      input.addEventListener('blur', function() {
+        if (this.hasAttribute('required') && !this.value.trim()) {
+          this.style.borderColor = '#ef4444';
+        } else {
+          this.style.borderColor = '#e5e7eb';
+        }
+      });
+      
+      input.addEventListener('input', function() {
+        if (this.style.borderColor === 'rgb(239, 68, 68)') {
+          this.style.borderColor = '#e5e7eb';
+        }
+      });
+    });
+
+    // Form validation
+    document.getElementById('editForm').addEventListener('submit', function(e) {
+      let isValid = true;
+      
+      document.querySelectorAll('input[required], textarea[required]').forEach(field => {
+        if (!field.value.trim()) {
+          field.style.borderColor = '#ef4444';
+          isValid = false;
+        }
+      });
+      
+      if (!isValid) {
+        e.preventDefault();
+        alert('Please fill in all required fields.');
+      }
+    });
+  </script>
 </body>
 </html>

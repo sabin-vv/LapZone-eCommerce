@@ -1,180 +1,691 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add a Category - LapZone</title>
-    <link rel="stylesheet" href="/css/sidebar.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
-            margin: 0;
-            padding: 20px;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Add Category - LapZone</title>
+  <link rel="stylesheet" href="/css/sidebar.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      margin: 0;
+      padding: 24px;
+      color: #1f2937;
+      
+      min-height: 100vh;
+    }
 
-        h2 {
-            font-size: 26px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            text-align: center;
-            color: #222;
-            text-transform: uppercase;
-        }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      padding: 48px;
+      border-radius: 20px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 20px;
-        }
+    .container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      
+    }
 
-        label {
-            font-size: 15px;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: #333;
-        }
+    /* Header Section with proper spacing */
+    .header-section {
+      text-align: center;
+      margin-bottom: 40px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    }
 
-        input[type="text"],
-        input[type="number"],
-        textarea {
-            padding: 10px 12px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 14px;
-            font-family: inherit;
-            transition: border-color 0.3s ease;
-        }
+    h2 {
+      font-size: 32px;
+      font-weight: 700;
+      margin: 0 0 12px 0;
+      color: #1f2937;
+      letter-spacing: -0.025em;
+    }
 
-        input:focus,
-        textarea:focus {
-            outline: none;
-            border-color: #888;
-        }
+    .subtitle {
+      color: #6b7280;
+      font-size: 16px;
+      margin: 0;
+      font-weight: 400;
+    }
 
-        textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
+    /* Form with consistent gaps */
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
 
-        span {
-            color: #d9534f;  
-            font-size: 12px;  
-            font-weight: bold;  
-            font-style: italic;
-            padding: 0 10px; 
-            display: inline-block;  
-            margin-top: 5px;
-        }
+    .form-section {
+      padding: 32px;
+      background: rgba(248, 250, 252, 0.5);
+      border-radius: 16px;
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
 
-        .offer-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #374151;
+      margin: 0 0 20px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+    }
 
-        .offer-group .form-group {
-            flex: 1;
-            min-width: 200px;
-        }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
 
-        .radio-group {
-            display: flex;
-            gap: 30px;
-            margin-top: 10px;
-        }
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+    }
 
-        .radio-group label {
-            display: flex;
-            align-items: center;
-            font-weight: normal;
-        }
+    label {
+      font-size: 15px;
+      font-weight: 600;
+      color: #374151;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+    }
 
-        .radio-group input[type="radio"] {
-            margin-right: 6px;
-        }
+    .label-icon {
+      width: 16px;
+      height: 16px;
+      opacity: 0.7;
+    }
 
-        .radio-group input[type="radio"]:checked + label {
-            font-weight: bold;
-        }
+    .required {
+      color: #ef4444;
+      font-weight: 500;
+    }
 
-        .submit-btn {
-            width: 100%;
-            padding: 14px;
-            background-color: #000;
-            color: #fff;
-            font-size: 16px;
-            font-weight: bold;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-transform: uppercase;
-            transition: background-color 0.3s ease;
-        }
+    .error-message {
+      color: #ef4444;
+      font-size: 13px;
+      font-weight: 500;
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
 
-        .submit-btn:hover {
-            background-color: #333;
-        }
+    input[type="text"],
+    input[type="number"],
+    textarea,
+    select {
+      padding: 14px 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      font-size: 15px;
+      font-family: inherit;
+      background: #ffffff;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      color: #1f2937;
+    }
 
-        @media (max-width: 600px) {
-            .container {
-                padding: 25px 20px;
-            }
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      transform: translateY(-1px);
+    }
 
-            .radio-group {
-                flex-direction: column;
-                gap: 15px;
-            }
-        }
-    </style>
+    input:hover,
+    textarea:hover,
+    select:hover {
+      border-color: #d1d5db;
+    }
+
+    input.error,
+    textarea.error {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 120px;
+      line-height: 1.6;
+    }
+
+    /* Radio group with proper spacing */
+    .radio-group-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .radio-group-label {
+      font-size: 15px;
+      font-weight: 600;
+      color: #374151;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .radio-option {
+      display: flex;
+      align-items: center;
+      padding: 12px 20px;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: #ffffff;
+      min-width: 120px;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .radio-option:hover {
+      border-color: #667eea;
+      background: #f8faff;
+    }
+
+    .radio-option.selected {
+      border-color: #667eea;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+    }
+
+    .radio-option input[type="radio"] {
+      margin: 0;
+      accent-color: #667eea;
+    }
+
+    .radio-option label {
+      margin: 0;
+      font-weight: 500;
+      cursor: pointer;
+      color: inherit;
+    }
+
+    .status-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      display: inline-block;
+    }
+
+    .status-indicator.unlisted {
+      background: #ef4444;
+    }
+
+    /* Submit button with proper spacing */
+    .submit-section {
+      padding-top: 16px;
+      border-top: 1px solid rgba(226, 232, 240, 0.8);
+    }
+
+    .submit-btn {
+      padding: 16px 32px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      text-transform: none;
+      letter-spacing: 0.025em;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .submit-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .submit-btn:hover::before {
+      left: 100%;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(102, 126, 234, 0.4);
+    }
+
+    .submit-btn:active {
+      transform: translateY(-1px);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Responsive design with maintained gaps */
+    @media (max-width: 768px) {
+      body {
+        padding: 16px;
+      }
+
+      .container {
+        padding: 32px 24px;
+        border-radius: 16px;
+      }
+
+      .header-section {
+        margin-bottom: 32px;
+        padding-bottom: 24px;
+      }
+
+      h2 {
+        font-size: 28px;
+      }
+
+      .form-section {
+        padding: 24px;
+        gap: 20px;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .radio-group {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .radio-option {
+        min-width: auto;
+        justify-content: flex-start;
+      }
+
+      form {
+        gap: 24px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 24px 16px;
+      }
+
+      .form-section {
+        padding: 20px;
+        gap: 16px;
+      }
+
+      .header-section {
+        margin-bottom: 24px;
+      }
+
+      h2 {
+        font-size: 24px;
+      }
+
+      .subtitle {
+        font-size: 14px;
+      }
+    }
+
+    /* Animation keyframes */
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes success {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    .submit-btn.success {
+      animation: success 0.3s ease;
+      background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .spinning {
+      animation: spin 1s linear infinite;
+    }
+
+    /* Form validation styles */
+    .form-group.has-error input,
+    .form-group.has-error textarea {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+    }
+  </style>
 </head>
 <body>
+  
+   <%- include("../partials/admin/sidebar.ejs") %> 
 
-    <%- include("../partials/admin/sidebar.ejs") %>
-    <div class="container">
-        <h2>Add Category</h2>
-        <form action="/admin/add-category" method="post">
-            <div class="form-group">
-                <label for="name">Category Name:</label>
-                <input type="text" id="name" name="name" placeholder="Type category name here...">
-                <% if(error){ %> 
-                    <span><%= error %></span>
-               <% } %>
-            </div>
-
-            <div class="form-group">
-                <label for="description">Description:</label>
-                <textarea id="description" name="description" placeholder="Type category description here..."></textarea>
-            </div>
-
-            <div class="offer-group">
-                <div class="form-group">
-                    <label for="offer">Category Offer Price:</label>
-                    <input type="number" id="offer" name="offer" placeholder="Max Redeemable">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Should Be:</label>
-                <div class="radio-group">
-                    <input type="radio" id="listed" name="isListed" value="true" checked>
-                    <label for="listed">Listed</label>
-                    <input type="radio" id="unlisted" name="isListed" value="false">
-                    <label for="unlisted">Unlisted</label>
-                </div>
-            </div>
-
-            <button type="submit" class="submit-btn">Add Category</button>
-        </form>
+  <div class="container">
+    <div class="header-section">
+      <h2>Add Category</h2>
+      <p class="subtitle">Create a new category for your products</p>
     </div>
+    
+    <form action="/admin/add-category" method="POST" id="addForm">
+      
+      <div class="form-section">
+       
+
+        <div class="form-group">
+          <label for="name">
+            <svg class="label-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+            </svg>
+            Category Name <span class="required">*</span>
+          </label>
+          <input 
+            type="text" 
+            id="name" 
+            name="name"
+            placeholder="Enter category name"
+            required
+          />
+          <!-- Error message would be displayed here -->
+          <!-- <div class="error-message">
+            <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+            </svg>
+            Category name is required
+          </div> -->
+        </div>
+
+        <div class="form-group">
+          <label for="description">
+            <svg class="label-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path>
+            </svg>
+            Description
+          </label>
+          <textarea 
+            id="description" 
+            name="description" 
+            placeholder="Describe your category..."
+          ></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="offer">
+              <svg class="label-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"></path>
+              </svg>
+              Category Offer (%)
+            </label>
+            <input 
+              type="number" 
+              id="offer" 
+              name="offer" 
+              min="0" 
+              max="100"
+              placeholder="0"
+            />
+          </div>
+        </div>
+
+        <div class="radio-group-container">
+          <div class="radio-group-label">
+            <svg class="label-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+            </svg>
+            Listing Status
+          </div>
+          <div class="radio-group">
+            <div class="radio-option selected" onclick="selectStatus(this, true)">
+              <input 
+                type="radio" 
+                name="isListed" 
+                value="true" 
+                checked
+                id="listed"
+              />
+              <label for="listed">Listed</label>
+              <span class=""></span>
+            </div>
+            <div class="radio-option" onclick="selectStatus(this, false)">
+              <input 
+                type="radio" 
+                name="isListed" 
+                value="false" 
+                id="unlisted"
+              />
+              <label for="unlisted">Unlisted</label>
+              <span class=" unlisted"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="submit-section">
+        <button type="submit" class="submit-btn" id="submitBtn">
+          <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
+          Add Category
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    function selectStatus(element, isListed) {
+      // Remove selected class from all options
+      document.querySelectorAll('.radio-option').forEach(option => {
+        option.classList.remove('selected');
+      });
+      
+      // Add selected class to clicked option
+      element.classList.add('selected');
+      
+      // Check the corresponding radio button
+      element.querySelector('input[type="radio"]').checked = true;
+    }
+
+    // Form submission animation
+    document.getElementById('addForm').addEventListener('submit', function(e) {
+      // Remove preventDefault for actual form submission
+      // e.preventDefault(); // Remove this line in production
+      
+      const submitBtn = document.getElementById('submitBtn');
+      const originalContent = submitBtn.innerHTML;
+      
+      submitBtn.innerHTML = `
+        <svg class="btn-icon spinning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+        </svg>
+        Adding Category...
+      `;
+      submitBtn.disabled = true;
+    });
+
+    // Add input validation
+    document.querySelectorAll('input, textarea').forEach(input => {
+      input.addEventListener('blur', function() {
+        validateField(this);
+      });
+      
+      input.addEventListener('input', function() {
+        // Remove error styling when user starts typing
+        if (this.classList.contains('error')) {
+          this.classList.remove('error');
+          this.parentElement.classList.remove('has-error');
+          
+          // Remove error message if exists
+          const errorMsg = this.parentElement.querySelector('.error-message');
+          if (errorMsg) {
+            errorMsg.remove();
+          }
+        }
+      });
+    });
+
+    function validateField(field) {
+      const value = field.value.trim();
+      const isRequired = field.hasAttribute('required');
+      
+      // Remove existing error state
+      field.classList.remove('error');
+      field.parentElement.classList.remove('has-error');
+      
+      // Remove existing error message
+      const existingError = field.parentElement.querySelector('.error-message');
+      if (existingError) {
+        existingError.remove();
+      }
+      
+      // Check if required field is empty
+      if (isRequired && !value) {
+        addErrorToField(field, 'This field is required');
+        return false;
+      }
+      
+      // Validate category name length
+      if (field.name === 'name' && value.length > 0 && value.length < 2) {
+        addErrorToField(field, 'Category name must be at least 2 characters');
+        return false;
+      }
+      
+      // Validate offer percentage
+      if (field.name === 'offer' && value) {
+        const offerValue = parseInt(value);
+        if (offerValue < 0 || offerValue > 100) {
+          addErrorToField(field, 'Offer must be between 0 and 100');
+          return false;
+        }
+      }
+      
+      return true;
+    }
+
+    function addErrorToField(field, message) {
+      field.classList.add('error');
+      field.parentElement.classList.add('has-error');
+      
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'error-message';
+      errorDiv.innerHTML = `
+        <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+        </svg>
+        ${message}
+      `;
+      
+      field.parentElement.appendChild(errorDiv);
+    }
+
+    // Form validation on submit
+    document.getElementById('addForm').addEventListener('submit', function(e) {
+      let isValid = true;
+      
+      // Validate all fields
+      document.querySelectorAll('input[required], textarea[required]').forEach(field => {
+        if (!validateField(field)) {
+          isValid = false;
+        }
+      });
+      
+      // Validate optional fields with content
+      document.querySelectorAll('input:not([required]), textarea:not([required])').forEach(field => {
+        if (field.value.trim()) {
+          if (!validateField(field)) {
+            isValid = false;
+          }
+        }
+      });
+      
+      if (!isValid) {
+        e.preventDefault();
+        
+        // Focus on first error field
+        const firstError = document.querySelector('.error');
+        if (firstError) {
+          firstError.focus();
+          firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        // Reset submit button
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.innerHTML = `
+          <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
+          Add Category
+        `;
+        submitBtn.disabled = false;
+      }
+    });
+
+    // Auto-capitalize category name
+    document.getElementById('name').addEventListener('input', function() {
+      // Capitalize first letter of each word
+      const words = this.value.split(' ');
+      const capitalizedWords = words.map(word => {
+        if (word.length > 0) {
+          return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+        }
+        return word;
+      });
+      this.value = capitalizedWords.join(' ');
+    });
+  </script>
 </body>
 </html>

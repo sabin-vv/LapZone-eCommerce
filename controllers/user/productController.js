@@ -1,3 +1,4 @@
+const Category = require("../../model/category");
 const Product = require("../../model/products");
 const Wishlist = require("../../model/wishlist")
 
@@ -6,7 +7,6 @@ const listProducts = async (req, res) => {
     return res.redirect("/login");
   }
   
-
   const user = req.session.user;
   const username = req.session.username
   const searchQuery = req.query.search ? req.query.search.trim() : "";
@@ -21,9 +21,6 @@ const listProducts = async (req, res) => {
   const limit = 9;
   const skip = (page - 1) * limit;
 
-
-
-  
   const query = { isActive: true, isExisting: true };
   if (searchQuery) {
     query.name = { $regex: searchQuery, $options: "i" };
@@ -37,7 +34,6 @@ const listProducts = async (req, res) => {
         RAM: { $in: ramFilter.map(ram => new RegExp("^" + ram, "i")) }
       }
     };
-
   }
   if (ssdFilter.length > 0) {
     query.variants = {
@@ -71,11 +67,8 @@ const listProducts = async (req, res) => {
   try {
       
     const wishlist = await Wishlist.findOne({ userId: req.session.user})
-    const wishlistIds = wishlist ?  wishlist.items.map(item => item.productId.toString()) : []
-    
-    const products = await Product.find(query).sort(sort).skip(skip).limit(limit);
-    
-    
+    const wishlistIds = wishlist ?  wishlist.items.map(item => item.productId.toString()) : []  
+    const products = await Product.find(query).sort(sort).skip(skip).limit(limit).populate('categoryId')
     const brands = await Product.distinct("brand");
     const ramvariants = await Product.distinct("variants.RAM");
     const rams = [...new Set(ramvariants.map(ram => ram.split(" ")[0]))];
@@ -137,17 +130,16 @@ const listProducts = async (req, res) => {
 };
 
 
-
 const viewProduct = async (req, res) => {
   if (!req.session.user) return res.redirect("/login");
 
   const user = req.session.user;
   const username = user.fullname
   const productId = req.params.id;
-  const product = await Product.findById(productId);
+  const product = await Product.findById(productId).populate('categoryId')
   const suggesionCategory = product.category;
 
-  const productSuggesions = await Product.find({ category: suggesionCategory, _id: { $ne: productId } });
+  const productSuggesions = await Product.find({ category: suggesionCategory, _id: { $ne: productId } })
 
 
   const wishlist = await Wishlist.findOne({ userId: user });

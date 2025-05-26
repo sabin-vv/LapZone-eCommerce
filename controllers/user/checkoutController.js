@@ -1,10 +1,10 @@
 const Cart = require("../../model/cart")
 const Address = require("../../model/address")
-const User = require("../../model/user")
 const { v4: uuidv4 } = require('uuid')
 const Order = require("../../model/order")
 const Product = require("../../model/products")
 const Wallet = require("../../model/wallet")
+const Coupon = require("../../model/coupon")
 
 const checkoutPage = async (req, res) => {
 
@@ -13,6 +13,8 @@ const checkoutPage = async (req, res) => {
   const userId = req.session.user
 
   const addresses = await Address.find({ userId })
+
+  const coupons = await Coupon.find()
 
   const cart = await Cart.findOne({ userId }).populate('items.productId')
   const wallet = await Wallet.findOne({ userId })
@@ -36,7 +38,7 @@ const checkoutPage = async (req, res) => {
     totalAmount
   };
 
-  res.render("user/checkoutPage", { addresses, cart: cart.items, orders: [orderSummary], wallet })
+  res.render("user/checkoutPage", { addresses, cart: cart.items, orders: [orderSummary], wallet , coupons})
 
 }
 
@@ -130,7 +132,7 @@ const orderplace = async (req, res) => {
   await Cart.deleteOne({ userId });
 
   res.json({ success: true, message: 'Order Placed' });
-};
+}
 
 const orderPage = async (req, res) => {
 
@@ -150,6 +152,3 @@ module.exports = {
   orderplace,
   orderPage,
 }
-
-
-
