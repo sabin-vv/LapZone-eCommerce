@@ -17,6 +17,10 @@ const checkoutPage = async (req, res) => {
   const coupons = await Coupon.find()
 
   const cart = await Cart.findOne({ userId }).populate('items.productId')
+
+  if (!cart)
+    return res.redirect("/cart")
+
   const wallet = await Wallet.findOne({ userId })
   if (!wallet) {
     wallet = new Wallet({ userId, balance: 0 });
@@ -38,7 +42,7 @@ const checkoutPage = async (req, res) => {
     totalAmount
   };
 
-  res.render("user/checkoutPage", { addresses, cart: cart.items, orders: [orderSummary], wallet , coupons})
+  res.render("user/checkoutPage", { addresses, cart: cart.items, orders: [orderSummary], wallet, coupons })
 
 }
 
@@ -47,7 +51,12 @@ const orderplace = async (req, res) => {
 
   const userId = req.session.user;
   const { shippingAddress, paymentMethod, total } = req.body;
+  const { appliedCoupon } = req.body
+  console.log(appliedCoupon)
 
+  const couponCode = appliedCoupon?.couponCode || null;
+  const couponId = appliedCoupon?.couponId || null;
+  const discountAmount = appliedCoupon?.discount || 0;
 
   const totalPrice = parseFloat(total.replace(/[₹,]/g, ''));
 
@@ -93,6 +102,8 @@ const orderplace = async (req, res) => {
 
     await wallet.save()
 
+  } else if (paymentMethod === 'Online') {
+    paymentStatus = 'Completed';
   }
 
   const orderItems = cart.items.map(item => ({
@@ -106,9 +117,11 @@ const orderplace = async (req, res) => {
   const subtotal = orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shippingFee = 50;
   const tax = Math.round(subtotal * 0.05);
-  const totalAmount = subtotal + shippingFee + tax;
+  let totalAmount = subtotal + shippingFee + tax;
 
-
+  if (appliedCoupon && Object.keys(appliedCoupon).length > 0) {
+    totalAmount -= appliedCoupon.discount
+  }
 
   const order = new Order({
     orderId,
@@ -122,7 +135,10 @@ const orderplace = async (req, res) => {
     paymentMethod,
     paymentStatus: 'Pending',
     orderStatus: 'Processing',
-    statusHistory: [{ status: 'Processing', current: true }]
+    discountAmount,
+    statusHistory: [{ status: 'Processing', current: true }],
+    coupon: couponCode ? { coupon: couponCode, couponId,  } : undefined,
+
   });
 
   await order.save();
@@ -131,19 +147,24 @@ const orderplace = async (req, res) => {
   }
   await Cart.deleteOne({ userId });
 
-  res.json({ success: true, message: 'Order Placed' });
+  res.json({ success: true, message: 'Order Placed', orderId });
 }
 
 const orderPage = async (req, res) => {
 
   if (!req.session.user) return res.redirect("/")
-
+  const orderId = req.params.id
   const user = req.session.user
   const username = user.fullname
-  const order = await Order.findOne({ user })
+  const order = await Order.findOne({ orderId })
 
 
   res.render("user/orderSuccessfullPage", { user, username, order })
+}
+
+const orderFailurePafe = (req,res) =>{
+
+  res.render("user/orderFailurePage")
 }
 
 
@@ -151,4 +172,5 @@ module.exports = {
   checkoutPage,
   orderplace,
   orderPage,
+  orderFailurePafe,
 }

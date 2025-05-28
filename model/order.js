@@ -127,10 +127,14 @@ const orderSchema = new mongoose.Schema({
     }],
     coupon:{
         code:String,
-        _id:{
+        couponId:{
             type:mongoose.Schema.Types.ObjectId,
             ref:'coupon'
         }
+    },
+    discountAmount:{
+        type:Number,
+        default:0
     }
 }, { timestamps: true });
 

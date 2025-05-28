@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Failed</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 60px 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .icon-container {
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .payment-failed-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto;
+            animation: shake 0.6s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .pulse-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 140px;
+            height: 140px;
+            border: 3px solid #ff4757;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.3;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        .title {
+            color: #2c3e50;
+            font-size: 2.2em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1em;
+            margin-bottom: 40px;
+            line-height: 1.5;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1em;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 160px;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 8px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 20px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #7f8c8d;
+            border: 2px solid #bdc3c7;
+        }
+
+        .btn-secondary:hover {
+            background: #ecf0f1;
+            border-color: #95a5a6;
+            transform: translateY(-2px);
+            color: #2c3e50;
+        }
+
+        .help-text {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ecf0f1;
+            color: #95a5a6;
+            font-size: 0.9em;
+        }
+
+        .help-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .help-link:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 40px 20px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .title {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon-container">
+            <div class="pulse-ring"></div>
+            <svg class="payment-failed-icon" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Card Background -->
+                <rect x="20" y="35" width="80" height="50" rx="8" fill="#ff4757" opacity="0.1"/>
+                <rect x="20" y="35" width="80" height="50" rx="8" stroke="#ff4757" stroke-width="2"/>
+                
+                <!-- Card stripe -->
+                <rect x="20" y="45" width="80" height="8" fill="#ff4757" opacity="0.3"/>
+                
+                <!-- X mark -->
+                <circle cx="60" cy="60" r="15" fill="#ff4757"/>
+                <path d="M52 52L68 68M68 52L52 68" stroke="white" stroke-width="3" stroke-linecap="round"/>
+                
+                <!-- Warning triangle -->
+                <path d="M60 15L75 35H45L60 15Z" fill="#ffa502" stroke="#ff6348" stroke-width="2"/>
+                <circle cx="60" cy="25" r="2" fill="#ff6348"/>
+                <rect x="59" y="28" width="2" height="4" fill="#ff6348"/>
+                
+                <!-- Coins scattered -->
+                <circle cx="25" cy="95" r="6" fill="#f1c40f" stroke="#f39c12" stroke-width="1"/>
+                <circle cx="40" cy="100" r="4" fill="#f1c40f" stroke="#f39c12" stroke-width="1"/>
+                <circle cx="80" cy="95" r="5" fill="#f1c40f" stroke="#f39c12" stroke-width="1"/>
+                <circle cx="95" cy="100" r="4" fill="#f1c40f" stroke="#f39c12" stroke-width="1"/>
+            </svg>
+        </div>
+        
+        <h1 class="title">Payment Failed</h1>
+        <p class="subtitle">We couldn't process your payment. This could be due to insufficient funds, an expired card, or a network issue. Please check your payment details and try again.</p>
+        
+        <div class="button-group">
+            <a href="/cart" class="btn btn-primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                </svg>
+                Retry Payment
+            </a>
+            <a href="/profile/order" class="btn btn-secondary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14,2 14,8 20,8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10,9 9,9 8,9"></polyline>
+                </svg>
+                View Orders
+            </a>
+        </div>
+        
+        <div class="help-text">
+            Need help? <a href="/support" class="help-link">Contact Support</a> or check our <a href="/faq" class="help-link">FAQ</a>
+        </div>
+    </div>
+</body>
+</html>

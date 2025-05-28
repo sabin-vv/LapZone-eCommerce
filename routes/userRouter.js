@@ -10,6 +10,8 @@ const cartController = require ("../controllers/user/cartController.js")
 const checkoutController = require('../controllers/user/checkoutController')
 const OrderController = require("../controllers/user/orderController.js")
 const walletController = require("../controllers/user/walletController.js")
+const couponController = require('../controllers/user/couponController.js')
+const razorpayController = require("../controllers/user/razorpayController.js")
 
 
 router.get('/', userController.landingPage)
@@ -74,7 +76,9 @@ router.get("/cart/clear-cart" ,cartController.emptyCart)
 
 router.get("/user/checkout",checkoutController.checkoutPage)
 router.post("/user/order",checkoutController.orderplace)
-router.get("/user/order-page",checkoutController.orderPage)
+router.get("/user/order-page/:id",checkoutController.orderPage)
+router.get("/user/order-failed",checkoutController.orderFailurePafe)
+
 router.get("/profile/order",OrderController.viewOrders)
 router.post("/profile/order/cancel-item",OrderController.cancelitem)
 router.post("/profile/order/cancel",OrderController.cancelProduct)
@@ -84,5 +88,9 @@ router.post("/profile/order/return-item",OrderController.returnProduct)
 router.get("/profile/wallet" ,walletController.viewWalletPage)
 router.post ("/profile/wallet/add",walletController.addMoneyToWallet)
 
+router.post("/user/create-razorpay-order",razorpayController.createRazoroay)
+
+
+router.post("/profile/apply-coupon",couponController.applyCoupon)
 
 module.exports = router

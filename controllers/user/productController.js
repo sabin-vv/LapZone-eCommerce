@@ -136,6 +136,7 @@ const viewProduct = async (req, res) => {
   const user = req.session.user;
   const username = user.fullname
   const productId = req.params.id;
+  
   const product = await Product.findById(productId).populate('categoryId')
   const suggesionCategory = product.category;
 

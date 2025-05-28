@@ -251,8 +251,7 @@
           <dt>Web Camera</dt>
           <dd><%= product.webcam %></dd>
           <% } %> <% if (product.ports && product.ports.length > 0) { %> <%
-          product.ports.forEach(portEntry => { %> <% if (portEntry['USB
-          Type-A']) { %>
+          product.ports.forEach(portEntry => { %> <% if (portEntry['USB Type-A']) { %>
           <dt>USB Type-A</dt>
           <dd><%= portEntry['USB Type-A'] %></dd>
           <% } %> <% if (portEntry['USB Type-C']) { %>
@@ -345,7 +344,6 @@
         btn.classList.add("active");
       }
 
-      
       async function addToCart(productId) {
         try {
           const response = await fetch("/cart/add-to-cart", {

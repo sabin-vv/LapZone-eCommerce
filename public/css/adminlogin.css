@@ -1,73 +1,172 @@
 body {
     margin: 0;
     padding: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background-color: #ffffff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to right, #4facfe, #00f2fe); /* Softer gradient background */
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-  }
+    min-height: 100vh;
+    color: #333;
+    overflow: hidden; /* Prevent scrollbar if background is slightly larger */
+}
 
-  .login-container {
+.login-container {
     width: 100%;
     max-width: 400px;
-    padding: 2rem;
+    padding: 2.5rem; /* Increased padding */
+    background: rgba(255, 255, 255, 0.95); /* Slightly transparent white background */
+    border-radius: 15px; /* More rounded corners */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); /* Stronger, softer shadow */
     text-align: center;
-  }
+    margin: 1rem;
+    position: relative; /* For potential animations or overlays */
+    overflow: hidden; /* Keep content within rounded corners */
+    backdrop-filter: blur(5px); /* Frosted glass effect (modern look) */
+    -webkit-backdrop-filter: blur(5px); /* For Safari */
+    animation: fadeIn 0.8s ease-out; /* Simple fade-in animation */
+}
 
-  h2 {
-    margin-bottom: 2rem;
-    font-weight: 600;
-  }
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
-  .input-group {
-    margin-bottom: 1.5rem;
+h2 {
+    margin-bottom: 2.2rem; /* Adjusted margin */
+    font-weight: 700; /* Bolder heading */
+    font-size: 2rem; /* Larger heading */
+    color: #333; /* Darker color for contrast */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05); /* Subtle text shadow */
+}
+
+.input-group {
+    margin-bottom: 1.7rem; /* Adjusted margin */
     text-align: left;
     position: relative;
-  }
+}
 
-  label {
+label {
     display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-  }
+    margin-bottom: 0.6rem; /* Adjusted margin */
+    font-weight: 600; /* Bolder label */
+    font-size: 0.95rem; /* Slightly larger label font */
+    color: #555; /* Softer color */
+}
 
-  input[type="email"],
-  input[type="password"] {
+input[type="email"],
+input[type="password"] {
     width: 100%;
-    padding: 0.75rem 1rem;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-  }
-  .password-wrapper {
-    position: relative;
-  }
-  
-  .password-wrapper input {
-    width: 100%;
-    padding-right: 3rem;
+    padding: 0.85rem 1.1rem; /* Increased padding */
+    font-size: 1.05rem; /* Slightly larger font */
+    border: 1px solid #ddd; /* Lighter border */
+    border-radius: 10px; /* More rounded input fields */
+    transition: border-color 0.4s, box-shadow 0.4s, background-color 0.3s;
     box-sizing: border-box;
-  }
-  
-  
+    background-color: #f9f9f9; /* Slightly off-white background for inputs */
+}
 
-  
-  
+input[type="email"]:focus,
+input[type="password"]:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.4); /* Stronger focus shadow */
+    background-color: #ffffff; /* White background on focus */
+}
 
-  .login-btn {
+.password-wrapper {
+    position: relative;
+}
+
+.password-wrapper input {
     width: 100%;
-    padding: 0.75rem;
-    background-color: #000;
+    padding-right: 3.5rem; /* More space for toggle icon */
+    box-sizing: border-box;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 1.2rem; /* Adjusted position */
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 1.3rem; /* Larger icon */
+    color: #888; /* Softer icon color */
+    user-select: none;
+    transition: color 0.3s;
+}
+
+.toggle-password:hover {
+    color: #333;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 0.9rem; /* Increased padding */
+    background-color: #007bff;
     color: #fff;
     border: none;
-    border-radius: 8px;
-    font-size: 1rem;
+    border-radius: 10px; /* More rounded button */
+    font-size: 1.1rem; /* Slightly larger font */
+    font-weight: 600; /* Bolder text */
     cursor: pointer;
-    margin-top: 1rem;
-  }
+    margin-top: 1.8rem; /* Adjusted margin */
+    transition: background-color 0.3s, transform 0.2s ease-in-out; /* Add transform transition */
+    letter-spacing: 0.5px; /* Slight letter spacing */
+}
 
-  .login-btn:hover {
-    background-color: #222;
-  }
+.login-btn:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px); /* Subtle lift effect */
+}
+
+.login-btn:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+    transform: none; /* No lift effect when disabled */
+}
+
+.error-message {
+    color: #d32f2f;
+    font-size: 0.9rem; /* Slightly larger error font */
+    margin-top: 0.7rem; /* Adjusted margin */
+    display: none;
+    text-align: center;
+    background-color: #ffebee; /* Light red background for error */
+    border: 1px solid #ef9a9a; /* Red border */
+    padding: 0.7rem; /* Padding around error message */
+    border-radius: 8px; /* Rounded corners for error box */
+}
+
+@media (max-width: 480px) {
+    .login-container {
+        padding: 2rem; /* Adjusted padding for smaller screens */
+        margin: 0.5rem;
+    }
+
+    h2 {
+        font-size: 1.7rem;
+        margin-bottom: 1.8rem;
+    }
+
+    input[type="email"],
+    input[type="password"] {
+        padding: 0.75rem;
+        font-size: 1rem;
+    }
+
+    .login-btn {
+        padding: 0.8rem;
+        font-size: 1rem;
+        margin-top: 1.5rem;
+    }
+    .toggle-password {
+        font-size: 1.1rem;
+    }
+}
