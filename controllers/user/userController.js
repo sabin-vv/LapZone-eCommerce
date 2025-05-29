@@ -108,7 +108,7 @@ const postSignUp = async (req, res) => {
 
     const existingUser = await User.findOne({ $or: [{ email: email }, { mobile: mobile }] });
     if (existingUser) {
-        console.log("user exist")
+        
         return res.render("user/userSignup", { message: "User already exists" });
     }
 

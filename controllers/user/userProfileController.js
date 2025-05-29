@@ -102,7 +102,7 @@ const addAddress = async (req, res) => {
     const user = await User.findById(userId)
 
     const { fullname, mobile, addressLine, district, state, city, pincode, landmark, addressType, isdefault } = req.body
-    console.log(isdefault)
+    
     const formFields = ['fullname', 'mobile', 'addressLine', 'district', 'state', 'city', 'pincode']
 
     const errors = {}

@@ -29,7 +29,7 @@
                         <div class="order-header">
                             <div>
                                 <h2 class="order-title">Order #<%= order.orderId %></h2>
-                                <p class="order-date">Placed on <%= order.createdAt %></p>
+                                <p class="order-date">Placed on <%= order.createdAt.toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) %></p>
                             </div>
                             <div class="d-flex align-items-center">
                                 <span class="status-badge status-<%= order.orderStatus.toLowerCase() %>"><%= order.orderStatus %></span>
@@ -113,9 +113,9 @@
                                                     <span class="status-badge status-<%= item.status.toLowerCase() %>"><%= item.status %></span>
                                                 </td>
                                                 <td data-label="Action" class="product-actions">
-                                                    <% if(item.status === 'Delivered'){ %>
+                                                    <% if(item.status === 'Delivered' && order.items.length > 1){ %>
                                                          <button class="btn-action btn-return" onclick="returnItem('<%= item._id %>')">Return</button>
-                                                    <% }else if (item.status === 'Ordered') { %>
+                                                    <% }else if (item.status === 'Ordered'&& order.items.length > 1) { %>
                                                         <button class="btn-action btn-cancel" onclick="cancelItem('<%= item._id %>')">Cancel</button>
                                                     <% } else if (item.status === 'CANCEL_REQUESTED') { %>
                                                         <span class="action-status">Cancel requested</span>
@@ -152,9 +152,9 @@
                                 <h3 class="section-title">Order Status Timeline</h3>
                                 <div class="tracking-timeline">
                                     <% if (order.statusHistory && order.statusHistory.length > 0) { %>
-                                        <% const sortedHistory = order.statusHistory.sort((a, b) => new Date(b.date) - new Date(a.date)); %>
+                                        <% const sortedHistory = order.statusHistory.sort((a, b) =>  new Date(a.date) - new Date(b.date)); %>
                                         <% sortedHistory.forEach((status, index) => { %>
-                                            <div class="timeline-item <%= index === 0 ? 'active' : '' %>">
+                                            <div class="timeline-item <%= index === sortedHistory.length-1 ? 'active' : '' %>">
                                                 <div class="timeline-content">
                                                     <div class="timeline-status"><%= status.status %></div>
                                                     <div class="timeline-date"><%= status.date %></div>
@@ -191,10 +191,11 @@
                             <!-- Action buttons -->
                             <div class="order-actions">
                                 <% if (order.orderStatus === 'Delivered') { %>
-                                    <a href = '/profile/order/invoice/<%= order._id %>' class="btn-order-action btn-danger text-decoration-none" >Download Invoice</a>
+                                    <a href = '/profile/order/invoice/<%= order._id %>' class="btn-order-action btn btn-warning text-decoration-none" >Download Invoice</a>
+                                    <span class="btn-order-action btn-danger text-decoration-none">Return</span>
                                 <% }else if(order.orderStatus === 'Cancelled'){ %>
                                     <span class="action-status"></span>
-                               <%  }else { %>
+                               <%  }else if(order.items.every(item => item.status === 'Ordered')) { %>
                                 <button class="btn-order-action btn-danger" onclick="cancelOrder('<%= order.orderId %>')">Cancel Order</button>
                                 <%} %>
                             </div>
@@ -266,10 +267,10 @@
                             <label for="returnReason" class="form-label">Reason for Return</label>
                             <select id="returnReason" class="form-select" required>
                                 <option value="">Select a reason</option>
-                                <option value="defective">Defective/doesn't work</option>
-                                <option value="not_as_described">Not as described</option>
-                                <option value="wrong_item">Wrong item received</option>
-                                <option value="no_longer_needed">No longer needed</option>
+                                <option value="Damaged">Defective/doesn't work</option>
+                                <option value="Not as Described">Not as described</option>
+                                <option value="Wrong Item">Wrong item received</option>
+                                <option value="No Longer Needed">No longer needed</option>
                                 <option value="other">Other</option>
                             </select>
                         </div>

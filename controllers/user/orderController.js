@@ -352,7 +352,7 @@ const viewOrders = async (req, res) => {
     const user = await User.findById(userId)
     const username = user.fullname
 
-    const orders = await Order.find({ user }).populate('items.productId')
+    const orders = await Order.find({ user }).populate('items.productId').sort({updatedAt: -1 })
 
     return res.render("user/orderDetails", { orders, user, username })
 }
@@ -410,7 +410,13 @@ const cancelProduct = async (req, rea) => {
     if (!req.session.user) return res.redirect("/")
 
     const { orderId, reason, comment } = req.body
-    console.log(orderId, reason, comment)
+
+    const order = await Order.findById(orderId)
+    if (!order)
+        return res.json({ success: false, message: "Product not Found" })
+
+    
+
 }
 
 const downloadInvoice = async (req, res) => {
@@ -451,31 +457,31 @@ const returnProduct = async (req, res) => {
     const { itemId, reason, comment } = req.body
     const userId = req.session.user
 
-    if(!reason)
-        return res.json({sucess: false,message:"You should select a Resson"})
-    if(reason === 'other' && comment === '')
-        return res.json({success:false, message :"Please Mention the Reason"})
+    if (!reason)
+        return res.json({ sucess: false, message: "You should select a Resson" })
+    if (reason === 'other' && comment === '')
+        return res.json({ success: false, message: "Please Mention the Reason" })
 
     const user = await User.findById(userId)
 
-    const order = await Order.findOne({ user: userId,'items._id' : itemId })
+    const order = await Order.findOne({ user: userId, 'items._id': itemId })
+
+
+    if (!order)
+        return res.json({ success: false, message: "Order not Found in our Server" })
+
+    const item = order.items.find(item => item._id.toString() === itemId.trim())
     
 
-    if(!order) 
-       return  res.json({success: false ,message : "Order not Found in our Server"})
-    
-    const item = order.items.find(item => item._id.toString() === itemId.trim())
-    console.log(item)
-    
     item.status = 'Return Requested'
-    item.returnReason  = reason
+    item.returnReason = reason
     item.returnComment = comment || null
     item.returnRequestDate = new Date()
 
     await order.save()
 
-    return res.json({success : true , message : 'Return Requested successfully'})
-    
+    return res.json({ success: true, message: 'Return Requested successfully' })
+
 
 }
 

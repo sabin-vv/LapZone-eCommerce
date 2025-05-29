@@ -10,6 +10,114 @@
     <link rel="stylesheet" href="/css/profileSidebar.css">
     <link rel="stylesheet" href="/css/wallet.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
+    <style>
+        /* Enhanced styles for scrollable transactions */
+        .transactions-section {
+            position: relative;
+        }
+        
+        .transactions-list {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 8px;
+            margin-right: -8px;
+        }
+        
+        .transactions-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .transactions-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        
+        .transactions-list::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+        
+        .transactions-list::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        
+        .show-all-toggle {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .show-all-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .show-all-toggle i {
+            transition: transform 0.3s ease;
+        }
+        
+        .show-all-toggle.expanded i {
+            transform: rotate(180deg);
+        }
+        
+        .transaction-count {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-left: 4px;
+        }
+        
+        .transactions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .fade-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 16px;
+            height: 30px;
+            background: linear-gradient(transparent, rgba(255, 255, 255, 0.9));
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .fade-overlay.hidden {
+            opacity: 0;
+        }
+        
+        .transaction-item {
+            animation: slideIn 0.3s ease forwards;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .transaction-item:nth-child(1) { animation-delay: 0.1s; }
+        .transaction-item:nth-child(2) { animation-delay: 0.2s; }
+        .transaction-item:nth-child(3) { animation-delay: 0.3s; }
+        .transaction-item:nth-child(4) { animation-delay: 0.4s; }
+        .transaction-item:nth-child(5) { animation-delay: 0.5s; }
+    </style>
 </head>
 
 <body>
@@ -53,59 +161,61 @@
 
                         <!-- Recent Transactions -->
                         <div class="transactions-section">
-                            <div class="section-header">
+                            <div class="transactions-header">
                                 <h3>Recent Transactions</h3>
                                 <% if (wallet.transactions.length> 0) { %>
-                                    <a href="/profile/wallet/history" class="view-all-link">View All (<%=
-                                            wallet.transactions.length %>)</a>
-                                    <% } %>
+                                    <button class="show-all-toggle" id="showAllBtn">
+                                        <span id="toggleText">Show All</span>
+                                        <span class="transaction-count"><%= wallet.transactions.length %></span>
+                                        <i class="bi bi-chevron-down"></i>
+                                    </button>
+                                <% } %>
                             </div>
 
-                            <div class="transactions-list">
-                                <% if (wallet.transactions.length===0) { %>
-                                    <!-- No Transactions -->
-                                    <div class="no-transactions">
-                                        <div class="no-transactions-icon">
-                                            <i class="bi bi-inbox"></i>
+                            <div class="transactions-list-container" style="position: relative;">
+                                <div class="transactions-list" id="transactionsList">
+                                    <% if (wallet.transactions.length===0) { %>
+                                        <!-- No Transactions -->
+                                        <div class="no-transactions">
+                                            <div class="no-transactions-icon">
+                                                <i class="bi bi-inbox"></i>
+                                            </div>
+                                            <h4>No transactions yet</h4>
+                                            <p>Start by adding money to your wallet or making a purchase</p>
                                         </div>
-                                        <h4>No transactions yet</h4>
-                                        <p>Start by adding money to your wallet or making a purchase</p>
-                                    </div>
                                     <% } else { %>
-                                        <!-- Show recent transactions (last 5) -->
-                                        <% const recentTransactions=wallet.transactions .sort((a, b)=> new Date(b.date)
-                                            - new Date(a.date))
-                                            .slice(0, 5);
-                                            %>
-                                            <% recentTransactions.forEach(transaction=> { %>
-                                                <div class="transaction-item">
-                                                    <div class="transaction-icon">
-                                                        <% if (transaction.type==='credit' ) { %>
-                                                            <i class="bi bi-arrow-down-circle text-success"></i>
-                                                            <% } else { %>
-                                                                <i class="bi bi-arrow-up-circle text-danger"></i>
-                                                                <% } %>
-                                                    </div>
-                                                    <div class="transaction-details">
-                                                        <h5>
-                                                            <%= transaction.description %>
-                                                        </h5>
-                                                        <p class="transaction-date">
-                                                            <%= new Date(transaction.date).toLocaleDateString('en-IN', {
-                                                                year: 'numeric' , month: 'long' , day: 'numeric' ,
-                                                                hour: '2-digit' , minute: '2-digit' }) %>
-                                                        </p>
-                                                    </div>
-                                                    <div class="transaction-amount <%= transaction.type %>">
-                                                        <% if (transaction.type==='credit' ) { %>
-                                                            +₹<%= transaction.amount.toLocaleString('en-IN') %>
-                                                                <% } else { %>
-                                                                    -₹<%= transaction.amount.toLocaleString('en-IN') %>
-                                                                        <% } %>
-                                                    </div>
-                                                </div>
-                                                <% }); %>
+                                        <!-- Show all transactions (sorted by date) -->
+                                        <% const sortedTransactions = wallet.transactions.sort((a, b) => new Date(b.date) - new Date(a.date)); %>
+                                        <% sortedTransactions.forEach((transaction, index) => { %>
+                                            <div class="transaction-item <%= index >= 5 ? 'hidden-transaction' : '' %>">
+                                                <div class="transaction-icon">
+                                                    <% if (transaction.type==='credit' ) { %>
+                                                        <i class="bi bi-arrow-down-circle text-success"></i>
+                                                    <% } else { %>
+                                                        <i class="bi bi-arrow-up-circle text-danger"></i>
                                                     <% } %>
+                                                </div>
+                                                <div class="transaction-details">
+                                                    <h5><%= transaction.description %></h5>
+                                                    <p class="transaction-date">
+                                                        <%= new Date(transaction.date).toLocaleDateString('en-IN', {
+                                                            year: 'numeric', month: 'long', day: 'numeric',
+                                                            hour: '2-digit', minute: '2-digit'
+                                                        }) %>
+                                                    </p>
+                                                </div>
+                                                <div class="transaction-amount <%= transaction.type %>">
+                                                    <% if (transaction.type==='credit' ) { %>
+                                                        +₹<%= transaction.amount.toLocaleString('en-IN') %>
+                                                    <% } else { %>
+                                                        -₹<%= transaction.amount.toLocaleString('en-IN') %>
+                                                    <% } %>
+                                                </div>
+                                            </div>
+                                        <% }); %>
+                                    <% } %>
+                                </div>
+                                <div class="fade-overlay" id="fadeOverlay"></div>
                             </div>
                         </div>
                     </div>
@@ -170,15 +280,14 @@
 
         <script>
             document.addEventListener('DOMContentLoaded', function () {
+                // Quick amount selection
                 const quickAmountBtns = document.querySelectorAll('.quick-amount');
                 const amountInput = document.getElementById('amount');
 
                 quickAmountBtns.forEach(btn => {
                     btn.addEventListener('click', function () {
                         quickAmountBtns.forEach(b => b.classList.remove('selected'));
-
                         this.classList.add('selected');
-
                         const amount = this.getAttribute('data-amount');
                         amountInput.value = amount;
                     });
@@ -188,6 +297,7 @@
                     quickAmountBtns.forEach(btn => btn.classList.remove('selected'));
                 });
 
+                // Add money form handling
                 const addMoneyForm = document.getElementById('addMoneyForm');
                 addMoneyForm.addEventListener('submit', function (e) {
                     const amount = parseInt(amountInput.value);
@@ -213,13 +323,85 @@
                     }, 10000);
                 });
 
-
+                // Balance formatting
                 const balanceAmount = document.querySelector('.balance-amount');
                 if (balanceAmount) {
                     const balance = '<%= wallet.balance %>';
                     balanceAmount.textContent = '₹' + parseInt(balance).toLocaleString('en-IN');
                 }
 
+                // Show/Hide all transactions functionality
+                const showAllBtn = document.getElementById('showAllBtn');
+                const transactionsList = document.getElementById('transactionsList');
+                const fadeOverlay = document.getElementById('fadeOverlay');
+                const toggleText = document.getElementById('toggleText');
+                let showingAll = false;
+
+                if (showAllBtn) {
+                    // Initially hide transactions beyond the first 5
+                    const hiddenTransactions = document.querySelectorAll('.hidden-transaction');
+                    hiddenTransactions.forEach(transaction => {
+                        transaction.style.display = 'none';
+                    });
+
+                    // Show fade overlay if there are more than 5 transactions
+                    if (hiddenTransactions.length > 0) {
+                        fadeOverlay.style.display = 'block';
+                    } else {
+                        fadeOverlay.style.display = 'none';
+                    }
+
+                    showAllBtn.addEventListener('click', function () {
+                        showingAll = !showingAll;
+                        
+                        if (showingAll) {
+                            // Show all transactions
+                            hiddenTransactions.forEach((transaction, index) => {
+                                setTimeout(() => {
+                                    transaction.style.display = 'flex';
+                                    transaction.style.animation = `slideIn 0.3s ease forwards`;
+                                    transaction.style.animationDelay = `${index * 0.1}s`;
+                                }, index * 50);
+                            });
+                            
+                            toggleText.textContent = 'Show Less';
+                            showAllBtn.classList.add('expanded');
+                            fadeOverlay.classList.add('hidden');
+                            
+                            // Enable scrolling
+                            transactionsList.style.maxHeight = '400px';
+                            transactionsList.style.overflowY = 'auto';
+                        } else {
+                            // Hide extra transactions
+                            hiddenTransactions.forEach(transaction => {
+                                transaction.style.display = 'none';
+                            });
+                            
+                            toggleText.textContent = 'Show All';
+                            showAllBtn.classList.remove('expanded');
+                            fadeOverlay.classList.remove('hidden');
+                            
+                            // Disable scrolling
+                            transactionsList.style.maxHeight = 'none';
+                            transactionsList.style.overflowY = 'visible';
+                            transactionsList.scrollTop = 0;
+                        }
+                    });
+
+                    // Handle scroll to hide/show fade overlay when all transactions are shown
+                    transactionsList.addEventListener('scroll', function() {
+                        if (showingAll) {
+                            const isScrolledToBottom = transactionsList.scrollHeight - transactionsList.clientHeight <= transactionsList.scrollTop + 1;
+                            if (isScrolledToBottom) {
+                                fadeOverlay.style.opacity = '0';
+                            } else {
+                                fadeOverlay.style.opacity = '1';
+                            }
+                        }
+                    });
+                }
+
+                // Toast notifications
                 const urlParams = new URLSearchParams(window.location.search);
                 const success = urlParams.get('success');
                 const error = urlParams.get('error');
@@ -239,7 +421,6 @@
                         position: 'bottomRight'
                     });
                 }
-
             });
         </script>
 

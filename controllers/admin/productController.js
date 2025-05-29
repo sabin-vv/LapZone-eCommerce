@@ -366,7 +366,7 @@ const addProduct = async (req, res) => {
     errors.imageUpload = uploadErrors.join("; ")
   }
   const category = await Category.findOne({name: req.body.category})
-  console.log(category)
+  
 
   const productData = {
     name: req.body.name,

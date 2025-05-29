@@ -1,5 +1,5 @@
+
 document.addEventListener('DOMContentLoaded', function() {
-    // Set up expand/collapse functionality for order cards
     const orderCards = document.querySelectorAll('.order-card');
     orderCards.forEach(card => {
         const header = card.querySelector('.order-header');
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (data.success) {
             Swal.fire({
                 icon: 'success',
-                title: 'Item Cancelled',
+                title: 'Cencellation Requested',
                 text: 'The item was cancelled successfully.',
                 timer: 2000,
                 showConfirmButton: false

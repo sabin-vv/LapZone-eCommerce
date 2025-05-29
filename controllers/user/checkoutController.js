@@ -52,7 +52,7 @@ const orderplace = async (req, res) => {
   const userId = req.session.user;
   const { shippingAddress, paymentMethod, total } = req.body;
   const { appliedCoupon } = req.body
-  console.log(appliedCoupon)
+
 
   const couponCode = appliedCoupon?.couponCode || null;
   const couponId = appliedCoupon?.couponId || null;
@@ -84,6 +84,7 @@ const orderplace = async (req, res) => {
     await wallet.save();
   }
 
+  let paymentStatus = 'Pending';
 
   if (paymentMethod === 'Wallet') {
 
@@ -91,6 +92,7 @@ const orderplace = async (req, res) => {
       return res.json({ success: false, message: "Not Enough Money" })
 
     wallet.balance -= totalPrice
+
 
     wallet.transactions.push({
       type: 'debit',
@@ -101,6 +103,7 @@ const orderplace = async (req, res) => {
     });
 
     await wallet.save()
+    paymentStatus = 'Completed'
 
   } else if (paymentMethod === 'Online') {
     paymentStatus = 'Completed';
@@ -133,11 +136,11 @@ const orderplace = async (req, res) => {
     totalAmount,
     shippingAddress,
     paymentMethod,
-    paymentStatus: 'Pending',
+    paymentStatus,
     orderStatus: 'Processing',
-    discountAmount,
+    discountAmount: appliedCoupon?.discount || 0,
     statusHistory: [{ status: 'Processing', current: true }],
-    coupon: couponCode ? { coupon: couponCode, couponId,  } : undefined,
+    coupon: couponCode ? { coupon: couponCode, couponId, } : undefined,
 
   });
 
@@ -162,7 +165,7 @@ const orderPage = async (req, res) => {
   res.render("user/orderSuccessfullPage", { user, username, order })
 }
 
-const orderFailurePafe = (req,res) =>{
+const orderFailurePafe = (req, res) => {
 
   res.render("user/orderFailurePage")
 }

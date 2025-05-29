@@ -3,8 +3,6 @@ const Product = (require("../../model/products"))
 const Wallet = require("../../model/wallet")
 
 
-
-
 const listOrders = async (req, res) => {
 
     if (!req.session.admin) return res.redirect("/admin")
@@ -88,7 +86,6 @@ const updateOrderStatus = async (req, res) => {
     }
 
 }
-
 
 const viewOrder = async (req, res) => {
     try {
@@ -176,20 +173,10 @@ const cancelReturnRequest = async (req, res) => {
     try {
         if (!req.session.admin) return res.redirect("/admin")
 
-        const returnRequests = await Order.find({
-            'items.status': 'Return Requested'
-        })
-            .populate('user', 'fullname email')
-            .populate('items.productId', 'productName images')
-            .sort({ 'items.returnRequestDate': -1 });
+        const returnRequests = await Order.find({ 'items.status': 'Return Requested' }).populate('user', 'fullname email').populate('items.productId', 'productName images').sort({ 'items.returnRequestDate': -1 });
 
 
-        const cancelRequests = await Order.find({
-            'items.status': 'Cancel Requested'
-        })
-            .populate('user', 'fullname email')
-            .populate('items.productId', 'productName images')
-            .sort({ 'items.cancelRequestDate': -1 });
+        const cancelRequests = await Order.find({ 'items.status': 'Cancel Requested' }).populate('user', 'fullname email').populate('items.productId', 'productName images').sort({ 'items.cancelRequestDate': -1 });
 
         res.render('admin/returnCancelRequests', {
             returnRequests,
@@ -209,41 +196,55 @@ const returnApprove = async (req, res) => {
     try {
         const { orderId, itemId } = req.body;
 
-        const order = await Order.findById(orderId).populate('items.productId')
-        if (!order) {
-            return res.status(404).json({ error: 'Order not found' });
-        }
+        const order = await Order.findById(orderId).populate('items.productId');
+        if (!order) return res.status(404).json({ error: 'Order not found' });
 
         const item = order.items.id(itemId);
-        if (!item) {
-            return res.status(404).json({ error: 'Item not found' });
+        if (!item) return res.status(404).json({ error: 'Item not found' });
+
+        if (item.status === 'Returned') {
+            return res.json({ success: true, message: 'Item already returned' });
         }
 
-        let wallet = await Wallet.findOne({ userId: order.user })
+        const subtotal = order.subtotal;
+        const totalDiscount = order.discountAmount || 0;
+        const totalTax = order.tax;
+        const shippingFee = order.shippingFee;
 
-        item.status = 'Returned';
-        item.returnDate = new Date();
+        const itemTotal = item.price * item.quantity;
+        const itemDiscount = (itemTotal / subtotal) * totalDiscount;
+        const itemTax = (itemTotal / subtotal) * totalTax;
 
+        console.log(item.returnReason)
+        const eligibleReasons = ['Damaged', 'Wrong Item'];
+        const returnReason = item.returnReason?.toLowerCase() || '';
+        const activeItems = order.items.filter(i => i._id.toString() !== itemId && i.status !== 'Returned' && i.status !== 'Cancelled');
+        const isLastReturnableItem = activeItems.length === 0;
 
-        order.statusHistory.push({
-            status: 'Returned',
-            date: new Date(),
-            current: false
-        });
+        const refundShipping = eligibleReasons.includes(returnReason) && isLastReturnableItem ? shippingFee : 0;
+        console.log(refundShipping)
 
-        if (order.paymentStatus == 'Completed') {
-            wallet.balance += order.totalAmount
+        const refundAmount = Math.round(itemTotal - itemDiscount + itemTax + refundShipping);
+
+        if (order.paymentStatus === 'Completed') {
+            let wallet = await Wallet.findOne({ userId: order.user });
+            if (!wallet) wallet = new Wallet({ userId: order.user, balance: 0, transactions: [] });
+
+            wallet.balance += refundAmount;
 
             wallet.transactions.push({
                 type: 'credit',
                 amount: refundAmount,
-                description: `Refund for Order #${order.orderId}`,
+                description: `Refund for returned item in Order #${order.orderId}`,
                 date: new Date(),
                 createdAt: new Date()
             });
-            await wallet.save()
+
+            await wallet.save();
         }
 
+        item.status = 'Returned';
+        item.returnDate = new Date();
 
         const product = await Product.findById(item.productId._id);
         if (product) {
@@ -251,19 +252,26 @@ const returnApprove = async (req, res) => {
             await product.save();
         }
 
+        order.statusHistory.push({
+            status: 'Returned',
+            date: new Date(),
+            current: false
+        });
+
         await order.save();
 
         res.json({
             success: true,
-            message: 'Return request approved and stock updated successfully'
+            refundAmount,
+            refundShipping,
+            message: `Return approved. ₹${refundAmount} refunded to wallet${refundShipping ? ' (includes shipping fee)' : ''}.`
         });
 
     } catch (error) {
         console.error('Error approving return request:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
-}
-
+};
 
 const returnReject = async (req, res) => {
     try {
@@ -324,9 +332,40 @@ const cancelApprove = async (req, res) => {
             return res.status(404).json({ error: 'Item not found' });
         }
 
+        if (item.status === 'Cancelled') {
+            return res.json({
+                success: true,
+                message: 'Item already cancelled'
+            });
+        }
+
+        const subtotal = order.subtotal;
+        const shippingFee = order.shippingFee;
+        const totalTax = order.tax;
+        const totalAmount = order.totalAmount
+        const totalDiscount = order.discountAmount || 0;
+
+        const itemTotal = item.price * item.quantity
+
+        const itemDiscount = (itemTotal / subtotal) * totalDiscount
+        const itemTax = (itemTotal / subtotal) * totalTax;
+
+        const otherActiveItems = order.items.filter(i => i._id.toString() !== itemId && i.status !== 'Cancelled');
+        const refundShipping = otherActiveItems.length === 0 ? shippingFee : 0;
+
+        const refundAmount = Math.round(itemTotal - itemDiscount + itemTax + refundShipping);
+
+        item.status = 'Cancelled';
+        item.cancelDate = new Date();
+
+        await Product.findByIdAndUpdate(item.productId, { $inc: { count: item.quantity } });
+
+
         let wallet = await Wallet.findOne({ userId: order.user })
+        if (!wallet) wallet = new Wallet({ userId: order.user, balance: 0, transactions: [] });
+
         if (order.paymentStatus == 'Completed') {
-            wallet.balance += order.totalAmount
+            wallet.balance += refundAmount
 
             wallet.transactions.push({
                 type: 'credit',
@@ -339,8 +378,10 @@ const cancelApprove = async (req, res) => {
         }
 
 
-        item.status = 'Cancelled';
-        item.cancelDate = new Date();
+        await Product.findByIdAndUpdate(itemId,
+            {
+                $inc: { count: item.quantity }
+            });
 
 
         const allItemsCancelled = order.items.every(item => item.status === 'Cancelled');
@@ -359,7 +400,9 @@ const cancelApprove = async (req, res) => {
 
         res.json({
             success: true,
-            message: 'Cancel request approved successfully'
+            message: `Cancel request approved successfully. ₹${Math.round(refundAmount)} refunded.`,
+            refundAmount: Math.round(refundAmount),
+            refundShipping: refundShipping
         });
 
     } catch (error) {
@@ -383,7 +426,7 @@ const cancelReject = async (req, res) => {
         if (!item) {
             return res.status(404).json({ error: 'Item not found' });
         }
-        
+
         item.status = order.orderStatus === 'Processing' ? 'Processing' : 'Ordered';
 
 
