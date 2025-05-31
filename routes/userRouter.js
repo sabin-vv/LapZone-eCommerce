@@ -12,6 +12,7 @@ const OrderController = require("../controllers/user/orderController.js")
 const walletController = require("../controllers/user/walletController.js")
 const couponController = require('../controllers/user/couponController.js')
 const razorpayController = require("../controllers/user/razorpayController.js")
+const referralController = require("../controllers/user/referralController.js")
 
 
 router.get('/', userController.landingPage)
@@ -20,18 +21,13 @@ router.get('/signup', userController.signupPage)
 router.post('/signup', userController.postSignUp)
 router.post("/verify-otp", userController.verifyOtp)
 router.post("/resend-otp", userController.resendOtp)
-
-
-
+router.post("/signup/referral-code", userController.checkReferralCode)
 
 router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }))
-
 router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: "/login" }), (req, res) => {
     req.session.user = req.user;
     res.redirect('/home')
 })
-
-
 
 router.post("/login", userController.postLoginPage)
 router.get("/home", isUserBlocked, userController.homePage)
@@ -41,7 +37,6 @@ router.post("/forgot-verify-otp", userController.forgotVerifyOtp)
 router.get("/newpassword", userController.newPassword)
 router.post("/reset-password", userController.resetPassword)
 router.post("/logout", userController.userLogout)
-
 
 
 router.get("/shop", isUserBlocked, productController.listProducts)
@@ -68,29 +63,39 @@ router.get("/wishlist/clear-wishlist",wishListController.clearWishlist)
 router.post('/wishlist/remove/:id' ,wishListController.removeWishlistProduct)
 router.post("/wishlist/add-to-cart",wishListController.addtoCart)
 
+
 router.post("/cart/add-to-cart", cartController.addtoCart)
 router.get("/cart",cartController.viewCartPage)
 router.post("/cart/update",cartController.cartUpdate)
 router.post("/cart/remove-item/:id",cartController.removecartItem)
 router.get("/cart/clear-cart" ,cartController.emptyCart)
 
+
 router.get("/user/checkout",checkoutController.checkoutPage)
 router.post("/user/order",checkoutController.orderplace)
 router.get("/user/order-page/:id",checkoutController.orderPage)
 router.get("/user/order-failed",checkoutController.orderFailurePafe)
 
+
 router.get("/profile/order",OrderController.viewOrders)
 router.post("/profile/order/cancel-item",OrderController.cancelitem)
-router.post("/profile/order/cancel",OrderController.cancelProduct)
+router.post("/profile/order/cancel",OrderController.cancelOrder)
 router.get("/profile/order/invoice/:id" ,OrderController.downloadInvoice)
 router.post("/profile/order/return-item",OrderController.returnProduct)
+router.post("/profile/order/return",OrderController.returnOrder)
+
 
 router.get("/profile/wallet" ,walletController.viewWalletPage)
 router.post ("/profile/wallet/add",walletController.addMoneyToWallet)
+
 
 router.post("/user/create-razorpay-order",razorpayController.createRazoroay)
 
 
 router.post("/profile/apply-coupon",couponController.applyCoupon)
+router.get("/profile/coupon",couponController.viewCouponPage)
+
+router.get("/profile/referral",referralController.viewReferralPage)
+
 
 module.exports = router

@@ -140,7 +140,7 @@
         }
 
         .reason-cell {
-            max-width: 200px;
+            max-width: 180px;
         }
 
         .reason-tag-small {
@@ -174,7 +174,8 @@
         .actions-cell {
             display: flex;
             gap: 6px;
-            flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-start;
         }
 
         .action-btn-small {
@@ -188,6 +189,7 @@
             cursor: pointer;
             transition: all 0.2s ease;
             font-size: 0.7rem;
+            white-space: nowrap;
         }
 
         .approve-btn-small {
@@ -222,6 +224,7 @@
             
             .actions-cell {
                 flex-direction: column;
+                gap: 4px;
             }
         }
 
@@ -297,10 +300,10 @@
                         <th style="width: 120px;">Order ID</th>
                         <th style="width: 120px;">Type</th>
                         <th style="width: 250px;">Product</th>
-                        <th style="width: 150px;">Customer</th>
-                        <th style="width: 200px;">Reason</th>
+                        <th style="width: 120px;">Customer</th>
+                        <th style="width: 180px;">Reason</th>
                         <th style="width: 100px;">Date</th>
-                        <th style="width: 150px;">Actions</th>
+                        <th style="width: 180px;">Actions</th>
                     </tr>
                 </thead>
                 <tbody id="requestsTableBody">

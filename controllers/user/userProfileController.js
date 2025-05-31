@@ -12,7 +12,7 @@ const profilePage = async (req, res) => {
 
     const userId = req.session.user
     const user = await User.findById(userId)
-    res.render("user/userProfile", { user, username: null })
+    res.render("user/userProfile", { user })
 
 }
 

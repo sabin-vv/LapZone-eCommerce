@@ -22,10 +22,7 @@
     <main class="main-content">
         <div class="page-header">
             <h1 class="page-title">Orders</h1>
-            <div class="action-buttons">
-                <button class="btn btn-outline">Export</button>
-                <button class="btn btn-primary">Add New Order</button>
-            </div>
+            
         </div>
 
         <div class="filters">
@@ -118,6 +115,7 @@
                                 <% const currentStatus = order.orderStatus.trim(); %>
                                 <% const isDisabled = currentStatus === 'Cancelled' || currentStatus === 'Delivered'; %>
                                 <% const statuses = ['Processing', 'Shipped', 'Delivered', 'Cancelled']; %>
+                                <% const lastStatus = order.statusHistory?.[order.statusHistory.length - 1]; %>
 
                                 <select 
                                     name="orderStatus" 
@@ -130,6 +128,9 @@
                                             <%= status %>
                                         </option>
                                     <% }) %>
+                                    <% if (lastStatus === 'Return Requested') { %>
+                                        <option value="Return" <%= currentStatus === 'Return' ? 'selected' : '' %>>Return</option>
+                                    <% } %>
                                 </select>
                             </td>
                             <td class="action-cell">

@@ -70,6 +70,7 @@ const clearWishlist = async (req, res) => {
     res.redirect("/wishlist")
 
 }
+
 const removeWishlistProduct = async (req, res) => {
 
     if (!req.session.user) return res.redirect("/")
@@ -83,7 +84,6 @@ const removeWishlistProduct = async (req, res) => {
     res.json({ success: true, mesage: "Removed from wishlist" })
 
 }
-
 
 const addtoCart = async (req, res) => {
 

@@ -6,6 +6,14 @@ const Product = require("../../model/products")
 const Wishlist = require("../../model/wishlist")
 
 
+function generateReferralCode() {
+    const char = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let code = '';
+    for (let i = 0; i < 8; i++) {
+        code += char.charAt(Math.floor(Math.random() * char.length));
+    }
+    return code;
+}
 
 const landingPage = async (req, res) => {
 
@@ -33,7 +41,7 @@ const signupPage = (req, res) => {
     if (req.session.user)
         return res.redirect("/home")
 
-    return res.render("user/userSignup", { errors: null ,message :null});
+    return res.render("user/userSignup", { errors: null, message: null, error: null });
 };
 
 
@@ -57,26 +65,38 @@ async function sendverificationEmail(email, otp) {
         from: process.env.NODEMAILER_EMAIL,
         to: email,
         subject: "OTP verification",
-        text: `Verification Code ${otp}`
-    })
+        text: `Your verification code is: ${otp}`, // Fallback for plain text email clients
+        html: `
+    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px;">
+      <h2 style="color: #4A90E2;">lapZone Email Verification</h2>
+      <p>Hi there,</p>
+      <p>Thank you for signing up. Please use the OTP below to verify your email address:</p>
+      <div style="margin: 20px 0; padding: 12px 20px; background-color: #f5f5f5; border-left: 4px solid #4A90E2; font-size: 24px; font-weight: bold;">
+        ${otp}
+      </div>
+      <p>This code will expire in 10 minutes.</p>
+      <p style="margin-top: 30px;">Best regards,<br>LapZone Team</p>
+    </div>
+  `
+    });
     return info.accepted.length > 0
 
 }
 
 const postSignUp = async (req, res) => {
-    const { fullname, email, mobile, password, confpassword } = req.body;
+    const { fullname, email, mobile, password, confpassword, referralCode } = req.body;
+
+    
+    if (referralCode) {
+        refferedUser = await User.findOne({ referralCode })
+    }
+    let refferedBy = refferedUser ? refferedUser : null
 
     const fields = [
         'fullname', 'email', 'mobile', 'password', 'confpassword'
     ]
 
     const errors = {}
-
-    fields.forEach(item => {
-        if (!req.body[item])
-            errors[item] = `${item} is required`;
-    })
-
 
     if (!/^[A-Za-z\s]+$/.test(fullname))
         errors['fullname'] = "only letters and spaces are allowed"
@@ -98,20 +118,24 @@ const postSignUp = async (req, res) => {
     if (!/^[A-Za-z\d@$!%*?&]{8,}$/.test(password))
         errors['password'] = "Password should be minimum 8 character long";
 
-    
+    fields.forEach(item => {
+        if (!req.body[item])
+            errors[item] = `${item} is required`;
+    })
+
+
 
     if (password !== confpassword)
         errors['confpassword'] = "passwords Missmatch";
 
-    if (Object.keys(errors > 0))
-        return res.render("user/userSignup", { errors, message: null });
+    if (Object.keys(errors).length > 0)
+        return res.render("user/userSignup", { errors, message: null, formData, error: null });
 
     const existingUser = await User.findOne({ $or: [{ email: email }, { mobile: mobile }] });
     if (existingUser) {
-        
-        return res.render("user/userSignup", { message: "User already exists" });
-    }
 
+        return res.render("user/userSignup", { message: "User already exists", error: null });
+    }
     const otp = generateOtp()
     const emailsend = await sendverificationEmail(email, otp)
     console.log(otp)
@@ -119,10 +143,8 @@ const postSignUp = async (req, res) => {
     if (!emailsend)
         res.json("Otp send error")
 
-
     req.session.otp = otp
-    req.session.userData = { fname, email, mobile, password }
-
+    req.session.userData = { fullname, email, mobile, password, refferedBy };
 
     res.render("user/mailverification", { data: email });
 };
@@ -135,10 +157,12 @@ const verifyOtp = async (req, res) => {
         const userdata = req.session.userData
         const hashedPassword = await bcrypt.hash(userdata.password, 10);
         const user = new User({
-            fullname: userdata.fname,
+            fullname: userdata.fullname,
             email: userdata.email,
             mobile: userdata.mobile,
             password: hashedPassword,
+            referralCode: generateReferralCode(),
+            refferedBy: userdata.refferedBy._id,
         });
         await user.save();
 
@@ -318,7 +342,16 @@ const userLogout = (req, res) => {
     })
 }
 
+const checkReferralCode = async (req, res) => {
 
+    const { code } = req.body
+
+    const user = await User.findOne({ referralCode: code })
+    if (!user)
+        return res.json({ success: false, message: "Invalid Referral Code" })
+    return res.json({ success: true })
+
+}
 
 module.exports = {
     landingPage,
@@ -336,5 +369,7 @@ module.exports = {
     forgotVerifyOtp,
     newPassword,
     resetPassword,
-    userLogout
+    userLogout,
+    checkReferralCode,
+    generateReferralCode,
 };

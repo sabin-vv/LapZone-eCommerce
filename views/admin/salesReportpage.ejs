@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Report | Admin Dashboard</title>
+    
+    <!-- CSS Dependencies -->
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/salesReportpage.css">  
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Include Sidebar -->
+        <%- include("../partials/admin/sidebar.ejs") %>
+        
+        <div class="main-content">
+            <button class="hamburger-btn" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">
+                    <i class="fas fa-chart-line"></i>
+                    Sales Report Dashboard
+                </h1>
+                <div class="d-flex gap-2">
+                    <span class="badge bg-primary">Last Updated: <span id="lastUpdated">--</span></span>
+                </div>
+            </div>
+            
+            <!-- Filter Status -->
+            <div id="filterStatus" class="filter-status">
+                <i class="fas fa-filter"></i>
+                <span id="filterStatusText">No filters applied</span>
+                <button onclick="clearAllFilters()" style="background: none; border: none; color: white; margin-left: 10px; cursor: pointer;">
+                    <i class="fas fa-times"></i> Clear
+                </button>
+            </div>
+            
+            <!-- Filter Controls -->
+            <div class="filter-container">
+                <h3 class="filter-header">
+                    <i class="fas fa-sliders-h"></i>
+                    Filter & Export Options
+                </h3>
+                
+                <div class="filter-controls">
+                    <div class="filter-group">
+                        <label class="filter-label">Time Period</label>
+                        <select id="filterType" class="filter-select">
+                            <option value="daily">Today</option>
+                            <option value="weekly">This Week</option>
+                            <option value="monthly">This Month</option>
+                            <option value="yearly">This Year</option>
+                            <option value="custom">Custom Range</option>
+                        </select>
+                    </div>
+                    
+                    <div id="customDateRange" class="custom-date-range">
+                        <div class="filter-group">
+                            <label class="filter-label">Start Date</label>
+                            <input type="date" id="startDate" class="filter-input">
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">End Date</label>
+                            <input type="date" id="endDate" class="filter-input">
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">&nbsp;</label>
+                        <button onclick="applyFilters()" class="btn btn-primary">
+                            <span id="loadingSpinner" class="loading-spinner" style="display: none;"></span>
+                            <i class="fas fa-search"></i>
+                            Apply Filter
+                        </button>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">&nbsp;</label>
+                        <div class="d-flex gap-2">
+                            <button onclick="exportPDF()" class="btn btn-success">
+                                <i class="fas fa-file-pdf"></i>
+                                PDF
+                            </button>
+                            <button onclick="exportExcel()" class="btn btn-info">
+                                <i class="fas fa-file-excel"></i>
+                                Excel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Key Metrics -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">Total Orders</div>
+                        <div class="stat-icon icon-orders">
+                            <i class="fas fa-shopping-bag"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="totalOrdersDisplay"><%= totalOrders || 0 %></div>
+                    <div class="stat-growth" id="ordersGrowth">vs previous period</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">Total Revenue</div>
+                        <div class="stat-icon icon-revenue">
+                            <i class="fas fa-rupee-sign"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="totalRevenueDisplay">₹<%= totalRevenue ? Math.round(totalRevenue).toLocaleString('en-IN') : 0 %></div>
+                    <div class="stat-growth" id="revenueGrowth">vs previous period</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">Total Discounts</div>
+                        <div class="stat-icon icon-discount">
+                            <i class="fas fa-tag"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="totalDiscountDisplay">₹<%= totalDiscount ? Math.round(totalDiscount).toLocaleString('en-IN') : 0 %></div>
+                    <div class="stat-growth" id="discountGrowth">vs previous period</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">Average Order Value</div>
+                        <div class="stat-icon icon-avg">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="avgOrderValueDisplay">₹<%= totalOrders > 0 ? Math.round((totalRevenue || 0) / totalOrders).toLocaleString('en-IN') : 0 %></div>
+                    <div class="stat-growth" id="avgGrowth">vs previous period</div>
+                </div>
+            </div>
+            
+            <!-- Charts Section -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">Sales Trend</div>
+                        <select id="chartType" class="filter-select">
+                            <option value="revenue">Revenue</option>
+                            <option value="orders">Orders</option>
+                        </select>
+                    </div>
+                    <div class="chart-container">
+                        <div id="salesChartLoading" class="chart-loading">
+                            <div class="loading-spinner"></div>
+                            <div>Loading chart...</div>
+                        </div>
+                        <canvas id="salesChart" style="display: none;"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">Payment Methods</div>
+                    </div>
+                    <div class="chart-container">
+                        <div id="paymentChartLoading" class="chart-loading">
+                            <div class="loading-spinner"></div>
+                            <div>Loading chart...</div>
+                        </div>
+                        <canvas id="paymentChart" style="display: none;"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Data Table -->
+            <div class="table-card">
+                <div class="table-header">
+                    <div class="table-title">Order Details</div>
+                    <div class="table-controls">
+                        <input type="text" id="searchInput" placeholder="Search orders, customers..." class="search-input">
+                        <select id="statusFilter" class="filter-select">
+                            <option value="">All Status</option>
+                            <option value="Processing">Processing</option>
+                            <option value="Delivered">Delivered</option>
+                            <option value="Cancelled">Cancelled</option>
+                            <option value="Returned">Returned</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div style="overflow-x: auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Date</th>
+                                <th>Customer</th>
+                                <th>Amount</th>
+                                <th>Discount</th>
+                                <th>Payment</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersTableBody">
+                            <% if (orders && orders.length > 0) { %>
+                                <% orders.slice(0, 10).forEach(order => { %>
+                                    <tr>
+                                        <td class="font-medium"><%= order.orderId %></td>
+                                        <td><%= new Date(order.createdAt).toLocaleDateString('en-IN') %></td>
+                                        <td><%= order.user ? order.user.fullname : 'N/A' %></td>
+                                        <td>₹<%= order.totalAmount.toLocaleString('en-IN') %></td>
+                                        <td>₹<%= (order.discountAmount || 0).toLocaleString('en-IN') %></td>
+                                        <td><%= order.paymentMethod %></td>
+                                        <td>
+                                            <span class="status-badge status-<%= order.orderStatus.toLowerCase() %>">
+                                                <%= order.orderStatus %>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="7" class="text-center py-4">
+                                        <div class="no-data">
+                                            <i class="fas fa-inbox"></i>
+                                            <div>No orders found</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="pagination">
+                    <div class="pagination-info">
+                        Showing <span id="showingCount"><%= orders ? Math.min(orders.length, 10) : 0 %></span> of <span id="totalCount"><%= orders ? orders.length : 0 %></span> orders
+                    </div>
+                    <div class="pagination-controls">
+                        <button class="page-btn" id="prevBtn" onclick="changePage(-1)" disabled>
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <span id="pageInfo" class="page-btn active">1</span>
+                        <button class="page-btn" id="nextBtn" onclick="changePage(1)" <%= orders && orders.length > 10 ? '' : 'disabled' %>>
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Pass server data to JavaScript -->
+    <script>
+        // Server data passed from EJS
+        window.serverData = {
+            orders: <%- JSON.stringify(orders || []) %>,
+            totalOrders: <%= totalOrders || 0 %>,
+            totalRevenue: <%= totalRevenue || 0 %>,
+            totalDiscount: <%= totalDiscount || 0 %>
+        };
+    </script>
+    
+    <!-- JavaScript Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    
+    <script>
+        // Global variables
+        let allOrders = []; // Original data from server
+        let reportData = []; // Filtered data
+        let filteredData = []; // Table filtered data
+        let currentPage = 1;
+        const pageSize = 10;
+        let salesChart, paymentChart;
+        let activeFilters = {};
+        
+        // Initialize page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Get data from server
+            if (window.serverData && window.serverData.orders) {
+                allOrders = window.serverData.orders;
+                reportData = [...allOrders]; // Start with all data
+            } else {
+                console.warn('No server data found');
+                allOrders = [];
+                reportData = [];
+            }
+            
+            initializePage();
+        });
+        
+        function initializePage() {
+            try {
+                
+                // Set last updated immediately
+                updateLastUpdated();
+                
+                // Initialize date pickers and event listeners
+                initializeDatePickers();
+                initializeEventListeners();
+                
+                // Initialize with existing data
+                filteredData = [...reportData];
+                
+                // Initialize charts with a delay to ensure DOM is ready
+                setTimeout(() => {
+                    updateCharts();
+                }, 500);
+                
+                // Initialize table
+                filterAndRenderTable();
+                
+            } catch (error) {
+                console.error('Error initializing page:', error);
+            }
+        }
+        
+        function initializeDatePickers() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('endDate').value = today;
+            
+            const lastWeek = new Date();
+            lastWeek.setDate(lastWeek.getDate() - 7);
+            document.getElementById('startDate').value = lastWeek.toISOString().split('T')[0];
+        }
+        
+        function initializeEventListeners() {
+            // Filter type change
+            document.getElementById('filterType').addEventListener('change', function() {
+                const customRange = document.getElementById('customDateRange');
+                if (this.value === 'custom') {
+                    customRange.classList.add('show');
+                } else {
+                    customRange.classList.remove('show');
+                }
+                
+                // Auto-apply filter when changing type (except custom)
+                if (this.value !== 'custom') {
+                    applyFilters();
+                }
+            });
+            
+            // Real-time search
+            document.getElementById('searchInput').addEventListener('input', debounce(filterAndRenderTable, 300));
+            
+            // Filter changes
+            document.getElementById('statusFilter').addEventListener('change', filterAndRenderTable);
+            document.getElementById('startDate').addEventListener('change', function() {
+                if (document.getElementById('filterType').value === 'custom') {
+                    applyFilters();
+                }
+            });
+            
+            document.getElementById('endDate').addEventListener('change', function() {
+                if (document.getElementById('filterType').value === 'custom') {
+                    applyFilters();
+                }
+            });
+            
+            // Chart type change
+            document.getElementById('chartType').addEventListener('change', updateSalesChart);
+        }
+        
+        // Debounce function for performance
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+        
+        function updateLastUpdated() {
+            const now = new Date();
+            const options = {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            };
+            document.getElementById('lastUpdated').textContent = now.toLocaleString('en-IN', options);
+        }
+        
+        function applyFilters() {
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            loadingSpinner.style.display = 'inline-block';
+            
+            try {
+                
+                // Get filter values
+                const filterType = document.getElementById('filterType').value;
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+                
+                // Apply date filter
+                let dateFilteredOrders = [...allOrders];
+                
+                const now = new Date();
+                let startFilterDate, endFilterDate;
+                
+                switch (filterType) {
+                    case 'daily':
+                        startFilterDate = new Date(now.setHours(0, 0, 0, 0));
+                        endFilterDate = new Date(now.setHours(23, 59, 59, 999));
+                        break;
+                        
+                    case 'weekly':
+                        const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+                        startOfWeek.setHours(0, 0, 0, 0);
+                        startFilterDate = startOfWeek;
+                        endFilterDate = new Date(startOfWeek);
+                        endFilterDate.setDate(endFilterDate.getDate() + 6);
+                        endFilterDate.setHours(23, 59, 59, 999);
+                        break;
+                        
+                    case 'monthly':
+                        startFilterDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                        endFilterDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+                        break;
+                        
+                    case 'yearly':
+                        startFilterDate = new Date(now.getFullYear(), 0, 1);
+                        endFilterDate = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
+                        break;
+                        
+                    case 'custom':
+                        if (startDate && endDate) {
+                            startFilterDate = new Date(startDate);
+                            startFilterDate.setHours(0, 0, 0, 0);
+                            endFilterDate = new Date(endDate);
+                            endFilterDate.setHours(23, 59, 59, 999);
+                        }
+                        break;
+                }
+                
+                if (startFilterDate && endFilterDate) {
+                    reportData = allOrders.filter(order => {
+                        const orderDate = new Date(order.createdAt);
+                        return orderDate >= startFilterDate && orderDate <= endFilterDate;
+                    });
+                } else {
+                    reportData = [...allOrders];
+                }
+                
+                
+                // Update UI
+                updateMetricsFromData();
+                updateCharts();
+                filterAndRenderTable();
+                updateLastUpdated();
+                
+            } catch (error) {
+                console.error('Error applying filters:', error);
+                alert('Error applying filters. Please try again.');
+            } finally {
+                loadingSpinner.style.display = 'none';
+            }
+        }
+        
+        function updateMetricsFromData() {
+            const totalOrders = reportData.length;
+            const totalRevenue = reportData.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
+            const totalDiscount = reportData.reduce((sum, order) => sum + (order.discountAmount || 0), 0);
+            const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+            
+            document.getElementById('totalOrdersDisplay').textContent = totalOrders;
+            document.getElementById('totalRevenueDisplay').textContent = `₹${Math.round(totalRevenue).toLocaleString('en-IN')}`;
+            document.getElementById('totalDiscountDisplay').textContent = `₹${Math.round(totalDiscount).toLocaleString('en-IN')}`;
+            document.getElementById('avgOrderValueDisplay').textContent = `₹${Math.round(avgOrderValue).toLocaleString('en-IN')}`;
+        }
+        
+        function updateCharts() {
+            
+            
+            if (reportData.length === 0) {
+                console.warn('No data available for charts');
+                showNoDataMessage();
+                return;
+            }
+            
+            updateSalesChart();
+            updatePaymentChart();
+        }
+        
+        function showNoDataMessage() {
+            document.getElementById('salesChartLoading').innerHTML = '<div style="color: #6b7280;">No data available for selected filters</div>';
+            document.getElementById('paymentChartLoading').innerHTML = '<div style="color: #6b7280;">No data available for selected filters</div>';
+        }
+        
+        function updateSalesChart() {
+            const chartType = document.getElementById('chartType').value;
+            
+            // Show loading state
+            document.getElementById('salesChartLoading').style.display = 'flex';
+            document.getElementById('salesChart').style.display = 'none';
+            
+            try {
+                // Group data by date
+                const dateGroups = {};
+                reportData.forEach(order => {
+                    const date = new Date(order.createdAt).toLocaleDateString('en-IN');
+                    if (!dateGroups[date]) {
+                        dateGroups[date] = { revenue: 0, orders: 0 };
+                    }
+                    dateGroups[date].revenue += order.totalAmount || 0;
+                    dateGroups[date].orders += 1;
+                });
+                
+                
+                const sortedDates = Object.keys(dateGroups).sort((a, b) => {
+                    const dateA = new Date(a.split('/').reverse().join('-'));
+                    const dateB = new Date(b.split('/').reverse().join('-'));
+                    return dateA - dateB;
+                });
+                
+                const labels = sortedDates.slice(-30); // Last 30 days max
+                const data = labels.map(date => 
+                    chartType === 'revenue' ? dateGroups[date].revenue : dateGroups[date].orders
+                );
+                
+                
+                if (salesChart) {
+                    salesChart.destroy();
+                }
+                
+                const ctx = document.getElementById('salesChart').getContext('2d');
+                salesChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: chartType === 'revenue' ? 'Revenue (₹)' : 'Orders',
+                            data: data,
+                            borderColor: '#4f46e5',
+                            backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#4f46e5',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 5
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleColor: '#ffffff',
+                                bodyColor: '#ffffff',
+                                borderColor: '#4f46e5',
+                                borderWidth: 1
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)'
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return chartType === 'revenue' ? '₹' + value.toLocaleString('en-IN') : value;
+                                    }
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)'
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                // Hide loading and show chart
+                document.getElementById('salesChartLoading').style.display = 'none';
+                document.getElementById('salesChart').style.display = 'block';
+                
+                
+            } catch (error) {
+                console.error('Error updating sales chart:', error);
+                document.getElementById('salesChartLoading').innerHTML = '<div style="color: #ef4444;">Error loading chart: ' + error.message + '</div>';
+            }
+        }
+        
+        function updatePaymentChart() {
+            
+            // Show loading state
+            document.getElementById('paymentChartLoading').style.display = 'flex';
+            document.getElementById('paymentChart').style.display = 'none';
+            
+            try {
+                const paymentMethods = {};
+                reportData.forEach(order => {
+                    const method = order.paymentMethod || 'Unknown';
+                    paymentMethods[method] = (paymentMethods[method] || 0) + 1;
+                });
+                
+                
+                const labels = Object.keys(paymentMethods);
+                const data = Object.values(paymentMethods);
+                const colors = ['#4f46e5', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+                
+                
+                if (paymentChart) {
+                    paymentChart.destroy();
+                }
+                
+                const ctx = document.getElementById('paymentChart').getContext('2d');
+                paymentChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: data,
+                            backgroundColor: colors.slice(0, labels.length),
+                            borderWidth: 3,
+                            borderColor: '#ffffff',
+                            hoverBorderWidth: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 20,
+                                    usePointStyle: true,
+                                    font: {
+                                        size: 12
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleColor: '#ffffff',
+                                bodyColor: '#ffffff',
+                                callbacks: {
+                                    label: function(context) {
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                        return `${context.label}: ${context.parsed} (${percentage}%)`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                // Hide loading and show chart
+                document.getElementById('paymentChartLoading').style.display = 'none';
+                document.getElementById('paymentChart').style.display = 'block';
+                
+                
+            } catch (error) {
+                console.error('Error updating payment chart:', error);
+                document.getElementById('paymentChartLoading').innerHTML = '<div style="color: #ef4444;">Error loading chart: ' + error.message + '</div>';
+            }
+        }
+        
+        function filterAndRenderTable() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            
+            filteredData = reportData.filter(order => {
+                const matchesSearch = !searchTerm || 
+                    order.orderId.toLowerCase().includes(searchTerm) ||
+                    (order.user && order.user.fullname && order.user.fullname.toLowerCase().includes(searchTerm)) ||
+                    (order.user && order.user.email && order.user.email.toLowerCase().includes(searchTerm));
+                
+                const matchesStatus = !statusFilter || order.orderStatus === statusFilter;
+                
+                return matchesSearch && matchesStatus;
+            });
+            
+            // Reset to first page when filtering
+            currentPage = 1;
+            renderTable();
+        }
+        
+        function renderTable() {
+            const startIndex = (currentPage - 1) * pageSize;
+            const endIndex = startIndex + pageSize;
+            const pageData = filteredData.slice(startIndex, endIndex);
+            
+            const tbody = document.getElementById('ordersTableBody');
+            
+            if (pageData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center py-4">
+                            <div class="no-data">
+                                <i class="fas fa-inbox"></i>
+                                <div>No orders found</div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                tbody.innerHTML = pageData.map(order => `
+                    <tr>
+                        <td class="font-medium">${order.orderId}</td>
+                        <td>${new Date(order.createdAt || order.orderDate).toLocaleDateString('en-IN')}</td>
+                        <td>${order.user ? order.user.fullname : 'N/A'}</td>
+                        <td>₹${(order.totalAmount || 0).toLocaleString('en-IN')}</td>
+                        <td>₹${(order.discountAmount || 0).toLocaleString('en-IN')}</td>
+                        <td>${order.paymentMethod || 'N/A'}</td>
+                        <td>
+                            <span class="status-badge status-${(order.orderStatus || 'unknown').toLowerCase()}">
+                                ${order.orderStatus || 'Unknown'}
+                            </span>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+            
+            updatePagination();
+        }
+        
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredData.length / pageSize);
+            const startIndex = (currentPage - 1) * pageSize;
+            const endIndex = Math.min(startIndex + pageSize, filteredData.length);
+            
+            document.getElementById('showingCount').textContent = filteredData.length > 0 ? `${startIndex + 1}-${endIndex}` : '0';
+            document.getElementById('totalCount').textContent = filteredData.length;
+            document.getElementById('pageInfo').textContent = `${currentPage} of ${Math.max(totalPages, 1)}`;
+            
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+            document.getElementById('nextBtn').disabled = currentPage === totalPages || totalPages === 0;
+        }
+        
+        function changePage(direction) {
+            const totalPages = Math.ceil(filteredData.length / pageSize);
+            const newPage = currentPage + direction;
+            
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPage = newPage;
+                renderTable();
+            }
+        }
+        
+        function exportPDF() {
+    try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // Header with company info
+        doc.setFontSize(20);
+        doc.setFont(undefined, 'bold');
+        doc.text('SALES REPORT', 105, 25, { align: 'center' });
+        
+        // Add a line under the title
+        doc.setLineWidth(0.5);
+        doc.line(20, 30, 190, 30);
+        
+        // Report info section
+        doc.setFontSize(10);
+        doc.setFont(undefined, 'normal');
+        doc.text(`Generated on: ${new Date().toLocaleDateString('en-IN', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        })} at ${new Date().toLocaleTimeString('en-IN', {
+            hour: '2-digit',
+            minute: '2-digit'
+        })}`, 20, 40);
+        
+        // Filter information
+        const filterType = document.getElementById('filterType').value;
+        let filterText = 'All Time';
+        if (filterType === 'daily') filterText = 'Today';
+        else if (filterType === 'weekly') filterText = 'This Week';
+        else if (filterType === 'monthly') filterText = 'This Month';
+        else if (filterType === 'yearly') filterText = 'This Year';
+        else if (filterType === 'custom') {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            filterText = `${startDate} to ${endDate}`;
+        }
+        
+        doc.text(`Report Period: ${filterText}`, 20, 45);
+        doc.text(`Total Records: ${filteredData.length}`, 20, 50);
+        
+        // Summary section
+        doc.setFontSize(12);
+        doc.setFont(undefined, 'bold');
+        doc.text('SUMMARY', 20, 65);
+        
+        // Summary box
+        doc.setDrawColor(200, 200, 200);
+        doc.rect(20, 70, 170, 25);
+        
+        doc.setFontSize(9);
+        doc.setFont(undefined, 'normal');
+        
+        // Get clean values without currency symbols
+        const totalOrdersText = document.getElementById('totalOrdersDisplay').textContent;
+        const totalRevenueText = document.getElementById('totalRevenueDisplay').textContent.replace('₹', '');
+        const totalDiscountText = document.getElementById('totalDiscountDisplay').textContent.replace('₹', '');
+        const avgOrderValueText = document.getElementById('avgOrderValueDisplay').textContent.replace('₹', '');
+        
+        // Summary in two columns
+        doc.text('Total Orders:', 25, 78);
+        doc.setFont(undefined, 'bold');
+        doc.text(totalOrdersText, 70, 78);
+        doc.setFont(undefined, 'normal');
+        
+        doc.text('Total Revenue:', 25, 85);
+        doc.setFont(undefined, 'bold');
+        doc.text(`Rs.${totalRevenueText}`, 70, 85);
+        doc.setFont(undefined, 'normal');
+        
+        doc.text('Total Discounts:', 105, 78);
+        doc.setFont(undefined, 'bold');
+        doc.text(`Rs.${totalDiscountText}`, 150, 78);
+        doc.setFont(undefined, 'normal');
+        
+        doc.text('Avg Order Value:', 105, 85);
+        doc.setFont(undefined, 'bold');
+        doc.text(`Rs.${avgOrderValueText}`, 150, 85);
+        doc.setFont(undefined, 'normal');
+        
+        // Order details section
+        doc.setFontSize(12);
+        doc.setFont(undefined, 'bold');
+        doc.text('ORDER DETAILS', 20, 110);
+        
+        // Table headers with better spacing
+        let yPos = 125;
+        doc.setFontSize(8);
+        doc.setFont(undefined, 'bold');
+
+        const headers = ['Order ID', 'Date', 'Customer', 'Amount', 'Discount', 'Payment', 'Status'];
+        const colPositions = [15, 42, 65, 85, 108, 130, 155];
+
+        // Draw header background
+        doc.setFillColor(240, 240, 240);
+        doc.rect(15, yPos - 5, 160, 8, 'F');
+
+        headers.forEach((header, index) => {
+            doc.text(header, colPositions[index], yPos);
+        });
+
+        yPos += 10;
+        doc.setFont(undefined, 'normal');
+        doc.setFontSize(7);
+
+        // Table data
+        const maxRowsPerPage = 30;
+        let rowCount = 0;
+
+        filteredData.forEach((order, index) => {
+            if (rowCount >= maxRowsPerPage) {
+                doc.addPage();
+                yPos = 30;
+                rowCount = 0;
+                
+                // Redraw headers on new page
+                doc.setFontSize(8);
+                doc.setFont(undefined, 'bold');
+                doc.setFillColor(240, 240, 240);
+                doc.rect(15, yPos - 5, 160, 8, 'F');
+                
+                headers.forEach((header, index) => {
+                    doc.text(header, colPositions[index], yPos);
+                });
+                yPos += 10;
+                doc.setFont(undefined, 'normal');
+                doc.setFontSize(7);
+            }
+            
+            // Alternate row colors
+            if (index % 2 === 0) {
+                doc.setFillColor(250, 250, 250);
+                doc.rect(15, yPos - 3, 160, 6, 'F');
+            }
+            
+            // Prepare clean data with better truncation
+            const orderDate = new Date(order.createdAt || order.orderDate).toLocaleDateString('en-IN', {
+                day: '2-digit',
+                month: '2-digit',
+                year: '2-digit'  // Use 2-digit year to save space
+            });
+            const customerName = order.user ? order.user.fullname : 'N/A';
+            const truncatedCustomer = customerName.length > 8 ? customerName.substring(0, 8) + '..' : customerName;
+            
+            // Clean number formatting
+            const totalAmount = Math.round(order.totalAmount || 0);
+            const discountAmount = Math.round(order.discountAmount || 0);
+            
+            const paymentMethod = order.paymentMethod || 'N/A';
+            const truncatedPayment = paymentMethod.length > 6 ? paymentMethod.substring(0, 6) + '..' : paymentMethod;
+            
+            const orderStatus = order.orderStatus || 'Unknown';
+            const truncatedStatus = orderStatus.length > 8 ? orderStatus.substring(0, 8) + '..' : orderStatus;
+            
+            const rowData = [
+                order.orderId,
+                orderDate,
+                truncatedCustomer,
+                totalAmount.toLocaleString('en-IN'),
+                discountAmount.toLocaleString('en-IN'),
+                truncatedPayment,
+                truncatedStatus
+            ];
+            
+            // Place each cell at its specific position
+            rowData.forEach((data, colIndex) => {
+                doc.text(data.toString(), colPositions[colIndex], yPos);
+            });
+            
+            yPos += 6;
+            rowCount++;
+        });
+        
+        // Footer
+        const pageCount = doc.internal.getNumberOfPages();
+        for (let i = 1; i <= pageCount; i++) {
+            doc.setPage(i);
+            doc.setFontSize(8);
+            doc.setFont(undefined, 'normal');
+            doc.setTextColor(128, 128, 128);
+            doc.text(`Page ${i} of ${pageCount}`, 190, 285, { align: 'right' });
+            doc.text('Generated by Sales Dashboard', 20, 285);
+            doc.setTextColor(0, 0, 0); // Reset to black
+        }
+        
+        // Generate filename
+        const timestamp = new Date().toISOString().split('T')[0];
+        const filename = `sales-report-${filterText.replace(/\s+/g, '-').toLowerCase()}-${timestamp}.pdf`;
+        
+        doc.save(filename);
+        
+    } catch (error) {
+        console.error('Error exporting PDF:', error);
+        alert('Failed to export PDF. Please try again.');
+    }
+}
+
+function exportExcel() {
+    try {
+        // Get filter information
+        const filterType = document.getElementById('filterType').value;
+        let filterText = 'All Time';
+        if (filterType === 'daily') filterText = 'Today';
+        else if (filterType === 'weekly') filterText = 'This Week';
+        else if (filterType === 'monthly') filterText = 'This Month';
+        else if (filterType === 'yearly') filterText = 'This Year';
+        else if (filterType === 'custom') {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            filterText = `${startDate} to ${endDate}`;
+        }
+        
+        // Create workbook with multiple sheets
+        const wb = XLSX.utils.book_new();
+        
+        // Summary Sheet
+        const summaryData = [
+            ['SALES REPORT SUMMARY'],
+            [],
+            ['Report Period:', filterText],
+            ['Generated On:', new Date().toLocaleDateString('en-IN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            })],
+            ['Total Records:', filteredData.length],
+            [],
+            ['METRICS'],
+            ['Total Orders', document.getElementById('totalOrdersDisplay').textContent],
+            ['Total Revenue', document.getElementById('totalRevenueDisplay').textContent],
+            ['Total Discounts', document.getElementById('totalDiscountDisplay').textContent],
+            ['Average Order Value', document.getElementById('avgOrderValueDisplay').textContent],
+            [],
+            ['PAYMENT METHOD BREAKDOWN'],
+        ];
+        
+        // Add payment method breakdown
+        const paymentMethods = {};
+        filteredData.forEach(order => {
+            const method = order.paymentMethod || 'Unknown';
+            paymentMethods[method] = (paymentMethods[method] || 0) + 1;
+        });
+        
+        Object.entries(paymentMethods).forEach(([method, count]) => {
+            summaryData.push([method, count]);
+        });
+        
+        summaryData.push([]);
+        summaryData.push(['STATUS BREAKDOWN']);
+        
+        // Add status breakdown
+        const statuses = {};
+        filteredData.forEach(order => {
+            const status = order.orderStatus || 'Unknown';
+            statuses[status] = (statuses[status] || 0) + 1;
+        });
+        
+        Object.entries(statuses).forEach(([status, count]) => {
+            summaryData.push([status, count]);
+        });
+        
+        const summaryWs = XLSX.utils.aoa_to_sheet(summaryData);
+        
+        // Style the summary sheet
+        summaryWs['!cols'] = [
+            { width: 25 },
+            { width: 20 }
+        ];
+        
+        XLSX.utils.book_append_sheet(wb, summaryWs, 'Summary');
+        
+        // Detailed Orders Sheet
+        const orderHeaders = [
+            'Order ID',
+            'Date',
+            'Customer Name',
+            'Customer Email',
+            'Total Amount',
+            'Discount Amount',
+            'Final Amount',
+            'Payment Method',
+            'Order Status',
+            'Created At'
+        ];
+        
+        const orderData = [
+            orderHeaders,
+            ...filteredData.map(order => [
+                order.orderId,
+                new Date(order.createdAt || order.orderDate).toLocaleDateString('en-IN'),
+                order.user ? order.user.fullname : 'N/A',
+                order.user ? order.user.email : 'N/A',
+                order.totalAmount || 0,
+                order.discountAmount || 0,
+                (order.totalAmount || 0) - (order.discountAmount || 0),
+                order.paymentMethod || 'N/A',
+                order.orderStatus || 'Unknown',
+                new Date(order.createdAt || order.orderDate).toLocaleString('en-IN')
+            ])
+        ];
+        
+        const orderWs = XLSX.utils.aoa_to_sheet(orderData);
+        
+        // Style the orders sheet
+        orderWs['!cols'] = [
+            { width: 15 }, // Order ID
+            { width: 12 }, // Date
+            { width: 20 }, // Customer Name
+            { width: 25 }, // Customer Email
+            { width: 15 }, // Total Amount
+            { width: 15 }, // Discount Amount
+            { width: 15 }, // Final Amount
+            { width: 18 }, // Payment Method
+            { width: 15 }, // Order Status
+            { width: 20 }  // Created At
+        ];
+        
+        // Add header styling
+        const headerRange = XLSX.utils.decode_range(orderWs['!ref']);
+        for (let col = headerRange.s.c; col <= headerRange.e.c; col++) {
+            const cellAddress = XLSX.utils.encode_cell({ r: 0, c: col });
+            if (!orderWs[cellAddress]) continue;
+            orderWs[cellAddress].s = {
+                font: { bold: true },
+                fill: { fgColor: { rgb: "CCCCCC" } },
+                alignment: { horizontal: "center" }
+            };
+        }
+        
+        XLSX.utils.book_append_sheet(wb, orderWs, 'Order Details');
+        
+        // Revenue Analysis Sheet (if there's data)
+        if (filteredData.length > 0) {
+            const revenueData = [
+                ['REVENUE ANALYSIS'],
+                [],
+                ['Date', 'Orders Count', 'Total Revenue', 'Average Order Value']
+            ];
+            
+            // Group by date for revenue analysis
+            const dateGroups = {};
+            filteredData.forEach(order => {
+                const date = new Date(order.createdAt).toLocaleDateString('en-IN');
+                if (!dateGroups[date]) {
+                    dateGroups[date] = { count: 0, revenue: 0 };
+                }
+                dateGroups[date].count += 1;
+                dateGroups[date].revenue += order.totalAmount || 0;
+            });
+            
+            Object.entries(dateGroups)
+                .sort(([a], [b]) => new Date(a.split('/').reverse().join('-')) - new Date(b.split('/').reverse().join('-')))
+                .forEach(([date, data]) => {
+                    revenueData.push([
+                        date,
+                        data.count,
+                        data.revenue,
+                        Math.round(data.revenue / data.count)
+                    ]);
+                });
+            
+            const revenueWs = XLSX.utils.aoa_to_sheet(revenueData);
+            revenueWs['!cols'] = [
+                { width: 15 },
+                { width: 15 },
+                { width: 18 },
+                { width: 20 }
+            ];
+            
+            XLSX.utils.book_append_sheet(wb, revenueWs, 'Revenue Analysis');
+        }
+        
+        // Save the file
+        const fileName = `sales-report-${filterText.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().split('T')[0]}.xlsx`;
+        XLSX.writeFile(wb, fileName);
+        
+    } catch (error) {
+        console.error('Error exporting Excel:', error);
+        alert('Failed to export Excel. Please try again.');
+    }
+}
+        
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            if (sidebar) {
+                sidebar.classList.toggle('open');
+            }
+        }
+        
+        window.addEventListener('error', function(e) {
+            console.error('Global error:', e.error);
+        });
+    </script>
+</body>
+</html>

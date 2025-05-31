@@ -215,14 +215,12 @@ const returnApprove = async (req, res) => {
         const itemDiscount = (itemTotal / subtotal) * totalDiscount;
         const itemTax = (itemTotal / subtotal) * totalTax;
 
-        console.log(item.returnReason)
         const eligibleReasons = ['Damaged', 'Wrong Item'];
         const returnReason = item.returnReason?.toLowerCase() || '';
         const activeItems = order.items.filter(i => i._id.toString() !== itemId && i.status !== 'Returned' && i.status !== 'Cancelled');
         const isLastReturnableItem = activeItems.length === 0;
 
         const refundShipping = eligibleReasons.includes(returnReason) && isLastReturnableItem ? shippingFee : 0;
-        console.log(refundShipping)
 
         const refundAmount = Math.round(itemTotal - itemDiscount + itemTax + refundShipping);
 

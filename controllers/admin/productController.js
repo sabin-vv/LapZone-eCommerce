@@ -83,8 +83,6 @@ const newProduct = async (req, res) => {
 
   const categories = await Category.find()
  
-
-
   res.render("admin/addProduct", { categories, errors: null ,formData : null})
 }
 

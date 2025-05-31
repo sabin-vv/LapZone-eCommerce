@@ -8,6 +8,7 @@ const upload = require("../middlewares/multer")
 const orderController = require("../controllers/admin/orderController");
 const offerController = require("../controllers/admin/offerController")
 const couponController  = require("../controllers/admin/couponController")
+const salesController = require("../controllers/admin/salesController")
 
 
 router.get("/login", adminController.getadminLogin)
@@ -76,5 +77,8 @@ router.post("/coupons/toggle-status", couponController.couponStatusChange)
 router.get("/coupons/edit/:id",couponController.editCoupon)
 router.post("/coupons/edit/:id" ,couponController.updateCoupon)
 router.post("/coupons/delete/:id",couponController.deleteCoupon)
+
+router.get("/sales-report",salesController.salesReportPage)
+router.get('/sales-report-data', salesController.getSalesReportData);
 
 module.exports = router

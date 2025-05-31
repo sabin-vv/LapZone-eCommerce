@@ -191,13 +191,18 @@
                             <!-- Action buttons -->
                             <div class="order-actions">
                                 <% if (order.orderStatus === 'Delivered') { %>
-                                    <a href = '/profile/order/invoice/<%= order._id %>' class="btn-order-action btn btn-warning text-decoration-none" >Download Invoice</a>
-                                    <span class="btn-order-action btn-danger text-decoration-none">Return</span>
-                                <% }else if(order.orderStatus === 'Cancelled'){ %>
-                                    <span class="action-status"></span>
-                               <%  }else if(order.items.every(item => item.status === 'Ordered')) { %>
-                                <button class="btn-order-action btn-danger" onclick="cancelOrder('<%= order.orderId %>')">Cancel Order</button>
-                                <%} %>
+                                    <a href="/profile/order/invoice/<%= order._id %>" class="btn-order-action btn btn-warning text-decoration-none">Download Invoice</a>
+                                    
+                                    <% if (order.items.every(item => item.status === 'Delivered')) { %>
+                                    <button class="btn-order-action btn btn-danger text-decoration-none" onclick="returnOrder('<%= order._id %>')">Return</button>
+                                    <% } %>
+
+                                <% } else if (order.orderStatus === 'Cancelled') { %>
+                                    <span class="action-status text-muted">Cancelled</span>
+
+                                <% } else if (order.items.every(item => item.status === 'Ordered')) { %>
+                                    <button class="btn-order-action btn btn-danger" onclick="cancelOrder('<%= order.orderId %>')">Cancel Order</button>
+                                <% } %>
                             </div>
                         </div>
                     </div>
@@ -306,11 +311,11 @@
                             <label for="orderCancelReason" class="form-label">Reason for Cancellation</label>
                             <select id="orderCancelReason" class="form-select" required>
                                 <option value="">Select a reason</option>
-                                <option value="changed_mind">Changed my mind</option>
-                                <option value="better_price">Found a better price elsewhere</option>
-                                <option value="shipping_delay">Shipping will take too long</option>
-                                <option value="mistake">Ordered by mistake</option>
-                                <option value="other">Other</option>
+                                <option value="Changed Mind">Changed my mind</option>
+                                <option value="Better Price">Found a better price elsewhere</option>
+                                <option value="Shipping Delay">Shipping will take too long</option>
+                                <option value="Mistake">Ordered by mistake</option>
+                                <option value="Other">Other</option>
                             </select>
                         </div>
                         <div class="mb-3">
@@ -322,6 +327,41 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-danger" id="confirmCancelOrder">Confirm Cancellation</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Return Order Modal -->
+    <div class="modal fade" id="returnOrderModal" tabindex="-1" aria-labelledby="returnOrderModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="returnOrderModalLabel">Return Order</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="returnOrderForm">
+                        <input type="hidden" id="returnOrderId" name="orderId">
+                        <p>Are you sure you want to return the entire order? This action cannot be undone.</p>
+                        <div class="mb-3">
+                            <label for="orderReturnReason" class="form-label">Reason for Return</label>
+                            <select id="orderReturnReason" class="form-select">
+                                <option value="">Select a reason</option>
+                                <option value="Damaged">Defective/doesn't work</option>
+                                <option value="Not as Described">Not as described</option>
+                                <option value="Wrong Item">Wrong item received</option>
+                                <option value="No Longer Needed">No longer needed</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                         <div class="mb-3">
+                            <label for="orderReturnComment" class="form-label">Additional Comments</label>
+                            <textarea id="orderReturnComment" class="form-control" rows="3"></textarea>
+                        </div>  
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="confirmReturnOrder">Submit Return Request</button>
+                    </form>    
                 </div>
             </div>
         </div>

@@ -2,12 +2,17 @@ const Coupon = require("../../model/coupon")
 const Cart = require('../../model/cart')
 const Order = require("../../model/order")
 
-
 const applyCoupon = async (req, res) => {
 
     if (!req.session.user) return res.redirect("/")
 
     const { code } = req.body
+    if (req.session.appliedCoupon && req.session.appliedCoupon.code === code.toUpperCase()) {
+        return res.json({
+            success: false,
+            message: "Coupon already applied"
+        });
+    }
     const coupon = await Coupon.findOne({ code: code.toUpperCase(), isActive: true })
 
     const dateNow = new Date();
@@ -55,18 +60,34 @@ const applyCoupon = async (req, res) => {
 
         await Coupon.updateOne({ _id: coupon._id }, { $inc: { usedCount: 1 } });
 
+        req.session.appliedCoupon = {
+            code: coupon.code,
+            couponId: coupon._id
+        };
+
         return res.json({
             success: true,
             totalAmount,
             discount,
             couponCode: coupon.code,
-            couponId: coupon._id,
+            couponId: coupon._id, message: `Coupon applied! You saved ₹${discount.toLocaleString('en-IN')}`
         })
     }
 
 }
 
+
+const viewCouponPage = async (req, res) => {
+
+    if (!req.session.user) return res.redirect("/login")
+
+    const coupons = await Coupon.find({ isActive: true })
+
+    return res.render("user/viewCouponPage", { coupons})
+}
+
 module.exports = {
     applyCoupon,
+    viewCouponPage,
 
 }

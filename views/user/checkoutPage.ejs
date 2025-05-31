@@ -76,14 +76,14 @@
                             <% const otherAddresses = addresses.filter(address => !address.isdefault); %>
                             <% if (otherAddresses.length > 0) { %>
                                 <div class="address-actions">
-                                    <a class="other-addresses-toggle" data-bs-toggle="collapse" href="#otherAddresses" role="button" aria-expanded="false" aria-controls="otherAddresses">
+                                    <a id="toggleOtherAddresses" class="other-addresses-toggle text-indigo-600" href="#">
                                         <i class="bi bi-chevron-down me-2"></i> View Other Addresses
                                     </a>
                                     <button class="btn btn-outline-primary">
                                         <i class="bi bi-plus-circle me-2"></i> Add New Address
                                     </button>
                                 </div>
-                                <div class="collapse other-addresses" id="otherAddresses">
+                                <div class="other-addresses hidden transition-all duration-300" id="otherAddresses">
                                     <% otherAddresses.forEach(address => { %>
                                         <div class="address-card" data-address-id="<%= address._id %>">
                                             <div class="d-flex justify-content-between align-items-center mb-2">
@@ -265,6 +265,22 @@
              location.reload()
         }
         document.addEventListener('DOMContentLoaded', function() {
+
+            const toggleBtn = document.getElementById('toggleOtherAddresses');
+            const otherAddresses = document.getElementById('otherAddresses');
+
+            toggleBtn?.addEventListener('click', function (e) {
+                e.preventDefault();
+                const icon = toggleBtn.querySelector('i');
+                otherAddresses.classList.toggle('hidden');
+                icon.classList.toggle('bi-chevron-down');
+                icon.classList.toggle('bi-chevron-up');
+
+                toggleBtn.innerHTML = `
+                    <i class="bi ${otherAddresses.classList.contains('hidden') ? 'bi-chevron-down' : 'bi-chevron-up'} me-2"></i>
+                    ${otherAddresses.classList.contains('hidden') ? 'View Other Addresses' : 'Hide Other Addresses'}
+                `;
+            });
             
             const addressCards = document.querySelectorAll('.address-card');
             const paymentOptions = document.querySelectorAll('.payment-option');
@@ -295,11 +311,10 @@
 
             const toggleLink = document.querySelector('.other-addresses-toggle');
             if (toggleLink) {
-                toggleLink.addEventListener('click', function() {
-                    const icon = this.querySelector('i');
-                    const isExpanded = this.getAttribute('aria-expanded') === 'true';
-                    icon.classList.toggle('bi-chevron-down', isExpanded); 
-                    icon.classList.toggle('bi-chevron-up', !isExpanded); 
+                toggleLink.addEventListener('click', function (e) {
+                   const icon = this.querySelector('i');
+                    icon.classList.toggle('bi-chevron-down');
+                    icon.classList.toggle('bi-chevron-up');
                 });
             }
 
@@ -437,7 +452,7 @@
                     
                     iziToast.success({
                         title: 'Success',
-                        message: `Coupon applied! You saved ₹${result.discount.toLocaleString('en-IN')}`,
+                        message: result.message,
                         position: 'bottomRight'
                     });
 
