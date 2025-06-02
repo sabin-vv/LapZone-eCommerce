@@ -1,4 +1,6 @@
 .sidebar {
+    margin-left: 2rem;
+    
     width: 280px;
     background-color: #ffffff;
     padding: 24px 15px;
@@ -11,6 +13,10 @@
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.03);
     overflow-y: auto;
     z-index: 100;
+    box-shadow: 
+        0 4px 25px rgba(0, 0, 0, 0.15),
+        0 2px 10px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 .profile-header {
@@ -51,7 +57,12 @@
     max-width: 170px;
 }
 .sidebar-section h4 {
-    padding-left: 5px;
+     background: #2c3e50;
+            color: white;
+            margin: 0;
+            padding: 15px 20px;
+            font-size: 16px;
+            font-weight: 600;
 }
 
 .sidebar ul {

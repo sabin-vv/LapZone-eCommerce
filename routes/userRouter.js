@@ -23,6 +23,7 @@ router.post("/verify-otp", userController.verifyOtp)
 router.post("/resend-otp", userController.resendOtp)
 router.post("/signup/referral-code", userController.checkReferralCode)
 
+
 router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }))
 router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: "/login" }), (req, res) => {
     req.session.user = req.user;
@@ -55,6 +56,7 @@ router.post("/profile/edit-address/:id",userProfileController.editAddress)
 router.post("/profile/delete-address/:id",userProfileController.deleteAddress)
 router.get("/profile/change-password",userProfileController.changePassword)
 router.post("/profile/set-default-address/:id",userProfileController.setDefaultAddress)
+router.get("/profile/logout",userController.userLogout)
 
 
 router.post("/wishlist/toggle",wishListController.toggleWishList)
@@ -75,6 +77,8 @@ router.get("/user/checkout",checkoutController.checkoutPage)
 router.post("/user/order",checkoutController.orderplace)
 router.get("/user/order-page/:id",checkoutController.orderPage)
 router.get("/user/order-failed",checkoutController.orderFailurePafe)
+router.post('/profile/checkout-page/edit-address/:id',checkoutController.editAddress)
+router.post("/profile/checkout-page/add-address", checkoutController.addAddress)
 
 
 router.get("/profile/order",OrderController.viewOrders)

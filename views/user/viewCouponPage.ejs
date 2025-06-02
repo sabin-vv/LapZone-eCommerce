@@ -566,7 +566,7 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Copy coupon code functionality
+            
             const copyButtons = document.querySelectorAll('.copy-btn');
             
             copyButtons.forEach(button => {
@@ -576,25 +576,20 @@
                     const code = this.getAttribute('data-code');
                     const tooltip = this.nextElementSibling;
                     
-                    // Create a temporary input element
                     const tempInput = document.createElement('input');
                     tempInput.value = code;
                     document.body.appendChild(tempInput);
                     
-                    // Select and copy the text
                     tempInput.select();
                     document.execCommand('copy');
                     
                     // Remove the temporary input
                     document.body.removeChild(tempInput);
                     
-                    // Show tooltip
                     tooltip.classList.add('show');
                     
-                    // Change button text
                     this.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
                     
-                    // Reset button after 2 seconds
                     setTimeout(() => {
                         this.innerHTML = '<i class="fa-regular fa-copy"></i> Copy';
                         tooltip.classList.remove('show');

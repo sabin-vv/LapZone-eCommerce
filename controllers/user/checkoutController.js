@@ -5,6 +5,7 @@ const Order = require("../../model/order")
 const Product = require("../../model/products")
 const Wallet = require("../../model/wallet")
 const Coupon = require("../../model/coupon")
+const User = require("../../model/user")
 
 const checkoutPage = async (req, res) => {
 
@@ -42,7 +43,7 @@ const checkoutPage = async (req, res) => {
     totalAmount
   };
 
-  res.render("user/checkoutPage", { addresses, cart: cart.items, orders: [orderSummary], wallet, coupons })
+  res.render("user/checkoutPage", { addresses, cart: cart.items, orders: [orderSummary], wallet, coupons, errors: null })
 
 }
 
@@ -170,10 +171,256 @@ const orderFailurePafe = (req, res) => {
   res.render("user/orderFailurePage")
 }
 
+const editAddress = async (req, res) => {
+
+   try {
+    
+
+    const isAjax = req.headers.accept && req.headers.accept.includes("application/json")
+    const userId = req.session.user
+    const addressId = req.params.id
+
+    
+    if (!req.body || Object.keys(req.body).length === 0) {
+      console.error("Request body is empty or undefined")
+      if (isAjax) {
+        return res.status(400).json({
+          success: false,
+          message: "No data received. Please check form submission.",
+        })
+      }
+      return res.status(400).send("Bad Request: No data received")
+    }
+
+    const {
+      fullname = "",
+      mobile = "",
+      phone = "", 
+      addressLine = "",
+      district = "",
+      state = "",
+      city = "",
+      pincode = "",
+      landmark = "",
+      addressType = "Home",
+    } = req.body
+
+   
+    const mobileNumber = mobile || phone
+
+    const errors = {}
+    const fields = { fullname, mobile: mobileNumber, addressLine, district, state, city, pincode }
+
+    if (!fullname || !/^[A-Za-z\s]{3,20}$/.test(fullname)) {
+      errors.fullname = "Name must contain only letters and spaces (3-20 chars)"
+    }
+
+    if (!mobileNumber || !/^\d{10}$/.test(mobileNumber)) {
+      errors.phone = "Mobile must be 10 digits"
+    }
+
+    if (!pincode || pincode.length !== 6 || !/^\d+$/.test(pincode)) {
+      errors.pincode = "Pincode must be 6 digits"
+    }
+    // Validate text fields
+    ;["state", "district", "city"].forEach((field) => {
+      const value = req.body[field]
+      if (!value || !/^[A-Za-z\s-]+$/.test(value)) {
+        errors[field] = `${field.charAt(0).toUpperCase() + field.slice(1)} must contain only letters`
+      }
+    })
+
+    // Check required fields
+    Object.entries(fields).forEach(([key, val]) => {
+      if (!val || val.trim() === "") {
+        errors[key] = `${key} is required`
+      }
+    })
+
+    if (Object.keys(errors).length > 0) {
+      
+      if (isAjax) {
+        return res.status(400).json({ success: false, errors })
+      }
+      return res.render("user/checkoutPage", { errors })
+    }
+
+    // Update address
+    const addressData = {
+      userId,
+      fullname: fullname.trim(),
+      mobile: mobileNumber,
+      addressLine: addressLine.trim(),
+      district: district.trim(),
+      state: state.trim(),
+      city: city.trim(),
+      pincode: pincode.trim(),
+      landmark: landmark ? landmark.trim() : "",
+      addresstype: addressType,
+    }
+
+    
+
+    const updatedAddress = await Address.findByIdAndUpdate(addressId, addressData, { new: true, runValidators: true })
+
+    if (!updatedAddress) {
+      if (isAjax) {
+        return res.status(404).json({ success: false, message: "Address not found" })
+      }
+      return res.status(404).send("Address not found")
+    }
+
+    
+
+    if (isAjax) {
+      return res.json({ success: true, message: "Address updated successfully" })
+    }
+
+    res.redirect("/user/checkout")
+  } catch (error) {
+    console.error("Error updating address:", error)
+
+    const isAjax = req.headers.accept && req.headers.accept.includes("application/json")
+    if (isAjax) {
+      return res.status(500).json({
+        success: false,
+        message: "Internal server error while updating address",
+      })
+    }
+
+    res.status(500).send("Internal Server Error")
+  }
+
+}
+
+const addAddress = async (req, res) => {
+  try {
+    console.log("Add address request body:", req.body)
+
+    const isAjax = req.headers.accept && req.headers.accept.includes("application/json")
+    const userId = req.session.user
+
+    // Check if req.body exists
+    if (!req.body || Object.keys(req.body).length === 0) {
+      console.error("Request body is empty or undefined")
+      if (isAjax) {
+        return res.status(400).json({
+          success: false,
+          message: "No data received. Please check form submission.",
+        })
+      }
+      return res.status(400).send("Bad Request: No data received")
+    }
+
+    // Destructure with fallback values
+    const {
+      fullname = "",
+      mobile = "",
+      addressLine = "",
+      district = "",
+      state = "",
+      city = "",
+      pincode = "",
+      landmark = "",
+      addressType = "Home",
+      isDefault = false,
+    } = req.body
+
+    const errors = {}
+    const fields = { fullname, mobile, addressLine, district, state, city, pincode }
+
+    // Validation
+    if (!fullname || !/^[A-Za-z\s]{3,20}$/.test(fullname)) {
+      errors.fullname = "Name must contain only letters and spaces (3-20 chars)"
+    }
+
+    if (!mobile || !/^\d{10}$/.test(mobile)) {
+      errors.mobile = "Mobile must be 10 digits"
+    }
+
+    if (!pincode || pincode.length !== 6 || !/^\d+$/.test(pincode)) {
+      errors.pincode = "Pincode must be 6 digits"
+    }
+    // Validate text fields
+    ;["state", "district", "city"].forEach((field) => {
+      const value = req.body[field]
+      if (!value || !/^[A-Za-z\s-]+$/.test(value)) {
+        errors[field] = `${field.charAt(0).toUpperCase() + field.slice(1)} must contain only letters`
+      }
+    })
+
+    // Check required fields
+    Object.entries(fields).forEach(([key, val]) => {
+      if (!val || val.trim() === "") {
+        errors[key] = `${key} is required`
+      }
+    })
+
+    if (Object.keys(errors).length > 0) {
+      console.log("Validation errors:", errors)
+      if (isAjax) {
+        return res.status(400).json({ success: false, errors })
+      }
+      return res.render("user/checkoutPage", { errors })
+    }
+
+    // Create new address
+    const addressData = {
+      userId,
+      fullname: fullname.trim(),
+      mobile: mobile.trim(),
+      addressLine: addressLine.trim(),
+      district: district.trim(),
+      state: state.trim(),
+      city: city.trim(),
+      pincode: pincode.trim(),
+      landmark: landmark ? landmark.trim() : "",
+      addresstype: addressType,
+      isdefault: isDefault === "on" || isDefault === true,
+    }
+
+    console.log("Creating new address with data:", addressData)
+
+    // If this is set as default, unset any existing default address
+    if (addressData.isdefault) {
+      await Address.updateMany({ userId: userId, isdefault: true }, { $set: { isdefault: false } })
+    }
+
+    // Create the new address
+    const newAddress = await Address.create(addressData)
+
+    console.log("Address created successfully:", newAddress)
+
+    if (isAjax) {
+      return res.json({
+        success: true,
+        message: "Address added successfully",
+        address: newAddress,
+      })
+    }
+
+    res.redirect("/user/checkout")
+  } catch (error) {
+    console.error("Error adding address:", error)
+
+    const isAjax = req.headers.accept && req.headers.accept.includes("application/json")
+    if (isAjax) {
+      return res.status(500).json({
+        success: false,
+        message: "Internal server error while adding address",
+      })
+    }
+
+    res.status(500).send("Internal Server Error")
+  }
+}
+
 
 module.exports = {
   checkoutPage,
   orderplace,
   orderPage,
   orderFailurePafe,
+  editAddress,
+  addAddress,
 }

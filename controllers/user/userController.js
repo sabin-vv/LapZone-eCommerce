@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer")
 const Product = require("../../model/products")
 const Wishlist = require("../../model/wishlist")
+const Wallet = require("../../model/wallet")
 
 
 function generateReferralCode() {
@@ -86,7 +87,8 @@ async function sendverificationEmail(email, otp) {
 const postSignUp = async (req, res) => {
     const { fullname, email, mobile, password, confpassword, referralCode } = req.body;
 
-    
+    const formData = req.body
+    let refferedUser = null
     if (referralCode) {
         refferedUser = await User.findOne({ referralCode })
     }
@@ -165,6 +167,38 @@ const verifyOtp = async (req, res) => {
             refferedBy: userdata.refferedBy._id,
         });
         await user.save();
+
+        if (userdata.refferedBy) {
+            const referrerId = userdata.refferedBy._id;
+
+            let referrerWallet = await Wallet.findOne({ userId: referrerId });
+            if (!referrerWallet) {
+                referrerWallet = new Wallet({ userId: referrerId, balance: 0 });
+            }
+
+            referrerWallet.balance += 500;
+            referrerWallet.transactions.push({
+                type: 'credit',
+                amount: 100,
+                description: `Referral bonus for referring ${userdata.fullname}`
+            });
+
+            await referrerWallet.save();
+        }
+
+        let newUserWallet = await Wallet.findOne({ userId: user._id });
+        if (!newUserWallet) {
+            newUserWallet = new Wallet({ userId: user._id, balance: 0 });
+        }
+
+        newUserWallet.balance += 1000;
+        newUserWallet.transactions.push({
+            type: 'credit',
+            amount: 1000,
+            description: 'Welcome bonus for signing up with referral'
+        });
+
+        await newUserWallet.save();
 
         return res.json({
             success: true, redirecturl: "/login"

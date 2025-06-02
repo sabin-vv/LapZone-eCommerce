@@ -82,8 +82,8 @@ const newProduct = async (req, res) => {
   if (!req.session.admin) return res.redirect("/admin");
 
   const categories = await Category.find()
- 
-  res.render("admin/addProduct", { categories, errors: null ,formData : null})
+
+  res.render("admin/addProduct", { categories, errors: null, formData: null })
 }
 
 const addProduct = async (req, res) => {
@@ -108,7 +108,7 @@ const addProduct = async (req, res) => {
     "warranty",
   ]
 
-  errors= {}
+  errors = {}
   requiredFields.forEach((field) => {
     if (!req.body[field] || req.body[field].toString().trim() === "") {
       errors[field] = `${field} is required`
@@ -129,6 +129,15 @@ const addProduct = async (req, res) => {
 
   if (req.body.salePrice && (isNaN(req.body.salePrice) || req.body.salePrice < 0)) {
     errors.salePrice = "Sale price must be a positive number"
+  }
+
+  if (req.body.salePrice && req.body.regularPrice && !isNaN(req.body.salePrice) && !isNaN(req.body.regularPrice)) {
+    const regular = parseFloat(req.body.regularPrice);
+    const sale = parseFloat(req.body.salePrice);
+
+    if (sale > regular) {
+      errors.salePrice = "Sale price cannot be greater than regular price";
+    }
   }
 
   if (req.body.offer && (isNaN(req.body.offer) || req.body.offer < 0 || req.body.offer > 100)) {
@@ -208,10 +217,10 @@ const addProduct = async (req, res) => {
 
   const images = []
   const uploadPromises = []
-  const processedFiles = new Map() 
+  const processedFiles = new Map()
   const uploadErrors = []
 
-  
+
   const createBufferHash = (buffer) => {
     if (!Buffer.isBuffer(buffer)) return null
 
@@ -275,27 +284,7 @@ const addProduct = async (req, res) => {
       continue
     }
 
-    if (processedFiles.has(bufferHash)) {
-      console.log(`Possible duplicate detected for ${fieldName}`)
-      console.log(`Hash: ${bufferHash}`)
-      console.log(`Original file name: ${file.originalname}`)
-      console.log(`File size: ${fileBuffer.length} bytes`)
 
-      // Let's temporarily disable reusing to debug the issue
-      // Instead of reusing, we'll upload again to see if they're truly different
-      /*
-      const previousIndex = processedFiles.get(bufferHash)
-      if (previousIndex !== undefined && images[previousIndex]) {
-        images.push({
-          url: images[previousIndex].url,
-          isMain: i === 0,
-        })
-      }
-      continue;
-      */
-    }
-
-   
     processedFiles.set(bufferHash, images.length)
 
     const uploadOptions = {
@@ -345,7 +334,7 @@ const addProduct = async (req, res) => {
 
   await Promise.all(uploadPromises)
 
-  
+
   if (images.length === 0) {
     errors.images = "At least one image is required"
     if (uploadErrors.length > 0) {
@@ -363,8 +352,8 @@ const addProduct = async (req, res) => {
   if (uploadErrors.length > 0) {
     errors.imageUpload = uploadErrors.join("; ")
   }
-  const category = await Category.findOne({name: req.body.category})
-  
+  const category = await Category.findOne({ name: req.body.category })
+
 
   const productData = {
     name: req.body.name,
@@ -372,7 +361,7 @@ const addProduct = async (req, res) => {
     category: req.body.category,
     color: req.body.color,
     description: req.body.description,
-    categoryId : category._id,
+    categoryId: category._id,
     brand: req.body.brand,
     CPU: req.body.CPU,
     OS: req.body.os,
@@ -543,7 +532,7 @@ const updateProduct = async (req, res) => {
       if (Object.keys(portObj).length > 0) ports.push(portObj);
     }
 
-    const category = await Category.findOne({name:req.body.category})
+    const category = await Category.findOne({ name: req.body.category })
 
 
     const productData = {
@@ -552,7 +541,7 @@ const updateProduct = async (req, res) => {
       category: req.body.category,
       color: req.body.color,
       description: req.body.description,
-      categoryId : category._id,
+      categoryId: category._id,
       brand: req.body.brand,
       CPU: req.body.CPU,
       OS: req.body.os || "",

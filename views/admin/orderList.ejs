@@ -37,6 +37,7 @@
                     <option value="shipped">Shipped</option>
                     <option value="delivered">Delivered</option>
                     <option value="cancelled">Cancelled</option>
+                    <option value="returned">Returned</option>
                 </select>
                 <select class="filter-select">
                     <option value="">All Payment Methods</option>
@@ -65,7 +66,6 @@
                 <thead>
                     <tr>
                         <th>Order ID</th>
-                        
                         <th class="sortable">Date</th>
                         <th>Customer</th>
                         <th class="sortable">Total</th>
@@ -113,8 +113,8 @@
                             </td>
                            <td>
                                 <% const currentStatus = order.orderStatus.trim(); %>
-                                <% const isDisabled = currentStatus === 'Cancelled' || currentStatus === 'Delivered'; %>
-                                <% const statuses = ['Processing', 'Shipped', 'Delivered', 'Cancelled']; %>
+                                <% const isDisabled = currentStatus === 'Cancelled' || currentStatus === 'Delivered' || currentStatus === 'Returned'; %>
+                                <% const statuses = ['Processing', 'Shipped', 'Delivered', 'Cancelled','Returned']; %>
                                 <% const lastStatus = order.statusHistory?.[order.statusHistory.length - 1]; %>
 
                                 <select 
@@ -131,6 +131,7 @@
                                     <% if (lastStatus === 'Return Requested') { %>
                                         <option value="Return" <%= currentStatus === 'Return' ? 'selected' : '' %>>Return</option>
                                     <% } %>
+                                    
                                 </select>
                             </td>
                             <td class="action-cell">

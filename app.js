@@ -11,6 +11,7 @@ const userRouter = require("./routes/userRouter")
 const adminRouter = require('./routes/adminRouter')
 const session = require("express-session")
 const nocache = require("nocache")
+require('./utils/cron')
 
 
 app.use(nocache())

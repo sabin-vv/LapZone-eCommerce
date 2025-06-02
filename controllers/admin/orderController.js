@@ -216,7 +216,7 @@ const returnApprove = async (req, res) => {
         const itemTax = (itemTotal / subtotal) * totalTax;
 
         const eligibleReasons = ['Damaged', 'Wrong Item'];
-        const returnReason = item.returnReason?.toLowerCase() || '';
+        const returnReason = item.returnReason || '';
         const activeItems = order.items.filter(i => i._id.toString() !== itemId && i.status !== 'Returned' && i.status !== 'Cancelled');
         const isLastReturnableItem = activeItems.length === 0;
 
@@ -248,6 +248,10 @@ const returnApprove = async (req, res) => {
         if (product) {
             product.count += item.quantity;
             await product.save();
+        }
+        const allItemsreturned   = order.items.every(item => item.status === 'Returned');
+        if(allItemsreturned){
+            order.orderStatus = 'Returned'
         }
 
         order.statusHistory.push({

@@ -7,7 +7,7 @@ const viewCouponPage = async (req, res) => {
 
     if (!req.session.admin) return res.redirect("/admin")
 
-    const coupons = await Coupon.find()
+    const coupons = await Coupon.find().sort({ createdAt: -1 })
 
     return res.render('admin/couponPage', { coupons })
 
