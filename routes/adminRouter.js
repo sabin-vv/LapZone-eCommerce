@@ -17,6 +17,15 @@ router.post("/adminlogout", adminController.adminLogout)
 router.get("/", adminController.adminDashbaord)
 router.get("/dashboard", adminController.adminDashbaord)
 router.get("/admindashboard", adminController.getDashboard)
+router.get("/dashboard-stats", adminController.getDashboardStats);
+router.get("/sales-data", adminController.getSalesData);
+router.get("/top-products", adminController.getTopProducts);
+router.get("/top-categories", adminController.getTopCategories);
+router.get("/top-brands", adminController.getTopBrands);
+router.get("/recent-orders", adminController.getRecentOrders);
+router.post("/generate-ledger", adminController.generateLedger);
+router.get("/download-ledger-csv", adminController.downloadLedgerCsv);
+router.get("/download-ledger-pdf", adminController.downloadLedgerPdf);
 
 
 router.get("/customers", customerController.customerList)

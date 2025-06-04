@@ -10,7 +10,7 @@ const listProducts = async (req, res) => {
   const user = req.session.user;
   const username = req.session.username
   const searchQuery = req.query.search ? req.query.search.trim() : "";
-
+  const categoryFilter = req.query.category ? (Array.isArray(req.query.category) ? req.query.category : req.query.category.split(",")) : [];
   const brandFilter = req.query.brand ? (Array.isArray(req.query.brand) ? req.query.brand : req.query.brand.split(",")) : [];
   const ramFilter = req.query.ram ? (Array.isArray(req.query.ram) ? req.query.ram : req.query.ram.split(",")) : [];
   const ssdFilter = req.query.ssd ? (Array.isArray(req.query.ssd) ? req.query.ssd : req.query.ssd.split(",")) : [];
@@ -24,6 +24,9 @@ const listProducts = async (req, res) => {
   const query = { isActive: true, isExisting: true };
   if (searchQuery) {
     query.name = { $regex: searchQuery, $options: "i" };
+  }
+  if (categoryFilter.length > 0) {
+    query.category = { $in: categoryFilter };
   }
   if (brandFilter.length > 0) {
     query.brand = { $in: brandFilter };
@@ -61,6 +64,8 @@ const listProducts = async (req, res) => {
     sort.salePrice = -1;
   } else if (sortOption === 'name-asc') {
     sort.name = 1
+  } else if (sortOption === 'name-desc') {
+    sort.name = -1
   }
 
   
@@ -79,9 +84,11 @@ const listProducts = async (req, res) => {
     
     const totalProducts = await Product.countDocuments(query);
     const totalPages = Math.ceil(totalProducts / limit);
+    const categories = await Category.find().sort({ name: 1 });
 
     res.render("user/shoppingPage", {
       products,
+      categories,
       user,
       username,
       brands,

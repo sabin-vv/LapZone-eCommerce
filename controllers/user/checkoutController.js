@@ -53,6 +53,7 @@ const orderplace = async (req, res) => {
   const userId = req.session.user;
   const { shippingAddress, paymentMethod, total } = req.body;
   const { appliedCoupon } = req.body
+  console.log("Payment method ", paymentMethod)
 
 
   const couponCode = appliedCoupon?.couponCode || null;
@@ -92,6 +93,7 @@ const orderplace = async (req, res) => {
     if (wallet.balance < totalPrice)
       return res.json({ success: false, message: "Not Enough Money" })
 
+
     wallet.balance -= totalPrice
 
 
@@ -108,6 +110,10 @@ const orderplace = async (req, res) => {
 
   } else if (paymentMethod === 'Online') {
     paymentStatus = 'Completed';
+  } else if (paymentMethod === 'COD') {
+    if (totalPrice > 1000) {
+      return res.json({ success: false, message: "COD is not available for orders above ₹1000" })
+    }
   }
 
   const orderItems = cart.items.map(item => ({
@@ -173,14 +179,14 @@ const orderFailurePafe = (req, res) => {
 
 const editAddress = async (req, res) => {
 
-   try {
-    
+  try {
+
 
     const isAjax = req.headers.accept && req.headers.accept.includes("application/json")
     const userId = req.session.user
     const addressId = req.params.id
 
-    
+
     if (!req.body || Object.keys(req.body).length === 0) {
       console.error("Request body is empty or undefined")
       if (isAjax) {
@@ -195,7 +201,7 @@ const editAddress = async (req, res) => {
     const {
       fullname = "",
       mobile = "",
-      phone = "", 
+      phone = "",
       addressLine = "",
       district = "",
       state = "",
@@ -205,7 +211,7 @@ const editAddress = async (req, res) => {
       addressType = "Home",
     } = req.body
 
-   
+
     const mobileNumber = mobile || phone
 
     const errors = {}
@@ -238,7 +244,7 @@ const editAddress = async (req, res) => {
     })
 
     if (Object.keys(errors).length > 0) {
-      
+
       if (isAjax) {
         return res.status(400).json({ success: false, errors })
       }
@@ -259,7 +265,7 @@ const editAddress = async (req, res) => {
       addresstype: addressType,
     }
 
-    
+
 
     const updatedAddress = await Address.findByIdAndUpdate(addressId, addressData, { new: true, runValidators: true })
 
@@ -270,7 +276,7 @@ const editAddress = async (req, res) => {
       return res.status(404).send("Address not found")
     }
 
-    
+
 
     if (isAjax) {
       return res.json({ success: true, message: "Address updated successfully" })

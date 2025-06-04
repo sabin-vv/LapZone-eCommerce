@@ -103,12 +103,12 @@ const postSignUp = async (req, res) => {
     if (!/^[A-Za-z\s]+$/.test(fullname))
         errors['fullname'] = "only letters and spaces are allowed"
 
-    if (!/(^\d+$)/.test(mobile))
-        errors['mobile'] = "Phone Number should be Number";
-
     if (mobile.length != 10)
         errors['mobile'] = "Phone number should be 10 digit";
 
+    if (!/(^\d+$)/.test(mobile))
+        errors['mobile'] = "Phone Number should be Number";
+    
     if (!/(?=.*[a-z])/.test(password))
         errors['password'] = "Password should contain minimum 1 lower case letter";
     if (!/(?=.*[A-Z])/.test(password))
@@ -164,7 +164,7 @@ const verifyOtp = async (req, res) => {
             mobile: userdata.mobile,
             password: hashedPassword,
             referralCode: generateReferralCode(),
-            refferedBy: userdata.refferedBy._id,
+            refferedBy: userdata.refferedBy._id || null,
         });
         await user.save();
 
@@ -237,7 +237,7 @@ const postLoginPage = async (req, res) => {
 
     const user = await User.findOne({ email })
     if (!user)
-        return res.render("user/userLogin", { error: "Invalid Credentials" })
+        return res.render("user/userLogin", { error: "User does not exist" })
     if (user.isBlocked)
         return res.render("user/userLogin", { error: "your Account is  Temporarily BLOCKED" })
 

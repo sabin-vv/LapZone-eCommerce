@@ -12,7 +12,7 @@ const viewReferralPage = async (req, res) => {
         await user.save()
     }
     const totalReferrals = await User.countDocuments({ refferedBy: user._id })
-    const totalEarnings = totalReferrals * 100
+    const totalEarnings = totalReferrals * 1000
 
     return res.render("user/referralPage", { user, totalReferrals, totalEarnings })
 

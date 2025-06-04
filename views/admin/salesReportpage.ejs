@@ -17,9 +17,7 @@
         <%- include("../partials/admin/sidebar.ejs") %>
         
         <div class="main-content">
-            <button class="hamburger-btn" onclick="toggleSidebar()">
-                <i class="fas fa-bars"></i>
-            </button>
+            
             
             <div class="page-header">
                 <h1 class="page-title">
@@ -292,22 +290,17 @@
         function initializePage() {
             try {
                 
-                // Set last updated immediately
                 updateLastUpdated();
                 
-                // Initialize date pickers and event listeners
                 initializeDatePickers();
                 initializeEventListeners();
                 
-                // Initialize with existing data
                 filteredData = [...reportData];
                 
-                // Initialize charts with a delay to ensure DOM is ready
                 setTimeout(() => {
                     updateCharts();
                 }, 500);
                 
-                // Initialize table
                 filterAndRenderTable();
                 
             } catch (error) {
@@ -334,7 +327,6 @@
                     customRange.classList.remove('show');
                 }
                 
-                // Auto-apply filter when changing type (except custom)
                 if (this.value !== 'custom') {
                     applyFilters();
                 }
@@ -393,12 +385,10 @@
             
             try {
                 
-                // Get filter values
                 const filterType = document.getElementById('filterType').value;
                 const startDate = document.getElementById('startDate').value;
                 const endDate = document.getElementById('endDate').value;
                 
-                // Apply date filter
                 let dateFilteredOrders = [...allOrders];
                 
                 const now = new Date();
@@ -449,7 +439,6 @@
                 }
                 
                 
-                // Update UI
                 updateMetricsFromData();
                 updateCharts();
                 filterAndRenderTable();
@@ -496,12 +485,10 @@
         function updateSalesChart() {
             const chartType = document.getElementById('chartType').value;
             
-            // Show loading state
             document.getElementById('salesChartLoading').style.display = 'flex';
             document.getElementById('salesChart').style.display = 'none';
             
             try {
-                // Group data by date
                 const dateGroups = {};
                 reportData.forEach(order => {
                     const date = new Date(order.createdAt).toLocaleDateString('en-IN');
@@ -512,14 +499,13 @@
                     dateGroups[date].orders += 1;
                 });
                 
-                
                 const sortedDates = Object.keys(dateGroups).sort((a, b) => {
                     const dateA = new Date(a.split('/').reverse().join('-'));
                     const dateB = new Date(b.split('/').reverse().join('-'));
                     return dateA - dateB;
                 });
                 
-                const labels = sortedDates.slice(-30); // Last 30 days max
+                const labels = sortedDates.slice(-30); 
                 const data = labels.map(date => 
                     chartType === 'revenue' ? dateGroups[date].revenue : dateGroups[date].orders
                 );
@@ -597,7 +583,6 @@
         
         function updatePaymentChart() {
             
-            // Show loading state
             document.getElementById('paymentChartLoading').style.display = 'flex';
             document.getElementById('paymentChart').style.display = 'none';
             
@@ -661,7 +646,6 @@
                     }
                 });
                 
-                // Hide loading and show chart
                 document.getElementById('paymentChartLoading').style.display = 'none';
                 document.getElementById('paymentChart').style.display = 'block';
                 
@@ -687,7 +671,6 @@
                 return matchesSearch && matchesStatus;
             });
             
-            // Reset to first page when filtering
             currentPage = 1;
             renderTable();
         }
@@ -759,16 +742,13 @@
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
-        // Header with company info
         doc.setFontSize(20);
         doc.setFont(undefined, 'bold');
-        doc.text('SALES REPORT', 105, 25, { align: 'center' });
+        doc.text('LAPZONE SALES REPORT', 105, 25, { align: 'center' });
         
-        // Add a line under the title
         doc.setLineWidth(0.5);
         doc.line(20, 30, 190, 30);
         
-        // Report info section
         doc.setFontSize(10);
         doc.setFont(undefined, 'normal');
         doc.text(`Generated on: ${new Date().toLocaleDateString('en-IN', {
@@ -780,7 +760,6 @@
             minute: '2-digit'
         })}`, 20, 40);
         
-        // Filter information
         const filterType = document.getElementById('filterType').value;
         let filterText = 'All Time';
         if (filterType === 'daily') filterText = 'Today';
@@ -796,12 +775,10 @@
         doc.text(`Report Period: ${filterText}`, 20, 45);
         doc.text(`Total Records: ${filteredData.length}`, 20, 50);
         
-        // Summary section
         doc.setFontSize(12);
         doc.setFont(undefined, 'bold');
         doc.text('SUMMARY', 20, 65);
         
-        // Summary box
         doc.setDrawColor(200, 200, 200);
         doc.rect(20, 70, 170, 25);
         
@@ -813,7 +790,6 @@
         const totalDiscountText = document.getElementById('totalDiscountDisplay').textContent.replace('₹', '');
         const avgOrderValueText = document.getElementById('avgOrderValueDisplay').textContent.replace('₹', '');
         
-        // Summary in two columns
         doc.text('Total Orders:', 25, 78);
         doc.setFont(undefined, 'bold');
         doc.text(totalOrdersText, 70, 78);
@@ -834,12 +810,10 @@
         doc.text(`Rs.${avgOrderValueText}`, 150, 85);
         doc.setFont(undefined, 'normal');
         
-        // Order details section
         doc.setFontSize(12);
         doc.setFont(undefined, 'bold');
         doc.text('ORDER DETAILS', 20, 110);
         
-        // Table headers with better spacing
         let yPos = 125;
         doc.setFontSize(8);
         doc.setFont(undefined, 'bold');
@@ -847,7 +821,6 @@
         const headers = ['Order ID', 'Date', 'Customer', 'Amount', 'Discount', 'Payment', 'Status'];
         const colPositions = [15, 42, 65, 85, 108, 130, 155];
 
-        // Draw header background
         doc.setFillColor(240, 240, 240);
         doc.rect(15, yPos - 5, 160, 8, 'F');
 
@@ -859,7 +832,6 @@
         doc.setFont(undefined, 'normal');
         doc.setFontSize(7);
 
-        // Table data
         const maxRowsPerPage = 30;
         let rowCount = 0;
 
@@ -869,7 +841,6 @@
                 yPos = 30;
                 rowCount = 0;
                 
-                // Redraw headers on new page
                 doc.setFontSize(8);
                 doc.setFont(undefined, 'bold');
                 doc.setFillColor(240, 240, 240);
@@ -883,22 +854,19 @@
                 doc.setFontSize(7);
             }
             
-            // Alternate row colors
             if (index % 2 === 0) {
                 doc.setFillColor(250, 250, 250);
                 doc.rect(15, yPos - 3, 160, 6, 'F');
             }
             
-            // Prepare clean data with better truncation
             const orderDate = new Date(order.createdAt || order.orderDate).toLocaleDateString('en-IN', {
                 day: '2-digit',
                 month: '2-digit',
-                year: '2-digit'  // Use 2-digit year to save space
+                year: '2-digit'  
             });
             const customerName = order.user ? order.user.fullname : 'N/A';
             const truncatedCustomer = customerName.length > 8 ? customerName.substring(0, 8) + '..' : customerName;
             
-            // Clean number formatting
             const totalAmount = Math.round(order.totalAmount || 0);
             const discountAmount = Math.round(order.discountAmount || 0);
             
@@ -918,7 +886,6 @@
                 truncatedStatus
             ];
             
-            // Place each cell at its specific position
             rowData.forEach((data, colIndex) => {
                 doc.text(data.toString(), colPositions[colIndex], yPos);
             });
@@ -927,7 +894,6 @@
             rowCount++;
         });
         
-        // Footer
         const pageCount = doc.internal.getNumberOfPages();
         for (let i = 1; i <= pageCount; i++) {
             doc.setPage(i);
@@ -935,11 +901,10 @@
             doc.setFont(undefined, 'normal');
             doc.setTextColor(128, 128, 128);
             doc.text(`Page ${i} of ${pageCount}`, 190, 285, { align: 'right' });
-            doc.text('Generated by Sales Dashboard', 20, 285);
+            doc.text('Generated by LapZone Sales', 20, 285);
             doc.setTextColor(0, 0, 0); // Reset to black
         }
         
-        // Generate filename
         const timestamp = new Date().toISOString().split('T')[0];
         const filename = `sales-report-${filterText.replace(/\s+/g, '-').toLowerCase()}-${timestamp}.pdf`;
         
@@ -953,7 +918,6 @@
 
 function exportExcel() {
     try {
-        // Get filter information
         const filterType = document.getElementById('filterType').value;
         let filterText = 'All Time';
         if (filterType === 'daily') filterText = 'Today';
@@ -966,10 +930,8 @@ function exportExcel() {
             filterText = `${startDate} to ${endDate}`;
         }
         
-        // Create workbook with multiple sheets
         const wb = XLSX.utils.book_new();
         
-        // Summary Sheet
         const summaryData = [
             ['SALES REPORT SUMMARY'],
             [],
@@ -992,7 +954,6 @@ function exportExcel() {
             ['PAYMENT METHOD BREAKDOWN'],
         ];
         
-        // Add payment method breakdown
         const paymentMethods = {};
         filteredData.forEach(order => {
             const method = order.paymentMethod || 'Unknown';
@@ -1006,7 +967,6 @@ function exportExcel() {
         summaryData.push([]);
         summaryData.push(['STATUS BREAKDOWN']);
         
-        // Add status breakdown
         const statuses = {};
         filteredData.forEach(order => {
             const status = order.orderStatus || 'Unknown';
@@ -1019,7 +979,6 @@ function exportExcel() {
         
         const summaryWs = XLSX.utils.aoa_to_sheet(summaryData);
         
-        // Style the summary sheet
         summaryWs['!cols'] = [
             { width: 25 },
             { width: 20 }
@@ -1027,7 +986,6 @@ function exportExcel() {
         
         XLSX.utils.book_append_sheet(wb, summaryWs, 'Summary');
         
-        // Detailed Orders Sheet
         const orderHeaders = [
             'Order ID',
             'Date',
@@ -1059,7 +1017,6 @@ function exportExcel() {
         
         const orderWs = XLSX.utils.aoa_to_sheet(orderData);
         
-        // Style the orders sheet
         orderWs['!cols'] = [
             { width: 15 }, // Order ID
             { width: 12 }, // Date
@@ -1073,7 +1030,6 @@ function exportExcel() {
             { width: 20 }  // Created At
         ];
         
-        // Add header styling
         const headerRange = XLSX.utils.decode_range(orderWs['!ref']);
         for (let col = headerRange.s.c; col <= headerRange.e.c; col++) {
             const cellAddress = XLSX.utils.encode_cell({ r: 0, c: col });
@@ -1087,7 +1043,6 @@ function exportExcel() {
         
         XLSX.utils.book_append_sheet(wb, orderWs, 'Order Details');
         
-        // Revenue Analysis Sheet (if there's data)
         if (filteredData.length > 0) {
             const revenueData = [
                 ['REVENUE ANALYSIS'],
@@ -1095,7 +1050,6 @@ function exportExcel() {
                 ['Date', 'Orders Count', 'Total Revenue', 'Average Order Value']
             ];
             
-            // Group by date for revenue analysis
             const dateGroups = {};
             filteredData.forEach(order => {
                 const date = new Date(order.createdAt).toLocaleDateString('en-IN');
@@ -1128,7 +1082,6 @@ function exportExcel() {
             XLSX.utils.book_append_sheet(wb, revenueWs, 'Revenue Analysis');
         }
         
-        // Save the file
         const fileName = `sales-report-${filterText.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().split('T')[0]}.xlsx`;
         XLSX.writeFile(wb, fileName);
         

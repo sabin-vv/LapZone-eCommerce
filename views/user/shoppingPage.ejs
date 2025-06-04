@@ -61,6 +61,25 @@
                         </div>
                     </div>
 
+                    <div class="mb-6">
+                        <button type="button" class="w-full text-left font-semibold text-gray-800 flex justify-between items-center py-2"
+                            onclick="toggleFilter('category')">
+                            Category
+                            <svg class="w-5 h-5 transform transition-transform" id="category-toggle" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div id="category-section" class="filter-section pt-2 mb-6">
+                            <% categories.forEach(category => { %>
+                                <label class="flex items-center mt-2">
+                                    <input type="checkbox" name="category" value="<%= category.name %>"
+                                        <%= query.category && query.category.includes(category.name) ? 'checked' : '' %>
+                                        class="rounded text-indigo-600 focus:ring-indigo-500">
+                                    <span class="ml-2 text-sm text-gray-600"><%= category.name %></span>
+                                </label>
+                            <% }) %>
+                    </div>
+
                     <!-- Brand Filter -->
                     <div class="mb-6">
                         <button type="button" class="w-full text-left font-semibold text-gray-800 flex justify-between items-center py-2"
@@ -162,6 +181,7 @@
                             <option value="price-asc" <%= query.sort === 'price-asc' ? 'selected' : '' %>>Price Low-High</option>
                             <option value="price-desc" <%= query.sort === 'price-desc' ? 'selected' : '' %>>Price High-Low</option>
                             <option value="name-asc" <%= query.sort === 'name-asc' ? 'selected' : '' %>>A-Z</option>
+                            <option value="name-desc" <%= query.sort === 'name-desc' ? 'selected' : '' %>>Z-A</option>
                         </select>
                     </div>
                 </div>
@@ -195,6 +215,7 @@
                                         </div>
                                         <h3 class="text-lg font-semibold text-gray-800 mb-2 line-clamp-2"><%= product.name %></h3>
                                         <ul class="text-sm text-gray-600 mb-4">
+                                            <li><%= product.category %></li>
                                             <li><%= product.CPU %></li>
                                             <li><%= product.variants[0]?.RAM || 'N/A' %> RAM</li>
                                             <li><%= product.variants[0]?.Storage || 'N/A' %> Storage</li>
