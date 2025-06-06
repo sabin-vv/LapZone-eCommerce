@@ -13,6 +13,8 @@ body {
     line-height: 1.6;
 }
 
+
+
 /* General Layout Improvements */
 .container-fluid {
     max-width: 1440px;
@@ -343,28 +345,37 @@ input[type="checkbox"]:checked {
 
 /* Out of Stock Products */
 .out-of-stock {
-    opacity: 0.6;
-    pointer-events: none;
-    position: relative;
+  pointer-events: none;
+  position: relative;
+}
+
+.out-of-stock::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(182, 175, 175, 0.5); /* Light overlay */
+  z-index: 1;
 }
 
 .out-of-stock::after {
-    content: "Out of Stock";
-    position: absolute;
-    top: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(-12deg);
-    color: #fff;
-    font-size: 1.25rem;
-    font-weight: 700;
-    background: rgba(220, 38, 38, 0.9);
-    padding: 0.5rem 1.5rem;
-    border-radius: 6px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    z-index: 5;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
+  content: "Out of Stock";
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-12deg);
+  color: #fff;
+  font-size: 1.25rem;
+  font-weight: 700;
+  background: rgba(220, 38, 38, 0.9); /* Red */
+  padding: 0.5rem 1.5rem;
+  border-radius: 6px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 2; /* Above the fade layer */
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  opacity: 1; 
 }
+
 
 /* Product Sorting */
 select#sort {
@@ -389,40 +400,53 @@ select#sort:focus {
 
 /* Pagination */
 .pagination {
-    display: flex;
-    justify-content: center;
-    margin: 2rem 0;
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
 }
 
 .pagination ul {
-    display: flex;
-    list-style: none;
-    padding: 0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    overflow: hidden;
+  display: flex;
+  list-style: none;
+  padding: 0;
+  overflow: hidden;
 }
 
 .pagination li {
-    margin: 0;
+  margin: 1px; 
+  
 }
 
 .pagination a {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 40px;
-    height: 40px;
-    padding: 0 0.75rem;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 0.75rem;
+  font-weight: 500;
+  font-size: 0.875rem; /* text-sm */
+  transition: all 0.2s ease;
+  border-right: 1px solid #d1d5db;
+  color: #4b5563; /* text-gray-600 */
+  background-color: #fff;
+  text-decoration: none;
+  border-radius: 8px;
+}
+
+.pagination a:last-child {
+  border-right: none;
 }
 
 .pagination a:hover {
-    background-color: #f3f4f6;
-    color: #4f46e5;
-    border-color: #e5e7eb;
+  background-color: #f3f4f6;
+  color: #4f46e5;
+}
+
+.pagination .active {
+  background-color:#4f46e5 ; 
+  color:#eef2ff;
+  font-weight: 600;
 }
 
 /* Mobile Adjustments */

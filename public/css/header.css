@@ -22,6 +22,7 @@ header {
 }
 
 .navbar-brand:hover {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     color: #2980b9 !important;
     transform: scale(1.02);
 }
@@ -103,11 +104,14 @@ header {
     
 }
 
+
+
 .navbar a.text-light:hover {
-    color: #ffffff !important;
-    background-color: #3498db;
+    color: #825656 !important;
+    
     transform: translateY(-1px);
 }
+
 
 /* Badge styling for cart and wishlist */
 .icon-with-badge {

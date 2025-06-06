@@ -6,19 +6,23 @@
     <link rel="stylesheet" href="/css/header.css">
     <link rel="stylesheet" href="/css/profileSidebar.css">
     <link rel="stylesheet" href="/css/referralPage.css">
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Referral Code</title>
     <style>
         /* Layout Container */
-        .container {
+        .main-body {
             display: flex;
-            max-width: 1200px;
-            margin: 0 auto;
-            min-height: calc(100vh - 80px);
+           
+            margin-top: 2rem;
         }
 
-
-
+        .main-container {
+            display: flex;
+            margin: 2rem 0 0 0 ;
+            margin-top: 2rem;
+            min-height: calc(100vh - 80px);
+        }
         /* Main Content Styles */
         .main-content {
             flex: 1;
@@ -247,7 +251,7 @@
 <body>
     <%- include("../partials/user/header.ejs") %>
 
-        <div class="container">
+        <div class="main-body">
 
             <%- include("../partials/user/profileSidebar.ejs") %>
                 
@@ -330,6 +334,7 @@
                 });
             });
         </script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
 </body>
 
 </html>

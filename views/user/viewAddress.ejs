@@ -79,7 +79,10 @@
         </div>
     </div>
 
+    <%- include("../partials/user/footer.ejs") %>
     <script>
+        const drop = bootstrap.Dropdown.getOrCreateInstance(document.getElementById('userDropdown'));
+drop.toggle();
         function editAddress(addressId) {
             window.location.href = `/profile/edit-address/${addressId}`;
         }
@@ -110,7 +113,14 @@
                 }
             })
         }
+         document.addEventListener('DOMContentLoaded', function () {
+    const userDropdown = document.getElementById('userDropdown');
+    if (userDropdown) {
+      new bootstrap.Dropdown(userDropdown);
+    }
+  });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
 </body>
 
 </html>

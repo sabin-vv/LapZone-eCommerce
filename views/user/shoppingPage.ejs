@@ -19,7 +19,7 @@
     <div class="container-fluid px-4 py-6 mx-auto">
         <div class="flex flex-col lg:flex-row gap-6">
             <!-- Filter Sidebar -->
-            <aside class="lg:w-1/4 bg-white rounded-xl shadow-lg p-6">
+            <aside class="lg:w-1/4 bg-white rounded-3xl shadow-lg p-6">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-bold text-gray-800">Filter By</h2>
                     <button class="lg:hidden text-indigo-600" onclick="toggleSidebar()">
@@ -248,31 +248,32 @@
                     <!-- Pagination -->
                     <div class="mt-8 flex justify-center">
                         <nav class="pagination" aria-label="Page navigation">
-                            <ul class="inline-flex items-center -space-x-px text-sm">
-                                <% if (currentPage > 1) { %>
-                                    <li>
-                                        <a href="/shop?page=<%= currentPage - 1 %>&search=<%= encodeURIComponent(searchQuery || '') %>&brand=<%= query.brand ? query.brand.join(',') : '' %>&ram=<%= query.ram ? query.ram.join(',') : '' %>&ssd=<%= query.ssd ? query.ssd.join(',') : '' %>&graphics=<%= query.graphics ? query.graphics.join(',') : '' %>&maxPrice=<%= query.maxPrice || '' %>&sort=<%= query.sort || 'popularity' %>"
-                                            class="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700">
-                                            Previous
-                                        </a>
-                                    </li>
-                                <% } %>
-                                <% for (let i = 1; i <= totalPages; i++) { %>
-                                    <li>
-                                        <a href="/shop?page=<%= i %>&search=<%= encodeURIComponent(searchQuery || '') %>&brand=<%= query.brand ? query.brand.join(',') : '' %>&ram=<%= query.ram ? query.ram.join(',') : '' %>&ssd=<%= query.ssd ? query.ssd.join(',') : '' %>&graphics=<%= query.graphics ? query.graphics.join(',') : '' %>&maxPrice=<%= query.maxPrice || '' %>&sort=<%= query.sort || 'popularity' %>"
-                                            class="px-3 py-2 leading-tight <%= currentPage === i ? 'text-indigo-600 bg-indigo-50 border-indigo-300' : 'text-gray-500 bg-white border-gray-300' %> hover:bg-gray-100 hover:text-gray-700">
-                                            <%= i %>
-                                        </a>
-                                    </li>
-                                <% } %>
-                                <% if (currentPage < totalPages) { %>
-                                    <li>
-                                        <a href="/shop?page=<%= currentPage + 1 %>&search=<%= encodeURIComponent(searchQuery || '') %>&brand=<%= query.brand ? query.brand.join(',') : '' %>&ram=<%= query.ram ? query.ram.join(',') : '' %>&ssd=<%= query.ssd ? query.ssd.join(',') : '' %>&graphics=<%= query.graphics ? query.graphics.join(',') : '' %>&maxPrice=<%= query.maxPrice || '' %>&sort=<%= query.sort || 'popularity' %>"
-                                            class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700">
-                                            Next
-                                        </a>
-                                    </li>
-                                <% } %>
+                            <ul>
+                            <% if (currentPage > 1) { %>
+                                <li>
+                                <a href="/shop?page=<%= currentPage - 1 %>&search=<%= encodeURIComponent(searchQuery || '') %>&brand=<%= query.brand?.join(',') || '' %>&ram=<%= query.ram?.join(',') || '' %>&ssd=<%= query.ssd?.join(',') || '' %>&graphics=<%= query.graphics?.join(',') || '' %>&maxPrice=<%= query.maxPrice || '' %>&sort=<%= query.sort || 'popularity' %>">
+                                    Previous
+                                </a>
+                                </li>
+                            <% } %>
+
+                            <% for (let i = 1; i <= totalPages; i++) { %>
+                                <li>
+                                <a
+                                    href="/shop?page=<%= i %>&search=<%= encodeURIComponent(searchQuery || '') %>&brand=<%= query.brand?.join(',') || '' %>&ram=<%= query.ram?.join(',') || '' %>&ssd=<%= query.ssd?.join(',') || '' %>&graphics=<%= query.graphics?.join(',') || '' %>&maxPrice=<%= query.maxPrice || '' %>&sort=<%= query.sort || 'popularity' %>"
+                                    class="<%= currentPage === i ? 'active' : '' %>">
+                                    <%= i %>
+                                </a>
+                                </li>
+                            <% } %>
+
+                            <% if (currentPage < totalPages) { %>
+                                <li>
+                                <a href="/shop?page=<%= currentPage + 1 %>&search=<%= encodeURIComponent(searchQuery || '') %>&brand=<%= query.brand?.join(',') || '' %>&ram=<%= query.ram?.join(',') || '' %>&ssd=<%= query.ssd?.join(',') || '' %>&graphics=<%= query.graphics?.join(',') || '' %>&maxPrice=<%= query.maxPrice || '' %>&sort=<%= query.sort || 'popularity' %>">
+                                    Next
+                                </a>
+                                </li>
+                            <% } %>
                             </ul>
                         </nav>
                     </div>
@@ -283,7 +284,7 @@
 
     <%- include("../partials/user/footer.ejs") %>
 
-    <script src="/js/header.js"></script>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Toggle filter sidebar on mobile
@@ -353,7 +354,7 @@
                                 iziToast.success({
                                 title: '',
                                 message: 'Product added to Wishlist',
-                                position: 'topRight',
+                                position: 'bottomRight',
                                 timeout: 2000
                             });
                                 icon.classList.remove('bi-heart');
@@ -362,7 +363,7 @@
                                 iziToast.success({
                                 title: '',
                                 message: 'Product removed from wishlst',
-                                position: 'topRight',
+                                position: 'bottomRight',
                                 timeout: 2000
                             });
                                 icon.classList.remove('bi-heart-fill');
@@ -425,7 +426,7 @@
                     iziToast.error({
                             title: 'Error',
                             message: 'Product Out of Stock',
-                            position: 'topRight',
+                            position: 'bottomRight',
                             timeout: 2000
                             });
                     if (result.message === 'Please log in') {

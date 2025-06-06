@@ -2,7 +2,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Poppins', Arial, sans-serif;
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 body {
@@ -13,11 +13,11 @@ body {
 
 .main-body {
     display: flex;
-    padding: 25px;
     gap: 30px;
     flex-wrap: wrap;
     max-width: 1400px;
-    
+    margin-top: 2rem;
+    overflow: hidden;
 }
 
 .main-content {

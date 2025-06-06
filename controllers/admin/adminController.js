@@ -392,7 +392,7 @@ const generateLedger = async (req, res) => {
                 $gte: new Date(startDate),
                 $lte: new Date(endDate)
             }
-        }).populate('user', 'fullname email');
+        }).populate('user', 'fullname email').sort({ orderDate: -1 });
 
         // Process ledger data
         const ledgerData = {
@@ -457,7 +457,7 @@ const downloadLedgerPdf = async (req, res) => {
                 $gte: new Date(startDate),
                 $lte: new Date(endDate)
             }
-        }).populate('user', 'fullname email');
+        }).populate('user', 'fullname email').sort({ orderDate: -1 });
 
         const totalRevenue = orders.reduce((sum, order) => sum + order.totalAmount, 0);
 

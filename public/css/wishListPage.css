@@ -8,10 +8,10 @@
 
 .main-container {
     display: flex;
-    padding: 30px;
+    
     gap: 30px;
     max-width: 1400px;
-    margin: 0 auto;
+    margin-top: 2rem;
     position: relative;
 }
 

@@ -2,6 +2,7 @@
     margin-left: 2rem;
     
     width: 280px;
+    flex-shrink: 0;
     background-color: #ffffff;
     padding: 24px 15px;
     border-right: 1px solid #e5e7eb;
@@ -10,7 +11,6 @@
     top:0;
     transition: all 0.3s ease;
     border-radius: 60px;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.03);
     overflow-y: auto;
     z-index: 100;
     box-shadow: 
@@ -69,6 +69,16 @@
     list-style: none;
     padding: 0;
     margin: 0;
+}
+.sidebar-link {
+  display: block;            /* ✅ Makes the whole <a> clickable */
+  
+  width: 100%;
+  text-decoration: none;
+  color: #1f2937;             /* text-gray-800 */
+  font-weight: 500;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
 }
 
 .sidebar ul a {
@@ -148,7 +158,9 @@
 /* Responsive style for sidebar */
 @media (max-width: 992px) {
     .sidebar {
-        width: 240px;
+        width: 25%; 
+        max-width: 320px;
+        min-width: 250px;
     }
 }
 

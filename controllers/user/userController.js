@@ -66,7 +66,7 @@ async function sendverificationEmail(email, otp) {
         from: process.env.NODEMAILER_EMAIL,
         to: email,
         subject: "OTP verification",
-        text: `Your verification code is: ${otp}`, // Fallback for plain text email clients
+        text: `Your verification code is: ${otp}`, 
         html: `
     <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px;">
       <h2 style="color: #4A90E2;">lapZone Email Verification</h2>
@@ -134,10 +134,11 @@ const postSignUp = async (req, res) => {
         return res.render("user/userSignup", { errors, message: null, formData, error: null });
 
     const existingUser = await User.findOne({ $or: [{ email: email }, { mobile: mobile }] });
-    if (existingUser) {
 
+    if (existingUser) {
         return res.render("user/userSignup", { message: "User already exists", error: null });
     }
+    
     const otp = generateOtp()
     const emailsend = await sendverificationEmail(email, otp)
     console.log(otp)

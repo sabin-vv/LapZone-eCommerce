@@ -14,19 +14,20 @@
     <div class="sidebar-section">
         <h4>My Profile</h4>
         <ul>
-            <li><a href="/profile/address">My Address</a></li>
-            <li ><a href="/profile/order">My Order</a></li>
-            <li><a href="/wishlist">My Wishlist</a></li>
+            <li><a href="/profile/address" class="sidebar-link"> <i class="fa-solid fa-location-dot me-2"></i>My Address</a></li>
+            <li ><a href="/profile/order" class="sidebar-link"><i class="fa-solid fa-box me-2"></i>My Order (<%= orderCount %>)</a></li>
+            <li><a href="/wishlist" class="sidebar-link"><i class="fa-solid fa-heart me-2"></i>My Wishlist (<%= wishlistCount %>)</a></li>
         </ul>
     </div>
     
     <div class="sidebar-section">
         <ul>
-            <li><a href="/profile/wallet">My Wallet</a></li>
-            <li><a href="/profile/coupon">My Coupon</a></li>
-            <li><a href="/profile/change-password">Change password</a></li>
-            <li><a href="/profile/logout">Log out</a></li>
-            <li><a href="/profile/referral">Referral Code</a></li>
+            <li><a href="/profile/wallet" class="sidebar-link"><i class="fa-solid fa-wallet me-2"></i>My Wallet</a></li>
+            <li><a href="/profile/coupon" class="sidebar-link"> <i class="fa-solid fa-ticket me-2"></i>My Coupon</a></li>
+            <li><a href="/profile/change-password" class="sidebar-link"><i class="fa-solid fa-key me-2"></i>Change password</a></li>
+            <li><a href="/profile/logout" class="sidebar-link"> <i class="fa-solid fa-arrow-right-from-bracket me-2"></i>Log out</a></li>
+            <li><a href="/profile/referral" class="sidebar-link"> <i class="fa-solid fa-user-plus me-2"></i>Referral Code</a></li>
+            
         </ul>
     </div>
 </div>

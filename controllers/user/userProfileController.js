@@ -77,7 +77,7 @@ const viewAddress = async (req, res) => {
     const user = await User.findById(req.session.user)
     const addresses = await Address.find({ userId: req.session.user })
 
-    res.render("user/viewAddress", { addresses, user, username: null })
+    res.render("user/viewAddress", { addresses, user })
 }
 
 
@@ -278,12 +278,6 @@ const editPassword = async (req, res) => {
 
     const required = ['currentPassword', 'newPassword', 'confirmPassword']
 
-    required.forEach(field => {
-        if (!req.body[field] || req.body[field].trim() === '') errors[field] = `${field} is required`
-    })
-
-
-
     const isCurrentPassword = await bcrypt.compare(currentPassword, userData.password)
     if (!isCurrentPassword)
         errors['currentPassword'] = 'Old password Miss match'
@@ -298,6 +292,10 @@ const editPassword = async (req, res) => {
         errors['newPassword'] = "Password contain minimum 1 special character";
     if (!/^[A-Za-z\d@$!%*?&]{8,}$/.test(newPassword))
         errors['newPassword'] = "Password should be minimum 8 character long";
+
+    required.forEach(field => {
+        if (!req.body[field] || req.body[field].trim() === '') errors[field] = `${field} is required`
+    })
 
 
     if (newPassword !== confirmPassword)

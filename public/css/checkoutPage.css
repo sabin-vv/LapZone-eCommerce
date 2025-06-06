@@ -3,13 +3,12 @@
             font-family: 'Inter', sans-serif;
             background-color: #f8f9fa; /* Light grey background */
         }
-        /* Main content area, using flexbox for sidebar and main content layout */
         .main-content {
             display: flex;
-            /* On small screens, stack content vertically */
             flex-direction: column;
+            margin-top: 2rem;
+            gap: 30px;
         }
-        /* Adjust main-content for larger screens using Bootstrap's media queries or Tailwind's responsive prefixes */
         @media (min-width: 992px) { /* Equivalent to Bootstrap's lg breakpoint */
             .main-content {
                 flex-direction: row;

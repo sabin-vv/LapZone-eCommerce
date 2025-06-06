@@ -6,7 +6,7 @@ const listProducts = async (req, res) => {
   if (!req.session.user) {
     return res.redirect("/login");
   }
-  
+
   const user = req.session.user;
   const username = req.session.username
   const searchQuery = req.query.search ? req.query.search.trim() : "";
@@ -52,7 +52,7 @@ const listProducts = async (req, res) => {
     query.salePrice = { $lte: maxPrice };
   }
 
-  
+
   const sort = {};
   if (sortOption === "popularity") {
     sort.rating = -1;
@@ -68,11 +68,11 @@ const listProducts = async (req, res) => {
     sort.name = -1
   }
 
-  
+
   try {
-      
-    const wishlist = await Wishlist.findOne({ userId: req.session.user})
-    const wishlistIds = wishlist ?  wishlist.items.map(item => item.productId.toString()) : []  
+
+    const wishlist = await Wishlist.findOne({ userId: req.session.user })
+    const wishlistIds = wishlist ? wishlist.items.map(item => item.productId.toString()) : []
     const products = await Product.find(query).sort(sort).skip(skip).limit(limit).populate('categoryId')
     const brands = await Product.distinct("brand");
     const ramvariants = await Product.distinct("variants.RAM");
@@ -81,7 +81,7 @@ const listProducts = async (req, res) => {
     const ssds = [...new Set(ssdvariants.map(ssd => ssd.split(" ")[0]))];
     const graphics = await Product.distinct("graphics");
 
-    
+
     const totalProducts = await Product.countDocuments(query);
     const totalPages = Math.ceil(totalProducts / limit);
     const categories = await Category.find().sort({ name: 1 });
@@ -126,7 +126,7 @@ const listProducts = async (req, res) => {
         graphics: [],
         sort: "popularity",
         maxPrice: null,
-        
+
       },
       currentPage: 1,
       totalPages: 0,
@@ -143,7 +143,7 @@ const viewProduct = async (req, res) => {
   const user = req.session.user;
   const username = user.fullname
   const productId = req.params.id;
-  
+
   const product = await Product.findById(productId).populate('categoryId')
   const suggesionCategory = product.category;
 
@@ -162,7 +162,8 @@ const viewProduct = async (req, res) => {
     user,
     username,
     productSuggesions,
-    isWishlisted
+    isWishlisted,
+    variants: product.variants
   });
 }
 

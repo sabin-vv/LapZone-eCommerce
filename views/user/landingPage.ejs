@@ -265,7 +265,7 @@
                                 iziToast.success({
                                     title: '',
                                     message: 'Product added to Wishlist',
-                                    position: 'topRight',
+                                    position: 'bottomRight',
                                     timeout: 2000
                                 });
                                 icon.classList.remove('bi-heart');
@@ -274,7 +274,7 @@
                                 iziToast.success({
                                     title: '',
                                     message: 'Product removed from wishlist',
-                                    position: 'topRight',
+                                    position: 'bottomRight',
                                     timeout: 2000
                                 });
                                 icon.classList.remove('bi-heart-fill');
@@ -287,7 +287,7 @@
                         iziToast.error({
                             title: 'Error',
                             message: 'An error occurred. Please try again.',
-                            position: 'topRight',
+                            position: 'bottomRight',
                             timeout: 2000
                         });
                     }
@@ -315,14 +315,14 @@
                                 iziToast.success({
                                     title: '',
                                     message: 'Product added to cart',
-                                    position: 'topRight',
+                                    position: 'bottomRight',
                                     timeout: 2000
                                 });
                             } else if (result.success === 'false') {
                                 iziToast.warning({
                                     title: '',
                                     message: 'Cart limit reached',
-                                    position: 'topRight',
+                                    position: 'bottomRight',
                                     timeout: 2000
                                 });
                             }
@@ -330,7 +330,7 @@
                             iziToast.error({
                                 title: 'Error',
                                 message: 'Cart limit exceeded',
-                                position: 'topRight',
+                                position: 'bottomRight',
                                 timeout: 2000
                             });
                         }
@@ -338,7 +338,7 @@
                         iziToast.error({
                             title: 'Error',
                             message: 'An error occurred. Please try again.',
-                            position: 'topRight',
+                            position: 'bottomRight',
                             timeout: 2000
                         });
                     }

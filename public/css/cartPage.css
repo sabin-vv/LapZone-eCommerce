@@ -15,10 +15,9 @@ body {
     min-height: 90vh;
     width: 100%;
     position: relative;
-    padding: 30px;
     gap: 30px;
     max-width: 1400px;
-    margin: 0 auto;
+    margin-top: 2rem;
 }
 
 /* Cart Container */

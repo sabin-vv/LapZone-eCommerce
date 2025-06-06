@@ -12,6 +12,7 @@ const adminRouter = require('./routes/adminRouter')
 const session = require("express-session")
 const nocache = require("nocache")
 require('./utils/cron')
+const counts = require("./middlewares/counts")
 
 
 app.use(nocache())
@@ -51,6 +52,8 @@ app.use((req, res, next) => {
     res.locals.username = req.session.username ||null
     next();
 });
+
+app.use(counts)
 
 app.use("/", userRouter)
 
