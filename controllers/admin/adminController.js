@@ -4,44 +4,50 @@ const Product = require("../../model/products")
 const Order = require("../../model/order")
 const puppeteer = require("puppeteer")
 
-const getadminLogin = (req, res) => {
-
-    if (req.session.admin)
-        return res.render("admin/adminDashboard")
-
-    res.render("admin/adminlogin", { error: null })
-
-}
-
-const login = async (req, res) => {
-
-    if (req.session.admin)
-        return res.render("admin/adminDashboard")
-
-    const { email, password } = req.body
-
-    if (!email || !password)
-        return res.render("admin/adminlogin", { error: "All Fields re Required" })
-
-    const user = await User.findOne({ email })
-    if (!user)
-        return res.render("admin/adminlogin", { error: "Account not Found" })
-
-    if (!user.isAdmin)
-        return res.render("admin/adminlogin", { error: "Unauthorized Access" })
-
-    const isMatch = await bcrypt.compare(password, user.password)
-    if (!isMatch)
-        return res.render("admin/adminlogin", { error: "Invalid Credentials" })
-
-    req.session.admin = email
-    res.redirect("/admin/dashboard")
-}
-
-const adminLogout = (req, res) => {
-
+const getadminLogin = (req, res, next) => {
     try {
+        if (req.session.admin)
+            return res.render("admin/adminDashboard")
 
+        res.render("admin/adminlogin", { error: null })
+
+    } catch (err) {
+        console.error("Error in getadminLogin:", err);
+        next(err);
+    }
+}
+
+const login = async (req, res, next) => {
+    try {
+        if (req.session.admin)
+            return res.render("admin/adminDashboard")
+
+        const { email, password } = req.body
+
+        if (!email || !password)
+            return res.render("admin/adminlogin", { error: "All Fields re Required" })
+
+        const user = await User.findOne({ email })
+        if (!user)
+            return res.render("admin/adminlogin", { error: "Account not Found" })
+
+        if (!user.isAdmin)
+            return res.render("admin/adminlogin", { error: "Unauthorized Access" })
+
+        const isMatch = await bcrypt.compare(password, user.password)
+        if (!isMatch)
+            return res.render("admin/adminlogin", { error: "Invalid Credentials" })
+
+        req.session.admin = email
+        res.redirect("/admin/dashboard")
+    } catch (error) {
+        console.error("Error in login:", err);
+        next(err);
+    }
+}
+
+const adminLogout = (req, res, next) => {
+    try {
         req.session.destroy(err => {
             if (err) {
                 console.log("Cannot destroy the Session : ", err)
@@ -52,76 +58,74 @@ const adminLogout = (req, res) => {
         })
 
     } catch (error) {
-
+        console.error("Error in adminLogout:", err);
+        next(err);
     }
-
-
 }
 
-const adminDashbaord = async (req, res) => {
+const adminDashbaord = async (req, res, next) => {
+    try {
+        if (!req.session.admin)
+            return res.render("admin/adminlogin", { error: null })
 
-    if (!req.session.admin)
-        return res.render("admin/adminlogin", { error: null })
+        const productCount = await Product.countDocuments()
+        const userCount = await User.countDocuments()
+        const orderCount = await Order.countDocuments()
+        const sales = await Order.aggregate([
+            { $group: { _id: null, total: { $sum: "$totalAmount" } } }
+        ])
+        const totalSales = Math.round(sales[0]?.total)
 
-    const productCount = await Product.countDocuments()
-    const userCount = await User.countDocuments()
-    const orderCount = await Order.countDocuments()
-    const sales = await Order.aggregate([
-        { $group: { _id: null, total: { $sum: "$totalAmount" } } }
-    ])
-    const totalSales = Math.round(sales[0]?.total)
+        return res.render("admin/adminDashboard", { productCount, userCount, orderCount, totalSales })
 
-
-    return res.render("admin/adminDashboard", { productCount, userCount, orderCount, totalSales })
-
+    } catch (error) {
+        console.error('Error fetching dashboard stats:', error);
+        next(error);
+    }
 }
 
-const getDashboardStats = async (req, res) => {
+const getDashboardStats = async (req, res, next) => {
     try {
         const now = new Date();
         const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
         const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
         const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
 
-        // Current month stats
         const currentMonthOrders = await Order.find({
             orderDate: { $gte: startOfMonth },
             orderStatus: { $ne: 'Cancelled' }
         });
 
-        // Last month stats
         const lastMonthOrders = await Order.find({
             orderDate: { $gte: startOfLastMonth, $lte: endOfLastMonth },
             orderStatus: { $ne: 'Cancelled' }
         });
 
-        // Calculate totals
         const totalSales = currentMonthOrders.reduce((sum, order) => sum + order.totalAmount, 0);
         const lastMonthSales = lastMonthOrders.reduce((sum, order) => sum + order.totalAmount, 0);
-        
+
         const totalOrders = await Order.countDocuments({ orderStatus: { $ne: 'Cancelled' } });
         const lastMonthOrdersCount = lastMonthOrders.length;
-        
+
         const totalCustomers = await User.countDocuments({ isAdmin: false });
         const lastMonthCustomers = await User.countDocuments({
             isAdmin: false,
             createdAt: { $gte: startOfLastMonth, $lte: endOfLastMonth }
         });
-        
+
         const totalProducts = await Product.countDocuments({ isExisting: true });
         const lastMonthProducts = await Product.countDocuments({
             isExisting: true,
             createdAt: { $gte: startOfLastMonth, $lte: endOfLastMonth }
         });
 
-        // Calculate percentage changes
-        const salesChange = lastMonthSales > 0 ? 
+        const salesChange = lastMonthSales > 0 ?
             ((totalSales - lastMonthSales) / lastMonthSales * 100).toFixed(1) : 0;
-        const ordersChange = lastMonthOrdersCount > 0 ? 
+        const ordersChange = lastMonthOrdersCount > 0 ?
             ((currentMonthOrders.length - lastMonthOrdersCount) / lastMonthOrdersCount * 100).toFixed(1) : 0;
-        const customersChange = lastMonthCustomers > 0 ? 
+        const customersChange = lastMonthCustomers > 0 ?
             ((totalCustomers - lastMonthCustomers) / lastMonthCustomers * 100).toFixed(1) : 0;
-        const productsChange = lastMonthProducts > 0 ? 
+        const productsChange = lastMonthProducts > 0 ?
             ((totalProducts - lastMonthProducts) / lastMonthProducts * 100).toFixed(1) : 0;
 
         res.json({
@@ -137,12 +141,11 @@ const getDashboardStats = async (req, res) => {
 
     } catch (error) {
         console.error('Error fetching dashboard stats:', error);
-        res.status(500).json({ error: 'Failed to fetch dashboard statistics' });
+        next(error);
     }
 };
 
-// Sales data for charts
-const getSalesData = async (req, res) => {
+const getSalesData = async (req, res, next) => {
     try {
         const { period } = req.query;
         const now = new Date();
@@ -151,82 +154,78 @@ const getSalesData = async (req, res) => {
 
         switch (period) {
             case 'yearly':
-                // Get last 5 years
                 for (let i = 4; i >= 0; i--) {
                     const year = now.getFullYear() - i;
                     labels.push(year.toString());
-                    
+
                     const yearStart = new Date(year, 0, 1);
                     const yearEnd = new Date(year + 1, 0, 1);
-                    
+
                     const orders = await Order.find({
                         orderDate: { $gte: yearStart, $lt: yearEnd },
                         orderStatus: { $ne: 'Cancelled' }
                     });
-                    
+
                     const yearSales = orders.reduce((sum, order) => sum + order.totalAmount, 0);
                     data.push(yearSales);
                 }
                 break;
 
             case 'monthly':
-                // Get last 12 months
                 for (let i = 11; i >= 0; i--) {
                     const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
                     labels.push(date.toLocaleDateString('en-US', { month: 'short' }));
-                    
+
                     const monthStart = new Date(date.getFullYear(), date.getMonth(), 1);
                     const monthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 1);
-                    
+
                     const orders = await Order.find({
                         orderDate: { $gte: monthStart, $lt: monthEnd },
                         orderStatus: { $ne: 'Cancelled' }
                     });
-                    
+
                     const monthSales = orders.reduce((sum, order) => sum + order.totalAmount, 0);
                     data.push(monthSales);
                 }
                 break;
 
             case 'weekly':
-                // Get last 4 weeks
                 for (let i = 3; i >= 0; i--) {
                     const weekStart = new Date(now);
                     weekStart.setDate(now.getDate() - (i * 7) - now.getDay());
                     weekStart.setHours(0, 0, 0, 0);
-                    
+
                     const weekEnd = new Date(weekStart);
                     weekEnd.setDate(weekStart.getDate() + 7);
-                    
+
                     labels.push(`Week ${4 - i}`);
-                    
+
                     const orders = await Order.find({
                         orderDate: { $gte: weekStart, $lt: weekEnd },
                         orderStatus: { $ne: 'Cancelled' }
                     });
-                    
+
                     const weekSales = orders.reduce((sum, order) => sum + order.totalAmount, 0);
                     data.push(weekSales);
                 }
                 break;
 
             case 'daily':
-                // Get last 7 days
                 for (let i = 6; i >= 0; i--) {
                     const date = new Date(now);
                     date.setDate(now.getDate() - i);
                     date.setHours(0, 0, 0, 0);
-                    
+
                     const nextDay = new Date(date);
                     nextDay.setDate(date.getDate() + 1);
-                    
+
                     labels.push(date.toLocaleDateString('en-US', { weekday: 'short' }));
-                    
+
                     const orders = await Order.find({
                         orderDate: { $gte: date, $lt: nextDay },
                         orderStatus: { $ne: 'Cancelled' }
                     });
-                    
+
                     const daySales = orders.reduce((sum, order) => sum + order.totalAmount, 0);
                     data.push(daySales);
                 }
@@ -240,12 +239,11 @@ const getSalesData = async (req, res) => {
 
     } catch (error) {
         console.error('Error fetching sales data:', error);
-        res.status(500).json({ error: 'Failed to fetch sales data' });
+        next(error);
     }
 };
 
-// Top selling products
-const getTopProducts = async (req, res) => {
+const getTopProducts = async (req, res, next) => {
     try {
         const topProducts = await Order.aggregate([
             { $match: { orderStatus: { $ne: 'Cancelled' } } },
@@ -283,12 +281,11 @@ const getTopProducts = async (req, res) => {
 
     } catch (error) {
         console.error('Error fetching top products:', error);
-        res.status(500).json({ error: 'Failed to fetch top products' });
+        next(error);
     }
 };
 
-// Top selling categories
-const getTopCategories = async (req, res) => {
+const getTopCategories = async (req, res, next) => {
     try {
         const topCategories = await Order.aggregate([
             { $match: { orderStatus: { $ne: 'Cancelled' } } },
@@ -318,12 +315,11 @@ const getTopCategories = async (req, res) => {
 
     } catch (error) {
         console.error('Error fetching top categories:', error);
-        res.status(500).json({ error: 'Failed to fetch top categories' });
+        next(error);
     }
 };
 
-// Top selling brands
-const getTopBrands = async (req, res) => {
+const getTopBrands = async (req, res, next) => {
     try {
         const topBrands = await Order.aggregate([
             { $match: { orderStatus: { $ne: 'Cancelled' } } },
@@ -353,12 +349,11 @@ const getTopBrands = async (req, res) => {
 
     } catch (error) {
         console.error('Error fetching top brands:', error);
-        res.status(500).json({ error: 'Failed to fetch top brands' });
+        next(error);
     }
 };
 
-// Recent orders
-const getRecentOrders = async (req, res) => {
+const getRecentOrders = async (req, res, next) => {
     try {
         const recentOrders = await Order.find()
             .populate('user', 'fullname')
@@ -378,15 +373,14 @@ const getRecentOrders = async (req, res) => {
 
     } catch (error) {
         console.error('Error fetching recent orders:', error);
-        res.status(500).json({ error: 'Failed to fetch recent orders' });
+        next(error);
     }
 };
 
-// Generate ledger
-const generateLedger = async (req, res) => {
+const generateLedger = async (req, res, next) => {
     try {
         const { startDate, endDate } = req.body;
-        
+
         const orders = await Order.find({
             orderDate: {
                 $gte: new Date(startDate),
@@ -394,7 +388,6 @@ const generateLedger = async (req, res) => {
             }
         }).populate('user', 'fullname email').sort({ orderDate: -1 });
 
-        // Process ledger data
         const ledgerData = {
             period: { startDate, endDate },
             totalOrders: orders.length,
@@ -413,15 +406,14 @@ const generateLedger = async (req, res) => {
 
     } catch (error) {
         console.error('Error generating ledger:', error);
-        res.status(500).json({ error: 'Failed to generate ledger' });
+        next(error);
     }
 };
 
-// Download ledger as CSV
-const downloadLedgerCsv = async (req, res) => {
+const downloadLedgerCsv = async (req, res, next) => {
     try {
         const { startDate, endDate } = req.query;
-        
+
         const orders = await Order.find({
             orderDate: {
                 $gte: new Date(startDate),
@@ -429,9 +421,8 @@ const downloadLedgerCsv = async (req, res) => {
             }
         }).populate('user', 'fullname email');
 
-        // Create CSV content
         let csvContent = 'Order ID,Customer Name,Email,Amount,Status,Date\n';
-        
+
         orders.forEach(order => {
             csvContent += `${order.orderId},${order.user.fullname},${order.user.email},${order.totalAmount},${order.orderStatus},${order.orderDate.toISOString().split('T')[0]}\n`;
         });
@@ -442,13 +433,11 @@ const downloadLedgerCsv = async (req, res) => {
 
     } catch (error) {
         console.error('Error downloading CSV:', error);
-        res.status(500).json({ error: 'Failed to download CSV' });
+        next(error);
     }
 };
 
-// Download ledger as PDF (basic implementation)
-// Download ledger as PDF - Fixed version
-const downloadLedgerPdf = async (req, res) => {
+const downloadLedgerPdf = async (req, res, next) => {
     try {
         const { startDate, endDate } = req.query;
 
@@ -527,17 +516,21 @@ const downloadLedgerPdf = async (req, res) => {
 
     } catch (error) {
         console.error('Error downloading PDF:', error);
-        res.status(500).json({ error: 'Failed to generate PDF' });
+        next(error);
     }
 };
 
-const getDashboard = (req, res) => {
+const getDashboard = (req, res, next) => {
+    try {
+        if (req.session.admin)
+            return res.redirect("/admin/dashboard")
 
-    if (req.session.admin)
-        return res.redirect("/admin/dashboard")
+    } catch (error) {
+        console.error('Error fetching dashboard:', error);
+        next(error);
+    }
 
 }
-
 
 
 module.exports = {
@@ -555,5 +548,4 @@ module.exports = {
     generateLedger,
     downloadLedgerCsv,
     downloadLedgerPdf
-
 }

@@ -94,7 +94,9 @@ router.post("/profile/wallet/add", validateUserStatus, walletController.addMoney
 
 
 router.post("/user/create-razorpay-order", razorpayController.createRazoroay)
-
+router.post("/user/retry-razorpay", razorpayController.retryRazorpay)
+router.post("/user/verify-payment", razorpayController.verifyPayment)
+router.get("/user/order-success/:id", validateUserStatus, checkoutController.orderSuccessPage)
 
 router.post("/profile/apply-coupon", validateUserStatus, couponController.applyCoupon)
 router.get("/profile/coupon", validateUserStatus, couponController.viewCouponPage)

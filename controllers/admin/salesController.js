@@ -1,6 +1,6 @@
 const Order = require("../../model/order");
 
-const salesReportPage = async (req, res) => {
+const salesReportPage = async (req, res, next) => {
     if (!req.session.admin) return res.redirect("/admin");
 
     try {
@@ -27,25 +27,25 @@ const salesReportPage = async (req, res) => {
         });
     } catch (error) {
         console.error('Error loading sales report page:', error);
-        res.status(500).render('error', { message: 'Failed to load sales report' });
+        next(error);
     }
 };
 
-const getSalesReportData = async (req, res) => {
+const getSalesReportData = async (req, res, next) => {
     try {
         const { filterType, startDate, endDate } = req.query;
-        
+
         // Build date filter based on filterType
         let dateFilter = {};
         const now = new Date();
-        
+
         switch (filterType) {
             case 'daily':
                 const startOfDay = new Date(now.setHours(0, 0, 0, 0));
                 const endOfDay = new Date(now.setHours(23, 59, 59, 999));
                 dateFilter = { createdAt: { $gte: startOfDay, $lte: endOfDay } };
                 break;
-                
+
             case 'weekly':
                 const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
                 startOfWeek.setHours(0, 0, 0, 0);
@@ -54,19 +54,19 @@ const getSalesReportData = async (req, res) => {
                 endOfWeek.setHours(23, 59, 59, 999);
                 dateFilter = { createdAt: { $gte: startOfWeek, $lte: endOfWeek } };
                 break;
-                
+
             case 'monthly':
                 const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
                 const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
                 dateFilter = { createdAt: { $gte: startOfMonth, $lte: endOfMonth } };
                 break;
-                
+
             case 'yearly':
                 const startOfYear = new Date(now.getFullYear(), 0, 1);
                 const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
                 dateFilter = { createdAt: { $gte: startOfYear, $lte: endOfYear } };
                 break;
-                
+
             case 'custom':
                 if (startDate && endDate) {
                     const start = new Date(startDate);
@@ -77,13 +77,13 @@ const getSalesReportData = async (req, res) => {
                 }
                 break;
         }
-        
+
         // Fetch filtered orders
         const orders = await Order.find(dateFilter)
             .populate('user', 'fullname email')
             .populate('items.productId', 'productName images')
             .sort({ createdAt: -1 });
-        
+
         // Calculate summary
         const summary = {
             totalOrders: orders.length,
@@ -91,19 +91,16 @@ const getSalesReportData = async (req, res) => {
             totalDiscount: orders.reduce((sum, order) => sum + (order.discountAmount || 0), 0),
             totalItems: orders.reduce((sum, order) => sum + order.items.length, 0)
         };
-        
+
         res.json({
             success: true,
             orders,
             summary
         });
-        
+
     } catch (error) {
         console.error('Error fetching sales report data:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to fetch sales report data'
-        });
+        next(error);
     }
 };
 

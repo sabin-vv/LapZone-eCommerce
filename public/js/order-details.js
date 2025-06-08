@@ -263,12 +263,70 @@ document.addEventListener('DOMContentLoaded', function () {
         modal.hide();
     });
 
+    async function retryPayment(orderId) {
+    try {
+        
+      const res = await fetch('/user/retry-razorpay', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId })
+      });
+      
+      const { razorpayOrderId, amount, key, user } = await res.json();
+      
+      const options = {
+        key,
+        amount,
+        currency: "INR",
+        name: "LapZone",
+        description: "Retry Payment",
+        order_id: razorpayOrderId,
+        handler: async function (response) {
+          await fetch('/user/verify-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpayOrderId: response.razorpay_order_id,
+              razorpaySignature: response.razorpay_signature,
+              orderId
+            })
+          });
 
+          window.location.href = `/user/order-success/${orderId}`;
+        },
+        modal: {
+          ondismiss: function () {
+            window.location.href = '/user/order-failed';
+          }
+        },
+        prefill: {
+          name: user.name || '',
+          email: user.email || '',
+          contact: user.phone || ''
+        },
+        theme: {
+          color: "#3399cc"
+        }
+      };
 
+      const rzp = new Razorpay(options);
+      rzp.open();
+
+    } catch (err) {
+      console.error('Retry payment error:', err);
+      Swal.fire({
+        icon: 'error',
+        title: 'Retry Failed',
+        text: 'Something went wrong while retrying payment.'
+      });
+    }
+  }
 
     window.cancelItem = cancelItem;
     window.returnItem = returnItem;
     window.cancelOrder = cancelOrder;
     window.returnOrder = returnOrder;
-    
+    window.retryPayment = retryPayment;    
+
 });

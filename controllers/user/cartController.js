@@ -3,56 +3,80 @@ const Cart = require("../../model/cart")
 const Product = require("../../model/products")
 const mongoose = require("mongoose")
 
-const viewCartPage = async (req, res) => {
+const viewCartPage = async (req, res, next) => {
+    try {
+        if (!req.session.user) return res.redirect("/login")
 
-    if (!req.session.user) return res.redirect("/login")
+        const userId = req.session.user
+        const cart = await Cart.findOne({ userId }).populate('items.productId')
 
-    const userId = req.session.user
-    const username = userId.fullname
-    const cart = await Cart.findOne({ userId }).populate('items.productId')
+        if (!cart)
+            return res.render("user/cartPage", { cart: null, })
 
-    if (!cart)
-        return res.render("user/cartPage", { cart: null, })
+        const totalPrice = cart.items.reduce((total, item) => {
+            const itemPrice = item.price || item.productId.salePrice
+            return total += (itemPrice * item.quantity)
+        }, 0)
 
-    const totalPrice = cart.items.reduce((total, item) => {
-        return total += (item.productId.salePrice * item.quantity)
-    }, 0)
-
-    return res.render("user/cartPage", { cart, totalPrice })
+        return res.render("user/cartPage", { cart, totalPrice })
+    } catch (error) {
+        console.error('Error fetching cart:', error);
+        next(error);
+    }
 
 
 }
 
-
-const addtoCart = async (req, res) => {
+const addtoCart = async (req, res, next) => {
     try {
         if (!req.session.user) return res.redirect("/");
 
-        const { productId } = req.body;
+        const { productId, ram, storage, price } = req.body;
         const userId = req.session.user;
-
+        console.log('checkpoint 1');
         const product = await Product.findById(productId);
         if (!product || !product.isActive || !product.isExisting)
             return res.json({ success: false });
-
+        console.log('checkpoint 2');
         if (product.count === 0)
             return res.json({ success: false, message: "Out of stock" });
+        console
+        let selectedVariant;
+        if (ram && storage) {
+            selectedVariant = product.variants.find(v => v.RAM === ram && v.Storage === storage);
+        }
+        if (!selectedVariant && product.variants.length > 0) {
+            selectedVariant = product.variants[0];
+        }
+        if (!selectedVariant) return res.json({ success: false, message: "Variant not found" })
 
         let cart = await Cart.findOne({ userId });
 
         if (!cart) {
             cart = new Cart({
                 userId,
-                items: [{ productId, quantity: 1 }],
+                items: [{
+                    productId,
+                    ram: selectedVariant.RAM,
+                    storage: selectedVariant.Storage,
+                    price: selectedVariant.priceAdjustment || product.salePrice,
+                    quantity: 1
+                }],
             });
             await cart.save();
             return res.status(200).json({ success: 'true', message: "Product added to cart" });
         }
 
-        const existingItem = cart.items.find(item => item.productId.toString() === productId);
+        const existingItem = cart.items.find(item => item.productId.toString() === productId && item.ram === ram && item.storage === storage);
 
         if (!existingItem) {
-            cart.items.push({ productId, quantity: 1 });
+            cart.items.push({
+                productId,
+                ram: selectedVariant.RAM,
+                storage: selectedVariant.Storage,
+                price: selectedVariant.priceAdjustment || product.salePrice,
+                quantity: 1
+            });
             await cart.save();
             return res.status(200).json({ 'success': 'true', message: "Product added to cart" });
         }
@@ -69,28 +93,24 @@ const addtoCart = async (req, res) => {
         return res.status(200).json({ success: 'true', message: "Product quantity increased in cart" });
 
     } catch (error) {
-        console.error("Add to Cart Error:", error);
-        res.status(500).json({ success: false, message: "Server error" });
+        console.error('Error adding to cart:', error);
+        next(error);
     }
 };
 
-
-const cartUpdate = async (req, res) => {
-     try {
+const cartUpdate = async (req, res, next) => {
+    try {
         const userId = req.session.user;
         const { itemId, quantity } = req.body;
-        
 
         const cartList = await Cart.findOne({ userId }).populate('items.productId');
-        
 
         if (!cartList) {
             return res.json({ success: false, message: "Cart not found" });
         }
 
         const productIndex = cartList.items.findIndex(item => item._id.toString() === itemId.toString());
-        
-        
+
         if (productIndex === -1) {
             return res.json({ success: false, message: "Product not found in cart" });
         }
@@ -99,15 +119,15 @@ const cartUpdate = async (req, res) => {
 
         await cartList.save();
 
-        
+
         let total = 0;
         let originalTotal = 0;
 
         cartList.items.forEach(item => {
-            const sale = item.productId.salePrice;
-            const regular = item.productId.regularPrice || sale;
+            const dynamicPrice = item.price || item.productId.salePrice;
+            const regular = item.productId.regularPrice || dynamicPrice;
 
-            total += sale * item.quantity;
+            total += dynamicPrice * item.quantity;
             originalTotal += regular * item.quantity;
         });
 
@@ -120,7 +140,11 @@ const cartUpdate = async (req, res) => {
                 items: cartList.items.map(item => ({
                     _id: item._id,
                     quantity: item.quantity,
-                    productId: item.productId._id
+                    productId: item.productId._id,
+                    price: item.price,
+                    ram: item.ram,
+                    storage: item.storage,
+
                 })),
                 total,
                 originalTotal,
@@ -129,13 +153,12 @@ const cartUpdate = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Error updating cart:", error);
-        res.json({ success: false, message: "An error occurred while updating the cart" });
+        console.error('Error updating cart:', error);
+        next(error);
     }
 };
 
-
-const removecartItem = async (req, res) => {
+const removecartItem = async (req, res, next) => {
     try {
 
         if (!req.session.user) return res.redirect("/")
@@ -155,18 +178,13 @@ const removecartItem = async (req, res) => {
         return res.json({ success: true, message: "Item removed from Cart" })
 
     } catch (error) {
-
-        console.error("Remove cart item error:", error);
-        res.status(500).json({ success: false, message: "Server error" });
-
+        console.error('Error removing cart item:', error);
+        next(error);
     }
-
-
 }
 
-const emptyCart = async (req,res) =>{
-
-     try {
+const emptyCart = async (req, res, next) => {
+    try {
         if (!req.session.user) return res.redirect("/");
 
         const userId = req.session.user;
@@ -179,9 +197,9 @@ const emptyCart = async (req,res) =>{
         return res.redirect('/cart');
     } catch (error) {
         console.error('Error clearing cart:', error);
-        return res.status(500).send("Internal Server Error");
+        next(error);
     }
-    
+
 }
 
 

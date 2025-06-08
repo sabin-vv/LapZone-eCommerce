@@ -1,193 +1,209 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LapZone Dashboard - Customers</title>
-    <link rel="stylesheet" href="/css/customerslist.css">
-    <link rel="stylesheet" href="/css/sidebar.css">
-    <!-- Include SweetAlert2 CDN -->
+    <link rel="stylesheet" href="/css/customerslist.css" />
+    <link rel="stylesheet" href="/css/sidebar.css" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 26px;
-        }
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 26px;
+      }
 
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
 
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #10b981;      
-            transition: 0.4s;
-            border-radius: 34px;
-        }
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #10b981;
+        transition: 0.4s;
+        border-radius: 34px;
+      }
 
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 20px;
-            width: 20px;
-            left: 4px;
-            bottom: 3px;
-            background-color: white;
-            transition: 0.4s;
-            border-radius: 50%;
-        }
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 4px;
+        bottom: 3px;
+        background-color: white;
+        transition: 0.4s;
+        border-radius: 50%;
+      }
 
-        input:checked + .slider {
-            background-color: #ef4444;
-        }
+      input:checked + .slider {
+        background-color: #ef4444;
+      }
 
-        input:checked + .slider:before {
-            transform: translateX(24px);
-        }
-        .search-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
-            justify-content: flex-end
+      input:checked + .slider:before {
+        transform: translateX(24px);
+      }
 
-        }
+      .search-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+        justify-content: flex-end;
+      }
 
-        .search-container input {
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            width: 300px;
-        }
+      .search-container input {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: 300px;
+      }
 
-        .search-container button {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
+      .search-container button {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
 
-        .search-container .search-btn {
-            background-color: #3085d6;
-            color: white;
-        }
+      .search-container .search-btn {
+        background-color: #3085d6;
+        color: white;
+      }
 
-        .search-container .clear-btn {
-            background-color: #ef4444;
-            color: white;
-        }
+      .search-container .clear-btn {
+        background-color: #ef4444;
+        color: white;
+      }
     </style>
-</head>
-<body>
+  </head>
+
+  <body>
     <div class="dashboard">
-        <%- include("../partials/admin/sidebar.ejs") %>
-        <main class="main-content">
-            <header class="header">
-                <h2>Customer List</h2>
-                <div class="user-section">
-                    <span>Admin</span>
-                    <div class="avatar"></div>
-                </div>
-            </header>
-            <div class="container mx-auto p-6">
-                <div class="customers">
-                    <div class="products">
-                        <div class="search-container">
-                            <form action="/admin/customers" method="get" class="search-form">
-                                <input 
-                                    type="text" 
-                                    name="search" 
-                                    placeholder="Search by name, email, or mobile..." 
-                                    value="<%= searchQuery || '' %>"
-                                >
-                                <button type="submit" class="search-btn">Search</button>
-                                <button type="button" class="clear-btn" onclick="window.location.href='/admin/customers'">Clear</button>
-                            </form>
-                        </div>
-                        <table class="product-table" id="productTable">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Mobile</th>
-                                    <th>Joining Date</th>
-                                    <th>Status</th>
-                                    <th>Block/Unblock</th>
-                                    <th>Info</th>
-                                </tr>
-                            </thead>
-                            <tbody id="productList">
-                                <% users.forEach(user => { %>
-                                    <tr data-user-id="<%= user._id %>">
-                                        <td><%= user.fullname %></td>
-                                        <td><%= user.email %></td>
-                                        <td><%= user.mobile %></td>
-                                        <td><%= user.createdAt.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }) %></td>
-                                        <td class="status"><%= user.isBlocked ? "Blocked" : "Active" %></td>
-                                        <td>
-                                            <form action="/admin/customer-block-unblock/<%= user._id %>?page=<%= currentPage || 1 %>" method="post" class="block-unblock-form">
-                                                <input type="hidden" name="isBlocked" value="<%= !user.isBlocked %>">
-                                                <label class="switch">
-                                                    <input type="checkbox" <%= user.isBlocked ? 'checked' : '' %> onchange="confirmBlockUnblock(this)">
-                                                    <span class="slider"></span>
-                                                </label>
-                                            </form>
-                                        </td>
-                                        <td><button class="info-btn">Info</button></td>
-                                    </tr>
-                                <% }) %>
-                            </tbody>
-                        </table>
-                        <div class="pagination">
-                            <% if (currentPage > 1) { %>
-                                <a href="?page=<%= currentPage - 1 %>" class="border rounded px-3 py-2">Previous</a>
-                            <% } %>
-                            <% for (let i = 1; i <= totalPages; i++) { %>
-                                <a href="?page=<%= i %>" class="border rounded px-3 py-2 <%= currentPage === i ? 'active' : '' %>"><%= i %></a>
-                            <% } %>
-                            <% if (currentPage < totalPages) { %>
-                                <a href="?page=<%= currentPage + 1 %>" class="border rounded px-3 py-2">Next</a>
-                            <% } %>
-                        </div>
-                    </div>
-                </div>
+      <%- include("../partials/admin/sidebar.ejs") %>
+      <main class="main-content">
+        <header class="header">
+          <h2>Customer List</h2>
+          <div class="user-section">
+            <span>Admin</span>
+            <div class="avatar"></div>
+          </div>
+        </header>
+        <div class="container mx-auto p-6">
+          <div class="customers">
+            <div class="products">
+              <div class="search-container">
+                <form action="/admin/customers"method="get" class="search-form" >
+                  <input  type="text"name="search"placeholder="Search by name, email, ormobile..."value="<%= searchQuery || '' %>"/>
+                  <button type="submit" class="search-btn">Search</button>
+                  <button type="button"class="clear-btn" onclick="window.location.href='/admin/customers'">Clear</button>
+                </form>
+              </div>
+              <table class="product-table" id="productTable">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Mobile</th>
+                    <th>Joining Date</th>
+                    <th>Status</th>
+                    <th>Block/Unblock</th>
+                    <th>Info</th>
+                  </tr>
+                </thead>
+                <tbody id="productList">
+                  <% users.forEach(user=> { %>
+                  <tr data-user-id="<%= user._id %>">
+                    <td><%= user.fullname %></td>
+                    <td><%= user.email %></td>
+                    <td><%= user.mobile %></td>
+                    <td>
+                      <%= user.createdAt.toLocaleString('en-IN', { dateStyle:'medium' , timeStyle: 'short' }) %>
+                    </td>
+                    <td class="status">
+                      <%= user.isBlocked ? "Blocked" : "Active" %>
+                    </td>
+                    <td>
+                      <label class="switch">
+                        <input type="checkbox" <%=user.isBlocked ? 'checked' :'' %> onchange="confirmBlockUnblock(this)"data-user-id="<%= user._id %>">
+                        <span class="slider"></span>
+                      </label>
+                    </td>
+                    <td><button class="info-btn">Info</button></td>
+                  </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+              <div class="pagination">
+                <% if (currentPage> 1) { %>
+                <a href="?page=<%= currentPage - 1 %>"
+                  class="border rounded px-3 py-2" >Previous</a>
+                <% } %> <% for (let i=1; i <=totalPages; i++) { %>
+                <a href="?page=<%= i %>"class="border rounded px-3 py-2 <%= currentPage === i ? 'active' : '' %>"><%= i %>
+                </a>
+                <% } %> <% if (currentPage < totalPages) { %>
+                <a href="?page=<%= currentPage + 1 %>" class="border rounded px-3 py-2">Next</a>
+                <% } %>
+              </div>
             </div>
-        </main>
+          </div>
+        </div>
+      </main>
     </div>
 
     <script>
-        function confirmBlockUnblock(checkbox) {
-            const form = checkbox.closest('form');
-            const isBlocking = checkbox.checked; 
+      async function confirmBlockUnblock(checkbox) {
+        const userId = checkbox.dataset.userId;
+        const isBlocking = checkbox.checked;
 
-            Swal.fire({
-                title: 'Are you sure?',
-                text: `Do you want to ${isBlocking ? 'block' : 'unblock'} this customer?`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, proceed!',
-                cancelButtonText: 'Cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // If user confirms, submit the form
-                    form.submit();
-                } else {
-                    // If user cancels, revert the checkbox state
-                    checkbox.checked = !checkbox.checked;
-                }
+        const result = await Swal.fire({
+          title: "Are you sure?",
+          text: `Do you want to ${
+            isBlocking ? "block" : "unblock"
+          } this customer?`,
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, proceed!",
+          cancelButtonText: "Cancel",
+        });
+
+        if (result.isConfirmed) {
+          try {
+            const res = await fetch(`/admin/customer-block-unblock/${userId}`, {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ isBlocked: isBlocking }),
             });
+
+            const data = await res.json();
+            if (data.success) {
+              const row = checkbox.closest("tr");
+              const statusCell = row.querySelector(".status");
+              statusCell.textContent = isBlocking ? "Blocked" : "Active";
+
+              Swal.fire("Success!", data.message, "success");
+            } else {
+              throw new Error(data.message || "Failed to update user status.");
+            }
+          } catch (err) {
+            checkbox.checked = !isBlocking;
+            Swal.fire("Error", err.message || "Something went wrong.", "error");
+          }
+        } else {
+          checkbox.checked = !isBlocking;
         }
+      }
     </script>
-</body>
+  </body>
 </html>

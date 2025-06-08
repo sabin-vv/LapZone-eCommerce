@@ -345,20 +345,24 @@ async function generateInvoicePDF(order) {
     return pdfBuffer;
 }
 
-const viewOrders = async (req, res) => {
+const viewOrders = async (req, res, next) => {
+    try {
+        if (!req.session.user) return res.redirect("/")
 
-    if (!req.session.user) return res.redirect("/")
+        const userId = req.session.user
+        const user = await User.findById(userId)
+        const username = user.fullname
 
-    const userId = req.session.user
-    const user = await User.findById(userId)
-    const username = user.fullname
+        const orders = await Order.find({ user }).populate('items.productId').sort({ updatedAt: -1 })
 
-    const orders = await Order.find({ user }).populate('items.productId').sort({ updatedAt: -1 })
-
-    return res.render("user/orderDetails", { orders, user, username })
+        return res.render("user/orderDetails", { orders, user, username })
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+        next(error);
+    }
 }
 
-const cancelitem = async (req, res) => {
+const cancelitem = async (req, res, next) => {
     try {
         const { itemId, reason, comment } = req.body;
 
@@ -400,13 +404,11 @@ const cancelitem = async (req, res) => {
         return res.status(200).json({ success: true, message: 'Item canceled successfully' });
     } catch (error) {
         console.error('Error canceling item:', error);
-        return res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
+        next(error);
     }
 };
 
-
-const cancelOrder = async (req, res) => {
-
+const cancelOrder = async (req, res, next) => {
     try {
         if (!req.session.user) return res.redirect("/")
 
@@ -469,14 +471,13 @@ const cancelOrder = async (req, res) => {
 
     } catch {
         console.error('Error canceling order:', error);
-        return res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
+        next(error);
     }
 
 }
 
-const downloadInvoice = async (req, res) => {
+const downloadInvoice = async (req, res, next) => {
     try {
-
         if (!req.session.user) return res.redirect("/")
 
         const orderId = req.params.id
@@ -498,97 +499,98 @@ const downloadInvoice = async (req, res) => {
 
     } catch (err) {
         console.error('Invoice generation error:', err);
-        res.status(500).send('Failed to generate invoice');
+        next(err);
     }
+}
 
+const returnProduct = async (req, res, next) => {
+    try {
+        if (!req.session.user) return res.redirect("/")
+
+
+        const { itemId, reason, comment } = req.body
+        const userId = req.session.user
+
+        if (!reason)
+            return res.json({ sucess: false, message: "You should select a Resson" })
+        if (reason === 'other' && comment === '')
+            return res.json({ success: false, message: "Please Mention the Reason" })
+
+        const user = await User.findById(userId)
+
+        const order = await Order.findOne({ user: userId, 'items._id': itemId })
+
+
+        if (!order)
+            return res.json({ success: false, message: "Order not Found in our Server" })
+
+        const item = order.items.find(item => item._id.toString() === itemId.trim())
+
+
+        item.status = 'Return Requested'
+        item.returnReason = reason
+        item.returnComment = comment || null
+        item.returnRequestDate = new Date()
+
+        await order.save()
+
+        return res.json({ success: true, message: 'Return Requested successfully' })
+    } catch (error) {
+        console.error('Error returning product:', error);
+        next(error);
+    }
 
 }
 
-const returnProduct = async (req, res) => {
+const returnOrder = async (req, res, next) => {
+    try {
+        if (!req.session.user) return res.redirect("/");
 
-    if (!req.session.user) return res.redirect("/")
+        const { orderId, reason, comment } = req.body;
 
+        if (!reason) {
+            return res.json({ success: false, message: "You must select a reason" });
+        }
 
-    const { itemId, reason, comment } = req.body
-    const userId = req.session.user
+        if (reason === 'other' && (!comment || comment.trim() === '')) {
+            return res.json({ success: false, message: "Please provide a reason in the comment" });
+        }
 
-    if (!reason)
-        return res.json({ sucess: false, message: "You should select a Resson" })
-    if (reason === 'other' && comment === '')
-        return res.json({ success: false, message: "Please Mention the Reason" })
+        const order = await Order.findById(orderId);
+        if (!order) {
+            return res.json({ success: false, message: "Order not found" });
+        }
 
-    const user = await User.findById(userId)
+        if (order.orderStatus === 'Cancelled') {
+            return res.json({ success: false, message: "Order is already cancelled" });
+        }
 
-    const order = await Order.findOne({ user: userId, 'items._id': itemId })
+        const returnableItems = order.items.filter(item => item.status === 'Delivered');
+        if (returnableItems.length === 0) {
+            return res.json({ success: false, message: "No items are eligible for return" });
+        }
 
+        returnableItems.forEach(item => {
+            item.status = 'Return Requested';
+            item.returnReason = reason;
+            item.returnComment = comment || null;
+            item.returnRequestDate = new Date();
+        });
 
-    if (!order)
-        return res.json({ success: false, message: "Order not Found in our Server" })
+        order.statusHistory.push({
+            status: 'Return Requested',
+            date: new Date(),
+            current: true
+        });
 
-    const item = order.items.find(item => item._id.toString() === itemId.trim())
+        await order.save();
 
+        return res.json({ success: true, message: "Return request submitted successfully" });
 
-    item.status = 'Return Requested'
-    item.returnReason = reason
-    item.returnComment = comment || null
-    item.returnRequestDate = new Date()
-
-    await order.save()
-
-    return res.json({ success: true, message: 'Return Requested successfully' })
-
-
-}
-
-const returnOrder = async (req, res) => {
-  try {
-    if (!req.session.user) return res.redirect("/");
-
-    const { orderId, reason, comment } = req.body;
-
-    if (!reason) {
-      return res.json({ success: false, message: "You must select a reason" });
+    } catch (error) {
+        console.error('Error returning order:', error);
+        next(error);
     }
-
-    if (reason === 'other' && (!comment || comment.trim() === '')) {
-      return res.json({ success: false, message: "Please provide a reason in the comment" });
-    }
-
-    const order = await Order.findById( orderId );
-    if (!order) {
-      return res.json({ success: false, message: "Order not found" });
-    }
-
-    if (order.orderStatus === 'Cancelled') {
-      return res.json({ success: false, message: "Order is already cancelled" });
-    }
-
-    const returnableItems = order.items.filter(item => item.status === 'Delivered');
-    if (returnableItems.length === 0) {
-      return res.json({ success: false, message: "No items are eligible for return" });
-    }
-
-    returnableItems.forEach(item => {
-      item.status = 'Return Requested';
-      item.returnReason = reason;
-      item.returnComment = comment || null;
-      item.returnRequestDate = new Date();
-    });
-
-    order.statusHistory.push({
-      status: 'Return Requested',
-      date: new Date(),
-      current: true
-    });
-
-    await order.save();
-
-    return res.json({ success: true, message: "Return request submitted successfully" });
-
-  } catch (error) {
-    console.error('Error processing return request:', error);
-    return res.status(500).json({ success: false, message: "Internal server error" });
-  }
 };
 
 

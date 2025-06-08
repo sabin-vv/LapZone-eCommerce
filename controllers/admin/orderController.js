@@ -3,32 +3,36 @@ const Product = (require("../../model/products"))
 const Wallet = require("../../model/wallet")
 
 
-const listOrders = async (req, res) => {
+const listOrders = async (req, res, next) => {
+    try {
+        if (!req.session.admin) return res.redirect("/admin")
 
-    if (!req.session.admin) return res.redirect("/admin")
+        const page = parseInt(req.query.page) || 1;
+        const limit = 10;
+        const skip = (page - 1) * limit;
 
-    const page = parseInt(req.query.page) || 1;
-    const limit = 10;
-    const skip = (page - 1) * limit;
+        const [orders, totalCount] = await Promise.all([
+            Order.find()
+                .populate("user")
+                .populate("items.productId")
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit),
+            Order.countDocuments()
+        ]);
 
-    const [orders, totalCount] = await Promise.all([
-        Order.find()
-            .populate("user")
-            .populate("items.productId")
-            .sort({ createdAt: -1 })
-            .skip(skip)
-            .limit(limit),
-        Order.countDocuments()
-    ]);
-
-    const totalPages = Math.ceil(totalCount / limit);
+        const totalPages = Math.ceil(totalCount / limit);
 
 
-    res.render("admin/orderList", { orders, currentPage: page, totalPages })
+        res.render("admin/orderList", { orders, currentPage: page, totalPages })
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+        next(error);
+    }
 
 }
 
-const updateOrderStatus = async (req, res) => {
+const updateOrderStatus = async (req, res, next) => {
 
     if (!req.session.admin) return res.redirect("/admin")
 
@@ -82,12 +86,12 @@ const updateOrderStatus = async (req, res) => {
         res.status(200).json({ success: true, message: 'Order status updated successfully' });
     } catch (error) {
         console.error('Error updating order status:', error);
-        res.status(500).json({ success: false, message: 'Server error' });
+        next(error);
     }
 
 }
 
-const viewOrder = async (req, res) => {
+const viewOrder = async (req, res, next) => {
     try {
         if (!req.session.admin) return res.redirect("/admin")
 
@@ -104,71 +108,74 @@ const viewOrder = async (req, res) => {
         res.render('admin/viewOrder', { order });
     } catch (error) {
         console.error('Error fetching order:', error);
-        res.status(500).send('Server error');
+        next(error);
     }
 };
 
-const updateItemStatus = async (req, res) => {
+const updateItemStatus = async (req, res, next) => {
+    try {
+        if (!req.session.admin) return res.redirect("/admin")
 
-    if (!req.session.admin) return res.redirect("/admin")
+        const itemId = req.params.id
+        const newStatus = req.body.itemStatus;
 
-    const itemId = req.params.id
-    const newStatus = req.body.itemStatus;
+        const order = await Order.findOne({ 'items._id': itemId })
 
-    const order = await Order.findOne({ 'items._id': itemId })
+        if (!order)
+            return res.redirect(`/admin/orders?status=error`);
 
-    if (!order)
-        return res.redirect(`/admin/orders?status=error`);
-
-    const item = order.items.id(itemId);
-    if (!item) {
-        return res.redirect(`/admin/view-order/${order._id}?status=error`);
-    }
-
-    item.status = newStatus;
-
-    if (order.items.every(item => item.status === 'Cancelled')) {
-        order.orderStatus = 'Cancelled'
-        const product = await Product.findById(item.productId);
-        if (product) {
-            product.count += item.quantity;
-            await product.save();
+        const item = order.items.id(itemId);
+        if (!item) {
+            return res.redirect(`/admin/view-order/${order._id}?status=error`);
         }
-    }
 
-    else if (order.items.every(item => item.status === 'Delivered')) {
-        order.orderStatus = 'Delivered'
-        const product = await Product.findById(item.productId);
-        if (product) {
-            product.count += item.quantity;
-            await product.save();
+        item.status = newStatus;
+
+        if (order.items.every(item => item.status === 'Cancelled')) {
+            order.orderStatus = 'Cancelled'
+            const product = await Product.findById(item.productId);
+            if (product) {
+                product.count += item.quantity;
+                await product.save();
+            }
         }
-    }
 
-    else
-        order.orderStatus = 'Processing'
-
-
-    order.statusHistory.push({
-        status: newStatus,
-        date: new Date(),
-        current: true
-    });
-
-    order.statusHistory.forEach(h => {
-        if (h !== order.statusHistory[order.statusHistory.length - 1]) {
-            h.current = false;
+        else if (order.items.every(item => item.status === 'Delivered')) {
+            order.orderStatus = 'Delivered'
+            const product = await Product.findById(item.productId);
+            if (product) {
+                product.count += item.quantity;
+                await product.save();
+            }
         }
-    });
 
-    await order.save();
+        else
+            order.orderStatus = 'Processing'
 
-    res.redirect(`/admin/view-order/${order._id}?status=updated`);
 
+        order.statusHistory.push({
+            status: newStatus,
+            date: new Date(),
+            current: true
+        });
+
+        order.statusHistory.forEach(h => {
+            if (h !== order.statusHistory[order.statusHistory.length - 1]) {
+                h.current = false;
+            }
+        });
+
+        await order.save();
+
+        res.redirect(`/admin/view-order/${order._id}?status=updated`);
+    } catch (error) {
+        console.error('Error updating item status:', error);
+        next(error);
+    }
 
 }
 
-const cancelReturnRequest = async (req, res) => {
+const cancelReturnRequest = async (req, res, next) => {
 
     try {
         if (!req.session.admin) return res.redirect("/admin")
@@ -186,13 +193,11 @@ const cancelReturnRequest = async (req, res) => {
 
     } catch (error) {
         console.error('Error fetching return/cancel requests:', error);
-        res.status(500).render('error', {
-            message: 'Error loading return/cancel requests'
-        });
+        next(error);
     }
 }
 
-const returnApprove = async (req, res) => {
+const returnApprove = async (req, res, next) => {
     try {
         const { orderId, itemId } = req.body;
 
@@ -249,8 +254,8 @@ const returnApprove = async (req, res) => {
             product.count += item.quantity;
             await product.save();
         }
-        const allItemsreturned   = order.items.every(item => item.status === 'Returned');
-        if(allItemsreturned){
+        const allItemsreturned = order.items.every(item => item.status === 'Returned');
+        if (allItemsreturned) {
             order.orderStatus = 'Returned'
         }
 
@@ -271,11 +276,11 @@ const returnApprove = async (req, res) => {
 
     } catch (error) {
         console.error('Error approving return request:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        next(error);
     }
 };
 
-const returnReject = async (req, res) => {
+const returnReject = async (req, res, next) => {
     try {
         const { orderId, itemId } = req.body;
 
@@ -314,12 +319,11 @@ const returnReject = async (req, res) => {
 
     } catch (error) {
         console.error('Error rejecting return request:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        next(error);
     }
 }
 
-
-const cancelApprove = async (req, res) => {
+const cancelApprove = async (req, res, next) => {
     try {
         const { orderId, itemId } = req.body;
 
@@ -409,12 +413,11 @@ const cancelApprove = async (req, res) => {
 
     } catch (error) {
         console.error('Error approving cancel request:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        next(error);
     }
 }
 
-
-const cancelReject = async (req, res) => {
+const cancelReject = async (req, res, next) => {
     try {
         const { orderId, itemId } = req.body;
 
@@ -452,7 +455,7 @@ const cancelReject = async (req, res) => {
 
     } catch (error) {
         console.error('Error rejecting cancel request:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        next(error);
     }
 }
 

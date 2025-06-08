@@ -23,7 +23,7 @@
         <!-- Include the improved sidebar -->
         <%- include("../partials/user/profileSidebar.ejs") %>
         
-        <div class="content-wrapper fade-in">
+        <div class="content-wrapper p-0 fade-in">
             <div class="cart-container">
                 <div class="page-header">
                     <h1 class="page-title">Shopping Cart</h1>
@@ -45,11 +45,10 @@
                                 </div>
                                 <div class="item-details">
                                     <h3 class="item-title"><%= item.productId.name %></h3>
+                                    <p><%= item.ram %> / <%= item.storage %></p>
                                     <div class="item-price">
-                                        <div class="current-price">₹<%= item.productId.salePrice.toLocaleString('en-IN') %></div>
-                                        <% if(item.productId.regularPrice) { %>
-                                            <div class="original-price">₹<%= item.productId.regularPrice.toLocaleString('en-IN') %></div>
-                                        <% } %>
+                                        <div class="current-price">₹<%= item.price.toLocaleString('en-IN') %></div>
+                                        
                                         <% if(item.savings) { %>
                                             <div class="savings">Save ₹<%= item.savings.toLocaleString('en-IN') %></div>
                                         <% } %>
@@ -274,7 +273,7 @@
         }
 
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoYz1HIcje39Wg7MXzU8s+dUjz/UZ5eIfJc5YyEGaLZ1Ihj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
 </body>
 
 </html>

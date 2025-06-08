@@ -71,11 +71,11 @@
     margin: 0;
 }
 .sidebar-link {
-  display: block;            /* ✅ Makes the whole <a> clickable */
+  display: block;           
   
   width: 100%;
   text-decoration: none;
-  color: #1f2937;             /* text-gray-800 */
+  color: #1f2937;             
   font-weight: 500;
   border-radius: 8px;
   transition: background-color 0.2s ease;
@@ -100,11 +100,17 @@
 .sidebar ul li:hover {
     background-color: #f9fafb;
     border-left: 3px solid #e5e7eb;
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    -webkit-box: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .sidebar ul li.active {
     background-color: #f3f4f6;
     border-left: 3px solid #4f46e5;
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    -webkit-box: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .sidebar ul li.active a {

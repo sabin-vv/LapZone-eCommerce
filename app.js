@@ -13,6 +13,7 @@ const session = require("express-session")
 const nocache = require("nocache")
 require('./utils/cron')
 const counts = require("./middlewares/counts")
+const errorHandler = require("./middlewares/errorHandler")
 
 
 app.use(nocache())
@@ -42,8 +43,6 @@ app.use(session({
 
 }))
 
-
-
 app.use(passport.initialize())
 app.use(passport.session())
 
@@ -56,10 +55,9 @@ app.use((req, res, next) => {
 app.use(counts)
 
 app.use("/", userRouter)
-
 app.use("/admin",adminRouter)
 
-
+app.use(errorHandler);
 
 app.listen(process.env.PORT, () => {
     console.log("server Started")

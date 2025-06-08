@@ -1,7 +1,7 @@
 const Wallet = require("../../model/wallet")
 const User = require("../../model/user")
 
-const viewWalletPage = async (req, res) => {
+const viewWalletPage = async (req, res, next) => {
     try {
         if (!req.session.user) {
             return res.redirect("/login")
@@ -27,8 +27,8 @@ const viewWalletPage = async (req, res) => {
         return res.render("user/wallet", { wallet: wallet, })
 
     } catch (error) {
-        console.error("Error loading wallet page:", error)
-        return res.redirect("/home")
+        console.error('Error fetching wallet page:', error);
+        next(error);
     }
 }
 

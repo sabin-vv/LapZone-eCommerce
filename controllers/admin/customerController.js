@@ -1,7 +1,7 @@
 const User = require("../../model/user.js");
 
 
-const customerList = async (req, res) => {
+const customerList = async (req, res, next) => {
     try {
         if (!req.session.admin) return res.redirect("/admin");
 
@@ -34,20 +34,17 @@ const customerList = async (req, res) => {
             searchQuery,
         });
     } catch (error) {
-        console.error("Error in customerList:", error);
-        res.status(500).send("Server Error");
+        console.error(error);
+        next(error);
     }
 };
 
-
-
-const customerControll = async (req, res) => {
+const customerControll = async (req, res, next) => {
     try {
         if (!req.session.admin) return res.redirect("/admin");
 
-    
+        const { isBlocked } = req.body;
         const userId = req.params.id;
-        const isBlocked = req.body.isBlocked === "true";
 
         const updatedUser = await User.findByIdAndUpdate(
             userId,
@@ -55,11 +52,13 @@ const customerControll = async (req, res) => {
             { new: true }
         );
 
-        res.redirect("/admin/customers");
+        return res.json({ success: true, isBlocked: updatedUser.isBlocked });
     } catch (error) {
-        res.status(500).send("Server Error");
+        console.error(error);
+        next(error);
     }
 };
+
 
 module.exports = {
     customerList,

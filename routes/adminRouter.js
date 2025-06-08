@@ -29,7 +29,7 @@ router.get("/download-ledger-pdf", adminController.downloadLedgerPdf);
 
 
 router.get("/customers", customerController.customerList)
-router.post("/customer-block-unblock/:id", customerController.customerControll)
+router.patch("/customer-block-unblock/:id", customerController.customerControll)
 
 
 router.get("/category", categoryController.categoryListing)

@@ -203,6 +203,9 @@
                                 <% } else if (order.items.every(item => item.status === 'Ordered')) { %>
                                     <button class="btn-order-action btn btn-danger" onclick="cancelOrder('<%= order.orderId %>')">Cancel Order</button>
                                 <% } %>
+                                <% if(order.paymentMethod === 'Online' && order.paymentStatus === 'Pending') { %>
+                                    <button class="btn-order-action btn btn-primary" onclick="retryPayment('<%= order.orderId %>')">Retry Payment</button>
+                                <% } %>
                             </div>
                         </div>
                     </div>
@@ -221,6 +224,8 @@
         </div>
     </div>
     
+    
+
     <!-- Cancel Item Modal -->
     <div class="modal fade" id="cancelItemModal" tabindex="-1" aria-labelledby="cancelItemModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -369,6 +374,7 @@
 
     <%- include("../partials/user/footer.ejs") %>
     
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="/js/order-details.js"></script>
 </body>
 </html>

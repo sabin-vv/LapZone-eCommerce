@@ -13,6 +13,18 @@ const cartSchema = mongoose.Schema({
             ref: 'product',
             required: true
         },
+        ram:{
+            type:String,
+            required:true
+        },
+        storage:{
+            type:String,
+            required:true
+        },
+        price:  {
+            type: Number,
+            required: true
+        },
         quantity: {
             type: Number,
             required: true

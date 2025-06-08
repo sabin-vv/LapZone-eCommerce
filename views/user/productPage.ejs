@@ -111,6 +111,17 @@
         background-color: rgba(255, 255, 255, 1);
         box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
       }
+      .variant-btn.active {
+        background-color: #5d7fee;
+        border: 2px solid #7778b1;
+        color: black;
+      }
+      #dynamicPrice {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1e40af;
+        
+      }
     </style>
   </head>
 
@@ -177,7 +188,7 @@
           <% if (finalOffer> 0) { %>
           <i class="bi bi-arrow-down-circle fs-5"></i>
           <span> <%= finalOffer %>% OFF </span>
-          <% } %> ₹<%= product.salePrice.toLocaleString('en-IN') %>
+          <% } %> ₹<span id="dynamicPrice"><%= product.salePrice.toLocaleString('en-IN') %></span>
           <del>₹<%= product.regularPrice.toLocaleString('en-IN') %></del>
         </div>
         <% } else { %>
@@ -205,35 +216,37 @@
         />
         <div class="variant-selector">
           <div>RAM</div>
-          <div class="variant-options">
-            <% product.variants.forEach(variant=> { %>
-            <button
-              class="variant-btn <%= variant.RAM === product.variants[0].RAM ? 'active' : '' %>"
-              onclick="selectVariant(this, 'RAM', '<%= variant.RAM %>')"
-            >
-              <%= variant.RAM %>
+          <% const uniqueRAMs = [...new Set(product.variants.map(variant => variant.RAM))]; %>
+          <div class="variant-options" id="ram-options">
+            <% uniqueRAMs.forEach(ram => { %>
+            <button 
+              class="variant-btn" data-ram="<%= ram %>"
+              onclick="selectRAM('<%= ram %>', this)">
+              <%= ram %>
             </button>
             <% }) %>
           </div>
           <div>Storage</div>
-          <div class="variant-options">
-            <% product.variants.forEach(variant=> { %>
-            <button
-              class="variant-btn <%= variant.Storage === product.variants[0].Storage ? 'active' : '' %>"
-              onclick="selectVariant(this, 'Storage', '<%= variant.Storage %>')"
-            >
-              <%= variant.Storage %>
+          <div class="variant-options" id="storage-options">
+            <% const uniqueStorages = [...new Set(product.variants.map(variant => variant.Storage))]; %>
+            <% uniqueStorages.forEach(storage => { %>
+            <button 
+              class="variant-btn" data-storage="<%= storage %>"
+              onclick="selectStorage('<%= storage %>', this)">
+              <%= storage %>
             </button>
             <% }) %>
           </div>
         </div>
 
+        <div id="dynamicPrice"></div>
+        <input type="hidden" id="salePriceValue" name="salePrice" />
+
+
         <div class="action-buttons">
           <button
             class="add-to-cart-btn mt-0 btn btn-warning"
-            onclick="addToCart('<%= product._id %>')"
-          >
-            Add to Cart <i class="bi bi-cart-plus"></i>
+            onclick="addToCart('<%= product._id %>')">Add to Cart <i class="bi bi-cart-plus"></i>
           </button>
         </div>
       </div>
@@ -245,54 +258,54 @@
         <dl>
           <% if (product.name) { %>
           <dt>Model Name</dt>
-          <dd>< %=product.name %></dd>
+          <dd><%= product.name %></dd>
           <% } %> <% if (product.brand) { %>
           <dt>Brand</dt>
-          <dd>< %=product.brand %></dd>
+          <dd><%= product.brand %></dd>
           <% } %> <% if (product.modelNumber) { %>
           <dt>Model Number</dt>
-          <dd>< %=product.modelNumber %></dd>
+          <dd><%= product.modelNumber %></dd>
           <% } %> <% if (product.category) { %>
           <dt>Category</dt>
-          <dd>< %=product.category %></dd>
+          <dd><%= product.category %></dd>
           <% } %> <% if (product.color) { %>
           <dt>Colour</dt>
-          <dd>< %=product.color %></dd>
+          <dd><%= product.color %></dd>
           <% } %> <% if (product.CPU) { %>
           <dt>Processor</dt>
-          <dd>< %=product.CPU %></dd>
+          <dd><%= product.CPU %></dd>
           <% } %> <% if (product.OS) { %>
           <dt>Operating System</dt>
-          <dd>< %=product.OS %></dd>
+          <dd><%= product.OS %></dd>
           <% } %> <% if (product.screen) { %>
           <dt>Display</dt>
-          <dd>< %=product.screen %></dd>
+          <dd><%= product.screen %></dd>
           <% } %> <% if (product.webcam) { %>
           <dt>Web Camera</dt>
-          <dd>< %=product.webcam %></dd>
+          <dd><%= product.webcam %></dd>
           <% } %> <% if (product.ports && product.ports.length> 0) { %> <%
           product.ports.forEach(portEntry=> { %> <% if (portEntry['USB Type-A'])
           { %>
           <dt>USB Type-A</dt>
-          <dd>< %=portEntry['USB Type-A'] %></dd>
+          <dd><%= portEntry['USB Type-A'] %></dd>
           <% } %> <% if (portEntry['USB Type-C']) { %>
           <dt>USB Type-C</dt>
-          <dd>< %=portEntry['USB Type-C'] %></dd>
+          <dd><%= portEntry['USB Type-C'] %></dd>
           <% } %> <% if (portEntry['HDMI']) { %>
           <dt>HDMI</dt>
-          <dd>< %=portEntry['HDMI'] %></dd>
+          <dd><%= portEntry['HDMI'] %></dd>
           <% } %> <% if (portEntry['AudioJack']) { %>
           <dt>Audio Jack</dt>
-          <dd>< %=portEntry['AudioJack'] %></dd>
+          <dd><%= portEntry['AudioJack'] %></dd>
           <% } %> <% if (portEntry['LAN']) { %>
           <dt>LAN</dt>
-          <dd>< %=portEntry['LAN'] %></dd>
+          <dd><%= portEntry['LAN'] %></dd>
           <% } %> <% if (portEntry['Card Reader']) { %>
           <dt>Card Reader</dt>
-          <dd>< %=portEntry['Card Reader'] %></dd>
+          <dd><%= portEntry['Card Reader'] %></dd>
           <% } %> <% }) %> <% } %> <% if (product.warranty) { %>
           <dt>Warranty</dt>
-          <dd>< %=product.warranty %></dd>
+          <dd><%= product.warranty %></dd>
           <% } %>
         </dl>
       </div>
@@ -333,11 +346,69 @@
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-      crossorigin="anonymous"
-    ></script>
+      crossorigin="anonymous"></script>
     <script>
       const basePrice = <%= product.salePrice %>;
-      const variants = <% - JSON.stringify(product.variants) %>;
+      const variants = <%- JSON.stringify(product.variants) %>;
+      
+
+      let selectedRAM = null;
+      let selectedStorage = null;
+      function highlightButton(containerId, value, attr) {
+        document.querySelectorAll(`#${containerId} .variant-btn`).forEach(btn => {
+          btn.classList.remove('active');
+          if (btn.dataset[attr] === value) {
+            btn.classList.add('active');
+          }
+        });
+      }
+
+      function selectRAM(ram) {
+        selectedRAM = ram;
+        highlightButton('ram-options', ram, 'ram');
+
+        const match = variants.find(v => v.RAM === ram);
+        if (match) {
+          selectedStorage = match.Storage;
+          highlightButton('storage-options', selectedStorage, 'storage');
+        }
+
+        updatePrice();
+      }
+
+      function selectStorage(storage) {
+        selectedStorage = storage;
+        highlightButton('storage-options', storage, 'storage');
+
+        const match = variants.find(v => v.Storage === storage);
+        if (match) {
+          selectedRAM = match.RAM;
+          highlightButton('ram-options', selectedRAM, 'ram');
+        }
+
+        updatePrice();
+      }
+
+    function updatePrice() {
+      
+  console.log("updatePrice called"); // Add this
+      const priceEl = document.getElementById("dynamicPrice");
+      const hiddenInput = document.getElementById("salePriceValue");
+
+      if (selectedRAM && selectedStorage) {
+        const variant = variants.find(v => v.RAM === selectedRAM && v.Storage === selectedStorage);
+        if (variant) {
+          const finalPrice = basePrice + (variant.priceAdjustment || 0);
+          priceEl.textContent = finalPrice.toLocaleString("en-IN");
+          hiddenInput.value = finalPrice;
+          return;
+        }
+      }
+         priceEl.textContent = basePrice.toLocaleString("en-IN");
+        hiddenInput.value = basePrice;
+    }
+
+
       let options = {
         width: 570,
         zoomWidth: 350,
@@ -349,44 +420,36 @@
 
       // Change main image on thumbnail click
       function changeImage(url) {
-        document.getElementById("mainImage").src = url;
-        document
-          .querySelectorAll(".thumbnail")
-          .forEach((thumb) => thumb.classList.remove("active"));
+        const container = document.getElementById("mainImageContainer");
+
+        container.innerHTML = `<img src="${url}" alt="Product Image" class="main-image" id="mainImage" />`;
+
+        document.querySelectorAll(".thumbnail").forEach((thumb) =>
+          thumb.classList.remove("active")
+        );
         event.target.classList.add("active");
+
+        const options = {
+          width: 570,
+          zoomWidth: 350,
+          offset: { vertical: 0, horizontal: 10 },
+          zoomStyle: "z-index: 1000;",
+        };
+
+        new ImageZoom(container, options);
       }
 
-      // Select variant (RAM or Storage)
-      function selectVariant(btn, type, value) {
-
-        const container = btn.closest('.variant-options');
-        container.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-
-        // Get selected variant values
-        const selectedRAM = document.querySelectorAll('.variant-options')[0].querySelector('.variant-btn.active')?.textContent.trim();
-        const selectedStorage = document.querySelectorAll('.variant-options')[1].querySelector('.variant-btn.active')?.textContent.trim();
-
-        // Find matching variant
-        const selectedVariant = variants.find(v => v.RAM === selectedRAM && v.Storage === selectedStorage);
-
-        if (selectedVariant) {
-          const adjustedPrice = basePrice + (selectedVariant.priceAdjustment || 0);
-
-          // ✅ Update visible price
-          document.getElementById("dynamicPrice").textContent = adjustedPrice.toLocaleString("en-IN");
-
-          // ✅ Update hidden field for coupon calculations
-          document.getElementById("salePriceValue").value = adjustedPrice;
-        }
-      }
 
       async function addToCart(productId) {
         try {
+          const ram =selectedRAM;
+          const storage =selectedStorage;
+          const price = document.getElementById("salePriceValue").value;
           const response = await fetch("/cart/add-to-cart", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ productId }),
+            body: JSON.stringify({ productId, ram, storage, price,
+             }),
           });
 
           if (!response.ok) {
@@ -460,7 +523,7 @@
                 iziToast.success({
                   title: "",
                   message: "Product added to Wishlist",
-                  position: "topRight",
+                  position: "bottomRight",
                   timeout: 2000,
                 });
                 icon.classList.remove("bi-heart");
@@ -469,7 +532,7 @@
                 iziToast.success({
                   title: "",
                   message: "Product removed from Wishlist",
-                  position: "topRight",
+                  position: "bottomRight",
                   timeout: 2000,
                 });
                 icon.classList.remove("bi-heart-fill");
@@ -484,7 +547,7 @@
             iziToast.error({
               title: "Error",
               message: "Something went wrong.",
-              position: "topRight",
+              position: "bottomRight",
               timeout: 2000,
             });
           });
@@ -511,6 +574,7 @@
           fullPath += `/${segment}`;
 
           if (nextIsID || isLast) {
+            // Replace 'product' with the actual product name
             const label =
               segment.toLowerCase() === "product"
                 ? productName
@@ -526,7 +590,22 @@
         breadcrumbContainer.innerHTML = breadcrumbHTML;
       }
 
-      document.addEventListener("DOMContentLoaded", generateBreadcrumb);
+      document.addEventListener("DOMContentLoaded", () => {
+  generateBreadcrumb(); // existing
+
+  document.querySelectorAll('#ram-options .variant-btn').forEach(btn => {
+    btn.addEventListener('click', () => selectRAM(btn.dataset.ram));
+  });
+
+  document.querySelectorAll('#storage-options .variant-btn').forEach(btn => {
+    btn.addEventListener('click', () => selectStorage(btn.dataset.storage));
+  });
+
+   const first = variants[0];
+  if (first) {
+    selectRAM(first.RAM);
+}
+      })
     </script>
   </body>
 </html>
