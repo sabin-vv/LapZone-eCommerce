@@ -13,30 +13,58 @@
         /* Layout Container */
         .main-body {
             display: flex;
-           
             margin-top: 2rem;
+            margin-bottom: 2rem;
         }
 
         .main-container {
             display: flex;
             margin: 2rem 0 0 0 ;
             margin-top: 2rem;
+            
             min-height: calc(100vh - 80px);
         }
         /* Main Content Styles */
         .main-content {
             flex: 1;
-            padding: 2rem;
+           padding-left: 30px;
         }
+        .breadcrumb {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            color: #666;
+            font-size: 14px;
+            align-items: center;
+        }
+
+        .breadcrumb a {
+            color: #666;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .breadcrumb a:hover {
+            color: blue;
+        }
+        .breadcrumb i {
+            font-size: 12px;
+            margin: 0 5px;
+        }
+
 
         .referral-card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 2.5rem;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15),
+                0 2px 10px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
             border: 1px solid rgba(255, 255, 255, 0.3);
             animation: slideUp 0.6s ease-out;
+            max-width: 60vw;
+            
         }
 
         @keyframes slideUp {
@@ -52,17 +80,19 @@
         }
 
         .referral-header {
-            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-align: left;
             margin-bottom: 2rem;
         }
 
         .referral-header h1 {
-            font-size: 2.5rem;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-size: 30px;
+            font-weight: 700;
             margin-bottom: 0.5rem;
+           
+            
         }
 
         .referral-header p {
@@ -167,8 +197,21 @@
         }
 
         .share-section {
-            margin-top: 2rem;
+            margin-top: 3rem;
             text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .share-section h3 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .share-section p {
+            color: #666;
+            margin-bottom: 1.5rem;
         }
 
         .share-buttons {
@@ -190,6 +233,7 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            font-size: 0.9rem;
         }
 
         .share-btn.twitter {
@@ -212,9 +256,15 @@
             color: white;
         }
 
+        .share-btn.link {
+            background: #666;
+            color: white;
+        }
+
         .share-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            filter: brightness(1.1);
         }
 
         /* Responsive Design */
@@ -222,13 +272,7 @@
             .container {
                 flex-direction: column;
             }
-
-            .sidebar {
-                width: 100%;
-                border-radius: 20px;
-                margin: 1rem;
-            }
-
+            
             .main-content {
                 padding: 1rem;
             }
@@ -244,6 +288,16 @@
             .code-display {
                 font-size: 1.5rem;
             }
+
+            .share-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .share-btn {
+                width: 200px;
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -257,9 +311,14 @@
                 
                 <main class="main-content">
                     <div class="referral-card">
+                        <div class="breadcrumb">
+                            <a href="/profile">Profile</a>
+                            <i class="fas fa-chevron-right"></i>
+                            <span>My Referral Code</span>
+                        </div>
                         <div class="referral-header">
+                            <i class="fa-solid fa-tags fa-2x" style="color: #6366f1;"></i>
                             <h1>Your Referral Code</h1>
-                            <p>Share this code with friends and earn rewards for every successful referral!</p>
                         </div>
 
                         <div class="code-section">
@@ -277,7 +336,35 @@
                                 <div class="stat-number">₹<%= totalEarnings ? totalEarnings : 0 %></div>
                                 <div class="stat-label">Total Earnings</div>
                             </div>
+                        </div>
+
+                        <div class="share-section">
+                            <h3>Share Your Code</h3>
+                            <p>Spread the word and start earning from your referrals!</p>
                             
+                            <div class="share-buttons">
+                                
+                                
+                                <button class="share-btn facebook" onclick="shareOnFacebook()">
+                                    <i class="fab fa-facebook-f"></i>
+                                    Facebook
+                                </button>
+                                
+                                <button class="share-btn whatsapp" onclick="shareOnWhatsApp()">
+                                    <i class="fab fa-whatsapp"></i>
+                                    WhatsApp
+                                </button>
+                                
+                                <button class="share-btn email" onclick="shareViaEmail()">
+                                    <i class="fas fa-envelope"></i>
+                                    Email
+                                </button>
+                                
+                                <button class="share-btn link" onclick="shareLink()">
+                                    <i class="fas fa-link"></i>
+                                    Copy Link
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </main>
@@ -301,12 +388,6 @@
                 });
             }
 
-            function shareOnTwitter() {
-                const code = document.getElementById('referralCode').textContent;
-                const text = `Join me on this amazing platform! Use my referral code: ${code}`;
-                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank');
-            }
-
             function shareOnFacebook() {
                 const url = window.location.href;
                 window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
@@ -323,6 +404,23 @@
                 const subject = 'Join me with my referral code!';
                 const body = `Hi there!\n\nI'd like to invite you to join this amazing platform. Use my referral code: ${code}\n\nBest regards!`;
                 window.open(`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank');
+            }
+
+            function shareLink() {
+                const url = window.location.href;
+                navigator.clipboard.writeText(url).then(() => {
+                    const btn = document.querySelector('.share-btn.link');
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    btn.style.background = '#28a745';
+
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.style.background = '#666';
+                    }, 2000);
+                }).catch(() => {
+                    alert('Failed to copy link. Please copy manually: ' + url);
+                });
             }
 
             // Add some interactive animations

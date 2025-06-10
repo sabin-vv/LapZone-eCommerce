@@ -125,7 +125,7 @@ const addtoCart = async (req, res, next) => {
         if (!cart) {
             cart = new Cart({
                 userId,
-                items: [{ productId, ram: selectedRam, storage: selectedStorage, price: priceAdjustment, quantity: 1 }],
+                items: [{ productId, ram: selectedRam, storage: selectedStorage, price: selectedPrice, quantity: 1 }],
             });
             await cart.save();
             const wishlist = await Wishlist.findOne({ userId });

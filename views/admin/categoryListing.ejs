@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Category Table with Toggle</title>
-    <link rel="stylesheet" href="/css/admindashboard.css">
     <link rel="stylesheet" href="/css/sidebar.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Include SweetAlert2 CDN -->
@@ -23,30 +22,29 @@
             width: 0;
             height: 0;
         }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ef4444;
-            transition: 0.4s;
-            border-radius: 24px;
+        .category-dashboard {
+            display: flex;
+            min-height: 100vh;
         }
 
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 20px;
-            width: 20px;
-            left: 2px;
-            bottom: 2px;
-            background-color: white;
-            transition: 0.4s;
-            border-radius: 50%;
+        .main-content {
+            flex: 1;
+            margin-left: 30px;
+            padding: 30px;
+            margin:2rem;
+            background-color: #f8fafc;
+           
+            max-height: fit-content;
+            transition: margin-left 0.3s ease;
+            border-radius: 15px;
         }
+        .title-container{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
 
         input:checked+.slider {
             background-color: #22c55e;
@@ -201,13 +199,18 @@
 </head>
 
 <body>
-    <div class="dashboard">
+    <%- include("../partials/admin/header.ejs") %>
+    <div class="category-dashboard">
         <%- include("../partials/admin/sidebar.ejs") %>
             <main class="main-content">
                 
                 <div class="container mx-auto p-6">
-                    <div class="flex justify-between items-center mb-4">
+                    <div class="   mb-4">
+                        <div class="title-container" >
                         <h1 class="text-2xl font-bold">Category Management</h1>
+                        <button class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition"
+                            onclick="window.location.href='/admin/category/add'">Add Category</button>
+                            </div>
                         <div class="search-container">
                             <form action="/admin/category" method="get" class="search-form">
                                 <input type="text" name="search" placeholder="Search by name, email, or mobile..."
@@ -217,8 +220,7 @@
                                     onclick="window.location.href='/admin/category'">Clear</button>
                             </form>
                         </div>
-                        <button class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition"
-                            onclick="window.location.href='/admin/category/add'">Add Category</button>
+                        
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full bg-white rounded-lg shadow-md">

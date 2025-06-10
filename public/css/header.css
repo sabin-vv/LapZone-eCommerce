@@ -1,13 +1,16 @@
 /* Professional Header Styling for LapZone */
 header {
-    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-    color: #ffffff;
+    background: rgb(33, 29, 29);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    
 }
 
 .navbar-dark {
     padding: 1rem 1.5rem;
+}
+
+.container-fluid {
+    max-width: 1440px;
+    margin: 0 auto;
 }
 
 /* Logo Styling */
@@ -15,7 +18,7 @@ header {
     font-weight: 700;
     font-style: italic;
     font-size: 2rem;
-    color: #3498db !important;
+    color: #57abde !important;
     margin-right: 2rem;
     transition: all 0.3s ease;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
@@ -96,70 +99,50 @@ header {
 
 /* Icons (Cart, Wishlist) */
 .navbar a.text-light {
-    color: #ecf0f1 !important;
     margin: 0 0.8rem;
     padding: 0.6rem;
     border-radius: 6px;
     transition: all 0.3s ease;
-    
 }
 
-
-
 .navbar a.text-light:hover {
-    color: #825656 !important;
-    
+    color: rgb(104, 104, 224) !important;
     transform: translateY(-1px);
 }
 
-
 /* Badge styling for cart and wishlist */
-.icon-with-badge {
-    position: relative;
-    display: inline-block;
-}
-
-.badge-count {
+.navbar .badge {
     position: absolute;
     top: -8px;
     right: -8px;
-    background-color: #e74c3c;
-    color: #ffffff;
+    background-color: #ca3241;
+    color: white;
     font-size: 0.75rem;
     font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 50%;
     min-width: 18px;
     height: 18px;
-    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 4px;
-    border: 2px solid #ffffff;
+    line-height: 1;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    animation: badgePulse 2s ease-in-out infinite;
 }
 
-.cart-badge {
-    background-color: #e74c3c;
-}
-
-.wishlist-badge {
+/* Alternative colored badges */
+.navbar .badge.wishlist-badge {
     background-color: #e91e63;
 }
 
-/* Badge animation */
-@keyframes badgePulse {
-    0%, 100% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.1);
-    }
+.navbar .badge.cart-badge {
+    background-color: #ff5722;
 }
 
-.badge-count:hover {
-    animation: none;
+/* Optional: Hover effect for badges */
+.navbar .badge:hover {
     transform: scale(1.1);
+    transition: transform 0.2s ease;
 }
 
 /* User Dropdown */
@@ -182,7 +165,7 @@ header {
 }
 
 .dropdown-menu {
-    background-color: #ffffff;
+    
     border: 1px solid #e9ecef;
     border-radius: 8px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
@@ -204,7 +187,7 @@ header {
 }
 
 .dropdown-item:hover {
-    background-color: #f8f9fa;
+    background-color: #d9e4ee !important;
     color: #3498db;
     padding-left: 1.5rem;
 }
@@ -237,44 +220,49 @@ a.btn-outline-light:hover {
     transform: translateY(-1px);
 }
 
-/* Navbar Toggler */
-.navbar-toggler {
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 6px;
-    padding: 0.4rem 0.6rem;
-    transition: all 0.3s ease;
+/* Mobile Header Styling */
+.mobile-header-wrapper {
+    display: flex;
+    flex-direction: column;
 }
 
-.navbar-toggler:hover {
-    border-color: #3498db;
-    background-color: rgba(52, 152, 219, 0.1);
+.mobile-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.navbar-toggler:focus {
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.25);
+.mobile-search-bar {
+    width: 100%;
 }
 
-.navbar-toggler-icon {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28236, 240, 241, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+.mobile-search-bar form {
+    width: 100%;
 }
 
-/* Mobile Collapse Fix */
-.navbar-collapse {
-    transition: none;
+.mobile-search-bar .search-bar {
+    width: 100%;
 }
 
-.navbar-collapse:not(.show) {
-    display: none !important;
+.mobile-search-bar .search-bar:focus {
+    width: 100%;
 }
 
-.navbar-collapse.show {
-    display: block !important;
-}
-
-.navbar-collapse.collapsing {
-    height: 0;
+.mobile-nav .nav-pills {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
     overflow: hidden;
-    transition: height 0.35s ease;
+}
+
+.mobile-nav .nav-link {
+    margin: 0;
+    border-radius: 0;
+    text-align: center;
+    padding: 0.8rem;
+}
+
+.mobile-nav .nav-link.active {
+    background-color: #3498db;
 }
 
 /* Responsive Design */
@@ -282,107 +270,47 @@ a.btn-outline-light:hover {
     .search-bar {
         width: 220px;
     }
-    
+
     .search-bar:focus {
         width: 240px;
     }
-    
+
     .navbar-brand {
         font-size: 1.8rem;
         margin-right: 1rem;
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767.98px) {
     .navbar-dark {
-        padding: 0.8rem 1rem;
+        padding: 0.8rem;
+    }
+    
+    .mobile-header-wrapper {
+        gap: 0.5rem;
     }
     
     .navbar-brand {
         font-size: 1.6rem;
-        margin-right: 0.5rem;
+        margin-right: 0;
     }
     
-    /* Mobile navigation */
-    .navbar-collapse {
-        background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
-        border-radius: 0 0 8px 8px;
-        padding: 1.2rem;
-        margin-top: 0.5rem;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    }
-    
-    .navbar-nav {
-        margin-bottom: 1.2rem !important;
-    }
-    
-    .nav-item {
-        margin: 0.3rem 0;
-    }
-    
-    .nav-link {
-        display: block;
-        padding: 0.8rem 1.2rem;
-        margin: 0.3rem 0;
-        width: 100%;
-        text-align: left;
-        border-radius: 6px;
-        background-color: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    
-    .nav-link:hover {
-        background-color: rgba(52, 152, 219, 0.2);
-        border-color: rgba(52, 152, 219, 0.3);
-    }
-    
-    /* Mobile search */
-    form.d-flex {
-        justify-content: center;
-        margin: 1.2rem 0;
-        width: 100%;
-    }
-    
-    .search-bar {
-        width: calc(100% - 70px);
-        max-width: 280px;
-    }
-    
-    .search-bar:focus {
-        width: calc(100% - 70px);
-        max-width: 280px;
-    }
-    
-    /* Mobile icons */
     .navbar a.text-light {
-        margin: 0 0.8rem;
-        padding: 0.8rem;
-        display: inline-block;
+        margin: 0 0.4rem;
+        padding: 0.4rem;
     }
     
-    /* Mobile user dropdown */
-    .dropdown {
-        text-align: center;
-        margin-top: 1rem;
-    }
-    
-    .user {
-        justify-content: center;
-        margin: 0 auto;
-        max-width: 200px;
-    }
-    
-    /* Mobile login button */
-    a.btn-outline-light {
-        display: block;
-        width: 140px;
-        margin: 1rem auto 0;
-        text-align: center;
+    .btn-sm.btn-outline-light {
+        padding: 0.3rem 0.8rem;
+        font-size: 0.875rem;
     }
 }
 
 @media (max-width: 576px) {
+    .navbar-dark {
+        padding: 0.6rem;
+    }
+    
     .navbar-brand {
         font-size: 1.4rem;
     }
@@ -392,35 +320,19 @@ a.btn-outline-light:hover {
         padding: 0.5rem 0.8rem;
     }
     
-    .navbar-collapse {
-        padding: 1rem;
+    .mobile-nav .nav-link {
+        font-size: 0.9rem;
+        padding: 0.6rem;
     }
     
-    .nav-link {
-        padding: 0.7rem 1rem;
-        font-size: 0.9rem;
+    .navbar a.text-light {
+        margin: 0 0.3rem;
     }
-}
-
-/* Subtle animation for better UX */
-@keyframes fadeInDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.navbar-collapse.show {
-    animation: fadeInDown 0.3s ease-out;
 }
 
 /* Active page indicator */
 .nav-link.active::after {
-    content: '';
+    content: "";
     position: absolute;
     bottom: -1px;
     left: 50%;
@@ -429,4 +341,18 @@ a.btn-outline-light:hover {
     height: 2px;
     background-color: #3498db;
     border-radius: 1px;
+}
+
+/* Animation for better UX */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.mobile-header-wrapper {
+    animation: fadeIn 0.3s ease-out;
 }

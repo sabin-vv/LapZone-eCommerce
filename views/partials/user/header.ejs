@@ -62,16 +62,7 @@
             <div class="container-fluid">
                 <!-- Logo and Toggler -->
                 <div class="d-flex align-items-center">
-                    <button 
-                        class="navbar-toggler me-2" 
-                        type="button" 
-                        data-bs-toggle="collapse" 
-                        data-bs-target="#navbarContent" 
-                        aria-controls="navbarContent" 
-                        aria-expanded="false" 
-                        aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
+                    
                     <a class="navbar-brand fw-bold fst-italic fs-2 text-light" href="/">LapZone</a>
                 </div>
 
@@ -84,6 +75,9 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-light" href="/shop">Shop</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/about">About</a>
                         </li>
                     </ul>
 
@@ -128,7 +122,7 @@
                                     </span>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                    <li><a class="dropdown-item" href="/profile/<%= user._id%>">Profile</a></li>
+                                    <li><a class="dropdown-item" href="/profile/">Profile</a></li>
                                     <li><a class="dropdown-item" href="/profile">Settings</a></li>
                                     <li><a class="dropdown-item logout-item" href="/logout">Logout</a></li>
                                 </ul>

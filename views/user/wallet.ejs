@@ -127,17 +127,23 @@
     <!-- Include your header here -->
     <%- include('../partials/user/header.ejs') %>
 
-        <div class="wallet-container">
+        
             <div class="wallet-wrapper">
                 <!-- Include Profile Sidebar -->
                 <%- include('../partials/user/profileSidebar.ejs') %>
 
                     <!-- Main Wallet Content -->
                     <div class="wallet-main-content">
+                        <div class="wallet-container">
+                            <div class="breadcrumb">
+                                <a href="/profile">Profile</a>
+                                <i class="fas fa-chevron-right"></i>
+                                <span>My Wallet</span>
+                            </div>
                         <div class="wallet-header">
+                            <i class="fa-solid fa-wallet fa-2x" style="color: #6366f1;"></i>
                             <h1 class="page-title">My Wallet</h1>
-                            <p class="page-subtitle">Welcome back, <%= username %>! Manage your wallet balance and
-                                    transactions</p>
+                            
                         </div>
 
                         <!-- Wallet Balance Card -->
@@ -221,8 +227,9 @@
                             </div>
                         </div>
                     </div>
+                        </div>
             </div>
-        </div>
+        
 
         <!-- Add Money Modal -->
         <div class="modal fade" id="addMoneyModal" tabindex="-1" aria-labelledby="addMoneyModalLabel"

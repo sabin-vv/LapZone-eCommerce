@@ -18,7 +18,14 @@
 
     <div class="main-content">
       <div class="address-form-section">
-        <h2><i class="fas fa-map-marker-alt"></i> New Address</h2>
+        <div class="breadcrumb">
+          <a href="/profile">Profile</a>
+          <i class="fas fa-chevron-right"></i>
+          <a href="/profile/address">My Address</a>
+          <i class="fas fa-chevron-right"></i>
+          <span>Add Address</span>
+        </div>
+        <h2><i class="fa-solid fa-address-card" style="color: #6366f1;"></i> New Address</h2>
 
         <form action="/profile/add-address/<%= user._id %>" method="POST">
           <div class="form-row">
@@ -124,6 +131,7 @@
             <button type="submit" class="add-btn"><i class="fas fa-check"></i> Add Address</button>
           </div>
         </form>
+      </div>
       </div>
     </div>
   </div>

@@ -1,11 +1,19 @@
 /* Main Content */
 .main-content {
     flex: 1;
-    padding: 32px;
-    margin-left: 250px;
+    margin-left: 30px;
+    padding: 30px;
+    margin:2rem;
     background-color: #f8fafc;
     min-height: 100vh;
     transition: margin-left 0.3s ease;
+    border-radius: 15px;
+    
+}
+
+.dashboard{
+    display: flex;
+    min-height: 100vh;
 }
 
 /* Header */
@@ -362,6 +370,7 @@ input:not(:checked) + .slider {
     display: flex;
     justify-content: center;
     margin: 1.5rem 0;
+    gap: 0.5rem;
 }
 
 .pagination .pages {

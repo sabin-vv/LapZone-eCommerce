@@ -13,13 +13,14 @@
 </head>
 
 <body class="bg-gray-100 font-sans">
+    <%- include("../partials/admin/header.ejs") %>
     <div class="flex min-h-screen">
         <!-- Sidebar Partial -->
         <%- include("../partials/admin/sidebar.ejs") %>
 
             <!-- Main Content -->
              
-            <main class="main-content flex-1 p-6 md:ml-64">
+            <main class="main-content flex-1 p-6 md:ml-10">
                 <h1 class="text-2xl font-bold mb-6">Add New Product</h1>
                 <form class="bg-white p-6 rounded-lg shadow-md" enctype="multipart/form-data"
                     action="/admin/product/add" method="POST">

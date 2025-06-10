@@ -33,47 +33,66 @@ const listOrders = async (req, res, next) => {
 }
 
 const updateOrderStatus = async (req, res, next) => {
-
-    if (!req.session.admin) return res.redirect("/admin")
+    if (!req.session.admin) return res.redirect("/admin");
 
     const { orderId, status } = req.body;
 
     try {
-
         if (!orderId || !status) {
             return res.status(400).json({ success: false, message: 'Order ID and status are required' });
         }
 
-        const validStatuses = ['Processing', 'Shipped', 'Delivered', 'Cancelled'];
+        const validStatuses = ['Processing', 'Shipped', 'Delivered', 'Cancelled', 'Returned'];
         if (!validStatuses.includes(status)) {
             return res.status(400).json({ success: false, message: 'Invalid status' });
         }
-
 
         const order = await Order.findOne({ orderId });
         if (!order) {
             return res.status(404).json({ success: false, message: 'Order not found' });
         }
 
-
         order.orderStatus = status;
 
-
-        order.statusHistory.forEach(history => {
-            history.current = false;
-        });
+        order.statusHistory.forEach(history => history.current = false);
         order.statusHistory.push({
             status,
             date: new Date(),
             current: true
         });
 
+        if (status === 'Cancelled' || status === 'Returned') {
+            order.paymentStatus = 'Refunded';
 
-        if (status === 'Cancelled') {
-            order.paymentStatus = 'Cancelled';
             order.items.forEach(item => {
-                item.status = 'Cancelled';
+                item.status = status;
             });
+
+            const userId = order.user;
+            const refundAmount = order.totalAmount;
+
+            let wallet = await Wallet.findOne({ userId });
+
+            if (!wallet) {
+                wallet = new Wallet({
+                    userId,
+                    balance: refundAmount,
+                    transactions: [{
+                        type: 'credit',
+                        amount: refundAmount,
+                        description: `Refund for Order ${order.orderId} (${status})`
+                    }]
+                });
+            } else {
+                wallet.balance += refundAmount;
+                wallet.transactions.push({
+                    type: 'credit',
+                    amount: refundAmount,
+                    description: `Refund for Order ${order.orderId} (${status})`
+                });
+            }
+
+            await wallet.save();
         } else if (status === 'Delivered') {
             order.paymentStatus = 'Completed';
             order.items.forEach(item => {
@@ -84,12 +103,12 @@ const updateOrderStatus = async (req, res, next) => {
         await order.save();
 
         res.status(200).json({ success: true, message: 'Order status updated successfully' });
+
     } catch (error) {
         console.error('Error updating order status:', error);
         next(error);
     }
-
-}
+};
 
 const viewOrder = async (req, res, next) => {
     try {

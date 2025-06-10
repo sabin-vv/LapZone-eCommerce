@@ -12,7 +12,9 @@
 </head>
 
 <body>
+     <%- include("../partials/admin/header.ejs") %>
     <div class="dashboard">
+       
         <!-- Sidebar -->
         <%- include("../partials/admin/sidebar.ejs") %>
 
@@ -922,7 +924,7 @@
                 fetchRecentOrders()
             ]);
 
-            showNotification('🎉 Dashboard loaded successfully!', 'success', 3000);
+            
 
         } catch (error) {
             handleError(error, 'initializeDashboard');

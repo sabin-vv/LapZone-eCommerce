@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/about.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <%- include("../partials/user/header.ejs") %>
+   <div class="main-container">
+    <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="/">Home</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>About</span>
+        </div>
+        
+    </nav>
+
+    <!-- Our Story Section -->
+    <div class="story-grid">
+        <!-- Text Content -->
+        <div class="story-content">
+            <h1 class="story-title">Our Story</h1>
+            
+            <div class="story-text">
+                <p class="story-paragraph">
+                    Welcome to LapZone, your one-stop destination for the 
+                    latest and most reliable laptops at unbeatable prices. Whether 
+                    you're a student, professional, gamer, or creative enthusiast, 
+                    we offer a wide range of laptops tailored to meet your unique 
+                    needs and budget.
+                </p>
+                
+                <p class="story-paragraph">
+                    Our mission is to make high-quality technology accessible 
+                    and affordable for everyone. We partner with top brands and 
+                    trusted suppliers to bring you the best deals, backed by expert 
+                    customer service and fast, secure shipping.
+                </p>
+                
+                <p class="story-paragraph">
+                    At LapZone, we believe in empowering our customers with 
+                    the right tools to stay productive, connected, and ahead in 
+                    today's digital world. Shop with confidence and upgrade your 
+                    tech game today!
+                </p>
+            </div>
+        </div>
+
+        <!-- Image Content -->
+        <div class="image-container">
+            <!-- Top Image -->
+            <div class="image-wrapper">
+                <img 
+                    src="/about/about.jpg" 
+                    alt="Modern workspace setup" 
+                    class="story-image"
+                >
+            </div>
+            
+            
+        </div>
+    </div>
+</div>
+
+<%- include("../partials/user/footer.ejs") %>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+</body>
+</html>

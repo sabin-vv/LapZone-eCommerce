@@ -51,18 +51,49 @@
         .main-content {
             display: flex;
             margin-top: 2rem;
+            margin-bottom: 2rem;
+            gap: 30px;
             min-height: calc(100vh - 80px);
+        }
+        .breadcrumb {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            color: #666;
+            font-size: 14px;
+            align-items: center;
+        }
+
+        .breadcrumb a {
+            color: #666;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .breadcrumb a:hover {
+            color: blue;
+        }
+
+        .breadcrumb i {
+            font-size: 12px;
+            margin: 0 5px;
         }
 
         .coupon-container {
             flex: 1;
-            padding: 2rem 1rem;
+            padding: 30px;
             max-width: 1200px;
-            margin: 0 auto;
+            margin-right: 30px;
+            background-color: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15),
+        0 2px 10px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        animation: slideUp 0.6s ease-out;
         }
 
         .page-title {
-            font-size: 1.75rem;
+            font-size: 30px;
             font-weight: 700;
             margin-bottom: 1.5rem;
             color: var(--text-primary);
@@ -426,6 +457,16 @@
             left: auto;
             right: -10px;
         }
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 <body>
@@ -435,6 +476,11 @@
         <%- include("../partials/user/profileSidebar.ejs") %>
         
         <div class="coupon-container">
+            <div class="breadcrumb">
+                <a href="/profile">Profile</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>My Coupons</span>
+            </div>
             <h1 class="page-title">
                 <i class="fa-solid fa-ticket"></i>
                 My Coupons
@@ -602,23 +648,14 @@
             const currentPath = window.location.pathname;
             const menuItems = document.querySelectorAll('.sidebar ul li a');
             
-            menuItems.forEach(item => {
-                if (item.getAttribute('href') === currentPath) {
-                    item.parentElement.classList.add('active');
-                }
-            });
+            
             
             // Mobile sidebar toggle
             const toggleBtn = document.querySelector('.toggle-sidebar');
             const sidebar = document.querySelector('.sidebar');
             const overlay = document.querySelector('.sidebar-overlay');
             
-            if (toggleBtn) {
-                toggleBtn.addEventListener('click', function() {
-                    sidebar.classList.toggle('active');
-                    overlay.classList.toggle('active');
-                });
-            }
+           
             
             if (overlay) {
                 overlay.addEventListener('click', function() {

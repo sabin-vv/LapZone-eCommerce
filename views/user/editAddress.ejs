@@ -8,73 +8,7 @@
   <link rel="stylesheet" href="/css/profileSidebar.css" />
   <link rel="stylesheet" href="/css/addAddress.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
-  <style>
-    .form-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      margin-bottom: 20px;
-    }
-
-    .form-group {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-
-    input,
-    select {
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      margin-top: 5px;
-    }
-
-    select {
-      width: 100%;
-      appearance: none;
-      background-color: white;
-    }
-
-    .error-field {
-      color: red;
-      font-size: 14px;
-      margin-top: 5px;
-    }
-
-    .buttons {
-      display: flex;
-      justify-content: flex-end;
-      gap: 15px;
-      margin-top: 30px;
-    }
-
-    .add-btn,
-    .cancel-btn {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      text-decoration: none;
-      text-align: center;
-    }
-
-    .add-btn {
-      background-color: #28a745;
-      color: white;
-    }
-
-    .cancel-btn {
-      background-color: #dc3545;
-      color: white;
-    }
-
-    h2, h3 {
-      margin-bottom: 15px;
-    }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -84,7 +18,14 @@
 
     <div class="main-content">
       <div class="address-form-section">
-        <h2>Edit Address</h2>
+        <div class="breadcrumb">
+          <a href="/profile">Profile</a>
+          <i class="fas fa-chevron-right"></i>
+          <a href="/profile/address">My Address</a>
+          <i class="fas fa-chevron-right"></i>
+          <span> Edit Address</span>
+        </div>
+        <h2> <i class="fa-solid fa-file-pen" style="color: #6366f1;"></i>Edit Address</h2>
 
         <form action="/profile/edit-address/<%= address._id %>" method="POST">
           
@@ -93,12 +34,16 @@
             <div class="form-group">
               <label>Full Name</label>
               <input type="text" name="fullname" value="<%= address ? address.fullname : user.fullname %>" placeholder="Full Name (required)" />
-              <p class="error-field"><%= errors?.fullname || "" %></p>
+              <% if(errors?.fullname) { %>
+              <p class="error-field"><i class="fas fa-exclamation-circle"></i> <%= errors?.fullname || "" %></p>
+              <% } %>
             </div>
             <div class="form-group">
               <label>Mobile</label>
               <input type="tel" name="mobile" maxlength="10" value="<%= address ? address.mobile : user.mobile %>" placeholder="Phone number (required)" />
-              <p class="error-field"><%= errors?.mobile || ''%></p>
+              <% if(errors?.mobile) { %>
+              <p class="error-field"><i class="fas fa-exclamation-circle"></i> <%= errors?.mobile || ''%></p>
+              <% } %>
             </div>
           </div>
 
@@ -107,7 +52,10 @@
             <div class="form-group">
               
               <input type="text" name="addressLine" value="<%= address ? address.addressLine : '' %>" placeholder="House Name, House Number, Locality (required)" />
-              <p class="error-field"><%= errors?.addressLine || ''%></p>
+              <% if(errors?.addressLine){ %>
+              <p class="error-field"><i class="fas fa-exclamation-circle"></i> <%= errors?.addressLine || ''%></p>
+              <% } %>
+            
             </div>
           </div>
 
@@ -115,12 +63,16 @@
             <div class="form-group">
              
               <input type="text" name="state" value="<%= address ? address.state : '' %>" placeholder="State (required)" />
-              <p class="error-field"><%= errors?.state || '' %></p>
+              <% if(errors?.state) { %>
+              <p class="error-field"><i class="fas fa-exclamation-circle"></i> <%= errors?.state || '' %></p>
+              <% } %>
             </div>
             <div class="form-group">
              
               <input type="text" name="district" value="<%= address ? address.district : '' %>" placeholder="District (required)" />
-              <p class="error-field"><%= errors?.district || '' %></p>
+              <% if(errors?.district) { %>
+              <p class="error-field"><i class="fas fa-exclamation-circle"></i> <%= errors?.district || '' %></p>
+              <% } %>
             </div>
           </div>
 
@@ -128,12 +80,16 @@
             <div class="form-group">
               
               <input type="text" name="city" value="<%= address ? address.city : '' %>" placeholder="City (required)" />
-              <p class="error-field"><%= errors?.city || '' %></p>
+              <% if(errors?.city) { %>
+              <p class="error-field"><i class="fas fa-exclamation-circle"></i> <%= errors?.city || '' %></p>
+              <% } %>
             </div>
             <div class="form-group">
               
               <input type="text" name="pincode" value="<%= address ? address.pincode : '' %>" placeholder="Pin Code (required)" maxlength="6" />
-              <p class="error-field"><%= errors?.pincode || '' %></p>
+              <% if(errors?.pincode) { %>
+              <p class="error-field"><i class="fas fa-exclamation-circle"></i> <%= errors?.pincode || '' %></p>
+              <% } %>
             </div>
           </div>
 

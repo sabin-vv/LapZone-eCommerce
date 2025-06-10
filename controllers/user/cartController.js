@@ -33,11 +33,11 @@ const addtoCart = async (req, res, next) => {
 
         const { productId, ram, storage, price } = req.body;
         const userId = req.session.user;
-        console.log('checkpoint 1');
+
         const product = await Product.findById(productId);
         if (!product || !product.isActive || !product.isExisting)
             return res.json({ success: false });
-        console.log('checkpoint 2');
+
         if (product.count === 0)
             return res.json({ success: false, message: "Out of stock" });
         console
@@ -113,6 +113,11 @@ const cartUpdate = async (req, res, next) => {
 
         if (productIndex === -1) {
             return res.json({ success: false, message: "Product not found in cart" });
+        }
+
+        const product = cartList.items[productIndex].productId;
+        if (quantity > product.count) {
+            return res.json({ success: false, message: `Only ${product.count} units available` });
         }
 
         cartList.items[productIndex].quantity = quantity;
@@ -210,3 +215,4 @@ module.exports = {
     removecartItem,
     emptyCart,
 }
+

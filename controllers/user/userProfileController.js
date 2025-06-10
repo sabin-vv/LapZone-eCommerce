@@ -116,10 +116,22 @@ const addAddress = async (req, res, next) => {
 
 
         if (!(/^[A-Za-z\s]{3,20}$/).test(fullname)) {
-            errors['fullname'] = "Name contain only letters ans spaces"
+            errors['fullname'] = "Name contain only letters and spaces"
         }
+
+        
         if (!/^\d+$/.test(mobile))
             errors['mobile'] = "Please enter valid mobile number"
+
+        if (addressLine.trim().length < 10) {
+            errors['addressLine'] = "Address Line should be minimum 10 characters"
+        }
+        if (/^[^a-zA-Z0-9]+$/.test(addressLine.trim())) {
+            errors['addressLine'] = "Address Line contain only letters and numbers"
+        }
+        if (!/[A-Za-z]/.test(addressLine)) {
+            errors['addressLine'] = "Address line must contain at least one letter"
+        }
 
         if (!(/^[A-Za-z\s\-]+$/).test(state))
             errors['state'] = "State contain only Letters"
@@ -135,6 +147,8 @@ const addAddress = async (req, res, next) => {
 
         if (!/^\d+$/.test(pincode))
             errors['pincode'] = "Please enter valid Pincode"
+        if (/^0/.test(pincode))
+            errors['pincode'] = "Pincode should not start with 0"
 
         formFields.forEach(field => {
             if (!req.body[field] || req.body[field].trim() === '') errors[field] = `${field} is Required`
@@ -202,10 +216,27 @@ const editAddress = async (req, res, next) => {
         const errors = {}
 
         if (!(/^[A-Za-z\s]{3,20}$/).test(fullname)) {
-            errors['fullname'] = "Name contain only letters ans spaces"
+            errors['fullname'] = "Name contain only letters and spaces"
         }
-        if (!/^\d+$/.test(mobile))
-            errors['mobile'] = "Please enter valid mobile number"
+        
+        const phoneRegex = /^[6-9]\d{9}$/;
+        if (!/^\d+$/.test(mobile)) {
+            errors['mobile'] = "Phone number should contain only digits";
+        } else if (mobile.length !== 10) {
+            errors['mobile'] = "Phone number should be 10 digits";
+        } else if (!phoneRegex.test(mobile)) {
+            errors['mobile'] = "Phone number must start with 6, 7, 8, or 9";
+        }
+
+        if (addressLine.trim().length < 10) {
+            errors['addressLine'] = "Address Line should be minimum 10 characters"
+        }
+        if (/^[^a-zA-Z0-9]+$/.test(addressLine.trim())) {
+            errors['addressLine'] = "Address Line contain only letters and numbers"
+        }
+        if (!/[A-Za-z]/.test(addressLine)) {
+            errors['addressLine'] = "Address line must contain at least one letter"
+        }
 
         if (!(/^[A-Za-z\s\-]+$/).test(state))
             errors['state'] = "State contain only Letters"
@@ -218,9 +249,10 @@ const editAddress = async (req, res, next) => {
 
         if (pincode.length < 6)
             errors['pincode'] = " Pincode have 6 digits"
-
         if (!/^\d+$/.test(pincode))
             errors['pincode'] = "Please enter valid Pincode"
+        if (/^0/.test(pincode))
+            errors['pincode'] = "Pincode should not start with 0"
 
         formFields.forEach(field => {
             if (!req.body[field] || req.body[field].trim() === '') errors[field] = `${field} is Required`
@@ -229,7 +261,7 @@ const editAddress = async (req, res, next) => {
 
         if (Object.keys(errors).length > 0) {
 
-            return res.render("user/addAddress", { errors, user, username: null, addressId, })
+            return res.render("user/editAddress", { errors, user, username: null, address })
         }
         const addressData = {
             userId: user._id,

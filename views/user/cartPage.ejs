@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/header.css">
     <link rel="stylesheet" href="/css/profileSidebar.css">
     <link rel="stylesheet" href="/css/cartpage.css">
-    <link rel="stylesheet" href="/css/layout-integration.css">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
     <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
@@ -25,8 +25,13 @@
         
         <div class="content-wrapper p-0 fade-in">
             <div class="cart-container">
+                <div class="breadcrumb">
+                    <a href="/profile">Profile</a>
+                    <i class="fas fa-chevron-right"></i>
+                    <span>My Cart</span>
+                </div>
                 <div class="page-header">
-                    <h1 class="page-title">Shopping Cart</h1>
+                    <h1 class="page-title"><i class="fa-solid fa-cart-shopping" style="color: #6366f1;"></i>Shopping Cart</h1>
                     <% if(cart && cart.items && cart.items.length > 0) { %>
                         <button class="btn btn-danger" onclick="confirmClearCart()">
                             <i class="fas fa-trash-alt"></i> Empty Cart
@@ -105,7 +110,7 @@
                             <h3>Your Cart is Empty</h3>
                             <p>Add items to your cart to continue shopping.</p>
                             <div style="margin-top: 24px;">
-                                <a href="/shop" class="btn btn-primary">
+                                <a  class="btn btn-primary">
                                     <i class="fas fa-store"></i> Browse Products
                                 </a>
                             </div>

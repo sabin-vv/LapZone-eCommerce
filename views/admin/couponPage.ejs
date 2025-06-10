@@ -19,13 +19,28 @@
             background-color: #f8f9fa;
         }
 
+        .coupon-dashboard {
+            display: flex;
+            min-height: 100vh;
+        }
+
         .main-content {
-            margin-left: 250px;
-            padding: 20px;
+            flex: 1;
+            margin-left: 30px;
+            padding: 30px;
+            margin:2rem;
+            background-color: #f8fafc;
+            max-height: fit-content;
+            transition: margin-left 0.3s ease;
+            border-radius: 15px;
+            
         }
 
         .page-header {
-            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            
         }
 
         .page-title {
@@ -38,6 +53,7 @@
         .breadcrumb {
             color: #666;
             font-size: 14px;
+            margin-bottom: 10px;
         }
 
         .breadcrumb a {
@@ -56,7 +72,7 @@
             padding: 20px;
             border-bottom: 1px solid #eee;
             display: flex;
-            justify-content: space-between;
+            justify-content: right;
             align-items: center;
         }
 
@@ -117,6 +133,29 @@
             color: #333;
             border-bottom: 1px solid #eee;
         }
+        .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
 
         .table-container {
             overflow-x: auto;
@@ -157,30 +196,6 @@
             opacity: 0;
             width: 0;
             height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 24px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
         }
 
         input:checked + .slider {
@@ -232,9 +247,8 @@
         }
 
         .add-coupon-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
+            width: 150px;
+            height: 50px;
             background: #333;
             color: white;
             padding: 15px 25px;
@@ -271,17 +285,22 @@
     </style>
 </head>
 <body>
-    <!-- Include sidebar partial -->
+    <%- include("../partials/admin/header.ejs") %>
+   <div class="coupon-dashboard">
     <%- include('../partials/admin/sidebar.ejs') %>
 
     <div class="main-content">
         <!-- Page Header -->
         <div class="page-header">
             <h1 class="page-title">Coupons</h1>
-            <div class="breadcrumb">
+            
+            <button class="add-coupon-btn" onclick="addCoupon()">
+            <i class="fas fa-plus"></i> Add Coupon
+        </button>
+        </div>
+        <div class="breadcrumb">
                 <a href="/admin/dashboard">Dashboard</a> > Coupons
             </div>
-        </div>
 
         <!-- Main Content Wrapper -->
         <div class="content-wrapper">
@@ -292,14 +311,14 @@
                     <i class="fas fa-search"></i>
                 </div>
                 
-                <div class="filter-buttons">
+                <!-- <div class="filter-buttons">
                     <button class="filters-toggle">
                         <i class="fas fa-filter"></i> Filters
                     </button>
                     <button class="filter-btn active" data-filter="all">ALL</button>
                     <button class="filter-btn" data-filter="active">ACTIVE</button>
                     <button class="filter-btn" data-filter="inactive">INACTIVE</button>
-                </div>
+                </div> -->
             </div>
 
             <!-- Table Section -->
@@ -366,11 +385,8 @@
                 </table>
             </div>
         </div>
+        </div>
 
-        <!-- Add Coupon Button -->
-        <button class="add-coupon-btn" onclick="addCoupon()">
-            <i class="fas fa-plus"></i> Add Coupon
-        </button>
     </div>
 
     <script>

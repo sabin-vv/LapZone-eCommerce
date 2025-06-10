@@ -23,6 +23,8 @@ router.post("/verify-otp", userController.verifyOtp)
 router.post("/resend-otp", userController.resendOtp)
 router.post("/signup/referral-code", userController.checkReferralCode)
 
+router.get("/about", userController.aboutPage)
+router.get("/contact-us", userController.contactUsPage)
 
 router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }))
 router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: "/login" }), (req, res) => {

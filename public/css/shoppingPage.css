@@ -12,13 +12,8 @@ body {
     overflow-x: hidden;
     line-height: 1.6;
 }
-
-
-
-/* General Layout Improvements */
-.container-fluid {
-    max-width: 1440px;
-    margin: 0 auto;
+.main-container {
+    padding: 2rem;
 }
 
 /* Filter Sidebar */
@@ -379,6 +374,7 @@ input[type="checkbox"]:checked {
 
 /* Product Sorting */
 select#sort {
+    width: 150px;
     padding: 0.5rem 2rem 0.5rem 1rem;
     border-radius: 8px;
     border: 1px solid #e5e7eb;
@@ -402,7 +398,7 @@ select#sort:focus {
 .pagination {
   display: flex;
   justify-content: center;
-  margin: 2rem 0;
+  margin-top: 2rem;
 }
 
 .pagination ul {
@@ -413,7 +409,7 @@ select#sort:focus {
 }
 
 .pagination li {
-  margin: 1px; 
+  margin: 0 5px;
   
 }
 
@@ -493,10 +489,7 @@ select#sort:focus {
 }
 
 @media (max-width: 640px) {
-    .container-fluid {
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
+    
     
     .product-card {
         min-height: 360px;

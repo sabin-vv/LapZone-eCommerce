@@ -40,11 +40,12 @@
 
         .main-content {
             flex: 1;
-            margin-left: 280px;
+            margin:2rem;
             padding: 2rem;
             background-color: var(--bg-secondary);
             min-height: 100vh;
             transition: margin-left 0.4s ease;
+            border-radius: 15px;
         }
 
         @media (max-width: 768px) {

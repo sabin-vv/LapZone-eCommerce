@@ -16,6 +16,7 @@ const counts = require("./middlewares/counts")
 const errorHandler = require("./middlewares/errorHandler")
 
 
+
 app.use(nocache())
 app.set('view engine', 'ejs')
 app.use(express.static(path.join(__dirname, 'public')))
@@ -47,6 +48,7 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 app.use((req, res, next) => {
+    
     res.locals.user =  req.session.user || null 
     res.locals.username = req.session.username ||null
     next();

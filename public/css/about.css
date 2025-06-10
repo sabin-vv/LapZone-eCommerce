@@ -1,0 +1,406 @@
+/* Our Story Page Styles */
+
+/* Container and Layout */
+.main-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    padding-top: 48px;
+    padding-bottom: 48px;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15),
+        0 2px 10px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        margin: 2rem auto;
+        border-radius: 15px;
+}
+
+.breadcrumb {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 20px;
+    color: #666;
+    font-size: 14px;
+    align-items: center;
+}
+
+.breadcrumb a {
+    color: #666;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.breadcrumb a:hover {
+    color: blue;
+}
+
+.breadcrumb i {
+    font-size: 12px;
+    margin: 0 5px;
+}
+
+/* Main Content Grid */
+.story-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 48px;
+    align-items: start;
+}
+
+@media (min-width: 1024px) {
+    .story-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* Text Content */
+.story-content {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.story-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #111827;
+    margin-bottom: 32px;
+    line-height: 1.2;
+}
+
+.story-text {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.story-paragraph {
+    color: #374151;
+    line-height: 1.7;
+    font-size: 16px;
+}
+
+/* Image Content */
+.image-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.image-wrapper {
+    background-color: #f3f4f6;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.story-image {
+    width: 100%;
+    height: 600px;
+    object-fit: cover;
+    display: block;
+}
+
+/* Newsletter Section */
+.newsletter-section {
+    background-color: #111827;
+    color: white;
+    padding: 32px 0;
+}
+
+.newsletter-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    text-align: center;
+}
+
+.newsletter-text {
+    font-size: 18px;
+    margin-bottom: 24px;
+}
+
+/* Features Grid */
+.features-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+    margin-top: 48px;
+}
+
+@media (min-width: 768px) {
+    .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .features-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.feature-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.feature-icon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 16px;
+    color: white;
+}
+
+.feature-title {
+    font-weight: 600;
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: white;
+}
+
+.feature-description {
+    font-size: 14px;
+    color: #d1d5db;
+}
+
+/* Footer Styles */
+.bg-dark {
+    background-color: #212529 !important;
+}
+
+.text-white {
+    color: #ffffff !important;
+}
+
+.py-5 {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -15px;
+}
+
+.col-lg-4, .col-lg-2, .col-6, .col-md-6 {
+    padding: 0 15px;
+}
+
+.col-lg-4 {
+    flex: 0 0 33.333333%;
+    max-width: 33.333333%;
+}
+
+.col-lg-2 {
+    flex: 0 0 16.666667%;
+    max-width: 16.666667%;
+}
+
+.col-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+}
+
+.col-md-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem;
+}
+
+.mb-3 {
+    margin-bottom: 1rem;
+}
+
+.mb-2 {
+    margin-bottom: 0.5rem;
+}
+
+.mb-0 {
+    margin-bottom: 0;
+}
+
+.me-3 {
+    margin-right: 1rem;
+}
+
+.mx-2 {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+.fs-4 {
+    font-size: 1.5rem;
+}
+
+.list-unstyled {
+    list-style: none;
+    padding-left: 0;
+}
+
+.text-decoration-none {
+    text-decoration: none;
+}
+
+.text-decoration-none:hover {
+    text-decoration: underline;
+    color: #ffffff;
+}
+
+.social-icons a {
+    font-size: 1.2rem;
+    transition: opacity 0.3s ease;
+}
+
+.social-icons a:hover {
+    opacity: 0.8;
+}
+
+.input-group {
+    display: flex;
+    width: 100%;
+}
+
+.form-control {
+    flex: 1;
+    padding: 0.375rem 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem 0 0 0.375rem;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.btn {
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    color: #ffffff;
+    border-radius: 0 0.375rem 0.375rem 0;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+}
+
+.my-4 {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.bg-light {
+    background-color: #f8f9fa;
+    height: 1px;
+    border: none;
+}
+
+.align-items-center {
+    align-items: center;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-md-start {
+    text-align: left;
+}
+
+.text-md-end {
+    text-align: right;
+}
+
+.mt-3 {
+    margin-top: 1rem;
+}
+
+/* Responsive Footer */
+@media (max-width: 992px) {
+    .col-lg-4, .col-lg-2 {
+        flex: 0 0 100%;
+        max-width: 100%;
+        margin-bottom: 2rem;
+    }
+    
+    .col-6 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+
+@media (max-width: 768px) {
+    .col-6, .col-md-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    
+    .text-md-start, .text-md-end {
+        text-align: center;
+    }
+    
+    .mt-md-0 {
+        margin-top: 1rem;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .main-container {
+        padding: 24px 16px;
+    }
+    
+    .story-title {
+        font-size: 2rem;
+        margin-bottom: 24px;
+    }
+    
+    .story-grid {
+        gap: 32px;
+    }
+    
+    .story-content {
+        gap: 24px;
+    }
+    
+    .newsletter-section {
+        padding: 24px 0;
+    }
+    
+    .features-grid {
+        margin-top: 32px;
+        gap: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .story-title {
+        font-size: 1.75rem;
+    }
+    
+    .story-paragraph {
+        font-size: 15px;
+    }
+    
+    .newsletter-text {
+        font-size: 16px;
+    }
+}

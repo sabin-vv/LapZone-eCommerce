@@ -16,6 +16,34 @@ function generateReferralCode() {
     return code;
 }
 
+const aboutPage = (req, res, next) => {
+    try {
+        res.render("user/about",{
+        user: res.locals.user,
+        username: res.locals.username,
+        wishlistCount: res.locals.wishlistCount || 0,
+        cartCount: res.locals.cartCount || 0
+        })
+    } catch (error) {
+        console.error('Error fetching about page:', error);
+        next(error);
+    }
+}
+
+const contactUsPage = (req, res, next) => {
+    try {
+        res.render("user/contactUs",{
+        user: res.locals.user,
+        username: res.locals.username,
+        wishlistCount: res.locals.wishlistCount || 0,
+        cartCount: res.locals.cartCount || 0
+        })
+    } catch (error) {
+        console.error('Error fetching about page:', error);
+        next(error);
+    }
+}
+
 const landingPage = async (req, res, next) => {
     try {
         const products = await Product.find({ isActive: true, isExisting: true }).sort({ updatedAt: -1 }).limit(4).populate('categoryId')
@@ -79,7 +107,7 @@ async function sendverificationEmail(email, otp) {
         text: `Your verification code is: ${otp}`,
         html: `
     <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px;">
-      <h2 style="color: #4A90E2;">lapZone Email Verification</h2>
+      <h2 style="color: #4A90E2;">LapZone Email Verification</h2>
       <p>Hi there,</p>
       <p>Thank you for signing up. Please use the OTP below to verify your email address:</p>
       <div style="margin: 20px 0; padding: 12px 20px; background-color: #f5f5f5; border-left: 4px solid #4A90E2; font-size: 24px; font-weight: bold;">
@@ -111,14 +139,29 @@ const postSignUp = async (req, res, next) => {
 
         const errors = {}
 
-        if (!/^[A-Za-z\s]+$/.test(fullname))
-            errors['fullname'] = "only letters and spaces are allowed"
+        if (!fullname || fullname.trim().length === 0) {
+            errors['fullname'] = "Name should not be empty";
+        } else if (!/[A-Za-z0-9]/.test(fullname)) {
+            errors['fullname'] = "Special characters only are not allowed";
+        } else if (fullname.length < 3) {
+            errors['fullname'] = "Name should be minimum 3 characters";
+        } else if (!/^[A-Za-z\s]+$/.test(fullname)) {
+            errors['fullname'] = "Only letters and spaces are allowed";
+        }
 
-        if (mobile.length != 10)
-            errors['mobile'] = "Phone number should be 10 digit";
+        if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+            errors['email'] = "Please enter valid email"
+        }
 
-        if (!/(^\d+$)/.test(mobile))
-            errors['mobile'] = "Phone Number should be Number";
+        const phoneRegex = /^[6-9]\d{9}$/;
+
+        if (!/^\d+$/.test(mobile)) {
+            errors['mobile'] = "Phone number should contain only digits";
+        } else if (mobile.length !== 10) {
+            errors['mobile'] = "Phone number should be 10 digits";
+        } else if (!phoneRegex.test(mobile)) {
+            errors['mobile'] = "Phone number must start with 6, 7, 8, or 9";
+        }
 
         if (!/(?=.*[a-z])/.test(password))
             errors['password'] = "Password should contain minimum 1 lower case letter";
@@ -177,7 +220,7 @@ const verifyOtp = async (req, res, next) => {
                 mobile: userdata.mobile,
                 password: hashedPassword,
                 referralCode: generateReferralCode(),
-                refferedBy: userdata.refferedBy._id || null,
+                refferedBy: userdata?.refferedBy?._id || null,
             });
             await user.save();
 
@@ -448,4 +491,6 @@ module.exports = {
     userLogout,
     checkReferralCode,
     generateReferralCode,
+    aboutPage,
+    contactUsPage,
 };
