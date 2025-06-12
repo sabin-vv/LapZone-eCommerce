@@ -14,23 +14,22 @@
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       margin: 0;
-      padding: 24px;
+      padding: 0;
       color: #1f2937;
-      
       min-height: 100vh;
     }
+    .dashboard{
+      display: flex;
+      min-height: 100vh;
+    }
+    .main-content {
+      flex: 1;
+      padding: 20px;
+      margin: 2rem 30px;
+      border-radius: 15px;
+      max-width: 900px;
+      box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15), 0 2px 10px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8);
 
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(20px);
-      padding: 48px;
-      border-radius: 20px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      position: relative;
-      overflow: hidden;
     }
 
     .container::before {
@@ -43,12 +42,49 @@
       
     }
 
-    /* Header Section with proper spacing */
     .header-section {
-      text-align: center;
-      margin-bottom: 40px;
-      padding-bottom: 32px;
+      text-align: left;
+      margin-bottom: 20px;
+      
       border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    }
+    .error-message {
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 6px;
+      min-height: 18px;
+      
+      
+    }
+
+
+    .error-message span {
+      color: #ef4444;
+      font-size: 13px;
+      font-weight: 500;
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 18px;
+      
+      transform: translateY(-4px);
+      transition: all 0.3s ease;
+    }
+
+    .error-message svg {
+      color: #ef4444;
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+    .error-icon {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
     }
 
     h2 {
@@ -66,7 +102,6 @@
       font-weight: 400;
     }
 
-    /* Form with consistent gaps */
     form {
       display: flex;
       flex-direction: column;
@@ -388,19 +423,19 @@
   </style>
 </head>
 <body>
+  <%- include('../partials/admin/header.ejs') %>
+  <div class="dashboard">
    <%- include("../partials/admin/sidebar.ejs") %> 
 
-  <div class="container">
+  <div class="main-content">
     <div class="header-section">
       <h2>Edit Category</h2>
-      <p class="subtitle">Update category information and settings</p>
+      
     </div>
     
-    <form action="/admin/update-category/CATEGORY_ID" method="POST" id="editForm">
+    <form action="/admin/update-category/<%= category._id %>" method="POST" id="editForm">
       
       <div class="form-section">
-        
-
         <div class="form-group">
           <label for="category">
             <svg class="label-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -412,10 +447,18 @@
             type="text" 
             id="category" 
             name="name"
-            value="Sample Category" 
-            placeholder="Enter category name"
-            required
-          />
+            value="<%= category.name %>" 
+            placeholder="Enter category name"/>
+            
+              <% if(error && error.name) { %>
+              <div class="error-message">
+                <svg class="error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span><%= error.name || ''  %> </span>
+              </div>
+              <% } %>
+            
         </div>
 
         <div class="form-group">
@@ -429,7 +472,7 @@
             id="description" 
             name="description" 
             placeholder="Describe your category..."
-          >This is a sample category description that explains what this category is for.</textarea>
+          ><%= category.description %></textarea>
         </div>
 
         <div class="form-row">
@@ -446,7 +489,7 @@
               name="offer" 
               min="0" 
               max="100"
-              value="10" 
+              value="<%= category.offer %>" 
               placeholder="0"
             />
           </div>
@@ -455,30 +498,33 @@
         <div class="radio-group-container">
           <div class="radio-group-label">
             <svg class="label-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+              </path>
             </svg>
             Listing Status
           </div>
           <div class="radio-group">
-            <div class="radio-option selected" onclick="selectStatus(this, true)">
+            <div class="radio-option <%= category.isListed ? 'selected' : '' %>" onclick="selectStatus(this, true)">
               <input 
                 type="radio" 
                 name="isListed" 
                 value="true" 
-                checked
                 id="listed"
+                <%= category.isListed ? 'checked' : '' %>
               />
               <label for="listed">Listed</label>
               <span class="status-indicator"></span>
             </div>
-            <div class="radio-option" onclick="selectStatus(this, false)">
+            <div class="radio-option <%= !category.isListed ? 'selected' : '' %>" onclick="selectStatus(this, false)">
               <input 
                 type="radio" 
                 name="isListed" 
                 value="false" 
                 id="unlisted"
-              />
+                <%= !category.isListed ? 'checked' : '' %>/>
               <label for="unlisted">Unlisted</label>
               <span class="status-indicator unlisted"></span>
             </div>
@@ -496,87 +542,7 @@
       </div>
     </form>
   </div>
+  </div>
 
-  <script>
-    function selectStatus(element, isListed) {
-      // Remove selected class from all options
-      document.querySelectorAll('.radio-option').forEach(option => {
-        option.classList.remove('selected');
-      });
-      
-      // Add selected class to clicked option
-      element.classList.add('selected');
-      
-      // Check the corresponding radio button
-      element.querySelector('input[type="radio"]').checked = true;
-    }
-
-    // Form submission animation
-    document.getElementById('editForm').addEventListener('submit', function(e) {
-      e.preventDefault(); // Prevent actual submission for demo
-      
-      const submitBtn = document.getElementById('submitBtn');
-      const originalContent = submitBtn.innerHTML;
-      
-      submitBtn.innerHTML = `
-        <svg class="btn-icon spinning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-        </svg>
-        Updating...
-      `;
-      submitBtn.disabled = true;
-
-      // Simulate form submission
-      setTimeout(() => {
-        submitBtn.innerHTML = `
-          <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-          </svg>
-          Updated Successfully!
-        `;
-        submitBtn.classList.add('success');
-        
-        setTimeout(() => {
-          submitBtn.innerHTML = originalContent;
-          submitBtn.disabled = false;
-          submitBtn.classList.remove('success');
-        }, 2000);
-      }, 1500);
-    });
-
-    // Add input validation
-    document.querySelectorAll('input, textarea').forEach(input => {
-      input.addEventListener('blur', function() {
-        if (this.hasAttribute('required') && !this.value.trim()) {
-          this.style.borderColor = '#ef4444';
-        } else {
-          this.style.borderColor = '#e5e7eb';
-        }
-      });
-      
-      input.addEventListener('input', function() {
-        if (this.style.borderColor === 'rgb(239, 68, 68)') {
-          this.style.borderColor = '#e5e7eb';
-        }
-      });
-    });
-
-    // Form validation
-    document.getElementById('editForm').addEventListener('submit', function(e) {
-      let isValid = true;
-      
-      document.querySelectorAll('input[required], textarea[required]').forEach(field => {
-        if (!field.value.trim()) {
-          field.style.borderColor = '#ef4444';
-          isValid = false;
-        }
-      });
-      
-      if (!isValid) {
-        e.preventDefault();
-        alert('Please fill in all required fields.');
-      }
-    });
-  </script>
 </body>
 </html>

@@ -98,6 +98,7 @@ const addProduct = async (req, res, next) => {
   try {
     if (!req.session.admin) return res.redirect("/admin")
 
+
     const requiredFields = [
       "name",
       "modelNumber",
@@ -109,27 +110,28 @@ const addProduct = async (req, res, next) => {
       "os",
       "screen",
       "graphics",
-      "rating",
-      "count",
       "regularPrice",
       "salePrice",
       "warranty",
     ]
 
     errors = {}
+
+    const { name } = req.body
+    const isProductExist = await Product.findOne({
+      name:
+      {
+        $regex: new RegExp(`^${name}$`, 'i')
+      }
+    })
+    if (isProductExist)
+      errors['name'] = 'The Product already exist'
+
     requiredFields.forEach((field) => {
       if (!req.body[field] || req.body[field].toString().trim() === "") {
         errors[field] = `${field} is required`
       }
     })
-
-    if (req.body.rating && (isNaN(req.body.rating) || req.body.rating < 0 || req.body.rating > 5)) {
-      errors.rating = "Rating must be between 0 and 5"
-    }
-
-    if (req.body.count && (isNaN(req.body.count) || req.body.count < 0)) {
-      errors.count = "Stock count must be a positive number"
-    }
 
     if (req.body.regularPrice && (isNaN(req.body.regularPrice) || req.body.regularPrice < 0)) {
       errors.regularPrice = "Regular price must be a positive number"
@@ -147,14 +149,11 @@ const addProduct = async (req, res, next) => {
         errors.salePrice = "Sale price cannot be greater than regular price";
       }
     }
-
-    if (req.body.offer && (isNaN(req.body.offer) || req.body.offer < 0 || req.body.offer > 100)) {
-      errors.offer = "Offer must be between 0 and 100"
-    }
-
+    
     let variantsArray = req.body.variants || []
-    if (!Array.isArray(variantsArray)) {
-      variantsArray = Object.keys(variantsArray).map((key) => variantsArray[key])
+
+    if (req.body.variants && typeof req.body.variants === 'object') {
+      variantsArray = Array.isArray(req.body.variants) ? req.body.variants : Object.values(req.body.variants);
     }
 
     if (variantsArray.length === 0) {
@@ -170,18 +169,28 @@ const addProduct = async (req, res, next) => {
 
         if (!variant.RAM || typeof variant.RAM !== "string" || variant.RAM.trim() === "") {
           variantErrors.RAM = "RAM is required"
-        } else if (!/^\d+\s*(GB|TB)$/i.test(variant.RAM.trim())) {
+        } else if (!/^\d+\s*(GB|TB)\b.*$/i.test(variant.RAM.trim())) {
           variantErrors.RAM = 'RAM must be in format "number GB" or "number TB"'
         }
 
         if (!variant.Storage || typeof variant.Storage !== "string" || variant.Storage.trim() === "") {
           variantErrors.Storage = "Storage is required"
-        } else if (!/^\d+\s*(GB|TB)$/i.test(variant.Storage.trim())) {
+        } else if (!/^\d+\s*(GB|TB)\b.*$/i.test(variant.Storage.trim())) {
           variantErrors.Storage = 'Storage must be in format "number GB" or "number TB"'
         }
 
         if (variant.priceAdjustment && isNaN(variant.priceAdjustment)) {
           variantErrors.priceAdjustment = "Price adjustment must be a number"
+        } else if (variant.priceAdjustment < 0) {
+          variantErrors.priceAdjustment = "Price adjustment cannot be negative"
+        }
+
+        if (!variant.stock || variant.stock === "") {
+          variantErrors.stock = "Stock is required"
+        } else if (variant.stock && isNaN(variant.stock)) {
+          variantErrors.stock = "Stock must be a number"
+        } else if (variant.stock && variant.stock < 0) {
+          variantErrors.stock = "Stock cannot be negative"
         }
 
         if (Object.keys(variantErrors).length > 0) {
@@ -216,9 +225,12 @@ const addProduct = async (req, res, next) => {
       delete errors.ports
     }
 
+    const formData = { ...req.body };
+    formData.variants = variantsArray;
+
     if (Object.keys(errors).length > 0) {
       const categories = await Category.find()
-      return res.render("admin/addProduct", { categories, errors, formData: req.body })
+      return res.render("admin/addProduct", { categories, errors, formData })
     }
 
     const fileFields = ["images[0].file", "images[1].file", "images[2].file", "images[3].file", "images[4].file"]
@@ -248,7 +260,6 @@ const addProduct = async (req, res, next) => {
         hash += "-" + middleSample[i].toString(16)
       }
 
-      // Sample from end (last 100 bytes)
       const endSample = buffer.slice(Math.max(0, length - 100), length)
       for (let i = 0; i < endSample.length; i += 10) {
         hash += "-" + endSample[i].toString(16)
@@ -256,6 +267,7 @@ const addProduct = async (req, res, next) => {
 
       return hash
     }
+    
 
     for (let i = 0; i < 5; i++) {
       const fieldName = fileFields[i]
@@ -349,7 +361,7 @@ const addProduct = async (req, res, next) => {
         errors.imageUpload = uploadErrors.join("; ")
       }
       const categories = await Category.find()
-      return res.render("admin/addProduct", { categories, errors, formData: req.body })
+      return res.render("admin/addProduct", { categories, errors, formData })
     }
 
     images[0].isMain = true
@@ -375,9 +387,6 @@ const addProduct = async (req, res, next) => {
       OS: req.body.os,
       screen: req.body.screen,
       graphics: req.body.graphics,
-      offer: req.body.offer || 0,
-      rating: req.body.rating,
-      count: req.body.count,
       isActive: req.body.isActive === "on",
       regularPrice: req.body.regularPrice,
       salePrice: req.body.salePrice,
@@ -397,6 +406,7 @@ const addProduct = async (req, res, next) => {
       console.error("Error saving product:", err)
       const categories = await Category.find()
       res.render("admin/addProduct", {
+        formData,
         categories,
         errors: { database: "Failed to save product" },
       })
@@ -413,14 +423,7 @@ const editProduct = async (req, res, next) => {
 
     const productId = req.params.id
     const product = await Product.findById(productId)
-    const categories = await Product.aggregate([
-      {
-        $group: { _id: "$category" },
-      },
-      {
-        $sort: { _id: 1 },
-      },
-    ])
+    const categories = await Category.find()
 
     return res.render("admin/productDetails", { product, categories })
   } catch (error) {

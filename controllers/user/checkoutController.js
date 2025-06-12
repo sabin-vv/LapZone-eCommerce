@@ -22,7 +22,7 @@ const checkoutPage = async (req, res, next) => {
     if (!cart)
       return res.redirect("/cart")
 
-    const wallet = await Wallet.findOne({ userId })
+   let wallet = await Wallet.findOne({ userId })
     if (!wallet) {
       wallet = new Wallet({ userId, balance: 0 });
       await wallet.save();

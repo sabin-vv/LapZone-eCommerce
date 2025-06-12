@@ -166,6 +166,7 @@
           </div>
         </div>
         <div class="rating">
+          <% if(product.rating){ %>
           <% for (let i=1; i <=5; i++) { %> <% if (i
           <=Math.floor(product.rating)) { %>
           <span>★</span>
@@ -177,8 +178,8 @@
           <% } %> <% } %>
           <span class="text-muted ms-2"
             >(<%= product.rating.toLocaleString('en-IN', {
-            minimumFractionDigits: 1, maximumFractionDigits: 1 }) %>/5)</span
-          >
+            minimumFractionDigits: 1, maximumFractionDigits: 1 }) %>/5)</span>
+            <% } %>
         </div>
         <% const productOffer=product.offer || 0; const
         categoryOffer=product.categoryId?.offer || 0; const

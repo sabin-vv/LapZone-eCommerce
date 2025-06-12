@@ -7,9 +7,11 @@ module.exports = (err, req, res, next) => {
 
   if (req.originalUrl.startsWith('/admin')) {
     return res.status(status).render('admin/errorPage', {
+      wishlistCount: 0,
+      cartCount: 0,
       message,
       status,
-      error: process.env.NODE_ENV === 'development' ? err.stack : { message: 'Internal Server Error' }
+      error: process.env.NODE_ENV === 'development' ? err.stack : { message: 'Internal Server Error' },
     });
   }else if (req.xhr || req.headers.accept.includes('application/json')) {
     return res.status(status).json({ success: false, message,
@@ -17,6 +19,8 @@ module.exports = (err, req, res, next) => {
      });
   }else{
     return res.status(status).render('user/errorPage', {
+      wishlistCount: 0,
+      cartCount: 0,
       message,
       status,
       error: process.env.NODE_ENV === 'development' ? err.stack : { message: 'Internal Server Error' }

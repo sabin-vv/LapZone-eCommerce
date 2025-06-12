@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/sidebar.css">
     <link rel="stylesheet" href="/css/productDetails.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
-    <script src="/js/header.js"></script>
+    
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
@@ -17,14 +17,12 @@
     <div class="flex min-h-screen">
         <!-- Sidebar Partial -->
         <%- include("../partials/admin/sidebar.ejs") %>
-
-            <!-- Main Content -->
              
             <main class="main-content flex-1 p-6 md:ml-10">
                 <h1 class="text-2xl font-bold mb-6">Add New Product</h1>
                 <form class="bg-white p-6 rounded-lg shadow-md" enctype="multipart/form-data"
                     action="/admin/product/add" method="POST">
-                        <div class="form-grid">
+                        <div class="form-field-grid">
                             <div>
                                 <label for="name" class="block text-sm font-medium text-gray-700">Product Name</label>
                                 <input type="text" id="name" name="name" class="mt-1 block w-full custom-input" value="<%= formData?.name ||'' %>">
@@ -51,6 +49,8 @@
                                         </option>
                                         <% }) %>
                                 </select>
+                                 <p data-error="category" class="text-red-500 text-xs italic">
+                                    <%=errors? errors. category : '' %>
                             </div>
                             <div>
                                 <label for="color" class="block text-sm font-medium text-gray-700">Color</label>
@@ -59,15 +59,7 @@
                                     <%=errors? errors.color : '' %>
                                 </p>
                             </div>
-                            <div class="col-span-2">
-                                <label for="description"
-                                    class="block text-sm font-medium text-gray-700">Description</label>
-                                <textarea id="description" name="description" class="mt-1 block w-full custom-textarea"
-                                    rows="4" value="<%= formData?.description ||'' %>"></textarea>
-                                <p data-error="description" class="text-red-500 text-xs italic">
-                                    <%=errors? errors.description : '' %>
-                                </p>
-                            </div>
+                            
                             <div>
                                 <label for="brand" class="block text-sm font-medium text-gray-700">Brand</label>
                                 <input type="text" id="brand" name="brand" class="mt-1 block w-full custom-input" value="<%= formData?.brand ||'' %>">
@@ -82,6 +74,7 @@
                                     <%=errors? errors.CPU : "" %>
                                 </p>
                             </div>
+                            
                             <div>
                                 <label for="os" class="block text-sm font-medium text-gray-700">OS</label>
                                 <input type="text" id="os" name="os" class="mt-1 block w-full custom-input" value="<%= formData?.os ||'' %>">
@@ -103,25 +96,7 @@
                                     <%=errors? errors.graphics : '' %>
                                 </p>
                             </div>
-                            <div>
-                                <label for="offer" class="block text-sm font-medium text-gray-700">Offer (%)</label>
-                                <input type="number" id="offer" name="offer" class="mt-1 block w-full custom-input" value="<%= formData?.offer ||'' %>">
-                            </div>
-                            <div>
-                                <label for="rating" class="block text-sm font-medium text-gray-700">Rating</label>
-                                <input type="number" id="rating" name="rating" class="mt-1 block w-full custom-input"
-                                    step="0.1" min="0" max="5" value="<%= formData?.rating ||'' %>">
-                                <p data-error="rating" class="text-red-500 text-xs italic">
-                                    <%=errors? errors.rating : '' %>
-                                </p>
-                            </div>
-                            <div>
-                                <label for="count" class="block text-sm font-medium text-gray-700">Stock Count</label>
-                                <input type="number" id="count" name="count" class="mt-1 block w-full custom-input" value="<%= formData?.count ||'' %>">
-                                <p data-error="count" class="text-red-500 text-xs italic">
-                                    <%=errors? errors.count : '' %>
-                                </p>
-                            </div>
+                            
                             <div>
                                 <label for="regularPrice" class="block text-sm font-medium text-gray-700">Regular
                                     Price</label>
@@ -139,68 +114,86 @@
                                 <p data-error="salePrice" class="text-red-500 text-xs italic">
                                     <%=errors? errors.salePrice : '' %>
                                 </p>
-                            </div>
+                            </div> 
                             <div>
-                                <label for="warranty" class="block text-sm font-medium text-gray-700">Warranty</label>
-                                <input type="text" id="warranty" name="warranty" class="mt-1 block w-full custom-input" value="<%= formData?.warranty ||'' %>">
-                                <p data-error="warranty" class="text-red-500 text-xs italic">
-                                    <%=errors? errors.warranty : '' %>
-                                </p>
+                                    <label for="warranty" class="block text-sm font-medium text-gray-700">Warranty</label>
+                                    <input type="text" id="warranty" name="warranty" class="mt-1 block w-full custom-input" value="<%= formData?.warranty ||'' %>">
+                                    <p data-error="warranty" class="text-red-500 text-xs italic">
+                                        <%=errors? errors.warranty : '' %>
+                                    </p>
+                                </div>
                             </div>
-                            <div>
-                                <label for="webcam" class="block text-sm font-medium text-gray-700">Webcam</label>
-                                <input type="text" id="webcam" name="webcam" class="mt-1 block w-full custom-input" value="<%= formData?.webcam ||'' %>">
-                                <p data-error="webcam" class="text-red-500 text-xs italic">
-                                    <%=errors? errors.webcam : '' %>
-                                </p>
+                            <div class="">
+                                <div>
+                                    <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                                    <textarea id="description" name="description" class="mt-1 block w-full custom-textarea"
+                                        rows="4"><%= formData?.description ||'' %></textarea>
+                                    <p data-error="description" class="text-red-500 text-xs italic">
+                                        <%=errors? errors.description : '' %>
+                                    </p>
+                                </div>
+                                
                             </div>
-                        </div>
 
                         <!-- Variants Section -->
                         <fieldset class="nested-fieldset mt-6">
                             <legend>Variants</legend>
                             <div id="variants-container" class="space-y-4">
-                                <div class="variant form-grid" data-index="0">
+                                <% (formData?.variants || [{}]).forEach((variant, index) => { %>
+                                <div class="variant form-variant-grid" data-index="<%= index %>">
                                     <div>
-                                        <label for="variant-ram-0"
-                                            class="block text-sm font-medium text-gray-700">RAM</label>
-                                        <input type="text" id="variant-ram-0" name="variants[0][RAM]"
-                                            class="mt-1 block w-full custom-input" value="<%= formData?.variants[0]['RAM'] ||'' %>">
-                                        <p data-error="variants[0][RAM]" class="text-red-500 text-xs italic">
-                                            <%= errors?.variants?.[0]?.["RAM"] || '' %>
-                                        </p>
+                                    <label for="variant-ram-<%= index %>" class="block text-sm font-medium text-gray-700">RAM</label>
+                                    <input type="text" id="variant-ram-<%= index %>" name="variants[<%= index %>][RAM]" 
+                                        class="mt-1 block w-full custom-input" 
+                                        value="<%= variant.RAM || '' %>">
+                                    <p data-error="variants[<%= index %>][RAM]" class="text-red-500 text-xs italic">
+                                        <%= errors?.variants?.[index]?.RAM || '' %>
+                                    </p>
+                                    </div>
+
+                                    <div>
+                                    <label for="variant-storage-<%= index %>" class="block text-sm font-medium text-gray-700">Storage</label>
+                                    <input type="text" id="variant-storage-<%= index %>" name="variants[<%= index %>][Storage]" 
+                                        class="mt-1 block w-full custom-input" 
+                                        value="<%= variant.Storage || '' %>">
+                                    <p data-error="variants[<%= index %>][Storage]" class="text-red-500 text-xs italic">
+                                        <%= errors?.variants?.[index]?.Storage || '' %>
+                                    </p>
+                                    </div>
+
+                                    <div>
+                                    <label for="variant-priceAdjustment-<%= index %>" class="block text-sm font-medium text-gray-700">Price Adjustment</label>
+                                    <input type="number" id="variant-priceAdjustment-<%= index %>" name="variants[<%= index %>][priceAdjustment]" 
+                                        class="mt-1 block w-full custom-input" 
+                                        value="<%= variant.priceAdjustment || '' %>">
+                                        <p data-error="variants[<%= index %>][priceAdjustment]" class="text-red-500 text-xs italic">
+                                        <%= errors?.variants?.[index]?.priceAdjustment || '' %></p>
                                     </div>
                                     <div>
-                                        <label for="variant-storage-0"
-                                            class="block text-sm font-medium text-gray-700">Storage</label>
-                                        <input type="text" id="variant-storage-0" name="variants[0][Storage]"
-                                            class="mt-1 block w-full custom-input" value="<%= formData?.variants[0]['Storage'] ||'' %>">
-                                        <p data-error="variants[0][Storage]" class="text-red-500 text-xs italic">
-                                            <%= errors?.variants?.[0]?.['Storage'] || '' %>
-                                        </p>
+                                    <label for="variant-stock-<%= index %>" class="block text-sm font-medium text-gray-700">Stock</label>
+                                    <input type="number" id="variant-stock-<%= index %>" name="variants[<%= index %>][stock]" 
+                                        class="mt-1 block w-full custom-input" 
+                                        value="<%= variant.stock || '' %>">
+                                        <p data-error="variants[<%= index %>][stock]" class="text-red-500 text-xs italic">
+                                        <%= errors?.variants?.[index]?.stock || '' %></p>
                                     </div>
-                                    <div>
-                                        <label for="variant-priceAdjustment-0"
-                                            class="block text-sm font-medium text-gray-700">Price Adjustment</label>
-                                        <input type="number" id="variant-priceAdjustment-0"
-                                            name="variants[0][priceAdjustment]" class="mt-1 block w-full custom-input" value="<%= formData?.variants[0]['priceAdjustment'] ||'' %>">
-                                    </div>
+
                                     <div class="flex items-end">
-                                        <button type="button"
-                                            class="remove-variant inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 hidden"
-                                            data-index="0">Remove</button>
+                                    <button type="button" class="remove-variant inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 <%= index === 0 ? 'hidden' : '' %>" 
+                                        data-index="<%= index %>">Remove</button>
                                     </div>
                                 </div>
+                                <% }) %>
                             </div>
+
                             <button type="button" id="add-variant"
-                                class="mt-4 inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Add
-                                Variant</button>
+                                class="mt-4 inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Add Variant</button>
                         </fieldset>
 
                         <!-- Ports Section -->
                         <fieldset class="nested-fieldset mt-6">
                             <legend>Ports</legend>
-                            <div class="form-grid">
+                            <div class="form-field-grid">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">USB Type-A</label>
                                     <input type="text" name="ports[0][USB Type-A]"
@@ -266,7 +259,7 @@
                                                 d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
                                             </path>
                                         </svg>
-                                        <p class="text-sm text-gray-600 mt-2">Drag and drop image here, or click add
+                                        <p class="text-sm text-gray-600 mt-2 ">Drag and drop image here, or click add
                                             image</p>
                                         <button type="button" class="custom-button mt-4">Add Image</button>
                                         <img id="main-preview" class="image-preview hidden" alt="Main Photo Preview">
@@ -409,37 +402,47 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     
     <script>
-
         let variantIndex = 1;
         function updateRemoveButtons() {
             const variants = document.querySelectorAll('.variant');
-            const removeButtons = document.querySelectorAll('.remove-variant');
-            if (variants.length > 1) {
-                removeButtons.forEach(button => button.classList.remove('hidden'));
-            } else {
-                removeButtons.forEach(button => button.classList.add('hidden'));
-            }
+
+            variants.forEach((variant, index) => {
+                const removeButton = variant.querySelector('.remove-variant');
+                if (removeButton) {
+                    if (index === 0) {
+                        removeButton.classList.add('hidden');
+                    } else {
+                        removeButton.classList.remove('hidden');
+                    }
+                }
+            });
         }
 
         document.getElementById('add-variant').addEventListener('click', () => {
             const container = document.getElementById('variants-container');
             const newVariant = document.createElement('div');
-            newVariant.className = 'variant form-grid';
+            newVariant.className = 'variant form-variant-grid';
             newVariant.dataset.index = variantIndex;
             newVariant.innerHTML = `
                 <div>
                     <label for="variant-ram-${variantIndex}" class="block text-sm font-medium text-gray-700">RAM</label>
-                    <input type="text" id="variant-ram-${variantIndex}" name="variants[${variantIndex}].RAM" class="mt-1 block w-full custom-input">
+                    <input type="text" id="variant-ram-${variantIndex}" name="variants[${variantIndex}][RAM]" class="mt-1 block w-full custom-input">
                 </div>
                 <div>
                     <label for="variant-storage-${variantIndex}" class="block text-sm font-medium text-gray-700">Storage</label>
-                    <input type="text" id="variant-storage-${variantIndex}" name="variants[${variantIndex}].Storage" class="mt-1 block w-full custom-input">
+                    <input type="text" id="variant-storage-${variantIndex}" name="variants[${variantIndex}][Storage]" class="mt-1 block w-full custom-input">
                 </div>
                 <div>
                     <label for="variant-priceAdjustment-${variantIndex}" class="block text-sm font-medium text-gray-700">Price Adjustment</label>
-                    <input type="number" id="variant-priceAdjustment-${variantIndex}" name="variants[${variantIndex}].priceAdjustment" class="mt-1 block w-full custom-input">
+                    <input type="number" id="variant-priceAdjustment-${variantIndex}" name="variants[${variantIndex}][priceAdjustment]" class="mt-1 block w-full custom-input">
+                </div>
+                <div>
+                    <label for="variant-stock-${variantIndex}" class="block text-sm font-medium text-gray-700">Stock</label>
+                    <input type="number" id="variant-stock-${variantIndex}" name="variants[${variantIndex}][stock]" class="mt-1 block w-full custom-input">
                 </div>
                 <div class="flex items-end">
                     <button type="button" class="remove-variant inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" data-index="${variantIndex}">Remove</button>
@@ -471,9 +474,6 @@
             });
         });
 
-
-
-        // Image Drag-and-Drop and Cropping
         let cropper = null;
         let currentFileInput = null;
         let currentPreview = null;
@@ -521,6 +521,14 @@
                 if (files.length > 0 && files[0].type.startsWith('image/')) {
                     fileInput.files = files;
                     handleImage(files[0], fileInput, preview, text, addButton, deleteButton);
+                } else{
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid File Type',
+                        text: 'Please select an Image file ( jpg, jpeg, png).',
+                        confirmButtonColor: '#dc2626',
+                        confirmButtonText: 'OK'
+                    });
                 }
             });
 
@@ -534,6 +542,13 @@
                     handleImage(file, fileInput, preview, text, addButton, deleteButton);
                 } else {
                     clearImage(preview, text, addButton, fileInput, deleteButton);
+                     Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid File Type',
+                        text: 'Please select an Image file ( jpg, jpeg, png).',
+                        confirmButtonColor: '#dc2626',
+                        confirmButtonText: 'OK'
+                    });
                 }
             });
 
@@ -579,7 +594,6 @@
             fileInput.value = '';
         }
 
-        // Cropper Modal Controls
         document.getElementById('cropConfirm').addEventListener('click', () => {
             const isMainPhoto = currentPreview.closest('.main-photo');
             const croppedCanvas = cropper.getCroppedCanvas({
@@ -587,14 +601,12 @@
                 height: isMainPhoto ? 300 : 150,
             });
 
-            // Update preview
             currentPreview.src = croppedCanvas.toDataURL('image/jpeg');
             currentPreview.classList.remove('hidden');
             currentText.classList.add('hidden');
             currentAddButton.classList.add('hidden');
             currentDeleteButton.classList.remove('hidden');
 
-            // Convert cropped image to file for form submission
             croppedCanvas.toBlob((blob) => {
                 const file = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
                 const dataTransfer = new DataTransfer();
@@ -602,7 +614,6 @@
                 currentFileInput.files = dataTransfer.files;
             }, 'image/jpeg');
 
-            // Close modal
             document.getElementById('cropModal').style.display = 'none';
             cropper.destroy();
             cropper = null;
@@ -615,13 +626,11 @@
             clearImage(currentPreview, currentText, currentAddButton, currentFileInput, currentDeleteButton);
         });
 
-        // Setup for main photo
         const mainDropArea = document.getElementById('main-drop');
         if (mainDropArea) {
             setupDragAndDrop(mainDropArea, document.getElementById('main-file'), document.getElementById('main-preview'), document.getElementById('main-delete'));
         }
 
-        // Setup for additional photos
         for (let i = 1; i <= 4; i++) {
             const dropArea = document.getElementById(`additional-drop-${i}`);
             if (dropArea) {
@@ -629,45 +638,21 @@
             }
         }
 
-        // Initial setup for remove buttons
         updateRemoveButtons();
 
-  //Form validation
-  
-document.addEventListener('DOMContentLoaded', () => {
-  const form = document.querySelector('form');
-
-  // Remove this line — it's clearing all file inputs on load and may confuse users
-  // document.querySelectorAll("input[type='file']").forEach(input => input.value = '');
-
-  form.addEventListener('submit', (e) => {
-    let hasError = false;
-
-    const inputs = form.querySelectorAll('input, textarea, select');
-
-    inputs.forEach(input => {
-      const errorMsg = document.querySelector(`[data-error='${input.name}']`);
-      if (!input.disabled && input.hasAttribute('required') && input.value.trim() === '') {
-        if (errorMsg) {
-          errorMsg.textContent = `${input.name} is required`;
-          errorMsg.classList.remove('hidden');
-        }
-        hasError = true;
-      } else {
-        if (errorMsg) {
-          errorMsg.textContent = '';
-          errorMsg.classList.add('hidden');
-        }
-      }
-    });
-
-    if (hasError) {
-      e.preventDefault(); 
-    }
-  });
-});
-
-
+        document.addEventListener('DOMContentLoaded', () => {
+        // Automatically apply input-error class to fields that have error messages from backend
+            const errorFields = document.querySelectorAll('[data-error]');
+            errorFields.forEach(p => {
+                if (p.textContent.trim() !== '') {
+                const fieldName = p.getAttribute('data-error');
+                const input = document.querySelector(`[name="${CSS.escape(fieldName)}"]`);
+                if (input) {
+                    input.classList.add('input-error');
+                }
+                }
+            });
+        });
     </script>
 </body>
 

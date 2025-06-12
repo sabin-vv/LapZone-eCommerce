@@ -345,21 +345,17 @@ async function generateInvoicePDF(order) {
     return pdfBuffer;
 }
 
-const viewOrders = async (req, res, next) => {
-    try {
-        if (!req.session.user) return res.redirect("/")
+const viewOrders = async (req, res) => {
 
-        const userId = req.session.user
-        const user = await User.findById(userId)
-        const username = user.fullname
+    if (!req.session.user) return res.redirect("/")
 
-        const orders = await Order.find({ user }).populate('items.productId').sort({ updatedAt: -1 })
+    const userId = req.session.user
+    const user = await User.findById(userId)
+    const username = user.fullname
 
-        return res.render("user/orderDetails", { orders, user, username })
-    } catch (error) {
-        console.error('Error fetching orders:', error);
-        next(error);
-    }
+    const orders = await Order.find({ user }).populate('items.productId').sort({ updatedAt: -1 })
+
+    return res.render("user/orderDetails", { orders, user, username })
 }
 
 const cancelitem = async (req, res, next) => {

@@ -276,8 +276,8 @@ input[type="checkbox"]:checked {
     display: flex;
     justify-content: space-between;
     padding: 0.75rem 1rem;
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
-    background-color: #fafafa;
+    
+   
     opacity: 0.9;
     transition: opacity 0.3s ease;
 }

@@ -71,7 +71,6 @@ const newCategory = async (req, res, next) => {
         if (!name)
             error['name'] = "Name cannot be Empty"
 
-
         if (!description)
             error['description'] = "Description cannot be Empty"
 
@@ -89,7 +88,6 @@ const newCategory = async (req, res, next) => {
             error['name'] = "Category Already Exist"
             return res.render("admin/addCategory", { error, category: null })
         }
-
 
         const category = new Category({
             name: name,
@@ -155,7 +153,7 @@ const editCategory = async (req, res, next) => {
         const categories = await Category.find().sort({ name: 1 });
 
 
-        res.render("admin/editCategory", { category: category, categories })
+        res.render("admin/editCategory", { category: category, categories, error: null })
     } catch (error) {
         console.error('Error fetching categories:', error);
         next(error);
@@ -168,6 +166,17 @@ const updateCategory = async (req, res, next) => {
 
         const categoryId = req.params.id
         const categoryData = req.body
+        let error = {}
+        const categoryNameExist = await Category.findOne({
+             name: { $regex: new RegExp(`^${categoryData.name.trim()}$`, 'i') },
+            _id: { $ne: categoryId }
+        })
+        categoryData._id = categoryId
+
+        if (categoryNameExist) {
+            error['name'] = "Category Name Already Exist"
+            return res.render("admin/editCategory", { category: categoryData, error })
+        }
 
         const updateData = {
             name: categoryData.name,
@@ -176,7 +185,6 @@ const updateCategory = async (req, res, next) => {
             isListed: categoryData.isListed === 'true'
         }
         await Category.updateOne({ _id: categoryId }, { $set: updateData })
-
 
         res.redirect("/admin/category")
     } catch (error) {

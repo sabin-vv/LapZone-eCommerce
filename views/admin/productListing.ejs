@@ -14,6 +14,9 @@
     <div class="dashboard">
         <%- include("../partials/admin/sidebar.ejs") %>
         <main class="main-content">
+            <div class="page-header">
+                <h2>Products</h2>
+            </div>
             
             <div class="action-bar">
                 <button class="add-product-btn" onclick="window.location.href='/admin/product/add'">
@@ -79,7 +82,7 @@
                                 <td><img src="<%= product.images.find(image => image.isMain)?.url || '/images/placeholder.jpg' %>" alt="<%= product.name %>"></td>
                                 <td><%= product.name %></td>
                                 <td><%= product.category %></td>
-                                <td>₹<%= product.salePrice %></td>
+                                <td>₹<%= product.salePrice.toLocaleString('en-IN') %></td>
                                 <td><%= product.count %></td>
                                 <td>
                                     <label class="switch">

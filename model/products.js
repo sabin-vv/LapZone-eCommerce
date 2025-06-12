@@ -48,13 +48,9 @@ const productSchema = new mongoose.Schema({
         required: true
     },
     offer: Number,
-    rating: {
-        type: Number,
-        required: true,
-    },
     count: {
         type: Number,
-        required: true
+        
     },
     isActive: {
         type: Boolean,
@@ -73,6 +69,11 @@ const productSchema = new mongoose.Schema({
             type: Number,
             default: 0,
         },
+        stock: {
+            type: Number,
+            required: true
+        }
+        
     }],
     ports: [{
         "USB Type-A": {
@@ -128,9 +129,7 @@ const productSchema = new mongoose.Schema({
             required: true,
             default: false
         }
-    },
-
-    { default: [] }],
+    }],
     isExisting: {
         type: Boolean,
         required: true,

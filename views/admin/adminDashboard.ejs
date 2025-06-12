@@ -15,10 +15,8 @@
      <%- include("../partials/admin/header.ejs") %>
     <div class="dashboard">
        
-        <!-- Sidebar -->
         <%- include("../partials/admin/sidebar.ejs") %>
 
-            <!-- Hamburger Button for Mobile -->
             <button class="hamburger-btn" id="hamburger-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -28,9 +26,7 @@
                 </svg>
             </button>
 
-            <!-- Main Content -->
             <div class="main-content">
-                <!-- Loading Overlay -->
                 <div class="loading-overlay" id="loading-overlay">
                     <div class="loading-spinner"></div>
                     <p>Loading dashboard data...</p>
@@ -41,7 +37,6 @@
                     <div class="date-display" id="current-date"></div>
                 </div>
 
-                <!-- Stats Cards -->
                 <div class="stats-container">
                     <div class="stat-card">
                         <div class="stat-icon sales-icon">
@@ -198,7 +193,6 @@
 
     const loadingOverlay = document.getElementById('loading-overlay');
 
-    // Modern Notification System
     function showNotification(message, type = 'info', duration = 5000) {
         const existingNotifications = document.querySelectorAll(`.toast-notification.toast-${type}`);
         existingNotifications.forEach(notification => {
@@ -214,7 +208,6 @@
             document.body.appendChild(notificationContainer);
         }
 
-        // Create notification element
         const notification = document.createElement('div');
         notification.className = `toast-notification toast-${type}`;
         
