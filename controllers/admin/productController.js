@@ -2,6 +2,7 @@ const Product = require("../../model/products")
 const Category = require("../../model/category")
 const cloudinary = require("../../config/cloudinary")
 const fs = require("fs")
+const sharp = require("sharp")
 
 
 const productListing = async (req, res, next) => {
@@ -85,7 +86,7 @@ const newProduct = async (req, res, next) => {
   try {
     if (!req.session.admin) return res.redirect("/admin");
 
-    const categories = await Category.find()
+    const categories = await Category.find().sort({ name: 1 })
 
     res.render("admin/addProduct", { categories, errors: null, formData: null })
   } catch (error) {
@@ -115,7 +116,7 @@ const addProduct = async (req, res, next) => {
       "warranty",
     ]
 
-    errors = {}
+    const errors = {}
 
     const { name } = req.body
     const isProductExist = await Product.findOne({
@@ -149,7 +150,7 @@ const addProduct = async (req, res, next) => {
         errors.salePrice = "Sale price cannot be greater than regular price";
       }
     }
-    
+
     let variantsArray = req.body.variants || []
 
     if (req.body.variants && typeof req.body.variants === 'object') {
@@ -183,7 +184,8 @@ const addProduct = async (req, res, next) => {
           variantErrors.priceAdjustment = "Price adjustment must be a number"
         } else if (variant.priceAdjustment < 0) {
           variantErrors.priceAdjustment = "Price adjustment cannot be negative"
-        }
+        } else if (req.body.salePrice + variant.priceAdjustment < 0)
+          variantErrors.priceAdjustment = "Please enter a vaid price for selling";
 
         if (!variant.stock || variant.stock === "") {
           variantErrors.stock = "Stock is required"
@@ -267,7 +269,6 @@ const addProduct = async (req, res, next) => {
 
       return hash
     }
-    
 
     for (let i = 0; i < 5; i++) {
       const fieldName = fileFields[i]
@@ -425,7 +426,7 @@ const editProduct = async (req, res, next) => {
     const product = await Product.findById(productId)
     const categories = await Category.find()
 
-    return res.render("admin/productDetails", { product, categories })
+    return res.render("admin/productDetails", { product, categories, errors: null, formData: null })
   } catch (error) {
     console.error('Error fetching product:', error);
     next(error);
@@ -437,10 +438,8 @@ const updateProduct = async (req, res, next) => {
 
     if (!req.session.admin) return res.redirect("/admin");
 
-
     const productId = req.params.id;
     const images = [];
-
 
     const requiredFields = [
       "name",
@@ -452,8 +451,6 @@ const updateProduct = async (req, res, next) => {
       "CPU",
       "screen",
       "graphics",
-      "rating",
-      "count",
       "regularPrice",
       "salePrice",
       "warranty",
@@ -461,19 +458,18 @@ const updateProduct = async (req, res, next) => {
     const errors = {};
     requiredFields.forEach((field) => {
       if (!req.body[field] || req.body[field].trim() === "") {
-        errors[field] = `'${field}' is required`;
+        errors[field] = `${field} is required`;
       }
     });
 
-
-    const numericFields = ["regularPrice", "salePrice", "rating", "count", "offer"];
+    const numericFields = ["regularPrice", "salePrice",];
     numericFields.forEach((field) => {
       if (req.body[field] && isNaN(Number(req.body[field]))) {
         errors.push(`Field '${field}' must be a valid number`);
       }
     });
 
-    if (errors.length > 0) {
+    if (Object.keys(errors).length > 0) {
       const product = await Product.findById(productId);
       const categories = await Product.aggregate([{ $group: { _id: "$category" } }, { $sort: { _id: 1 } }]);
       return res.render("admin/productDetails", {
@@ -483,7 +479,6 @@ const updateProduct = async (req, res, next) => {
         formData: req.body,
       });
     }
-
 
     const existingProduct = await Product.findById(productId).select("images");
     const fileFields = ["images[0].file", "images[1].file", "images[2].file", "images[3].file", "images[4].file"];
@@ -495,7 +490,6 @@ const updateProduct = async (req, res, next) => {
         isMain: img.isMain,
       })));
     }
-
 
     if (req.files && Object.keys(req.files).length > 0) {
       for (let i = 0; i < fileFields.length; i++) {
@@ -524,7 +518,7 @@ const updateProduct = async (req, res, next) => {
       images[0].isMain = true;
     }
 
-
+    console.log(req.body.variants)
     const variants = [];
     if (req.body.variants && typeof req.body.variants === "object") {
       Object.values(req.body.variants).forEach((variant) => {
@@ -533,6 +527,7 @@ const updateProduct = async (req, res, next) => {
             RAM: variant.RAM,
             Storage: variant.Storage,
             priceAdjustment: Number.parseFloat(variant.priceAdjustment) || 0,
+            stock: Number.parseInt(variant.stock) || 0,
           });
         }
       });
@@ -567,13 +562,9 @@ const updateProduct = async (req, res, next) => {
       OS: req.body.os || "",
       screen: req.body.screen,
       graphics: req.body.graphics,
-      offer: Number.parseFloat(req.body.offer) || 0,
-      rating: Number.parseFloat(req.body.rating) || 0,
-      count: Number.parseInt(req.body.count) || 0,
       regularPrice: Number.parseFloat(req.body.regularPrice) || 0,
       salePrice: Number.parseFloat(req.body.salePrice) || 0,
       warranty: req.body.warranty,
-      webcam: req.body.webcam || "",
       isActive: req.body.isActive === "on",
       isExisting: true,
       images,
@@ -589,7 +580,7 @@ const updateProduct = async (req, res, next) => {
     if (!updatedProduct) {
       errors.push("Product not found");
       const product = await Product.findById(productId);
-      const categories = await Product.aggregate([{ $group: { _id: "$category" } }, { $sort: { _id: 1 } }]);
+      const categories = await Category.find().sort({ name: 1 });
       return res.render("admin/productDetails", {
         product,
         categories,

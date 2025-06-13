@@ -40,7 +40,7 @@ const addtoCart = async (req, res, next) => {
 
         if (product.count === 0)
             return res.json({ success: false, message: "Out of stock" });
-        console
+       
         let selectedVariant;
         if (ram && storage) {
             selectedVariant = product.variants.find(v => v.RAM === ram && v.Storage === storage);
@@ -59,7 +59,7 @@ const addtoCart = async (req, res, next) => {
                     productId,
                     ram: selectedVariant.RAM,
                     storage: selectedVariant.Storage,
-                    price: selectedVariant.priceAdjustment || product.salePrice,
+                    price,
                     quantity: 1
                 }],
             });
@@ -74,7 +74,7 @@ const addtoCart = async (req, res, next) => {
                 productId,
                 ram: selectedVariant.RAM,
                 storage: selectedVariant.Storage,
-                price: selectedVariant.priceAdjustment || product.salePrice,
+                price,
                 quantity: 1
             });
             await cart.save();
@@ -115,9 +115,12 @@ const cartUpdate = async (req, res, next) => {
             return res.json({ success: false, message: "Product not found in cart" });
         }
 
-        const product = cartList.items[productIndex].productId;
-        if (quantity > product.count) {
-            return res.json({ success: false, message: `Only ${product.count} units available` });
+        const cartItem = cartList.items[productIndex];
+        const product = cartItem.productId;
+        const variant = product.variants.find(v => v.RAM === cartItem.ram && v.Storage === cartItem.storage );
+        
+        if (quantity > variant.stock && quantity > cartItem.quantity) {
+            return res.json({ success: false, message: `Only ${variant.stock} units available` });
         }
 
         cartList.items[productIndex].quantity = quantity;

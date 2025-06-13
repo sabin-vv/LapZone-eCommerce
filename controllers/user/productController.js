@@ -154,7 +154,6 @@ const viewProduct = async (req, res, next) => {
 
     const productSuggesions = await Product.find({ category: suggesionCategory, _id: { $ne: productId } })
 
-
     const wishlist = await Wishlist.findOne({ userId: user });
 
     let isWishlisted = false;

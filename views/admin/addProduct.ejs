@@ -406,27 +406,31 @@
 
     
     <script>
-        let variantIndex = 1;
-        function updateRemoveButtons() {
-            const variants = document.querySelectorAll('.variant');
+    let variantIndex = 1;
+    let cropper = null;
+    let currentFileInput = null;
+    let currentPreview = null;
+    let currentText = null;
+    let currentAddButton = null;
+    let currentDeleteButton = null;
 
-            variants.forEach((variant, index) => {
-                const removeButton = variant.querySelector('.remove-variant');
-                if (removeButton) {
-                    if (index === 0) {
-                        removeButton.classList.add('hidden');
-                    } else {
-                        removeButton.classList.remove('hidden');
-                    }
-                }
-            });
-        }
+    function updateRemoveButtons() {
+        const variants = document.querySelectorAll('.variant');
+        variants.forEach((variant, index) => {
+            const removeButton = variant.querySelector('.remove-variant');
+            if (removeButton) {
+                removeButton.classList.toggle('hidden', index === 0);
+            }
+        });
+    }
 
+    function setupVariantAddRemove() {
         document.getElementById('add-variant').addEventListener('click', () => {
             const container = document.getElementById('variants-container');
             const newVariant = document.createElement('div');
             newVariant.className = 'variant form-variant-grid';
             newVariant.dataset.index = variantIndex;
+
             newVariant.innerHTML = `
                 <div>
                     <label for="variant-ram-${variantIndex}" class="block text-sm font-medium text-gray-700">RAM</label>
@@ -445,9 +449,10 @@
                     <input type="number" id="variant-stock-${variantIndex}" name="variants[${variantIndex}][stock]" class="mt-1 block w-full custom-input">
                 </div>
                 <div class="flex items-end">
-                    <button type="button" class="remove-variant inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" data-index="${variantIndex}">Remove</button>
+                    <button type="button" class="remove-variant inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-red-600 hover:bg-red-700" data-index="${variantIndex}">Remove</button>
                 </div>
             `;
+
             container.appendChild(newVariant);
             variantIndex++;
             updateRemoveButtons();
@@ -464,101 +469,33 @@
                     inputs[1].name = `variants[${idx}].Storage`;
                     inputs[2].id = `variant-priceAdjustment-${idx}`;
                     inputs[2].name = `variants[${idx}].priceAdjustment`;
+                    inputs[3].id = `variant-stock-${idx}`;
+                    inputs[3].name = `variants[${idx}].stock`;
                     const removeButton = variant.querySelector('.remove-variant');
-                    if (removeButton) {
-                        removeButton.dataset.index = idx;
-                    }
+                    if (removeButton) removeButton.dataset.index = idx;
                 });
                 variantIndex = remainingVariants.length;
                 updateRemoveButtons();
             });
         });
+    }
 
-        let cropper = null;
-        let currentFileInput = null;
-        let currentPreview = null;
-        let currentText = null;
-        let currentAddButton = null;
-        let currentDeleteButton = null;
+    function setupDragAndDrop(dropArea, fileInput, preview, deleteButton) {
+        const text = dropArea.querySelector('p');
+        const buttons = dropArea.querySelectorAll('button');
+        const addButton = Array.from(buttons).find(btn => !btn.classList.contains('delete-image'));
 
-        document.addEventListener('DOMContentLoaded',()=>{
-            const fileInputs = document.querySelectorAll("input[type = 'file']")
-            fileInputs.forEach(input => {
-                input.value = ''
-            })
-            const cropModal = document.getElementById('cropModal');
-            cropModal.style.display = 'none';
-        })
+        const handleFile = (file) => {
+            if (!file.type.startsWith('image/')) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid File Type',
+                    text: 'Please select an image file (jpg, jpeg, png).',
+                    confirmButtonColor: '#dc2626'
+                });
+                return;
+            }
 
-        function setupDragAndDrop(dropArea, fileInput, preview, deleteButton) {
-            const text = dropArea.querySelector('p');
-            const buttons = dropArea.querySelectorAll('button');
-            const addButton = Array.from(buttons).find(btn => !btn.classList.contains('delete-image'));
-
-            addButton.addEventListener('click', (e) => {
-                e.stopPropagation();
-                fileInput.click();
-            });
-
-            dropArea.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                dropArea.classList.add('drag-active');
-            });
-
-            dropArea.addEventListener('dragenter', (e) => {
-                e.preventDefault();
-                dropArea.classList.add('drag-active');
-            });
-
-            dropArea.addEventListener('dragleave', () => {
-                dropArea.classList.remove('drag-active');
-            });
-
-            dropArea.addEventListener('drop', (e) => {
-                e.preventDefault();
-                dropArea.classList.remove('drag-active');
-                const files = e.dataTransfer.files;
-                if (files.length > 0 && files[0].type.startsWith('image/')) {
-                    fileInput.files = files;
-                    handleImage(files[0], fileInput, preview, text, addButton, deleteButton);
-                } else{
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Invalid File Type',
-                        text: 'Please select an Image file ( jpg, jpeg, png).',
-                        confirmButtonColor: '#dc2626',
-                        confirmButtonText: 'OK'
-                    });
-                }
-            });
-
-            dropArea.addEventListener('click', () => {
-                fileInput.click();
-            });
-
-            fileInput.addEventListener('change', () => {
-                const file = fileInput.files[0];
-                if (file && file.type.startsWith('image/')) {
-                    handleImage(file, fileInput, preview, text, addButton, deleteButton);
-                } else {
-                    clearImage(preview, text, addButton, fileInput, deleteButton);
-                     Swal.fire({
-                        icon: 'error',
-                        title: 'Invalid File Type',
-                        text: 'Please select an Image file ( jpg, jpeg, png).',
-                        confirmButtonColor: '#dc2626',
-                        confirmButtonText: 'OK'
-                    });
-                }
-            });
-
-            deleteButton.addEventListener('click', (e) => {
-                e.stopPropagation();
-                clearImage(preview, text, addButton, fileInput, deleteButton);
-            });
-        }
-
-        function handleImage(file, fileInput, preview, text, addButton, deleteButton) {
             currentFileInput = fileInput;
             currentPreview = preview;
             currentText = text;
@@ -571,89 +508,143 @@
                 cropImage.src = e.target.result;
                 document.getElementById('cropModal').style.display = 'flex';
 
-                // Initialize Cropper.js
-                if (cropper) {
-                    cropper.destroy();
-                }
+                if (cropper) cropper.destroy();
                 const isMainPhoto = preview.closest('.main-photo');
                 cropper = new Cropper(cropImage, {
-                    aspectRatio: isMainPhoto ? 400 / 300 : 150 / 150,
-                    viewMode: 1,
-                    autoCropArea: 1,
+                    aspectRatio: 800 / 600 ,
+                    viewMode: 0,
+                    autoCropArea: 0.8,
+                    responsive:true,
+                    zoomWheel : true,
+                    scalable : true,
+                    Zoomable:true,
                 });
             };
             reader.readAsDataURL(file);
-        }
+        };
 
-        function clearImage(preview, text, addButton, fileInput, deleteButton) {
-            preview.src = '';
-            preview.classList.add('hidden');
-            text.classList.remove('hidden');
-            addButton.classList.remove('hidden');
-            deleteButton.classList.add('hidden');
-            fileInput.value = '';
-        }
-
-        document.getElementById('cropConfirm').addEventListener('click', () => {
-            const isMainPhoto = currentPreview.closest('.main-photo');
-            const croppedCanvas = cropper.getCroppedCanvas({
-                width: isMainPhoto ? 400 : 150,
-                height: isMainPhoto ? 300 : 150,
-            });
-
-            currentPreview.src = croppedCanvas.toDataURL('image/jpeg');
-            currentPreview.classList.remove('hidden');
-            currentText.classList.add('hidden');
-            currentAddButton.classList.add('hidden');
-            currentDeleteButton.classList.remove('hidden');
-
-            croppedCanvas.toBlob((blob) => {
-                const file = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(file);
-                currentFileInput.files = dataTransfer.files;
-            }, 'image/jpeg');
-
-            document.getElementById('cropModal').style.display = 'none';
-            cropper.destroy();
-            cropper = null;
+        addButton?.addEventListener('click', e => {
+            e.stopPropagation();
+            fileInput.click();
         });
 
-        document.getElementById('cropCancel').addEventListener('click', () => {
-            document.getElementById('cropModal').style.display = 'none';
-            cropper.destroy();
-            cropper = null;
-            clearImage(currentPreview, currentText, currentAddButton, currentFileInput, currentDeleteButton);
+        dropArea.addEventListener('click', () => fileInput.click());
+
+        dropArea.addEventListener('dragover', e => {
+            e.preventDefault();
+            dropArea.classList.add('drag-active');
         });
+
+        dropArea.addEventListener('dragleave', () => {
+            dropArea.classList.remove('drag-active');
+        });
+
+        dropArea.addEventListener('drop', e => {
+            e.preventDefault();
+            dropArea.classList.remove('drag-active');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                handleFile(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files[0]) handleFile(fileInput.files[0]);
+        });
+
+        deleteButton.addEventListener('click', e => {
+            e.stopPropagation();
+            clearImage(preview, text, addButton, fileInput, deleteButton);
+        });
+    }
+
+    function clearImage(preview, text, addButton, fileInput, deleteButton) {
+        preview.src = '';
+        preview.classList.add('hidden');
+        text.classList.remove('hidden');
+        addButton.classList.remove('hidden');
+        deleteButton.classList.add('hidden');
+        fileInput.value = '';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll("input[type='file']").forEach(input => input.value = '');
+
+        const cropModal = document.getElementById('cropModal');
+        cropModal.style.display = 'none';
+
+        setupVariantAddRemove();
 
         const mainDropArea = document.getElementById('main-drop');
         if (mainDropArea) {
-            setupDragAndDrop(mainDropArea, document.getElementById('main-file'), document.getElementById('main-preview'), document.getElementById('main-delete'));
+            setupDragAndDrop(
+                mainDropArea,
+                document.getElementById('main-file'),
+                document.getElementById('main-preview'),
+                document.getElementById('main-delete')
+            );
         }
 
         for (let i = 1; i <= 4; i++) {
             const dropArea = document.getElementById(`additional-drop-${i}`);
             if (dropArea) {
-                setupDragAndDrop(dropArea, document.getElementById(`additional-file-${i}`), document.getElementById(`additional-preview-${i}`), document.getElementById(`additional-delete-${i}`));
+                setupDragAndDrop(
+                    dropArea,
+                    document.getElementById(`additional-file-${i}`),
+                    document.getElementById(`additional-preview-${i}`),
+                    document.getElementById(`additional-delete-${i}`)
+                );
             }
         }
 
-        updateRemoveButtons();
-
-        document.addEventListener('DOMContentLoaded', () => {
-        // Automatically apply input-error class to fields that have error messages from backend
-            const errorFields = document.querySelectorAll('[data-error]');
-            errorFields.forEach(p => {
-                if (p.textContent.trim() !== '') {
+        document.querySelectorAll('[data-error]').forEach(p => {
+            if (p.textContent.trim() !== '') {
                 const fieldName = p.getAttribute('data-error');
                 const input = document.querySelector(`[name="${CSS.escape(fieldName)}"]`);
-                if (input) {
-                    input.classList.add('input-error');
-                }
-                }
-            });
+                if (input) input.classList.add('input-error');
+            }
         });
-    </script>
+
+        updateRemoveButtons();
+    });
+
+    // Crop Confirm
+    document.getElementById('cropConfirm').addEventListener('click', () => {
+        if (!cropper) return;
+
+        const isMainPhoto = currentPreview.closest('.main-photo');
+        const croppedCanvas = cropper.getCroppedCanvas({
+            width: isMainPhoto ? 400 : 150,
+            height: isMainPhoto ? 300 : 150,
+        });
+
+        currentPreview.src = croppedCanvas.toDataURL('image/jpeg');
+        currentPreview.classList.remove('hidden');
+        currentText.classList.add('hidden');
+        currentAddButton.classList.add('hidden');
+        currentDeleteButton.classList.remove('hidden');
+
+        croppedCanvas.toBlob((blob) => {
+            const file = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            currentFileInput.files = dataTransfer.files;
+        }, 'image/jpeg');
+
+        document.getElementById('cropModal').style.display = 'none';
+        cropper.destroy();
+        cropper = null;
+    });
+
+    document.getElementById('cropCancel').addEventListener('click', () => {
+        document.getElementById('cropModal').style.display = 'none';
+        if (cropper) cropper.destroy();
+        cropper = null;
+        clearImage(currentPreview, currentText, currentAddButton, currentFileInput, currentDeleteButton);
+    });
+</script>
+      
 </body>
 
 </html>

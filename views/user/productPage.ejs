@@ -181,25 +181,29 @@
             minimumFractionDigits: 1, maximumFractionDigits: 1 }) %>/5)</span>
             <% } %>
         </div>
-        <% const productOffer=product.offer || 0; const
-        categoryOffer=product.categoryId?.offer || 0; const
-        finalOffer=Math.max(productOffer, categoryOffer); %> <% if
-        (product.regularPrice && product.salePrice < product.regularPrice) { %>
+
+        <% const productOffer = product.offer || 0; 
+        const categoryOffer = product.categoryId?.offer || 0; 
+        const finalOffer = Math.max(productOffer, categoryOffer); %> 
+        
         <div class="price">
-          <% if (finalOffer> 0) { %>
-          <i class="bi bi-arrow-down-circle fs-5"></i>
-          <span> <%= finalOffer %>% OFF </span>
-          <% } %> ₹<span id="dynamicPrice"><%= product.salePrice.toLocaleString('en-IN') %></span>
-          <del>₹<%= product.regularPrice.toLocaleString('en-IN') %></del>
+          <% if (finalOffer > 0) { %>
+            <i class="bi bi-arrow-down-circle fs-5"></i>
+            <span><%= finalOffer %>% OFF</span>
+          <% } %>
+
+          ₹<span id="dynamicPrice"><%= product.salePrice.toLocaleString('en-IN') %></span>
+
+          <% if (product.regularPrice && product.salePrice < product.regularPrice) { %>
+            <del>₹<%= product.regularPrice.toLocaleString('en-IN') %></del>
+          <% } %>
         </div>
-        <% } else { %>
-        <div class="price">
-          ₹<%= product.salePrice.toLocaleString('en-IN') %>
-        </div>
-        <% } %>
-        <div class="description">
-          <%= product.description || 'No description available.' %>
-        </div>
+
+
+
+          <div class="description">
+            <%= product.description || 'No description available.' %>
+          </div>
         <div class="offers">
           <ul>
             <% if (finalOffer && finalOffer> 0) { %>
@@ -239,10 +243,6 @@
             <% }) %>
           </div>
         </div>
-
-        <div id="dynamicPrice"></div>
-        <input type="hidden" id="salePriceValue" name="salePrice" />
-
 
         <div class="action-buttons">
           <button
@@ -311,7 +311,7 @@
         </dl>
       </div>
     </div>
-
+    
     <section class="suggestions">
       <h1>Suggestions</h1>
       <div class="suggestions-grid">
@@ -391,10 +391,10 @@
       }
 
     function updatePrice() {
-      
-  console.log("updatePrice called"); // Add this
       const priceEl = document.getElementById("dynamicPrice");
       const hiddenInput = document.getElementById("salePriceValue");
+
+      if (!priceEl || !hiddenInput) return; 
 
       if (selectedRAM && selectedStorage) {
         const variant = variants.find(v => v.RAM === selectedRAM && v.Storage === selectedStorage);
@@ -405,10 +405,10 @@
           return;
         }
       }
-         priceEl.textContent = basePrice.toLocaleString("en-IN");
-        hiddenInput.value = basePrice;
-    }
 
+      priceEl.textContent = basePrice.toLocaleString("en-IN");
+      hiddenInput.value = basePrice;
+    }
 
       let options = {
         width: 570,
@@ -592,20 +592,20 @@
       }
 
       document.addEventListener("DOMContentLoaded", () => {
-  generateBreadcrumb(); // existing
+        generateBreadcrumb(); 
 
-  document.querySelectorAll('#ram-options .variant-btn').forEach(btn => {
-    btn.addEventListener('click', () => selectRAM(btn.dataset.ram));
-  });
+        document.querySelectorAll('#ram-options .variant-btn').forEach(btn => {
+          btn.addEventListener('click', () => selectRAM(btn.dataset.ram));
+        });
 
-  document.querySelectorAll('#storage-options .variant-btn').forEach(btn => {
-    btn.addEventListener('click', () => selectStorage(btn.dataset.storage));
-  });
+        document.querySelectorAll('#storage-options .variant-btn').forEach(btn => {
+          btn.addEventListener('click', () => selectStorage(btn.dataset.storage));
+        });
 
-   const first = variants[0];
-  if (first) {
-    selectRAM(first.RAM);
-}
+        const first = variants[0];
+        if (first) {
+          selectRAM(first.RAM);
+      }
       })
     </script>
   </body>
