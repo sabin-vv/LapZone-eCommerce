@@ -644,18 +644,13 @@
                 });
             });
             
-            // Highlight active sidebar item
             const currentPath = window.location.pathname;
             const menuItems = document.querySelectorAll('.sidebar ul li a');
             
-            
-            
-            // Mobile sidebar toggle
             const toggleBtn = document.querySelector('.toggle-sidebar');
             const sidebar = document.querySelector('.sidebar');
             const overlay = document.querySelector('.sidebar-overlay');
             
-           
             
             if (overlay) {
                 overlay.addEventListener('click', function() {

@@ -75,7 +75,8 @@ router.post("/cart/remove-item/:id", validateUserStatus, cartController.removeca
 router.get("/cart/clear-cart", validateUserStatus, cartController.emptyCart)
 
 
-router.get("/user/checkout", validateUserStatus, checkoutController.checkoutPage)
+router.post("/user/checkout", validateUserStatus, checkoutController.proceedToCheckoutPage)
+router.get("/user/checkout",checkoutController.viewCheckoutPage)
 router.post("/user/order", validateUserStatus, checkoutController.orderplace)
 router.get("/user/order-page/:id", validateUserStatus, checkoutController.orderPage)
 router.get("/user/order-failed", validateUserStatus, checkoutController.orderFailurePafe)

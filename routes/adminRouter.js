@@ -79,7 +79,7 @@ router.post("/product/remove-offer/:id", offerController.removeProductOffer)
 router.post("/category/add-offer/:id", offerController.addCategoryOffer)
 router.post("/category/remove-offer/:id", offerController.removeCategoryOffer)
 
-router.get("/coupon",couponController.viewCouponPage)
+router.get("/coupons",couponController.viewCouponPage)
 router.get("/coupons/add",couponController.newCoupon)
 router.post ("/coupons/add" ,couponController.addCoupon)
 router.post("/coupons/toggle-status", couponController.couponStatusChange)

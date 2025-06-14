@@ -6,6 +6,7 @@ const applyCoupon = async (req, res, next) => {
     try {
         if (!req.session.user) return res.redirect("/")
 
+        console.log(req.session.appliedCoupon)
         const { code } = req.body
         if (req.session.appliedCoupon && req.session.appliedCoupon.code === code.toUpperCase()) {
             return res.json({
@@ -65,6 +66,23 @@ const applyCoupon = async (req, res, next) => {
                 couponId: coupon._id
             };
 
+            return res.json({
+                success: true,
+                totalAmount,
+                discount,
+                couponCode: coupon.code,
+                couponId: coupon._id, message: `Coupon applied! You saved ₹${discount.toLocaleString('en-IN')}`
+            })
+        } else {
+            discount = coupon.discountValue
+            totalAmount -= discount
+            if(totalAmount < 0) 
+                return res.json({ success: false, message: "This coupon can't applied to this Order" });
+            await Coupon.updateOne({ _id: coupon._id }, { $inc: { usedCount: 1 } });
+            req.session.appliedCoupon = {
+                code: coupon.code,
+                couponId: coupon._id
+            };
             return res.json({
                 success: true,
                 totalAmount,

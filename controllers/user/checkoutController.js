@@ -7,49 +7,75 @@ const Wallet = require("../../model/wallet")
 const Coupon = require("../../model/coupon")
 const User = require("../../model/user")
 
-const checkoutPage = async (req, res, next) => {
+const proceedToCheckoutPage = async (req, res, next) => {
   try {
     if (!req.session.user) return res.redirect("/")
 
     const userId = req.session.user
-
-    const addresses = await Address.find({ userId })
-
-    const coupons = await Coupon.find()
 
     const cart = await Cart.findOne({ userId }).populate('items.productId')
 
     if (!cart)
       return res.redirect("/cart")
 
-   let wallet = await Wallet.findOne({ userId })
+    for (const item of cart.items) {
+      const product = item.productId;
+      const variant = product.variants.find(v => v.RAM === item.ram && v.Storage === item.storage);
+
+      if (!variant) return res.json({ success: false, message: "Invalid variant for product" });
+
+      if (variant.stock < item.quantity && variant.stock !== 0) {
+        return res.json({ success: false, message: `Only ${variant.stock} units available for product ${product.name}` });
+      }else if(variant.stock === 0) {
+        return res.json({ success: false, message: `${product.name} is Out of Stock` });
+      }
+    }
+
+    return res.json({ success: true });  
+
+  } catch (error) {
+    console.error('Error fetching checkout page:', error);
+    next(error);
+  }
+}
+
+const viewCheckoutPage = async (req, res, next) => {
+  try {
+    if (!req.session.user) return res.redirect("/")
+    const userId = req.session.user;
+    const addresses = await Address.find({ userId })
+    const coupons = await Coupon.find()
+    const cart = await Cart.findOne({ userId }).populate('items.productId');
+
+    let wallet = await Wallet.findOne({ userId })
     if (!wallet) {
       wallet = new Wallet({ userId, balance: 0 });
       await wallet.save();
     }
 
     const subtotal = cart.items.reduce((acc, item) => {
-      return acc + item.productId.salePrice * item.quantity;
-    }, 0);
+        return acc + item.productId.salePrice * item.quantity;
+      }, 0);
 
-    const shippingFee = 50;
-    const tax = Math.round(subtotal * 0.05);
-    const totalAmount = subtotal + shippingFee + tax;
+      const shippingFee = 50;
+      const tax = Math.round(subtotal * 0.05);
+      const totalAmount = subtotal + shippingFee + tax;
 
-    const orderSummary = {
-      subtotal,
-      shippingFee,
-      tax,
-      totalAmount
-    };
-
-    res.render("user/checkoutPage", { addresses, cart: cart.items, orders: [orderSummary], wallet, coupons, errors: null })
+      if( req.session.appliedCoupon){
+        delete req.session.appliedCoupon;
+      }
+      const orderSummary = {
+        subtotal,
+        shippingFee,
+        tax,
+        totalAmount
+      };
+      res.render("user/checkoutPage", { addresses, cart: cart.items, orders: [orderSummary], wallet, coupons, errors: null })
 
   } catch (error) {
     console.error('Error fetching checkout page:', error);
     next(error);
   }
-
 }
 
 const orderplace = async (req, res, next) => {
@@ -448,7 +474,8 @@ const orderSuccessPage = async (req, res) => {
 }
 
 module.exports = {
-  checkoutPage,
+  proceedToCheckoutPage,
+  viewCheckoutPage,
   orderplace,
   orderPage,
   orderFailurePafe,

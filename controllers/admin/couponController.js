@@ -21,7 +21,7 @@ const newCoupon = (req, res, next) => {
     try {
         if (!req.session.admin) return res.redirect("/admin")
 
-        res.render('admin/addCoupon', { errorfield: null })
+        res.render('admin/addCoupon', { errorfield: null ,formData:null })
     } catch (error) {
         console.error('Error fetching coupons:', error);
         next(error);
@@ -35,14 +35,30 @@ const addCoupon = async (req, res, next) => {
 
         const { code, discountType, discountValue, maxDiscountAmount, minPurchaseAmount, startDate, expiryDate } = req.body
         const isActive = req.body.isActive === 'on' ? true : false;
+        const formData = req.body
 
         const errorfield = {}
         if (!code || code.trim() === '') {
             errorfield['code'] = `Coupon cannot be Empty`;
         }
-        if (!discountValue)
+        if (!discountValue) {
             errorfield['discountValue'] = 'Discount Value cannot be Empty'
-
+        } else if (isNaN(discountValue)) {
+            errorfield['discountValue'] = 'Discount Value must be a number'
+        } else if (discountType === 'percentage') {
+            const numericValue = Number(discountValue);
+            if (numericValue < 0 || numericValue > 100) {
+                errorfield['discountValue'] = 'Discount Value should be between 0 and 100';
+            }
+        }else if(discountType === 'fixed') {
+            if (isNaN(discountValue)) {
+                errorfield['discountValue'] = 'Discount Value must be a number'
+            }else if(discountValue < 0) {  
+                errorfield['discountValue'] = 'Discount Value should be positive'
+            }else if(minPurchaseAmount < discountValue) {
+                errorfield['minPurchaseAmount'] = 'Minimum Purchase Amount should be greater than or equal to Discount Value'
+            }
+        }
         const dateNow = new Date();
         dateNow.setSeconds(0, 0)
 
@@ -54,7 +70,7 @@ const addCoupon = async (req, res, next) => {
             errorfield['expiryDate'] = 'Expiry Date should greater than start Date'
 
         if (errorfield && Object.keys(errorfield).length > 0)
-            return res.render("admin/addCoupon", { errorfield })
+            return res.render("admin/addCoupon", { errorfield ,formData})
 
         const coupon = await Coupon.findOne({ code })
 
@@ -72,12 +88,11 @@ const addCoupon = async (req, res, next) => {
             startDate,
             expiryDate,
             isActive,
-
         })
 
         await couponData.save()
 
-        return res.redirect("/admin/coupon/")
+        return res.redirect("/admin/coupons/")
     } catch (error) {
         console.error('Error fetching coupons:', error);
         next(error);
@@ -139,8 +154,24 @@ const updateCoupon = async (req, res, next) => {
         if (!code || code.trim() === '') {
             errorfield['code'] = `Coupon cannot be Empty`;
         }
-        if (!discountValue)
+        if (!discountValue){
             errorfield['discountValue'] = 'Discount Value cannot be Empty'
+        } else if (isNaN(discountValue)) {
+            errorfield['discountValue'] = 'Discount Value must be a number'
+        } else if (discountType === 'percentage') {
+            const numericValue = Number(discountValue);
+            if (numericValue < 0 || numericValue > 100) {
+                errorfield['discountValue'] = 'Discount Value should be between 0 and 100';
+            }
+        }else if(discountType === 'fixed') {
+            if (isNaN(discountValue)) {
+                errorfield['discountValue'] = 'Discount Value must be a number'
+            }else if(discountValue < 0) {  
+                errorfield['discountValue'] = 'Discount Value should be positive'
+            }else if(minPurchaseAmount < discountValue) {
+                errorfield['minPurchaseAmount'] = 'Minimum Purchase Amount should be greater than or equal to Discount Value'
+            }
+        }
 
         const dateNow = new Date();
         dateNow.setSeconds(0, 0)
@@ -153,7 +184,7 @@ const updateCoupon = async (req, res, next) => {
             errorfield['expiryDate'] = 'Expiry Date should greater than start Date'
 
         if (errorfield && Object.keys(errorfield).length > 0)
-            return res.render("admin/addCoupon", { errorfield })
+            return res.render("admin/addCoupon", { errorfield ,formData:req.body})
 
         const existingCoupon = await Coupon.findOne({
             code: code.trim().toUpperCase(),
@@ -176,12 +207,11 @@ const updateCoupon = async (req, res, next) => {
             isActive
         }
         await Coupon.findByIdAndUpdate(couponId, { $set: { ...couponData } }, { new: true })
-        return res.redirect("/admin/coupon")
+        return res.redirect("/admin/coupons")
     } catch (error) {
         console.error('Error fetching coupons:', error);
         next(error);
     }
-
 }
 
 const deleteCoupon = async (req, res, next) => {
@@ -213,5 +243,4 @@ module.exports = {
     editCoupon,
     updateCoupon,
     deleteCoupon,
-
 }

@@ -1,574 +1,402 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Checkout | LapZone</title>
-    <link rel="stylesheet" href="/css/header.css" />
-    <link rel="stylesheet" href="/css/profileSidebar.css" />
-    <link rel="stylesheet" href="/css/checkoutpage.css" />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
-      crossorigin="anonymous"
-    />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-    />
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/izitoast@1.4.0/dist/css/iziToast.min.css"
-    />
-    <script src="https://cdn.jsdelivr.net/npm/izitoast@1.4.0/dist/js/iziToast.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-  </head>
 
-  <body>
-    <%- include("../partials/user/header.ejs") %>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout | LapZone</title>
+  <link rel="stylesheet" href="/css/header.css" />
+  <link rel="stylesheet" href="/css/profileSidebar.css" />
+  <link rel="stylesheet" href="/css/checkoutpage.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast@1.4.0/dist/css/iziToast.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/izitoast@1.4.0/dist/js/iziToast.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body>
+  <%- include("../partials/user/header.ejs") %>
 
     <div class="main-content">
       <%- include("../partials/user/profileSidebar.ejs") %>
 
-      <div class="container checkout-container">
-        <div class="checkout-card" data-current-step="2">
-          <div class="checkout-steps">
-            <div class="steps-line"></div>
-            <div class="steps-progress"></div>
-            <div class="checkout-step">
-              <div class="step-number active">1</div>
-              <div class="step-name active">Cart</div>
-            </div>
-            <div class="checkout-step">
-              <div class="step-number active">2</div>
-              <div class="step-name active">Checkout</div>
-            </div>
-            <div class="checkout-step">
-              <div class="step-number">3</div>
-              <div class="step-name">Payment</div>
-            </div>
-            <div class="checkout-step">
-              <div class="step-number">4</div>
-              <div class="step-name">Confirmation</div>
+        <div class="container checkout-container">
+          <div class="checkout-card" data-current-step="2">
+            <div class="checkout-steps">
+              <div class="steps-line"></div>
+              <div class="steps-progress"></div>
+              <div class="checkout-step">
+                <div class="step-number active">1</div>
+                <div class="step-name active">Cart</div>
+              </div>
+              <div class="checkout-step">
+                <div class="step-number active">2</div>
+                <div class="step-name active">Checkout</div>
+              </div>
+              <div class="checkout-step">
+                <div class="step-number">3</div>
+                <div class="step-name">Payment</div>
+              </div>
+              <div class="checkout-step">
+                <div class="step-number">4</div>
+                <div class="step-name">Confirmation</div>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div class="row">
-          <div class="col-lg-8 mb-4 lg:mb-0">
-            <div class="checkout-card">
-              <h3 class="checkout-title">Shipping Address</h3>
-              <% if (addresses && addresses.length> 0) { %> <% const
-              defaultAddress=addresses.find(address=> address.isdefault); %> <%
-              if (defaultAddress) { %>
-              <div
-                class="address-card selected"
-                data-address-id="<%= defaultAddress._id %>"
-              >
-                <div
-                  class="d-flex justify-content-between align-items-center mb-2"
-                >
-                  <div>
-                    <span class="address-name">
-                      <%= defaultAddress.addresstype %>
-                    </span>
-                    <span class="address-type">Default</span>
-                  </div>
-                  <div>
-                    <button
-                      class="btn btn-sm btn-outline-secondary"
-                      data-bs-toggle="modal"
-                      data-bs-target="#editAddressModal"
-                      data-id="<%= defaultAddress._id %>"
-                      data-name="<%= defaultAddress.fullname %>"
-                      data-phone="<%= defaultAddress.mobile %>"
-                      data-line="<%= defaultAddress.addressLine %>"
-                      data-city="<%= defaultAddress.city %>"
-                      data-district="<%= defaultAddress.district %>"
-                      data-state="<%= defaultAddress.state %>"
-                      data-pincode="<%= defaultAddress.pincode %>"
-                    >
-                      Edit
-                    </button>
-                  </div>
+          <div class="row">
+            <div class="col-lg-8 mb-4 lg:mb-0">
+              <div class="checkout-card">
+                <h3 class="checkout-title">Shipping Address</h3>
+                <% if (addresses && addresses.length> 0) { %> <% const defaultAddress=addresses.find(address=>
+                    address.isdefault); %> <% if (defaultAddress) { %>
+                      <div class="address-card selected" data-address-id="<%= defaultAddress._id %>">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                          <div>
+                            <span class="address-name">
+                              <%= defaultAddress.addresstype %>
+                            </span>
+                            <span class="address-type">Default</span>
+                          </div>
+                          <div>
+                            <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
+                              data-bs-target="#editAddressModal" data-id="<%= defaultAddress._id %>"
+                              data-name="<%= defaultAddress.fullname %>" data-phone="<%= defaultAddress.mobile %>"
+                              data-line="<%= defaultAddress.addressLine %>" data-city="<%= defaultAddress.city %>"
+                              data-district="<%= defaultAddress.district %>" data-state="<%= defaultAddress.state %>"
+                              data-pincode="<%= defaultAddress.pincode %>">
+                              Edit
+                            </button>
+                          </div>
+                        </div>
+                        <div class="address-details">
+                          <p class="mb-1">
+                            <%= defaultAddress.fullname %>
+                          </p>
+                          <p class="mb-1">
+                            <%= defaultAddress.addressLine %>
+                          </p>
+                          <p class="mb-1">
+                            <%= defaultAddress.city %>, <%= defaultAddress.district %>
+                          </p>
+                          <p class="mb-1">
+                            <%= defaultAddress.state %> - <%= defaultAddress.pincode %>
+                          </p>
+                          <p class="mb-0">Phone: (+91) <%= defaultAddress.mobile %>
+                          </p>
+                        </div>
+                      </div>
+                      <% } %>
+                        <% const otherAddresses=addresses.filter(address=>
+                          !address.isdefault); %> <% if (otherAddresses.length> 0) { %>
+                            <div class="address-actions">
+                              <a id="toggleOtherAddresses" class="other-addresses-toggle text-indigo-600" href="#">
+                                <i class="bi bi-chevron-down me-2"></i> View Other Addresses
+                              </a>
+                              <button class="btn btn-outline-primary">
+                                <i class="bi bi-plus-circle me-2"></i> Add New Address
+                              </button>
+                            </div>
+                            <div class="other-addresses hidden transition-all duration-300" id="otherAddresses">
+                              <% otherAddresses.forEach(address=> { %>
+                                <div class="address-card" data-address-id="<%= address._id %>">
+                                  <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div>
+                                      <span class="address-name">
+                                        <%= address.addresstype %>
+                                      </span>
+                                    </div>
+                                    <div>
+                                      <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
+                                        data-bs-target="#editAddressModal" data-id="<%= address._id %>"
+                                        data-name="<%= address.fullname %>" data-phone="<%= address.mobile %>"
+                                        data-line="<%= address.addressLine %>" data-city="<%= address.city %>"
+                                        data-district="<%= address.district %>" data-state="<%= address.state %>"
+                                        data-pincode="<%= address.pincode %>">
+                                        Edit
+                                      </button>
+                                    </div>
+                                  </div>
+                                  <div class="address-details">
+                                    <p class="mb-1">
+                                      <%= address.fullname %>
+                                    </p>
+                                    <p class="mb-1">
+                                      <%= address.addressLine %>
+                                    </p>
+                                    <p class="mb-1">
+                                      <%= address.city %>, <%= address.district %>
+                                    </p>
+                                    <p class="mb-1">
+                                      <%= address.state %> - <%= address.pincode %>
+                                    </p>
+                                    <p class="mb-0">Phone: (+91) <%= address.mobile %>
+                                    </p>
+                                  </div>
+                                </div>
+                                <% }) %>
+                            </div>
+                            <% } else if (!defaultAddress) { %>
+                              <div class="address-actions justify-content-end">
+                                <button class="btn btn-outline-primary">
+                                  <i class="bi bi-plus-circle me-2"></i> Add New Address
+                                </button>
+                              </div>
+                              <% } %>
+                                <% } else { %>
+                                  <div class="address-actions justify-content-end">
+                                    <button class="btn btn-outline-primary">
+                                      <i class="bi bi-plus-circle me-2"></i> Add New Address
+                                    </button>
+                                  </div>
+                                  <p class="text-muted mt-3 text-center">
+                                    No addresses found. Please add a new address.
+                                  </p>
+                                  <% } %>
+              </div>
+
+              <div class="checkout-card">
+                <h3 class="checkout-title">Payment Method</h3>
+                <div class="payment-option selected" data-payment-method="Wallet">
+                  <input type="radio" name="payment-method" id="Wallet" value="Wallet" checked
+                    class="form-check-input me-2" />
+                  <i class="bi bi-wallet payment-icon"></i>
+                  <label for="Wallet" class="mb-0 flex-grow-1">LapZone Wallet</label>
+                  <span class="ms-auto badge bg-secondary">₹<%= wallet ? wallet.balance.toLocaleString('en-IN') : 0 %>
+                      Available</span>
                 </div>
-                <div class="address-details">
-                  <p class="mb-1"><%= defaultAddress.fullname %></p>
-                  <p class="mb-1"><%= defaultAddress.addressLine %></p>
-                  <p class="mb-1">
-                    <%= defaultAddress.city %>, <%= defaultAddress.district %>
-                  </p>
-                  <p class="mb-1">
-                    <%= defaultAddress.state %> - <%= defaultAddress.pincode %>
-                  </p>
-                  <p class="mb-0">Phone: (+91) <%= defaultAddress.mobile %></p>
+
+                <div class="payment-option" data-payment-method="Online">
+                  <input type="radio" name="payment-method" id="Online" value="Online" class="form-check-input me-2" />
+                  <img src="https://cdn.razorpay.com/logo.svg" alt="Razorpay" class="h-6 mr-2" />
+                  <label for="Online" class="mb-0 flex-grow-1"></label>
+                  <div id="paypal-button-container" class="hidden"></div>
+                  <p id="result-message" class="hidden text-sm text-red-600"></p>
+                </div>
+
+                <div class="payment-option" data-payment-method="COD">
+                  <input type="radio" name="payment-method" id="COD" value="COD" class="form-check-input me-2" />
+                  <i class="bi bi-cash payment-icon"></i>
+                  <label for="COD" class="mb-0">Cash on Delivery</label>
                 </div>
               </div>
-              <% } %> <% const otherAddresses=addresses.filter(address=>
-              !address.isdefault); %> <% if (otherAddresses.length> 0) { %>
-              <div class="address-actions">
-                <a
-                  id="toggleOtherAddresses"
-                  class="other-addresses-toggle text-indigo-600"
-                  href="#"
-                >
-                  <i class="bi bi-chevron-down me-2"></i> View Other Addresses
-                </a>
-                <button class="btn btn-outline-primary">
-                  <i class="bi bi-plus-circle me-2"></i> Add New Address
-                </button>
-              </div>
-              <div
-                class="other-addresses hidden transition-all duration-300"
-                id="otherAddresses"
-              >
-                <% otherAddresses.forEach(address=> { %>
-                <div class="address-card" data-address-id="<%= address._id %>">
-                  <div
-                    class="d-flex justify-content-between align-items-center mb-2"
-                  >
-                    <div>
-                      <span class="address-name">
-                        <%= address.addresstype %>
-                      </span>
+            </div>
+
+            <div class="col-lg-4">
+              <% if (orders && orders.length> 0) { %> <% orders.forEach(order=> {
+                  %>
+                  <div class="checkout-card">
+                    <h3 class="checkout-title">Order Summary</h3>
+                    <div class="checkout-section">
+                      <% if (cart && cart.length> 0) { %> <% cart.forEach(item=> { %>
+                          <div class="product-item">
+                            <% const mainImage=item.productId.images.find(img=> img.isMain
+                              === true) %>
+                              <img
+                                src="<%= mainImage?.url || 'https://placehold.co/80x80/cccccc/333333?text=No+Image' %>"
+                                alt="<%= item.productId.name %>" class="product-image" />
+                              <div class="product-details">
+                                <div class="product-name">
+                                  <%= item.productId.name %>
+                                </div>
+                                <div class="product-price">
+                                  ₹<%= item.price.toLocaleString('en-IN') %>
+                                </div>
+                                <div class="product-quantity">
+                                  Qty: <%= item.quantity %>
+                                </div>
+                              </div>
+                          </div>
+                          <% }) %>
+                            <% } else { %>
+                              <p class="text-muted text-center">Your cart is empty.</p>
+                              <% } %>
                     </div>
-                    <div>
-                      <button
-                        class="btn btn-sm btn-outline-secondary"
-                        data-bs-toggle="modal"
-                        data-bs-target="#editAddressModal"
-                        data-id="<%= address._id %>"
-                        data-name="<%= address.fullname %>"
-                        data-phone="<%= address.mobile %>"
-                        data-line="<%= address.addressLine %>"
-                        data-city="<%= address.city %>"
-                        data-district="<%= address.district %>"
-                        data-state="<%= address.state %>"
-                        data-pincode="<%= address.pincode %>"
-                      >
-                        Edit
+                    <div class="apply-coupon d-flex gap-2 align-items-start flex-wrap">
+                      <div class="position-relative flex-grow-1">
+                        <input type="text" id="couponCodeInput" class="form-control coupon-input pe-5"
+                          placeholder="Enter coupon code" />
+                        <i class="bi bi-x-circle position-absolute top-50 end-0 translate-middle-y me-3 text-muted"
+                          style="cursor: pointer" onclick="clearCouponInput()"></i>
+                      </div>
+
+                      <button class="btn btn-outline-primary" data-bs-toggle="offcanvas"
+                        data-bs-target="#couponSidebar">
+                        <i class="bi bi-tags me-1"></i> View Coupons
+                      </button>
+
+                      <button class="btn btn-primary coupon-button"
+                        onclick="applyCoupon(document.getElementById('couponCodeInput').value);">
+                        Apply
                       </button>
                     </div>
-                  </div>
-                  <div class="address-details">
-                    <p class="mb-1"><%= address.fullname %></p>
-                    <p class="mb-1"><%= address.addressLine %></p>
-                    <p class="mb-1">
-                      <%= address.city %>, <%= address.district %>
-                    </p>
-                    <p class="mb-1">
-                      <%= address.state %> - <%= address.pincode %>
-                    </p>
-                    <p class="mb-0">Phone: (+91) <%= address.mobile %></p>
-                  </div>
-                </div>
-                <% }) %>
-              </div>
-              <% } else if (!defaultAddress) { %>
-              <div class="address-actions justify-content-end">
-                <button class="btn btn-outline-primary">
-                  <i class="bi bi-plus-circle me-2"></i> Add New Address
-                </button>
-              </div>
-              <% } %> <% } else { %>
-              <div class="address-actions justify-content-end">
-                <button class="btn btn-outline-primary">
-                  <i class="bi bi-plus-circle me-2"></i> Add New Address
-                </button>
-              </div>
-              <p class="text-muted mt-3 text-center">
-                No addresses found. Please add a new address.
-              </p>
-              <% } %>
-            </div>
-
-            <div class="checkout-card">
-              <h3 class="checkout-title">Payment Method</h3>
-              <div class="payment-option selected" data-payment-method="Wallet">
-                <input
-                  type="radio"
-                  name="payment-method"
-                  id="Wallet"
-                  value="Wallet"
-                  checked
-                  class="form-check-input me-2"
-                />
-                <i class="bi bi-wallet payment-icon"></i>
-                <label for="Wallet" class="mb-0 flex-grow-1"
-                  >LapZone Wallet</label
-                >
-                <span class="ms-auto badge bg-secondary"
-                  >₹<%= wallet ? wallet.balance.toLocaleString('en-IN') : 0 %>
-                  Available</span
-                >
-              </div>
-
-              <div class="payment-option" data-payment-method="Online">
-                <input
-                  type="radio"
-                  name="payment-method"
-                  id="Online"
-                  value="Online"
-                  class="form-check-input me-2"
-                />
-                <img
-                  src="https://cdn.razorpay.com/logo.svg"
-                  alt="Razorpay"
-                  class="h-6 mr-2"
-                />
-                <label for="Online" class="mb-0 flex-grow-1"></label>
-                <div id="paypal-button-container" class="hidden"></div>
-                <p id="result-message" class="hidden text-sm text-red-600"></p>
-              </div>
-
-              <div class="payment-option" data-payment-method="COD">
-                <input
-                  type="radio"
-                  name="payment-method"
-                  id="COD"
-                  value="COD"
-                  class="form-check-input me-2"
-                />
-                <i class="bi bi-cash payment-icon"></i>
-                <label for="COD" class="mb-0">Cash on Delivery</label>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4">
-            <% if (orders && orders.length> 0) { %> <% orders.forEach(order=> {
-            %>
-            <div class="checkout-card">
-              <h3 class="checkout-title">Order Summary</h3>
-              <div class="checkout-section">
-                <% if (cart && cart.length> 0) { %> <% cart.forEach(item=> { %>
-                <div class="product-item">
-                  <% const mainImage=item.productId.images.find(img=> img.isMain
-                  === true) %>
-                  <img
-                    src="<%= mainImage?.url || 'https://placehold.co/80x80/cccccc/333333?text=No+Image' %>"
-                    alt="<%= item.productId.name %>"
-                    class="product-image"
-                  />
-                  <div class="product-details">
-                    <div class="product-name"><%= item.productId.name %></div>
-                    <div class="product-price">
-                      ₹<%= item.productId.salePrice.toLocaleString('en-IN') %>
+                    <div class="checkout-section mt-4">
+                      <div class="order-summary-item">
+                        <span>Subtotal</span>
+                        <span>₹<%= order.subtotal.toLocaleString('en-IN') %></span>
+                      </div>
+                      <div class="order-summary-item">
+                        <span>Shipping</span>
+                        <span>₹<%= order.shippingFee.toLocaleString('en-IN') %></span>
+                      </div>
+                      <div class="order-summary-item">
+                        <span>Tax</span>
+                        <span>₹<%= order.tax.toLocaleString('en-IN') %></span>
+                      </div>
+                      <div id="discountRow" class="d-none"></div>
+                      <div class="order-total">
+                        <span>Total</span>
+                        <span id="orderTotalValue">₹<%= order.totalAmount.toLocaleString('en-IN') %></span>
+                      </div>
                     </div>
-                    <div class="product-quantity">
-                      Qty: <%= item.quantity %>
+                    <button class="btn btn-primary w-100 mt-4" onclick="placeOrder();">
+                      <i class="bi bi-lock-fill me-2"></i> Place Order
+                    </button>
+                    <div class="text-center mt-3">
+                      <a href="/cart" class="text-decoration-none text-blue-600 hover:text-blue-800">
+                        <i class="bi bi-arrow-left me-1"></i> Return to Cart
+                      </a>
                     </div>
                   </div>
+                  <% }) %>
+                    <% } else { %>
+                      <div class="checkout-card">
+                        <h3 class="checkout-title">Order Summary</h3>
+                        <p class="text-muted text-center">
+                          No order summary available. Please add items to your cart.
+                        </p>
+                        <div class="text-center mt-3">
+                          <a href="/cart" class="text-decoration-none text-blue-600 hover:text-blue-800">
+                            <i class="bi bi-arrow-left me-1"></i> Go to Cart
+                          </a>
+                        </div>
+                      </div>
+                      <% } %>
+                      
+                <div class="checkout-card text-center">
+                <div class="d-flex align-items-center justify-content-center mb-2">
+                  <i class="bi bi-shield-lock-fill me-2" style="font-size: 1.5rem; color: #3498db"></i>
+                  <span class="fw-bold text-gray-800">Secure Checkout</span>
+                  </div>
+                  <p class="text-muted small mb-0"> Your payment information is encrypted and secure. We never store your full credit card details.
+                  </p>
                 </div>
-                <% }) %> <% } else { %>
-                <p class="text-muted text-center">Your cart is empty.</p>
-                <% } %>
-              </div>
-              <div
-                class="apply-coupon d-flex gap-2 align-items-start flex-wrap"
-              >
-                <div class="position-relative flex-grow-1">
-                  <input
-                    type="text"
-                    id="couponCodeInput"
-                    class="form-control coupon-input pe-5"
-                    placeholder="Enter coupon code"
-                  />
-                  <i
-                    class="bi bi-x-circle position-absolute top-50 end-0 translate-middle-y me-3 text-muted"
-                    style="cursor: pointer"
-                    onclick="clearCouponInput()"
-                  ></i>
-                </div>
-
-                <button
-                  class="btn btn-outline-primary"
-                  data-bs-toggle="offcanvas"
-                  data-bs-target="#couponSidebar"
-                >
-                  <i class="bi bi-tags me-1"></i> View Coupons
-                </button>
-
-                <button
-                  class="btn btn-primary coupon-button"
-                  onclick="applyCoupon(document.getElementById('couponCodeInput').value);"
-                >
-                  Apply
-                </button>
-              </div>
-              <div class="checkout-section mt-4">
-                <div class="order-summary-item">
-                  <span>Subtotal</span>
-                  <span>₹<%= order.subtotal.toLocaleString('en-IN') %></span>
-                </div>
-                <div class="order-summary-item">
-                  <span>Shipping</span>
-                  <span>₹<%= order.shippingFee.toLocaleString('en-IN') %></span>
-                </div>
-                <div class="order-summary-item">
-                  <span>Tax</span>
-                  <span>₹<%= order.tax.toLocaleString('en-IN') %></span>
-                </div>
-                <div class="order-total">
-                  <span>Total</span>
-                  <span id="orderTotalValue"
-                    >₹<%= order.totalAmount.toLocaleString('en-IN') %></span
-                  >
-                </div>
-              </div>
-              <button
-                class="btn btn-primary w-100 mt-4"
-                onclick="placeOrder();"
-              >
-                <i class="bi bi-lock-fill me-2"></i> Place Order
-              </button>
-              <div class="text-center mt-3">
-                <a
-                  href="/cart"
-                  class="text-decoration-none text-blue-600 hover:text-blue-800"
-                >
-                  <i class="bi bi-arrow-left me-1"></i> Return to Cart
-                </a>
-              </div>
-            </div>
-            <% }) %> <% } else { %>
-            <div class="checkout-card">
-              <h3 class="checkout-title">Order Summary</h3>
-              <p class="text-muted text-center">
-                No order summary available. Please add items to your cart.
-              </p>
-              <div class="text-center mt-3">
-                <a
-                  href="/cart"
-                  class="text-decoration-none text-blue-600 hover:text-blue-800"
-                >
-                  <i class="bi bi-arrow-left me-1"></i> Go to Cart
-                </a>
-              </div>
-            </div>
-            <% } %>
-
-            <div class="checkout-card text-center">
-              <div
-                class="d-flex align-items-center justify-content-center mb-2"
-              >
-                <i
-                  class="bi bi-shield-lock-fill me-2"
-                  style="font-size: 1.5rem; color: #3498db"
-                ></i>
-                <span class="fw-bold text-gray-800">Secure Checkout</span>
-              </div>
-              <p class="text-muted small mb-0">
-                Your payment information is encrypted and secure. We never store
-                your full credit card details.
-              </p>
             </div>
           </div>
         </div>
-      </div>
     </div>
 
-    <div
-      class="offcanvas offcanvas-end"
-      tabindex="-1"
-      id="couponSidebar"
-      aria-labelledby="couponSidebarLabel"
-    >
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="couponSidebar" aria-labelledby="couponSidebarLabel">
       <div class="offcanvas-header">
         <h5 class="offcanvas-title" id="couponSidebarLabel">
           Available Coupons
         </h5>
-        <button
-          type="button"
-          class="btn-close text-reset"
-          data-bs-dismiss="offcanvas"
-          aria-label="Close"
-        ></button>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
       </div>
       <div class="offcanvas-body">
         <% if (coupons && coupons.length> 0) { %> <% coupons.forEach(coupon=> {
-        %>
-        <div class="card mb-3 shadow-sm rounded-lg">
-          <div class="card-body">
-            <h5 class="card-title text-lg font-semibold text-gray-800 mb-2">
-              <%= coupon.code %>
-            </h5>
-            <p class="card-text text-gray-700">
-              Discount:
-              <span class="font-bold"> <%= coupon.discountValue %>% </span>
-            </p>
-            <p class="card-text text-gray-700">
-              Save upto :<span class="font-bold">
-                <%= coupon.maxDiscountAmount%>
-              </span>
-            </p>
-            <p class="card-text text-muted text-sm">
-              <small
-                >Valid until: <%= coupon.expiryDate.toLocaleDateString()
-                %></small
-              >
-            </p>
-            <button
-              class="btn btn-sm btn-primary mt-3"
-              onclick="applyCoupon('<%= coupon.code %>')"
-            >
-              Apply
-            </button>
-          </div>
-        </div>
-        <% }) %> <% } else { %>
-        <p class="text-muted text-center">No available coupons.</p>
-        <% } %>
+            %>
+            <div class="card mb-3 shadow-sm rounded-lg">
+              <div class="card-body">
+                <h5 class="card-title text-lg font-semibold text-gray-800 mb-2">
+                  <%= coupon.code %>
+                </h5>
+                <p class="card-text text-gray-700">
+                  Discount:
+                  <% if(coupon.discountType === 'percentage'){ %>
+                  <span class="font-bold">
+                    <%= coupon.discountValue %>%
+                  </span>
+                  <%} else {%>
+                    <span class="font-bold">
+                    ₹<%= coupon.discountValue %>
+                  <% } %>
+                  </span>
+                </p>
+                <p class="card-text text-gray-700">
+                  Save upto :<span class="font-bold">
+                    <%= coupon.maxDiscountAmount%>
+                  </span>
+                </p>
+                <p class="card-text text-muted text-sm">
+                  <small>Valid until: <%= coupon.expiryDate.toLocaleDateString() %></small>
+                </p>
+                <button class="btn btn-sm btn-primary mt-3" onclick="applyCoupon('<%= coupon.code %>')">
+                  Apply
+                </button>
+              </div>
+            </div>
+            <% }) %>
+              <% } else { %>
+                <p class="text-muted text-center">No available coupons.</p>
+                <% } %>
       </div>
     </div>
 
-    <div
-      class="modal fade"
-      id="editAddressModal"
-      tabindex="-1"
-      aria-labelledby="editAddressLabel"
-      aria-hidden="true"
-    >
+    <div class="modal fade" id="editAddressModal" tabindex="-1" aria-labelledby="editAddressLabel" aria-hidden="true">
       <div class="modal-dialog">
-        <form
-          id="editAddressForm"
-          method="POST"
-          class="modal-content"
-          onsubmit="return submitEditForm(event)"
-        >
+        <form id="editAddressForm" method="POST" class="modal-content" onsubmit="return submitEditForm(event)">
           <div class="modal-header">
             <h5 class="modal-title" id="editAddressLabel">Edit Address</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <input type="hidden" name="addressId" id="modalAddressId" />
 
             <div class="mb-3">
               <label class="form-label">Full Name</label>
-              <input
-                type="text"
-                class="form-control"
-                name="fullname"
-                id="modalFullName"
-              />
-              <span
-                id="modalError-fullname"
-                class="text-danger text-sm d-block mt-1"
-              ></span>
+              <input type="text" class="form-control" name="fullname" id="modalFullName" />
+              <span id="modalError-fullname" class="text-danger text-sm d-block mt-1"></span>
             </div>
 
             <div class="mb-3">
               <label class="form-label">Phone</label>
-              <input
-                type="text"
-                class="form-control"
-                name="phone"
-                id="modalPhone"
-              />
-              <span
-                id="modalError-phone"
-                class="text-danger text-sm d-block mt-1"
-              ></span>
+              <input type="text" class="form-control" name="phone" id="modalPhone" />
+              <span id="modalError-phone" class="text-danger text-sm d-block mt-1"></span>
             </div>
 
             <div class="mb-3">
               <label class="form-label">Address Line</label>
-              <input
-                type="text"
-                class="form-control"
-                name="addressLine"
-                id="modalAddressLine"
-              />
-              <span
-                id="modalError-addressLine"
-                class="text-danger text-sm d-block mt-1"
-              ></span>
+              <input type="text" class="form-control" name="addressLine" id="modalAddressLine" />
+              <span id="modalError-addressLine" class="text-danger text-sm d-block mt-1"></span>
             </div>
 
             <div class="mb-3">
               <label class="form-label">City</label>
-              <input
-                type="text"
-                class="form-control"
-                name="city"
-                id="modalCity"
-              />
-              <span
-                id="modalError-city"
-                class="text-danger text-sm d-block mt-1"
-              ></span>
+              <input type="text" class="form-control" name="city" id="modalCity" />
+              <span id="modalError-city" class="text-danger text-sm d-block mt-1"></span>
             </div>
 
             <div class="mb-3">
               <label class="form-label">District</label>
-              <input
-                type="text"
-                class="form-control"
-                name="district"
-                id="modalDistrict"
-              />
-              <span
-                id="modalError-district"
-                class="text-danger text-sm d-block mt-1"
-              ></span>
+              <input type="text" class="form-control" name="district" id="modalDistrict" />
+              <span id="modalError-district" class="text-danger text-sm d-block mt-1"></span>
             </div>
 
             <div class="mb-3">
               <label class="form-label">State</label>
-              <input
-                type="text"
-                class="form-control"
-                name="state"
-                id="modalState"
-              />
-              <span
-                id="modalError-state"
-                class="text-danger text-sm d-block mt-1"
-              ></span>
+              <input type="text" class="form-control" name="state" id="modalState" />
+              <span id="modalError-state" class="text-danger text-sm d-block mt-1"></span>
             </div>
 
             <div class="mb-3">
               <label class="form-label">Pincode</label>
-              <input
-                type="text"
-                class="form-control"
-                name="pincode"
-                id="modalPincode"
-              />
-              <span
-                id="modalError-pincode"
-                class="text-danger text-sm d-block mt-1"
-              ></span>
+              <input type="text" class="form-control" name="pincode" id="modalPincode" />
+              <span id="modalError-pincode" class="text-danger text-sm d-block mt-1"></span>
             </div>
 
             <div class="mb-3">
               <label class="form-label">Landmark (Optional)</label>
-              <input
-                type="text"
-                class="form-control"
-                name="landmark"
-                id="modalLandmark"
-              />
+              <input type="text" class="form-control" name="landmark" id="modalLandmark" />
             </div>
 
             <div class="mb-3">
               <label class="form-label">Address Type</label>
-              <select
-                class="form-control"
-                name="addressType"
-                id="modalAddressType"
-              >
+              <select class="form-control" name="addressType" id="modalAddressType">
                 <option value="Home">Home</option>
                 <option value="Work">Work</option>
                 <option value="Other">Other</option>
@@ -579,11 +407,7 @@
             <button type="submit" class="btn btn-primary">
               Update Address
             </button>
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
               Cancel
             </button>
           </div>
@@ -591,148 +415,65 @@
       </div>
     </div>
 
-    <div
-      class="modal fade"
-      id="addAddressModal"
-      tabindex="-1"
-      aria-labelledby="addAddressLabel"
-      aria-hidden="true"
-    >
+    <div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressLabel" aria-hidden="true">
       <div class="modal-dialog">
-        <form
-          id="addAddressForm"
-          method="POST"
-          action="/profile/checkout-page/add-address"
-          class="modal-content"
-          onsubmit="return submitAddAddressForm(event)"
-        >
+        <form id="addAddressForm" method="POST" action="/profile/checkout-page/add-address" class="modal-content"
+          onsubmit="return submitAddAddressForm(event)">
           <div class="modal-header">
             <h5 class="modal-title" id="addAddressLabel">Add New Address</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <div class="mb-3">
               <label class="form-label">Full Name</label>
-              <input
-                type="text"
-                class="form-control"
-                name="fullname"
-                id="newFullName"
-              />
-              <span
-                id="newError-fullname"
-                class="text-danger text-sm d-block mt-1"
-              ></span>
+              <input type="text" class="form-control" name="fullname" id="newFullName" />
+              <span id="newError-fullname" class="text-danger text-sm d-block mt-1"></span>
             </div>
 
             <div class="mb-3">
               <label class="form-label">Phone</label>
-              <input
-                type="text"
-                class="form-control"
-                name="mobile"
-                id="newPhone"
-                maxlength="10"
-              />
-              <span
-                id="newError-mobile"
-                class="text-danger text-sm d-block mt-1"
-              ></span>
+              <input type="text" class="form-control" name="mobile" id="newPhone" maxlength="10" />
+              <span id="newError-mobile" class="text-danger text-sm d-block mt-1"></span>
             </div>
 
             <div class="mb-3">
               <label class="form-label">Address Line</label>
-              <input
-                type="text"
-                class="form-control"
-                name="addressLine"
-                id="newAddressLine"
-              />
-              <span
-                id="newError-addressLine"
-                class="text-danger text-sm d-block mt-1"
-              ></span>
+              <input type="text" class="form-control" name="addressLine" id="newAddressLine" />
+              <span id="newError-addressLine" class="text-danger text-sm d-block mt-1"></span>
             </div>
 
             <div class="mb-3">
               <label class="form-label">City</label>
-              <input
-                type="text"
-                class="form-control"
-                name="city"
-                id="newCity"
-              />
-              <span
-                id="newError-city"
-                class="text-danger text-sm d-block mt-1"
-              ></span>
+              <input type="text" class="form-control" name="city" id="newCity" />
+              <span id="newError-city" class="text-danger text-sm d-block mt-1"></span>
             </div>
 
             <div class="mb-3">
               <label class="form-label">District</label>
-              <input
-                type="text"
-                class="form-control"
-                name="district"
-                id="newDistrict"
-              />
-              <span
-                id="newError-district"
-                class="text-danger text-sm d-block mt-1"
-              ></span>
+              <input type="text" class="form-control" name="district" id="newDistrict" />
+              <span id="newError-district" class="text-danger text-sm d-block mt-1"></span>
             </div>
 
             <div class="mb-3">
               <label class="form-label">State</label>
-              <input
-                type="text"
-                class="form-control"
-                name="state"
-                id="newState"
-              />
-              <span
-                id="newError-state"
-                class="text-danger text-sm d-block mt-1"
-              ></span>
+              <input type="text" class="form-control" name="state" id="newState" />
+              <span id="newError-state" class="text-danger text-sm d-block mt-1"></span>
             </div>
 
             <div class="mb-3">
               <label class="form-label">Pincode</label>
-              <input
-                type="text"
-                class="form-control"
-                name="pincode"
-                id="newPincode"
-                maxlength="6"
-              />
-              <span
-                id="newError-pincode"
-                class="text-danger text-sm d-block mt-1"
-              ></span>
+              <input type="text" class="form-control" name="pincode" id="newPincode" maxlength="6" />
+              <span id="newError-pincode" class="text-danger text-sm d-block mt-1"></span>
             </div>
 
             <div class="mb-3">
               <label class="form-label">Landmark (Optional)</label>
-              <input
-                type="text"
-                class="form-control"
-                name="landmark"
-                id="newLandmark"
-              />
+              <input type="text" class="form-control" name="landmark" id="newLandmark" />
             </div>
 
             <div class="mb-3">
               <label class="form-label">Address Type</label>
-              <select
-                class="form-control"
-                name="addressType"
-                id="newAddressType"
-              >
+              <select class="form-control" name="addressType" id="newAddressType">
                 <option value="Home">Home</option>
                 <option value="Work">Work</option>
                 <option value="Other">Other</option>
@@ -740,32 +481,17 @@
             </div>
 
             <div class="mb-3 form-check">
-              <input
-                type="checkbox"
-                class="form-check-input"
-                name="isDefault"
-                id="newIsDefault"
-              />
-              <label class="form-check-label" for="newIsDefault"
-                >Set as default address</label
-              >
+              <input type="checkbox" class="form-check-input" name="isDefault" id="newIsDefault" />
+              <label class="form-check-label" for="newIsDefault">Set as default address</label>
             </div>
           </div>
           <div class="modal-footer">
             <button type="submit" class="btn btn-primary">
-              <span
-                id="addAddressSpinner"
-                class="spinner-border spinner-border-sm me-2 d-none"
-                role="status"
-                aria-hidden="true"
-              ></span>
+              <span id="addAddressSpinner" class="spinner-border spinner-border-sm me-2 d-none" role="status"
+                aria-hidden="true"></span>
               Save Address
             </button>
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
               Cancel
             </button>
           </div>
@@ -773,11 +499,9 @@
       </div>
     </div>
 
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
       xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-      crossorigin="anonymous"
-    ></script>
+      crossorigin="anonymous"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script>
       // Add this to your existing JavaScript in the checkout page
@@ -900,6 +624,7 @@
 
       function clearCouponInput() {
         document.getElementById("couponCodeInput").value = "";
+
         location.reload();
       }
       document.addEventListener("DOMContentLoaded", function () {
@@ -914,16 +639,14 @@
           icon.classList.toggle("bi-chevron-up");
 
           toggleBtn.innerHTML = `
-                    <i class="bi ${
-                      otherAddresses.classList.contains("hidden")
-                        ? "bi-chevron-down"
-                        : "bi-chevron-up"
-                    } me-2"></i>
-                    ${
-                      otherAddresses.classList.contains("hidden")
-                        ? "View Other Addresses"
-                        : "Hide Other Addresses"
-                    }
+                    <i class="bi ${otherAddresses.classList.contains("hidden")
+              ? "bi-chevron-down"
+              : "bi-chevron-up"
+            } me-2"></i>
+                    ${otherAddresses.classList.contains("hidden")
+              ? "View Other Addresses"
+              : "Hide Other Addresses"
+            }
                 `;
         });
 
@@ -965,8 +688,8 @@
       });
 
       async function placeOrder() {
-        
-         const selectedAddressCard = document.querySelector(".address-card.selected");
+
+        const selectedAddressCard = document.querySelector(".address-card.selected");
         const addressDetails =
           selectedAddressCard.querySelector(".address-details");
         const lines = addressDetails.querySelectorAll("p");
@@ -1002,7 +725,7 @@
           const res = await fetch("/user/create-razorpay-order", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ amount: totalAmount , shippingAddress }),
+            body: JSON.stringify({ amount: totalAmount, shippingAddress }),
           });
 
           const { orderId, amount, key } = await res.json();
@@ -1123,9 +846,17 @@
             couponInput.value = couponCodeToApply;
             const totalEl = document.getElementById("orderTotalValue");
             if (totalEl && result.totalAmount !== undefined) {
-              totalEl.innerText = `₹${result.totalAmount.toLocaleString(
-                "en-IN"
-              )}`;
+              totalEl.innerText = `₹${result.totalAmount.toLocaleString("en-IN")}`;
+              const discountRow = document.getElementById("discountRow");
+              if (discountRow && result.discount) {
+                discountRow.innerHTML = `
+                <div class="order-summary-item">
+                  <span>Discount</span>
+                  <span> - ₹${result.discount.toLocaleString('en-IN')}</span>
+                </div>
+              `;
+                discountRow.classList.remove('d-none');
+              }
             }
             window.appliedCoupon = {
               couponCode: result.couponCode,
@@ -1268,5 +999,6 @@
       window.bootstrap = window.bootstrap || {};
       window.iziToast = window.iziToast || {};
     </script>
-  </body>
+</body>
+
 </html>
