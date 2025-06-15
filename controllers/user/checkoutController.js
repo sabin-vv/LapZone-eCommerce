@@ -26,12 +26,12 @@ const proceedToCheckoutPage = async (req, res, next) => {
 
       if (variant.stock < item.quantity && variant.stock !== 0) {
         return res.json({ success: false, message: `Only ${variant.stock} units available for product ${product.name}` });
-      }else if(variant.stock === 0) {
+      } else if (variant.stock === 0) {
         return res.json({ success: false, message: `${product.name} is Out of Stock` });
       }
     }
 
-    return res.json({ success: true });  
+    return res.json({ success: true });
 
   } catch (error) {
     console.error('Error fetching checkout page:', error);
@@ -44,7 +44,7 @@ const viewCheckoutPage = async (req, res, next) => {
     if (!req.session.user) return res.redirect("/")
     const userId = req.session.user;
     const addresses = await Address.find({ userId })
-    const coupons = await Coupon.find()
+    const coupons = await Coupon.find().sort({ createdAt: -1 })
     const cart = await Cart.findOne({ userId }).populate('items.productId');
 
     let wallet = await Wallet.findOne({ userId })
@@ -54,23 +54,23 @@ const viewCheckoutPage = async (req, res, next) => {
     }
 
     const subtotal = cart.items.reduce((acc, item) => {
-        return acc + item.productId.salePrice * item.quantity;
-      }, 0);
+      return acc + item.productId.salePrice * item.quantity;
+    }, 0);
 
-      const shippingFee = 50;
-      const tax = Math.round(subtotal * 0.05);
-      const totalAmount = subtotal + shippingFee + tax;
+    const shippingFee = 50;
+    const tax = Math.round(subtotal * 0.05);
+    const totalAmount = subtotal + shippingFee + tax;
 
-      if( req.session.appliedCoupon){
-        delete req.session.appliedCoupon;
-      }
-      const orderSummary = {
-        subtotal,
-        shippingFee,
-        tax,
-        totalAmount
-      };
-      res.render("user/checkoutPage", { addresses, cart: cart.items, orders: [orderSummary], wallet, coupons, errors: null })
+    if (req.session.appliedCoupon) {
+      delete req.session.appliedCoupon;
+    }
+    const orderSummary = {
+      subtotal,
+      shippingFee,
+      tax,
+      totalAmount
+    };
+    res.render("user/checkoutPage", { addresses, cart: cart.items, orders: [orderSummary], wallet, coupons, errors: null })
 
   } catch (error) {
     console.error('Error fetching checkout page:', error);
@@ -78,15 +78,39 @@ const viewCheckoutPage = async (req, res, next) => {
   }
 }
 
+const validateStock =  async (req, res) => {
+  try {
+    const userId = req.session.user;
+    const cart = await Cart.findOne({ userId }).populate("items.productId");
+    if (!cart || cart.items.length === 0) {
+      return res.json({ success: false, message: "Cart is empty." });
+    }
+
+    for (const item of cart.items) {
+      const product = item.productId;
+      const variant = product.variants.find(v => v.RAM === item.ram && v.Storage === item.storage);
+
+      if (!variant || variant.stock < item.quantity) {
+        return res.json({
+          success: false,
+          message: `${product.name} (${item.ram}, ${item.storage}) is out of stock.`,
+        });
+      }
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Stock validation error:", err);
+    res.status(500).json({ success: false, message: "Server error." });
+  }
+};
+
 const orderplace = async (req, res, next) => {
   try {
     if (!req.session.user) return res.redirect("/");
 
     const userId = req.session.user;
-    const { shippingAddress, paymentMethod, total } = req.body;
-    const { appliedCoupon } = req.body
-    console.log("Payment method ", paymentMethod)
-
+    const { shippingAddress, paymentMethod, total, appliedCoupon } = req.body;
 
     const couponCode = appliedCoupon?.couponCode || null;
     const couponId = appliedCoupon?.couponId || null;
@@ -95,24 +119,35 @@ const orderplace = async (req, res, next) => {
     const totalPrice = parseFloat(total.replace(/[₹,]/g, ''));
 
     const cart = await Cart.findOne({ userId }).populate('items.productId');
-
     if (!cart || cart.items.length === 0) {
       return res.status(400).json({ success: false, message: "Cart is empty." });
     }
 
-    const stockIssues = cart.items.filter(item =>
-      !item.productId.isExisting ||
-      !item.productId.isActive ||
-      item.productId.count < item.quantity
-    );
+    for (const item of cart.items) {
+      const product = item.productId;
+      if (!product || !product.isActive || !product.isExisting) {
+        return res.json({ success: false, message: `Product not available` });
+      }
 
-    if (stockIssues.length > 0) {
-      return res.json({ success: false, message: 'Product Out of Stock' });
+      const variant = product.variants.find(v =>
+        v.RAM === item.ram && v.Storage === item.storage
+      );
+
+      if (!variant) {
+        return res.json({ success: false, message: `Variant not found for ${product.name}` });
+      }
+
+      if (variant.stock < item.quantity) {
+        return res.json({
+          success: false,
+          message: `Only ${variant.stock} left for ${product.name} `
+        });
+      }
     }
 
     const orderId = 'LPZ-' + uuidv4().replace(/\D/g, '').slice(0, 15);
 
-    let wallet = await Wallet.findOne({ userId })
+    let wallet = await Wallet.findOne({ userId });
     if (!wallet) {
       wallet = new Wallet({ userId, balance: 0 });
       await wallet.save();
@@ -121,14 +156,11 @@ const orderplace = async (req, res, next) => {
     let paymentStatus = 'Pending';
 
     if (paymentMethod === 'Wallet') {
+      if (wallet.balance < totalPrice) {
+        return res.json({ success: false, message: "Not Enough Money" });
+      }
 
-      if (wallet.balance < totalPrice)
-        return res.json({ success: false, message: "Not Enough Money" })
-
-
-      wallet.balance -= totalPrice
-
-
+      wallet.balance -= totalPrice;
       wallet.transactions.push({
         type: 'debit',
         amount: totalPrice,
@@ -136,15 +168,13 @@ const orderplace = async (req, res, next) => {
         date: new Date(),
         createdAt: new Date()
       });
-
-      await wallet.save()
-      paymentStatus = 'Completed'
-
+      await wallet.save();
+      paymentStatus = 'Completed';
     } else if (paymentMethod === 'Online') {
       paymentStatus = 'Completed';
     } else if (paymentMethod === 'COD') {
       if (totalPrice > 1000) {
-        return res.json({ success: false, message: "COD is not available for orders above ₹1000" })
+        return res.json({ success: false, message: "COD is not available for orders above ₹1000" });
       }
     }
 
@@ -152,18 +182,16 @@ const orderplace = async (req, res, next) => {
       productId: item.productId._id,
       productName: item.productId.name,
       quantity: item.quantity,
-      price: item.productId.salePrice,
+      ram: item.ram,
+      storage: item.storage,
+      price: item.price,
       status: 'Ordered'
     }));
 
     const subtotal = orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const shippingFee = 50;
     const tax = Math.round(subtotal * 0.05);
-    let totalAmount = subtotal + shippingFee + tax;
-
-    if (appliedCoupon && Object.keys(appliedCoupon).length > 0) {
-      totalAmount -= appliedCoupon.discount
-    }
+    let totalAmount = subtotal + shippingFee + tax - discountAmount;
 
     const order = new Order({
       orderId,
@@ -177,25 +205,29 @@ const orderplace = async (req, res, next) => {
       paymentMethod,
       paymentStatus,
       orderStatus: 'Processing',
-      discountAmount: appliedCoupon?.discount || 0,
+      discountAmount,
       statusHistory: [{ status: 'Processing', current: true }],
-      coupon: couponCode ? { coupon: couponCode, couponId, } : undefined,
-
+      coupon: couponCode ? { coupon: couponCode, couponId } : undefined,
     });
 
     await order.save();
-    for (const item of orderItems) {
-      await Product.findByIdAndUpdate(item.productId, { $inc: { count: -item.quantity } }, { new: true })
-    }
-    await Cart.deleteOne({ userId });
 
+    for (const item of cart.items) {
+      await Product.updateOne(
+        { _id: item.productId._id, "variants.RAM": item.ram, "variants.Storage": item.storage },
+        { $inc: { "variants.$.stock": -item.quantity } }
+      );
+    }
+
+    await Cart.deleteOne({ userId });
     res.json({ success: true, message: 'Order Placed', orderId });
+
   } catch (error) {
     console.error('Error placing order:', error);
     next(error);
   }
+};
 
-}
 
 const orderPage = async (req, res, next) => {
   try {
@@ -331,7 +363,6 @@ const editAddress = async (req, res) => {
 
 const addAddress = async (req, res) => {
   try {
-    console.log("Add address request body:", req.body)
 
     const isAjax = req.headers.accept && req.headers.accept.includes("application/json")
     const userId = req.session.user
@@ -388,7 +419,6 @@ const addAddress = async (req, res) => {
     })
 
     if (Object.keys(errors).length > 0) {
-      console.log("Validation errors:", errors)
       if (isAjax) {
         return res.status(400).json({ success: false, errors })
       }
@@ -409,15 +439,11 @@ const addAddress = async (req, res) => {
       isdefault: isDefault === "on" || isDefault === true,
     }
 
-    console.log("Creating new address with data:", addressData)
-
     if (addressData.isdefault) {
       await Address.updateMany({ userId: userId, isdefault: true }, { $set: { isdefault: false } })
     }
 
     const newAddress = await Address.create(addressData)
-
-    console.log("Address created successfully:", newAddress)
 
     if (isAjax) {
       return res.json({
@@ -476,6 +502,7 @@ const orderSuccessPage = async (req, res) => {
 module.exports = {
   proceedToCheckoutPage,
   viewCheckoutPage,
+  validateStock,
   orderplace,
   orderPage,
   orderFailurePafe,

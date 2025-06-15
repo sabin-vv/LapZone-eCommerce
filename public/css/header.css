@@ -99,7 +99,7 @@ header {
 
 /* Icons (Cart, Wishlist) */
 .navbar a.text-light {
-    margin: 0 0.8rem;
+    margin: 0 0.3rem;
     padding: 0.6rem;
     border-radius: 6px;
     transition: all 0.3s ease;

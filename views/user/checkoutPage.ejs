@@ -290,52 +290,55 @@
         </div>
     </div>
 
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="couponSidebar" aria-labelledby="couponSidebarLabel">
-      <div class="offcanvas-header">
+    <div class="offcanvas offcanvas-end coupon-offcanvas" tabindex="-1" id="couponSidebar" aria-labelledby="couponSidebarLabel">
+    <div class="offcanvas-header">
         <h5 class="offcanvas-title" id="couponSidebarLabel">
-          Available Coupons
+            Available Coupons
         </h5>
-        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-      </div>
-      <div class="offcanvas-body">
-        <% if (coupons && coupons.length> 0) { %> <% coupons.forEach(coupon=> {
-            %>
-            <div class="card mb-3 shadow-sm rounded-lg">
-              <div class="card-body">
-                <h5 class="card-title text-lg font-semibold text-gray-800 mb-2">
-                  <%= coupon.code %>
-                </h5>
-                <p class="card-text text-gray-700">
-                  Discount:
-                  <% if(coupon.discountType === 'percentage'){ %>
-                  <span class="font-bold">
-                    <%= coupon.discountValue %>%
-                  </span>
-                  <%} else {%>
-                    <span class="font-bold">
-                    ₹<%= coupon.discountValue %>
-                  <% } %>
-                  </span>
-                </p>
-                <p class="card-text text-gray-700">
-                  Save upto :<span class="font-bold">
-                    <%= coupon.maxDiscountAmount%>
-                  </span>
-                </p>
-                <p class="card-text text-muted text-sm">
-                  <small>Valid until: <%= coupon.expiryDate.toLocaleDateString() %></small>
-                </p>
-                <button class="btn btn-sm btn-primary mt-3" onclick="applyCoupon('<%= coupon.code %>')">
-                  Apply
-                </button>
-              </div>
-            </div>
-            <% }) %>
-              <% } else { %>
-                <p class="text-muted text-center">No available coupons.</p>
-                <% } %>
-      </div>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
+    <div class="offcanvas-body">
+        <% if (coupons && coupons.length > 0) { %>
+            <% coupons.forEach(coupon => { %>
+                <div class="coupon-card">
+                    <div class="card-body">
+                        <div class="coupon-code"><%= coupon.code %></div>
+                        
+                        <% if (coupon.discountType === 'percentage') { %>
+                            <div class="discount-badge"><%= coupon.discountValue %>% OFF</div>
+                        <% } else { %>
+                            <div class="discount-badge fixed-discount">₹<%= coupon.discountValue %> OFF</div>
+                        <% } %>
+                        
+                        <div class="coupon-meta">
+                            <% if (coupon.maxDiscountAmount) { %>
+                                <div class="max-discount">Save up to ₹<%= coupon.maxDiscountAmount %></div>
+                            <% } %>
+                            <% if (coupon.minPurchaseAmount) { %>
+                                <div class="min-purchase">Min ₹<%= coupon.minPurchaseAmount %></div>
+                            <% } %>
+                        </div>
+                        
+                        <div class="expiry-date">
+                            Valid until: <%= coupon.expiryDate.toLocaleDateString() %>
+                        </div>
+                        
+                        <button class="apply-coupon-btn" onclick="applyCoupon('<%= coupon.code %>')">
+                            Apply Coupon
+                        </button>
+                    </div>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <div class="no-coupons">
+                <div class="empty-icon">
+                    <i class="fas fa-ticket-alt"></i>
+                </div>
+                <p>No available coupons at the moment.</p>
+            </div>
+        <% } %>
+    </div>
+</div>
 
     <div class="modal fade" id="editAddressModal" tabindex="-1" aria-labelledby="editAddressLabel" aria-hidden="true">
       <div class="modal-dialog">
@@ -526,7 +529,6 @@
           }
         });
 
-        // Initialize the form with default values
         document.getElementById("newAddressType").value = "Home";
       });
 
@@ -536,23 +538,16 @@
         const form = document.getElementById("addAddressForm");
         const action = form.action;
 
-        // Show spinner
         const spinner = document.getElementById("addAddressSpinner");
         spinner.classList.remove("d-none");
 
-        // Disable submit button
         const submitButton = form.querySelector('button[type="submit"]');
         submitButton.disabled = true;
 
-        // Clear previous errors
-        document
-          .querySelectorAll('[id^="newError-"]')
-          .forEach((el) => (el.textContent = ""));
+        document.querySelectorAll('[id^="newError-"]').forEach((el) => (el.textContent = ""));
 
-        // Create FormData object
         const formData = new FormData(form);
 
-        // Convert FormData to URLSearchParams for proper form encoding
         const urlEncodedData = new URLSearchParams();
         for (const [key, value] of formData.entries()) {
           urlEncodedData.append(key, value);
@@ -670,7 +665,7 @@
         paymentOptions.forEach((option) => {
           option.addEventListener("click", function () {
             const radio = this.querySelector('input[type="radio"]');
-            radio.checked = true; // Set the radio button as checked
+            radio.checked = true; 
 
             paymentOptions.forEach((o) => o.classList.remove("selected"));
             this.classList.add("selected");
@@ -690,8 +685,7 @@
       async function placeOrder() {
 
         const selectedAddressCard = document.querySelector(".address-card.selected");
-        const addressDetails =
-          selectedAddressCard.querySelector(".address-details");
+        const addressDetails = selectedAddressCard.querySelector(".address-details");
         const lines = addressDetails.querySelectorAll("p");
 
         const shippingAddress = {
@@ -704,9 +698,7 @@
           phone: lines[4]?.innerText.replace("Phone: (+91) ", "").trim(),
         };
 
-        const paymentMethod = document.querySelector(
-          'input[name="payment-method"]:checked'
-        )?.value;
+        const paymentMethod = document.querySelector( 'input[name="payment-method"]:checked')?.value;
         if (!paymentMethod)
           return Swal.fire({
             icon: "error",
@@ -722,6 +714,20 @@
         }
 
         if (paymentMethod === "Online") {
+          const stockRes = await fetch("/user/validate-stock", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        });
+
+        const stockResult = await stockRes.json();
+        if (!stockResult.success) {
+          iziToast.error({
+            title: "Out of Stock",
+            message: stockResult.message || "Some products are unavailable.",
+            position: "bottomRight",
+          });
+          return;
+        }
           const res = await fetch("/user/create-razorpay-order", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -812,7 +818,7 @@
             icon: "error",
             title: "Order Failed",
             text: result.message || "Error occurred",
-          });
+          }).then
         }
       }
 
@@ -896,22 +902,14 @@
         const id = button.getAttribute("data-id");
 
         // Populate modal fields with data from button
-        document.getElementById("modalAddressId").value =
-          button.getAttribute("data-id");
-        document.getElementById("modalFullName").value =
-          button.getAttribute("data-name");
-        document.getElementById("modalPhone").value =
-          button.getAttribute("data-phone");
-        document.getElementById("modalAddressLine").value =
-          button.getAttribute("data-line");
-        document.getElementById("modalDistrict").value =
-          button.getAttribute("data-district");
-        document.getElementById("modalCity").value =
-          button.getAttribute("data-city");
-        document.getElementById("modalState").value =
-          button.getAttribute("data-state");
-        document.getElementById("modalPincode").value =
-          button.getAttribute("data-pincode");
+        document.getElementById("modalAddressId").value = button.getAttribute("data-id");
+        document.getElementById("modalFullName").value =  button.getAttribute("data-name");
+        document.getElementById("modalPhone").value =  button.getAttribute("data-phone");
+        document.getElementById("modalAddressLine").value =   button.getAttribute("data-line");
+        document.getElementById("modalDistrict").value =  button.getAttribute("data-district");
+        document.getElementById("modalCity").value =  button.getAttribute("data-city");
+        document.getElementById("modalState").value =  button.getAttribute("data-state");
+        document.getElementById("modalPincode").value =  button.getAttribute("data-pincode");
 
         const form = document.getElementById("editAddressForm");
         form.action = `/profile/checkout-page/edit-address/${id}`;
@@ -923,23 +921,16 @@
         const form = document.getElementById("editAddressForm");
         const action = form.action;
 
-        // Clear previous errors
         document
           .querySelectorAll('[id^="modalError-"]')
           .forEach((el) => (el.textContent = ""));
 
-        // Create FormData object
         const formData = new FormData(form);
 
         const urlEncodedData = new URLSearchParams();
         for (const [key, value] of formData.entries()) {
           urlEncodedData.append(key, value);
         }
-
-        console.log(
-          "Submitting form data:",
-          Object.fromEntries(urlEncodedData)
-        );
 
         try {
           const response = await fetch(action, {
@@ -954,13 +945,11 @@
           const result = await response.json();
 
           if (result.success) {
-            // Close modal
             const modal = window.bootstrap.Modal.getInstance(
               document.getElementById("editAddressModal")
             );
             modal.hide();
 
-            // Show success message
             window.iziToast.success({
               title: "Success",
               message: "Address updated successfully",
@@ -971,7 +960,6 @@
               location.reload();
             }, 1000);
           } else if (result.errors) {
-            // Display validation errors
             for (const [key, msg] of Object.entries(result.errors)) {
               const errorField = document.getElementById(`modalError-${key}`);
               if (errorField) {

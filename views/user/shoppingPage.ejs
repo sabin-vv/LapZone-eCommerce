@@ -191,7 +191,7 @@
                 <% } else { %>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         <% products.forEach(product => { %>
-                            <div class="product-card bg-white rounded-xl shadow-md overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1 <%= product.count === 0 ? 'out-of-stock' : '' %>">
+                            <div class="product-card bg-white rounded-xl shadow-md overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1 <%= product.variants.every(v => v.stock === 0) ? 'out-of-stock' : '' %>">
                                 <% 
                                     const productOffer = product.offer || 0;
                                     const categoryOffer = product.categoryId?.offer || 0;

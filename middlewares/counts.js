@@ -11,9 +11,13 @@ const counts = async (req, res, next) => {
         const cartCount = cart ? cart.items.length :0
         const orderCount = await Order.countDocuments({ user: userId });
 
-        res.locals.wishlistCount = wishlistCount;
-        res.locals.orderCount = orderCount;
-        res.locals.cartCount = cartCount;
+        res.locals.wishlistCount = wishlistCount||0;
+        res.locals.orderCount = orderCount||0;
+        res.locals.cartCount = cartCount||0;
+    } else {
+      res.locals.wishlistCount = 0;
+      res.locals.cartCount = 0;
+      res.locals.orderCount = 0;
     }
     next();
 }

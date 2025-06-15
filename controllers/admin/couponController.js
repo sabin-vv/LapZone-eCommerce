@@ -184,7 +184,7 @@ const updateCoupon = async (req, res, next) => {
             errorfield['expiryDate'] = 'Expiry Date should greater than start Date'
 
         if (errorfield && Object.keys(errorfield).length > 0)
-            return res.render("admin/addCoupon", { errorfield ,formData:req.body})
+            return res.render("admin/editCoupon", { errorfield ,formData:req.body,coupon})
 
         const existingCoupon = await Coupon.findOne({
             code: code.trim().toUpperCase(),

@@ -28,74 +28,74 @@ const viewCartPage = async (req, res, next) => {
 }
 
 const addtoCart = async (req, res, next) => {
-    try {
-        if (!req.session.user) return res.redirect("/");
+  try {
+    if (!req.session.user) return res.redirect("/");
 
-        const { productId, ram, storage, price } = req.body;
-        const userId = req.session.user;
+    const { productId } = req.body;
+    const userId = req.session.user;
 
-        const product = await Product.findById(productId);
-        if (!product || !product.isActive || !product.isExisting)
-            return res.json({ success: false });
+    const product = await Product.findById(productId);
+    if (!product || !product.isActive || !product.isExisting) {
+      return res.status(400).json({ success: false, message: "Product not available" });
+    }
 
-        if (product.count === 0)
-            return res.json({ success: false, message: "Out of stock" });
-       
-        let selectedVariant;
-        if (ram && storage) {
-            selectedVariant = product.variants.find(v => v.RAM === ram && v.Storage === storage);
-        }
-        if (!selectedVariant && product.variants.length > 0) {
-            selectedVariant = product.variants[0];
-        }
-        if (!selectedVariant) return res.json({ success: false, message: "Variant not found" })
+    const selectedVariant = product.variants.find(v => v.stock > 0);
 
-        let cart = await Cart.findOne({ userId });
+    if (!selectedVariant) {
+      return res.status(400).json({ success: false, message: "All variants are out of stock" });
+    }
 
-        if (!cart) {
-            cart = new Cart({
-                userId,
-                items: [{
-                    productId,
-                    ram: selectedVariant.RAM,
-                    storage: selectedVariant.Storage,
-                    price,
-                    quantity: 1
-                }],
-            });
-            await cart.save();
-            return res.status(200).json({ success: 'true', message: "Product added to cart" });
-        }
+    const finalPrice = product.salePrice + (selectedVariant.priceAdjustment || 0);
 
-        const existingItem = cart.items.find(item => item.productId.toString() === productId && item.ram === ram && item.storage === storage);
+    let cart = await Cart.findOne({ userId });
 
-        if (!existingItem) {
-            cart.items.push({
-                productId,
-                ram: selectedVariant.RAM,
-                storage: selectedVariant.Storage,
-                price,
-                quantity: 1
-            });
-            await cart.save();
-            return res.status(200).json({ 'success': 'true', message: "Product added to cart" });
+    if (!cart) {
+      cart = new Cart({
+        userId,
+        items: [{
+          productId,
+          ram: selectedVariant.RAM,
+          storage: selectedVariant.Storage,
+          price: finalPrice,
+          quantity: 1
+        }]
+      });
+    } else {
+      const existingItem = cart.items.find(item =>
+        item.productId.toString() === productId &&
+        item.ram === selectedVariant.RAM &&
+        item.storage === selectedVariant.Storage
+      );
+
+      if (existingItem) {
+        if (existingItem.quantity >= 5) {
+          return res.status(400).json({ success: false, message: "Cart limit reached" });
         }
 
-        if (existingItem.quantity >= 5)
-            return res.status(400).json({ 'success': 'false', message: "Cart limit reached" });
-
-        if (product.count <= existingItem.quantity)
-            return res.status(400).json({ 'success': false, message: "Out of stock" });
+        if (selectedVariant.stock <= existingItem.quantity) {
+          return res.status(400).json({ success: false, message: "Not enough stock available" });
+        }
 
         existingItem.quantity += 1;
-        await cart.save();
-
-        return res.status(200).json({ success: 'true', message: "Product quantity increased in cart" });
-
-    } catch (error) {
-        console.error('Error adding to cart:', error);
-        next(error);
+      } else {
+        cart.items.push({
+          productId,
+          ram: selectedVariant.RAM,
+          storage: selectedVariant.Storage,
+          price: finalPrice,
+          quantity: 1
+        });
+      }
     }
+
+    await cart.save();
+
+    return res.status(200).json({ success: 'true', message: "Product added to cart" });
+
+  } catch (error) {
+    console.error("Error adding to cart:", error);
+    next(error);
+  }
 };
 
 const cartUpdate = async (req, res, next) => {

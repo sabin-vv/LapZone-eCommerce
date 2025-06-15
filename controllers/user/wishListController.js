@@ -5,11 +5,10 @@ const Product = require("../../model/products")
 const Cart = require("../../model/cart")
 
 
-
 const toggleWishList = async (req, res, next) => {
     try {
-        if (!req.session.user) return res.json({ success: false })
-
+        if (!req.session.user) return res.status(401).json({ success: false, notLoggedIn: true })
+           
         const { productId } = req.body
 
         const userId = req.session.user
@@ -99,73 +98,89 @@ const removeWishlistProduct = async (req, res, next) => {
 }
 
 const addtoCart = async (req, res, next) => {
-    try {
-        if (!req.session.user) return res.redirect("/")
+  try {
+    if (!req.session.user) return res.redirect("/");
 
-        const { productId, ram, storage, price } = req.body
-        const userId = req.session.user;
+    const { productId, variantId } = req.body;
+    const userId = req.session.user;
 
-        const product = await Product.findById(productId);
-        if (!product || !product.isActive || !product.isExisting)
-            return res.json({ success: false });
+    const product = await Product.findById(productId);
+    if (!product || !product.isActive || !product.isExisting) {
+      return res.status(400).json({ success: false, message: "Product not available" });
+    }
 
-        if (product.count === 0)
-            return res.json({ success: false, message: "Out of stock" });
+    // Find the selected variant by ID
+    const selectedVariant = product.variants.id(variantId);
+    if (!selectedVariant) {
+      return res.status(400).json({ success: false, message: "Variant not found" });
+    }
 
-        let selectedVariant;
-        if (!ram && !storage) {
-            selectedVariant = product.variants[0]
+    if (selectedVariant.stock <= 0) {
+      return res.status(400).json({ success: false, message: "Selected variant is out of stock" });
+    }
+
+    const finalPrice = product.salePrice + (selectedVariant.priceAdjustment || 0);
+
+    let cart = await Cart.findOne({ userId });
+
+    if (!cart) {
+      cart = new Cart({
+        userId,
+        items: [{
+          productId,
+          ram: selectedVariant.RAM,
+          storage: selectedVariant.Storage,
+          price: finalPrice,
+          quantity: 1
+        }]
+      });
+    } else {
+      // Check if variant already exists in cart
+      const existingItem = cart.items.find(item =>
+        item.productId.toString() === productId &&
+        item.ram === selectedVariant.RAM &&
+        item.storage === selectedVariant.Storage
+      );
+
+      if (existingItem) {
+        if (existingItem.quantity >= 5) {
+          return res.status(400).json({ success: false, message: "Cart limit reached" });
         }
-        if (!selectedVariant) return res.json({ success: false, message: "Variant not found" })
-
-        const { RAM: selectedRam, Storage: selectedStorage, priceAdjustment: selectedPrice } = selectedVariant
-
-        let cart = await Cart.findOne({ userId });
-
-        if (!cart) {
-            cart = new Cart({
-                userId,
-                items: [{ productId, ram: selectedRam, storage: selectedStorage, price: selectedPrice, quantity: 1 }],
-            });
-            await cart.save();
-            const wishlist = await Wishlist.findOne({ userId });
-            wishlist.items = await wishlist.items.filter(item => item.productId.toString() !== productId.toString())
-            await wishlist.save()
-            return res.status(200).json({ success: 'true', message: "Product added to cart" });
+        if (selectedVariant.stock <= existingItem.quantity) {
+          return res.status(400).json({ success: false, message: "Not enough stock" });
         }
-
-        const existingItem = cart.items.find(item => item.productId.toString() === productId);
-
-        if (!existingItem) {
-            cart.items.push({ productId, ram: selectedRam, storage: selectedStorage, price: product.salePrice + selectedPrice, quantity: 1 });
-            await cart.save();
-            const wishlist = await Wishlist.findOne({ userId });
-            wishlist.items = await wishlist.items.filter(item => item.productId.toString() !== productId.toString())
-            await wishlist.save()
-
-            return res.status(200).json({ 'success': 'true', message: "Product added to cart" });
-        }
-
-        if (existingItem.quantity >= 5)
-            return res.status(400).json({ 'success': 'false', message: "Cart limit reached" });
-
-        if (product.count <= existingItem.quantity)
-            return res.status(400).json({ 'success': false, message: "Out of stock" });
 
         existingItem.quantity += 1;
-        await cart.save();
-        const wishlist = await Wishlist.findOne({ userId: req.session.user })
-        wishlist.items = await wishlist.items.filter(item => item.productId.toString() !== productId.toString())
-        await wishlist.save()
-
-        return res.status(200).json({ success: 'true', message: "Product quantity increased in cart" });
+      } else {
+        cart.items.push({
+          productId,
+          ram: selectedVariant.RAM,
+          storage: selectedVariant.Storage,
+          price: finalPrice,
+          quantity: 1
+        });
+      }
     }
-    catch (error) {
-        console.error('Error adding to cart:', error);
-        next(error);
+
+    await cart.save();
+
+    // Remove from wishlist
+    const wishlist = await Wishlist.findOne({ userId });
+    if (wishlist) {
+      wishlist.items = wishlist.items.filter(
+        item => item.productId.toString() !== productId.toString()
+      );
+      await wishlist.save();
     }
 
-}
+    return res.status(200).json({ success: true, message: "Product added to cart" });
+
+  } catch (error) {
+    console.error('Error adding to cart:', error);
+    next(error);
+  }
+};
+
 
 
 module.exports = {

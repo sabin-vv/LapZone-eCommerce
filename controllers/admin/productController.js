@@ -518,7 +518,6 @@ const updateProduct = async (req, res, next) => {
       images[0].isMain = true;
     }
 
-    console.log(req.body.variants)
     const variants = [];
     if (req.body.variants && typeof req.body.variants === "object") {
       Object.values(req.body.variants).forEach((variant) => {

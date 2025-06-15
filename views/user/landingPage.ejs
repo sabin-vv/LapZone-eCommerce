@@ -11,341 +11,397 @@
     <link rel="stylesheet" href="/css/landingPage.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
     <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
     <%- include("../partials/user/header.ejs") %>
 
-    <section class="hero position-relative">
-        <img src="/Banners/beatsnoop.com-v7784.jpg" alt="Premium Laptops" class="w-100 img-fluid">
-        <div class="hero-content">
-            <h1>Upgrade Your Computing Experience</h1>
-            <p>Discover the perfect blend of power, design, and innovation with our premium laptop collection</p>
-            <a href="/shop" class="btn btn-primary btn-lg">Shop Now</a>
-        </div>
-    </section>
+        <section class="hero position-relative">
+            <img src="/Banners/beatsnoop.com-v7784.jpg" alt="Premium Laptops" class="w-100 img-fluid">
+            <div class="hero-content">
+                <h1>Upgrade Your Computing Experience</h1>
+                <p>Discover the perfect blend of power, design, and innovation with our premium laptop collection</p>
+                <a href="/shop" class="btn btn-primary btn-lg">Shop Now</a>
+            </div>
+        </section>
 
-    <section class="section container py-5">
-        <div class="section-header">
-            <h2 class="section-title">New Arrivals</h2>
-            <p class="text-muted">Discover our latest premium laptops with cutting-edge technology</p>
-        </div>
-        
-        <% if (products && products.length) { %>
-        <div class="product-list row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 justify-content-center">
-            <% products.forEach(product => {
-                const mainImage = product.images.find(img => img.isMain);
-                const variant = product.variants?.[0]; 
-                let isWishlisted = false; 
-                if (typeof wishlistIds !== 'undefined') {
-                    isWishlisted = wishlistIds?.includes(product._id.toString())
-                } 
-            %>
-            <div class="col">
-                <div class="product card h-100">
-                    <% 
-                        const productOffer = product.offer || 0;
-                        const categoryOffer = product.categoryId?.offer || 0;
-                        const finalOffer = Math.max(productOffer, categoryOffer);
-                    %>
-                    <% if (finalOffer > 0) { %>
-                        <span class="offer-badge"><%= finalOffer %>% OFF</span>
-                    <% } %>
-                    <% if (product.isNew) { %>
-                    <div class="feature-badge">New</div>
-                    <% } %>
-                    <a href="/shop/product/<%= product._id %>" class="text-decoration-none text-dark">
-                        <img src="<%= mainImage?.url || '/images/default.jpg' %>" alt="<%= product.name %> laptop"
-                            class="card-img-top">
-                        
-                        <div class="product-details d-flex justify-content-between">
-                            <div class="rating-container">
-                                <div class="rating-stars">
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-half"></i>
-                                </div>
-                                <span>4.5</span>
+        <section class="section container py-5">
+            <div class="section-header">
+                <h2 class="section-title">New Arrivals</h2>
+                <p class="text-muted">Discover our latest premium laptops with cutting-edge technology</p>
+            </div>
+
+            <% if (products && products.length) { %>
+                <div
+                    class="product-list row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 justify-content-center">
+                    <% products.forEach(product=> {
+                        const mainImage = product.images.find(img => img.isMain);
+                        const variant = product.variants?.[0];
+                        let isWishlisted = false;
+                        if (typeof wishlistIds !== 'undefined') {
+                        isWishlisted = wishlistIds?.includes(product._id.toString())
+                        } %>
+                        <div class="col">
+                            <div class="product card h-100">
+                                <% const productOffer=product.offer || 0; const categoryOffer=product.categoryId?.offer
+                                    || 0; const finalOffer=Math.max(productOffer, categoryOffer); %>
+                                    <% if (finalOffer> 0) { %>
+                                        <span class="offer-badge">
+                                            <%= finalOffer %>% OFF
+                                        </span>
+                                        <% } %>
+                                            <% if (product.isNew) { %>
+                                                <div class="feature-badge">New</div>
+                                                <% } %>
+                                                    <a href="/shop/product/<%= product._id %>"
+                                                        class="text-decoration-none text-dark">
+                                                        <img src="<%= mainImage?.url || '/images/default.jpg' %>"
+                                                            alt="<%= product.name %> laptop" class="card-img-top">
+
+                                                        <div class="product-details d-flex justify-content-between">
+                                                            <div class="rating-container">
+                                                                <div class="rating-stars">
+                                                                    <i class="bi bi-star-fill"></i>
+                                                                    <i class="bi bi-star-fill"></i>
+                                                                    <i class="bi bi-star-fill"></i>
+                                                                    <i class="bi bi-star-fill"></i>
+                                                                    <i class="bi bi-star-half"></i>
+                                                                </div>
+                                                                <span>4.5</span>
+                                                            </div>
+                                                            <button class="btn btn-sm wishlist-btn"
+                                                                data-product-id="<%= product._id %>"
+                                                                title="Add to wishlist"
+                                                                onclick="event.stopPropagation()">
+                                                                <i
+                                                                    class="bi <%= isWishlisted ? 'bi-heart-fill' : 'bi-heart' %> fs-4 text-danger"></i>
+                                                            </button>
+                                                        </div>
+
+                                                        <div class="card-body text-center">
+                                                            <h5 class="card-title">
+                                                                <%= product.name %>
+                                                            </h5>
+                                                            <p class="card-text">
+                                                                <i class="bi bi-cpu me-1"></i>
+                                                                <%= product.CPU %> <br>
+                                                                    <i class="bi bi-memory me-1"></i>
+                                                                    <%= variant?.RAM || 'N/A' %> <br>
+                                                                        <i class="bi bi-hdd me-1"></i>
+                                                                        <%= variant?.Storage || 'N/A' %>
+                                                            </p>
+                                                            <p class="card-text fw-bold text-primary">₹<%=
+                                                                    product.salePrice.toLocaleString('en-IN') %>
+                                                            </p>
+                                                        </div>
+                                                    </a>
+
+                                                    <button type="submit" class="cart-btn btn btn-outline-primary"
+                                                        data-product-id="<%= product._id %>" title="Add to Cart">
+                                                        <i class="bi bi-cart-plus me-2"></i> Add to Cart
+                                                    </button>
                             </div>
-                            <button class="btn btn-sm wishlist-btn" data-product-id="<%= product._id %>"
-                                title="Add to wishlist" onclick="event.stopPropagation()">
-                                <i class="bi <%= isWishlisted ? 'bi-heart-fill' : 'bi-heart' %> fs-4 text-danger"></i>
-                            </button>
                         </div>
-                        
-                        <div class="card-body text-center">
-                            <h5 class="card-title"><%= product.name %></h5>
-                            <p class="card-text">
-                                <i class="bi bi-cpu me-1"></i> <%= product.CPU %> <br>
-                                <i class="bi bi-memory me-1"></i> <%= variant?.RAM || 'N/A' %> <br>
-                                <i class="bi bi-hdd me-1"></i> <%= variant?.Storage || 'N/A' %>
-                            </p>
-                            <p class="card-text fw-bold text-primary">₹<%= product.salePrice.toLocaleString('en-IN') %></p>
-                        </div>
-                    </a>
-                    
-                    <button type="submit" class="cart-btn btn btn-outline-primary" data-product-id="<%= product._id %>"
-                        title="Add to Cart">
-                        <i class="bi bi-cart-plus me-2"></i> Add to Cart
-                    </button>
+                        <% }) %>
                 </div>
+                <div class="text-center mt-5">
+                    <a href="/shop" class="btn btn-primary btn-lg">View All Products</a>
+                </div>
+                <% } else { %>
+                    <p class="text-center text-muted">No new arrivals available.</p>
+                    <% } %>
+        </section>
+
+        <section class="banner-2 position-relative">
+            <img src="/Banners/steptodown.com667448.jpg" alt="Gaming Laptops" class="w-100 img-fluid">
+            <div class="hero-content">
+                <h1>Ultimate Gaming Performance</h1>
+                <p>Experience lightning-fast performance with our premium gaming laptops</p>
+                <a href="/shop" class="btn btn-primary btn-lg">Explore Gaming Laptops</a>
             </div>
-            <% }) %>
-        </div>
-        <div class="text-center mt-5">
-            <a href="/shop" class="btn btn-primary btn-lg">View All Products</a>
-        </div>
-        <% } else { %>
-        <p class="text-center text-muted">No new arrivals available.</p>
-        <% } %>
-    </section>
+        </section>
 
-    <section class="banner-2 position-relative">
-        <img src="/Banners/steptodown.com667448.jpg" alt="Gaming Laptops" class="w-100 img-fluid">
-        <div class="hero-content">
-            <h1>Ultimate Gaming Performance</h1>
-            <p>Experience lightning-fast performance with our premium gaming laptops</p>
-            <a href="/shop" class="btn btn-primary btn-lg">Explore Gaming Laptops</a>
-        </div>
-    </section>
+        <section class="section container py-5">
+            <div class="section-header">
+                <h2 class="section-title">Fastest Laptops</h2>
+                <p class="text-muted">Extreme performance laptops for demanding users and gamers</p>
+            </div>
 
-    <section class="section container py-5">
-        <div class="section-header">
-            <h2 class="section-title">Fastest Laptops</h2>
-            <p class="text-muted">Extreme performance laptops for demanding users and gamers</p>
-        </div>
-        
-        <% if (gamingProducts && gamingProducts.length) { %>
-        <div class="product-list row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 justify-content-center">
-            <% gamingProducts.forEach(product => {
-    const mainImage = product.images.find(img => img.isMain);
-    const variant = product.variants?.[0];
-                let isWishlisted = false; 
-                if (typeof wishlistIds !== 'undefined') {
-                    isWishlisted = wishlistIds?.includes(product._id.toString())
-                }
-            %>
-            <div class="col">
-                <div class="product card h-100">
-                    <% 
-                        const productOffer = product.offer || 0;
-                        const categoryOffer = product.categoryId?.offer || 0;
-                        const finalOffer = Math.max(productOffer, categoryOffer);
-                    %>
-                    <% if (finalOffer > 0) { %>
-                        <span class="offer-badge"><%= finalOffer %>% OFF</span>
-                    <% } %>
-                    <% if (product.isNew) { %>
-                    <div class="feature-badge">New</div>
-                    <% } %>
-                    <% if (product.isGaming) { %>
-                    <div class="feature-badge">Gaming</div>
-                    <% } %>
-                    <a href="/shop/product/<%= product._id %>" class="text-decoration-none text-dark">
-                        <img src="<%= mainImage?.url || '/images/default.jpg' %>" alt="<%= product.name %> laptop"
-                            class="card-img-top">
-                            
-                        <div class="product-details d-flex justify-content-between">
-                            <div class="rating-container">
-                                <div class="rating-stars">
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                </div>
-                                <span>5.0</span>
+            <% if (gamingProducts && gamingProducts.length) { %>
+                <div
+                    class="product-list row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 justify-content-center">
+                    <% gamingProducts.forEach(product=> {
+                        const mainImage = product.images.find(img => img.isMain);
+                        const variant = product.variants?.[0];
+                        let isWishlisted = false;
+                        if (typeof wishlistIds !== 'undefined') {
+                        isWishlisted = wishlistIds?.includes(product._id.toString())
+                        }
+                        %>
+                        <div class="col">
+                            <div class="product card h-100">
+                                <% const productOffer=product.offer || 0; const categoryOffer=product.categoryId?.offer
+                                    || 0; const finalOffer=Math.max(productOffer, categoryOffer); %>
+                                    <% if (finalOffer> 0) { %>
+                                        <span class="offer-badge">
+                                            <%= finalOffer %>% OFF
+                                        </span>
+                                        <% } %>
+                                            <% if (product.isNew) { %>
+                                                <div class="feature-badge">New</div>
+                                                <% } %>
+                                                    <% if (product.isGaming) { %>
+                                                        <div class="feature-badge">Gaming</div>
+                                                        <% } %>
+                                                            <a href="/shop/product/<%= product._id %>"
+                                                                class="text-decoration-none text-dark">
+                                                                <img src="<%= mainImage?.url || '/images/default.jpg' %>"
+                                                                    alt="<%= product.name %> laptop"
+                                                                    class="card-img-top">
+
+                                                                <div
+                                                                    class="product-details d-flex justify-content-between">
+                                                                    <div class="rating-container">
+                                                                        <div class="rating-stars">
+                                                                            <i class="bi bi-star-fill"></i>
+                                                                            <i class="bi bi-star-fill"></i>
+                                                                            <i class="bi bi-star-fill"></i>
+                                                                            <i class="bi bi-star-fill"></i>
+                                                                            <i class="bi bi-star-fill"></i>
+                                                                        </div>
+                                                                        <span>5.0</span>
+                                                                    </div>
+                                                                    <button class="btn btn-sm wishlist-btn"
+                                                                        data-product-id="<%= product._id %>"
+                                                                        title="Add to wishlist"
+                                                                        onclick="event.stopPropagation()">
+                                                                        <i
+                                                                            class="bi <%= isWishlisted ? 'bi-heart-fill' : 'bi-heart' %> fs-4 text-danger"></i>
+                                                                    </button>
+                                                                </div>
+
+                                                                <div class="card-body text-center">
+                                                                    <h5 class="card-title">
+                                                                        <%= product.name %>
+                                                                    </h5>
+                                                                    <p class="card-text">
+                                                                        <i class="bi bi-cpu me-1"></i>
+                                                                        <%= product.CPU %> <br>
+                                                                            <i class="bi bi-memory me-1"></i>
+                                                                            <%= variant?.RAM || 'N/A' %> <br>
+                                                                                <i class="bi bi-hdd me-1"></i>
+                                                                                <%= variant?.Storage || 'N/A' %>
+                                                                    </p>
+                                                                    <p class="card-text fw-bold text-primary">₹<%=
+                                                                            product.salePrice.toLocaleString('en-IN') %>
+                                                                    </p>
+                                                                </div>
+                                                            </a>
+
+                                                            <button type="submit"
+                                                                class="cart-btn btn btn-outline-primary"
+                                                                data-product-id="<%= product._id %>"
+                                                                title="Add to Cart">
+                                                                <i class="bi bi-cart-plus me-2"></i> Add to Cart
+                                                            </button>
                             </div>
-                            <button class="btn btn-sm wishlist-btn" data-product-id="<%= product._id %>"
-                                title="Add to wishlist" onclick="event.stopPropagation()">
-                                <i class="bi <%= isWishlisted ? 'bi-heart-fill' : 'bi-heart' %> fs-4 text-danger"></i>
-                            </button>
                         </div>
-                        
-                        <div class="card-body text-center">
-                            <h5 class="card-title"><%= product.name %></h5>
-                            <p class="card-text">
-                                <i class="bi bi-cpu me-1"></i> <%= product.CPU %> <br>
-                                <i class="bi bi-memory me-1"></i> <%= variant?.RAM || 'N/A' %> <br>
-                                <i class="bi bi-hdd me-1"></i> <%= variant?.Storage || 'N/A' %>
-                            </p>
-                            <p class="card-text fw-bold text-primary">₹<%= product.salePrice.toLocaleString('en-IN') %></p>
-                        </div>
-                    </a>
-                    
-                    <button type="submit" class="cart-btn btn btn-outline-primary" data-product-id="<%= product._id %>"
-                        title="Add to Cart">
-                        <i class="bi bi-cart-plus me-2"></i> Add to Cart
-                    </button>
+                        <% }) %>
                 </div>
-            </div>
-            <% }) %>
-        </div>
-        <div class="text-center mt-5">
-            <a href="/shop" class="btn btn-primary btn-lg">View All Products</a>
-        </div>
-        <% } else { %>
-        <p class="text-center text-muted">No gaming laptops available.</p>
-        <% } %>
-    </section>
+                <div class="text-center mt-5">
+                    <a href="/shop" class="btn btn-primary btn-lg">View All Products</a>
+                </div>
+                <% } else { %>
+                    <p class="text-center text-muted">No gaming laptops available.</p>
+                    <% } %>
+        </section>
 
-    <section class="features py-5 bg-light">
-        <div class="container">
-            <div class="row g-4">
-                <div class="col-md-3 col-6">
-                    <div class="feature text-center">
-                        <i class="bi bi-truck fs-1 text-primary mb-3"></i>
-                        <h5>Free Delivery</h5>
-                        <p class="small text-muted">On all orders above ₹50,000</p>
+        <section class="features py-5 bg-light">
+            <div class="container">
+                <div class="row g-4">
+                    <div class="col-md-3 col-6">
+                        <div class="feature text-center">
+                            <i class="bi bi-truck fs-1 text-primary mb-3"></i>
+                            <h5>Free Delivery</h5>
+                            <p class="small text-muted">On all orders above ₹50,000</p>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-3 col-6">
-                    <div class="feature text-center">
-                        <i class="bi bi-shield-check fs-1 text-primary mb-3"></i>
-                        <h5>High Quality</h5>
-                        <p class="small text-muted">Premium brands and products</p>
+                    <div class="col-md-3 col-6">
+                        <div class="feature text-center">
+                            <i class="bi bi-shield-check fs-1 text-primary mb-3"></i>
+                            <h5>High Quality</h5>
+                            <p class="small text-muted">Premium brands and products</p>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-3 col-6">
-                    <div class="feature text-center">
-                        <i class="bi bi-arrow-repeat fs-1 text-primary mb-3"></i>
-                        <h5>Easy Returns</h5>
-                        <p class="small text-muted">30-day money back guarantee</p>
+                    <div class="col-md-3 col-6">
+                        <div class="feature text-center">
+                            <i class="bi bi-arrow-repeat fs-1 text-primary mb-3"></i>
+                            <h5>Easy Returns</h5>
+                            <p class="small text-muted">30-day money back guarantee</p>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-3 col-6">
-                    <div class="feature text-center">
-                        <i class="bi bi-headset fs-1 text-primary mb-3"></i>
-                        <h5>24/7 Support</h5>
-                        <p class="small text-muted">Support team always available</p>
+                    <div class="col-md-3 col-6">
+                        <div class="feature text-center">
+                            <i class="bi bi-headset fs-1 text-primary mb-3"></i>
+                            <h5>24/7 Support</h5>
+                            <p class="small text-muted">Support team always available</p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <%- include("../partials/user/footer.ejs") %>
+        <%- include("../partials/user/footer.ejs") %>
 
-    <div id="toast-container" class="toast-container"></div>
-    <script src="/js/header.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
-        
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Wishlist button functionality
-            document.querySelectorAll('.wishlist-btn').forEach(btn => {
-                btn.addEventListener('click', async function (e) {
-                    e.stopPropagation();
-                    e.preventDefault();
+            <div id="toast-container" class="toast-container"></div>
+            <script src="/js/header.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+                integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+                crossorigin="anonymous"></script>
 
-        const icon = this.querySelector('i');
-        const productId = this.dataset.productId;
-                    
-                    try {
-            const response = await fetch("/wishlist/toggle", {
-                            method: "POST",
-                            headers: {
-                                'Content-type': "application/json"
-                            },
-                            body: JSON.stringify({ productId })
-                        });
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    document.querySelectorAll('.wishlist-btn').forEach(btn => {
+                        btn.addEventListener('click', async function (e) {
+                            e.stopPropagation();
+                            e.preventDefault();
 
-            const result = await response.json();
+                            const icon = this.querySelector('i');
+                            const productId = this.dataset.productId;
 
-                        if (result.success) {
-                            if (result.action == 'added') {
-                                iziToast.success({
-                                    title: '',
-                                    message: 'Product added to Wishlist',
+                            try {
+                                const response = await fetch("/wishlist/toggle", {
+                                    method: "POST",
+                                    headers: {
+                                        'Content-type': "application/json"
+                                    },
+                                    body: JSON.stringify({ productId })
+                                });
+                                console.log(await response);
+                                if(response.redirected&& response.url.includes('/login')){ 
+                                    Swal.fire({
+                                        title: 'Please Login',
+                                        text: 'Please Login to add product to Wishlist',
+                                        icon: 'warning',
+                                        confirmButtonText: 'Login'
+                                    }).then((result) => {
+                                        window.location.href = "/login";
+                                    });
+                                    return 
+                                }
+                                const result = await response.json();
+
+                                if (result.success) {
+                                    if (result.action == 'added') {
+                                        iziToast.success({
+                                            title: '',
+                                            message: 'Product added to Wishlist',
+                                            position: 'bottomRight',
+                                            timeout: 2000
+                                        });
+                                        if (icon) {
+                                            icon.classList.remove('bi-heart');
+                                            icon.classList.add('bi-heart-fill');
+                                        }
+                                    } else if(result.action =='removed') {
+                                        iziToast.success({
+                                            title: '',
+                                            message: 'Product removed from wishlist',
+                                            position: 'bottomRight',
+                                            timeout: 2000
+                                        });
+                                        icon.classList.remove('bi-heart-fill');
+                                        icon.classList.add('bi-heart');
+                                    }
+                                } else{
+                                    Swal.fire({
+                                        title: 'warning',
+                                        text: 'Login to add product to wishlist',
+                                        icon: 'error',
+                                        confirmButtonText: 'Okay'
+                                })
+                                }
+                            } catch (error) {
+                                iziToast.error({
+                                    title: 'Error',
+                                    message: 'An error occurred. Please try again.',
                                     position: 'bottomRight',
                                     timeout: 2000
                                 });
-                                icon.classList.remove('bi-heart');
-                                icon.classList.add('bi-heart-fill');
-                            } else {
-                                iziToast.success({
-                                    title: '',
-                                    message: 'Product removed from wishlist',
-                                    position: 'bottomRight',
-                                    timeout: 2000
-                                });
-                                icon.classList.remove('bi-heart-fill');
-                                icon.classList.add('bi-heart');
+
                             }
-                        } else {
-                            window.location.href = "/login";
-                        }
-                    } catch (error) {
-                        iziToast.error({
-                            title: 'Error',
-                            message: 'An error occurred. Please try again.',
-                            position: 'bottomRight',
-                            timeout: 2000
                         });
-                    }
-                });
-            });
+                    });
 
-            // Cart button functionality
-            document.querySelectorAll(".cart-btn").forEach(btn => {
-                btn.addEventListener('click', async function (e) {
-        const productId = this.dataset.productId;
                     
-                    try {
-            const response = await fetch("/cart/add-to-cart", {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ productId })
-                        });
-                        
-            const result = await response.json();
-                        
-                        if (result.success) {
-                            if (result.success === 'true') {
-                                iziToast.success({
-                                    title: '',
-                                    message: 'Product added to cart',
-                                    position: 'bottomRight',
-                                    timeout: 2000
+                    document.querySelectorAll(".cart-btn").forEach(btn => {
+                        btn.addEventListener('click', async function (e) {
+                            const productId = this.dataset.productId;
+
+                            try {
+                                const response = await fetch("/cart/add-to-cart", {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ productId })
                                 });
-                            } else if (result.success === 'false') {
-                                iziToast.warning({
-                                    title: '',
-                                    message: 'Cart limit reached',
+                                if(response.redirected && response.url.includes('/login')){ 
+                                    Swal.fire({
+                                        title: 'Please Login',
+                                        text: 'Please Login to add product to Cart',
+                                        icon: 'warning',
+                                        confirmButtonText: 'Login'
+                                    }).then((result) => {
+                                        window.location.href = "/login";
+                                    });
+                                    return
+                                }
+
+                                const result = await response.json();
+                                
+                                if (result.success) {
+                                    if (result.success === 'true') {
+                                        iziToast.success({
+                                            title: '',
+                                            message: 'Product added to cart',
+                                            position: 'bottomRight',
+                                            timeout: 2000
+                                        });
+                                    } else if (result.success === 'false') {
+                                        iziToast.warning({
+                                            title: '',
+                                            message: 'Cart limit reached',
+                                            position: 'bottomRight',
+                                            timeout: 2000
+                                        });
+                                    }
+                                } else {
+                                    iziToast.error({
+                                        title: 'Error',
+                                        message: 'Cart limit exceeded',
+                                        position: 'bottomRight',
+                                        timeout: 2000
+                                    });
+                                }
+                            } catch (error) {
+                                iziToast.error({
+                                    title: 'Error',
+                                    message: 'An error occurred. Please try again.',
                                     position: 'bottomRight',
                                     timeout: 2000
                                 });
                             }
-                        } else {
-                            iziToast.error({
-                                title: 'Error',
-                                message: 'Cart limit exceeded',
-                                position: 'bottomRight',
-                                timeout: 2000
-                            });
-                        }
-                    } catch (error) {
-                        iziToast.error({
-                            title: 'Error',
-                            message: 'An error occurred. Please try again.',
-                            position: 'bottomRight',
-                            timeout: 2000
                         });
-                    }
+                    });
                 });
-            });
-        });
-    </script>     
+            </script>
 </body>
 
 </html>

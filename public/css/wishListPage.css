@@ -415,3 +415,195 @@
         opacity: 1;
     }
 }
+ .variant-selector {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            display: none; /* Hidden by default */
+        }
+
+        .variant-selector.active {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        .variant-group {
+            margin-bottom: 15px;
+        }
+
+        .variant-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .variant-label {
+            font-weight: 600;
+            color: #495057;
+            font-size: 13px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .variant-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .variant-option {
+            padding: 8px 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s ease;
+            min-width: 70px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .variant-option:hover {
+            border-color: #6366f1;
+            background: #f8f9ff;
+            transform: translateY(-1px);
+        }
+
+        .variant-option.selected {
+            border-color: #6366f1;
+            background: #6366f1;
+            color: white;
+            box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
+        }
+
+        .variant-option.out-of-stock {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #f8f9fa;
+            color: #6c757d;
+            text-decoration: line-through;
+        }
+
+        .selected-variant-info {
+            margin-top: 12px;
+            padding: 10px;
+            background: #e8f5e8;
+            border-radius: 6px;
+            border-left: 4px solid #28a745;
+            font-size: 12px;
+            display: none;
+        }
+
+        .selected-variant-info.show {
+            display: block;
+        }
+
+        .variant-price {
+            font-weight: 600;
+            color: #6366f1;
+        }
+
+        .variant-stock {
+            color: #28a745;
+            font-size: 11px;
+        }
+
+        .out-of-stock-text {
+            color: #dc3545;
+            font-size: 11px;
+        }
+
+        .product-card {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .variant-toggle-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+            z-index: 10;
+        }
+
+        .variant-toggle-btn:hover {
+            background: #5b5fd1;
+            transform: scale(1.1);
+        }
+
+        .variant-toggle-btn.active {
+            background: #dc3545;
+            transform: rotate(45deg);
+        }
+
+        .cart-btn {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cart-btn.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background: #6c757d !important;
+        }
+
+        .variant-required-text {
+            font-size: 11px;
+            color: #dc3545;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Update existing product card styles */
+        .product-card:hover .variant-toggle-btn {
+            opacity: 1;
+        }
+
+        .product-img {
+            height: 180px; /* Reduced to make room for variant selector */
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .variant-toggle-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 12px;
+                top: 10px;
+                right: 10px;
+            }
+
+            .variant-selector {
+                padding: 12px;
+            }
+
+            .variant-option {
+                padding: 6px 10px;
+                font-size: 11px;
+                min-width: 60px;
+            }
+        }

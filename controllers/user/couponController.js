@@ -6,7 +6,6 @@ const applyCoupon = async (req, res, next) => {
     try {
         if (!req.session.user) return res.redirect("/")
 
-        console.log(req.session.appliedCoupon)
         const { code } = req.body
         if (req.session.appliedCoupon && req.session.appliedCoupon.code === code.toUpperCase()) {
             return res.json({

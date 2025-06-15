@@ -4,8 +4,6 @@ const UserController = require("./userController")
 const bcrypt = require("bcrypt")
 const { findByIdAndUpdate } = require("../../model/order")
 
-
-
 const profilePage = async (req, res, next) => {
     try {
         if (!req.session.user) return res.redirect("/")
@@ -354,7 +352,7 @@ const editPassword = async (req, res, next) => {
             errors['newPassword'] = "password Missmatch"
 
         if (Object.keys(errors).length > 0)
-            return res.render("user/userChangePassword", { user, username, errors })
+            return res.status(400).render("user/userChangePassword", { user, username, errors })
 
         const hashNewPassword = await bcrypt.hash(newPassword, 10);
 
@@ -389,7 +387,6 @@ const setDefaultAddress = async (req, res, next) => {
     }
 
 }
-
 
 module.exports = {
     profilePage,

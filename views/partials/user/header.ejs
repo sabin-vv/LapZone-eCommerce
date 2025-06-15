@@ -61,10 +61,8 @@
         <nav class="navbar navbar-expand-md navbar-dark px-3 py-2">
     <div class="container-fluid flex-column flex-md-row align-items-start align-items-md-center">
 
-      <!-- Top row: Brand, search bar, icons -->
       <div class="d-flex justify-content-between align-items-center w-100 flex-wrap">
         
-        <!-- LapZone -->
         <a class="navbar-brand fw-bold fst-italic fs-2 text-light" href="/">LapZone</a>
 
         <ul class="navbar-nav ms-4 d-none d-md-flex">
@@ -75,12 +73,7 @@
 
         <!-- Search Bar -->
         <form action="/shop" method="GET" class="d-flex align-items-center flex-grow-1 mx-3" style="max-width: 400px;">
-          <input 
-            type="text" 
-            name="search" 
-            class="form-control search-bar" 
-            placeholder="What are you looking for?" 
-            aria-label="Search products">
+          <input type="text" name="search" class="form-control search-bar" placeholder="What are you looking for?"  aria-label="Search products">
           <button type="submit" class="btn btn-outline-light ms-2">
             <i class="bi bi-search"></i>
           </button>
@@ -104,12 +97,7 @@
 
           <% if (user) { %>
   <div class="dropdown">
-    <button 
-      class="btn text-light p-0 d-flex align-items-center gap-1" 
-      type="button" 
-      id="userDropdown" 
-      data-bs-toggle="dropdown" 
-      aria-expanded="false">
+    <button  class="btn text-light p-0 d-flex align-items-center gap-1" type="button"  id="userDropdown" data-bs-toggle="dropdown"  aria-expanded="false">
       <i class="bi bi-person-circle fs-5"></i>
       <span><%= username || user.name %></span> 
     </button>
@@ -125,14 +113,12 @@
         </div>
       </div>
 
-      <!-- Bottom row (ONLY shown on mobile) -->
       <ul class="nav justify-content-center w-100 mt-2 d-flex d-md-none">
         <li class="nav-item"><a class="nav-link text-light" href="/">Home</a></li>
         <li class="nav-item"><a class="nav-link text-light" href="/shop">Shop</a></li>
         <li class="nav-item"><a class="nav-link text-light" href="/about">About</a></li>
       </ul>
 
-      <!-- Inline nav (desktop only) -->
       
 
     </div>

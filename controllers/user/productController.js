@@ -4,10 +4,6 @@ const Wishlist = require("../../model/wishlist")
 
 const listProducts = async (req, res, next) => {
   try {
-    if (!req.session.user) {
-      return res.redirect("/login");
-    }
-
     const user = req.session.user;
     const username = req.session.username
     const searchQuery = req.query.search ? req.query.search.trim() : "";

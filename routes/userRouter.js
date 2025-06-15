@@ -42,7 +42,7 @@ router.post("/reset-password", userController.resetPassword)
 router.post("/logout", userController.userLogout)
 
 
-router.get("/shop", validateUserStatus, productController.listProducts)
+router.get("/shop", productController.listProducts)
 router.get("/shop/product/:id", validateUserStatus, productController.viewProduct)
 
 
@@ -74,7 +74,7 @@ router.post("/cart/update", validateUserStatus, cartController.cartUpdate)
 router.post("/cart/remove-item/:id", validateUserStatus, cartController.removecartItem)
 router.get("/cart/clear-cart", validateUserStatus, cartController.emptyCart)
 
-
+router.post("/user/validate-stock", validateUserStatus, checkoutController.validateStock)
 router.post("/user/checkout", validateUserStatus, checkoutController.proceedToCheckoutPage)
 router.get("/user/checkout",checkoutController.viewCheckoutPage)
 router.post("/user/order", validateUserStatus, checkoutController.orderplace)
