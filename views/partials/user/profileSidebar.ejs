@@ -31,8 +31,8 @@
     </div>
 </div>
 
-<button class="toggle-sidebar d-md-none" aria-label="Toggle sidebar">
-    <i class="fa-solid fa-angle-double-left"></i>
+<button class="toggle-sidebar d-md-none" aria-label="Toggle sidebar" onclick="toggleSidebar()">
+    <i class="fa-solid fa-angle-double-right"></i>
 </button>
 
 <div class="sidebar-overlay"></div>
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (overlay) {
             overlay.classList.remove('active');
         }
-        document.body.style.overflow = '';
+        document.body.style.overflow = 'hidden';
     }
     
     function openSidebar() {
@@ -72,15 +72,27 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     if (toggleBtn) {
+        const icon = toggleBtn.querySelector('i')
+
         toggleBtn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
             
-            if (sidebar && sidebar.classList.contains('active')) {
-                closeSidebar();
-            } else {
-                openSidebar();
+             const isOpen = sidebar.classList.contains('active');
+
+        if (isOpen) {
+            closeSidebar();
+            if (icon) {
+                icon.classList.remove('fa-angle-double-left');
+                icon.classList.add('fa-angle-double-right');
             }
+        } else {
+            openSidebar();
+            if (icon) {
+                icon.classList.remove('fa-angle-double-right');
+                icon.classList.add('fa-angle-double-left');
+            }
+        }
         });
     }
     
@@ -117,4 +129,5 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
 </script>

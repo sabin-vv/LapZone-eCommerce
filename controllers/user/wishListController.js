@@ -3,6 +3,7 @@ const Wishlist = require("../../model/wishlist")
 const mongoose = require("mongoose")
 const Product = require("../../model/products")
 const Cart = require("../../model/cart")
+const User = require("../../model/user")
 
 
 const toggleWishList = async (req, res, next) => {
@@ -51,14 +52,14 @@ const viewWishlist = async (req, res, next) => {
     try {
         if (!req.session.user) return res.redirect("/login")
 
-        const user = req.session.user;
+        const user = await User.findById(req.session.user);
         const wishlist = await Wishlist.findOne({ userId: user }).populate('items.productId')
 
 
         if (wishlist)
-            return res.render("user/wishListPage", { wishlist: wishlist.items, })
+            return res.render("user/wishListPage", { wishlist: wishlist.items, user })
 
-        return res.render("user/wishListPage", { wishlist: null, })
+        return res.render("user/wishListPage", { wishlist: null, user })
     } catch (error) {
         console.error('Error fetching wishlist:', error);
         next(error);
@@ -164,7 +165,6 @@ const addtoCart = async (req, res, next) => {
 
     await cart.save();
 
-    // Remove from wishlist
     const wishlist = await Wishlist.findOne({ userId });
     if (wishlist) {
       wishlist.items = wishlist.items.filter(

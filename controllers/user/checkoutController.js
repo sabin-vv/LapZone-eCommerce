@@ -42,10 +42,13 @@ const proceedToCheckoutPage = async (req, res, next) => {
 const viewCheckoutPage = async (req, res, next) => {
   try {
     if (!req.session.user) return res.redirect("/")
+      
     const userId = req.session.user;
     const addresses = await Address.find({ userId })
     const coupons = await Coupon.find().sort({ createdAt: -1 })
     const cart = await Cart.findOne({ userId }).populate('items.productId');
+    if(!cart)
+      return res.redirect('/cart')
 
     let wallet = await Wallet.findOne({ userId })
     if (!wallet) {

@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="/css/productlisting.css">
     <!-- Add SweetAlert2 CDN -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 </head>
 <body>
     <%- include("../partials/admin/header.ejs") %>
@@ -83,7 +85,9 @@
                                 <td><%= product.name %></td>
                                 <td><%= product.category %></td>
                                 <td>₹<%= product.salePrice.toLocaleString('en-IN') %></td>
-                                <td><%= product.count %></td>
+                                <td><%= product.variants && product.variants.length > 0
+                                    ? product.variants.reduce((sum, v) => sum + (v.stock || 0), 0)
+                                    : 0 %></td>
                                 <td>
                                     <label class="switch">
                                         <input type="checkbox" <%= product.isActive ? "checked" : "" %> onchange="toggleProduct('<%= product._id %>', this)">

@@ -48,7 +48,6 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 app.use((req, res, next) => {
-    
     res.locals.user =  req.session.user || null 
     res.locals.username = req.session.username ||null
     next();

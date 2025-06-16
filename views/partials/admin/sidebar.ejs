@@ -1,29 +1,30 @@
 <body>
-<button class="hamburger-btn" id="hamburgerBtn">&#9776;</button>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<button class="hamburger-btn" id="hamburgerBtn">
+    <span></span>
+</button>
+
 <aside class="sidebar" id="sidebar">
     <div class="logo-container">
-        <button class="close-btn" id="closeBtn">&times;</button>
         <img src="/uploads/logo/logo.png" alt="LapZone Logo">
         <h1 class="sidebar-logo">LapZone</h1>
-        
     </div>
     <nav>
         <ul>
-            <li><a href="/admin/admindashboard" class="sidebar-link" data-page="admindashboard">Dashboard</a></li>
-            <li><a href="/admin/products" class="sidebar-link" data-page="products">Products</a></li>
-            <li><a href="/admin/orders" class="sidebar-link" data-page="orderlist">Order List</a></li>
-            <li><a href="/admin/customers" class="sidebar-link" data-page="customers">Customers</a></li>
-            <li><a href="/admin/sales-report" class="sidebar-link" data-page="sales">Sales</a></li>
-            <li><a href="/admin/category" class="sidebar-link" data-page="category">Category</a></li>
-            <li><a href="/admin/coupons" class="sidebar-link" data-page="coupons">Coupons</a></li>
+            <li><a href="/admin/admindashboard" class="sidebar-link" data-page="admindashboard"><i class="fas fa-chart-line"></i>Dashboard</a></li>
+            <li><a href="/admin/products" class="sidebar-link" data-page="products"><i class="fas fa-box"></i>Products</a></li>
+            <li><a href="/admin/orders" class="sidebar-link" data-page="orderlist"><i class="fas fa-clipboard-list"></i>Order List</a></li>
+            <li><a href="/admin/customers" class="sidebar-link" data-page="customers"><i class="fas fa-users"></i>Customers</a></li>
+            <li><a href="/admin/sales-report" class="sidebar-link" data-page="sales"><i class="fas fa-chart-bar"></i>Sales</a></li>
+            <li><a href="/admin/category" class="sidebar-link" data-page="category"><i class="fas fa-tags"></i>Category</a></li>
+            <li><a href="/admin/coupons" class="sidebar-link" data-page="coupons"><i class="fas fa-ticket-alt"></i>Coupons</a></li>
+        </ul>
     </nav>
     
     <form action="/admin/adminlogout" method="post">
         <button type="submit" class="logout-btn">Logout</button>
     </form>
-    <!-- Hamburger Button -->
-
-
 </aside>
 
 <script>
@@ -48,31 +49,73 @@
     document.addEventListener('DOMContentLoaded', () => {
         setActiveSidebarLink();
 
+        const sidebar = document.getElementById('sidebar');
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        // Toggle sidebar function
+        function toggleSidebar() {
+            const isOpen = sidebar.classList.contains('open');
+            
+            if (isOpen) {
+                sidebar.classList.remove('open');
+                hamburgerBtn.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            } else {
+                sidebar.classList.add('open');
+                hamburgerBtn.classList.add('active');
+                sidebarOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        // Hamburger button click
+        if (hamburgerBtn) {
+            hamburgerBtn.addEventListener('click', toggleSidebar);
+        }
+
+        // Overlay click to close sidebar
+        if (sidebarOverlay) {
+            sidebarOverlay.addEventListener('click', () => {
+                if (sidebar.classList.contains('open')) {
+                    toggleSidebar();
+                }
+            });
+        }
+
+        // Close sidebar when clicking on links (mobile)
         const sidebarLinks = document.querySelectorAll('.sidebar-link');
         sidebarLinks.forEach(link => {
             link.addEventListener('click', function (e) {
+                // Close sidebar on mobile when clicking a link
+                if (window.innerWidth <= 768) {
+                    setTimeout(() => {
+                        toggleSidebar();
+                    }, 100);
+                }
+                
                 sidebarLinks.forEach(l => l.classList.remove('active'));
                 this.classList.add('active');
-                window.location.href = this.getAttribute('href');
             });
         });
 
-        // Sidebar toggling
-        const sidebar = document.getElementById('sidebar');
-        const hamburgerBtn = document.getElementById('hamburgerBtn');
-        const closeBtn = document.getElementById('closeBtn');
-
-        if (hamburgerBtn && sidebar) {
-            hamburgerBtn.addEventListener('click', () => {
-                sidebar.classList.add('open');
-            });
-        }
-
-        if (closeBtn && sidebar) {
-            closeBtn.addEventListener('click', () => {
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
                 sidebar.classList.remove('open');
-            });
-        }
+                hamburgerBtn.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+
+        // Prevent body scroll when sidebar is open on mobile
+        sidebar.addEventListener('touchmove', (e) => {
+            if (sidebar.classList.contains('open')) {
+                e.stopPropagation();
+            }
+        });
     });
 </script>
 </body>

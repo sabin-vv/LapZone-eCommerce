@@ -454,9 +454,12 @@
         }
         
         function updateMetricsFromData() {
-            const totalOrders = reportData.length;
-            const totalRevenue = reportData.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
-            const totalDiscount = reportData.reduce((sum, order) => sum + (order.discountAmount || 0), 0);
+            const validOrders = reportData.filter(order =>
+                order.orderStatus !== 'Cancelled' && order.orderStatus !== 'Returned'
+            );
+            const totalOrders = validOrders.length;
+            const totalRevenue = validOrders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
+            const totalDiscount = validOrders.reduce((sum, order) => sum + (order.discountAmount || 0), 0);
             const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
             
             document.getElementById('totalOrdersDisplay').textContent = totalOrders;
@@ -491,7 +494,8 @@
             
             try {
                 const dateGroups = {};
-                reportData.forEach(order => {
+                reportData.filter(order => order.orderStatus !== 'Cancelled' && order.orderStatus !== 'Returned')
+                .forEach(order => {
                     const date = new Date(order.createdAt).toLocaleDateString('en-IN');
                     if (!dateGroups[date]) {
                         dateGroups[date] = { revenue: 0, orders: 0 };
@@ -589,7 +593,8 @@
             
             try {
                 const paymentMethods = {};
-                reportData.forEach(order => {
+                reportData.filter(order => order.orderStatus !== 'Camcelled' && order.orderStatus !== 'Returned')
+                .forEach(order => {
                     const method = order.paymentMethod || 'Unknown';
                     paymentMethods[method] = (paymentMethods[method] || 0) + 1;
                 });
@@ -836,7 +841,8 @@
         const maxRowsPerPage = 30;
         let rowCount = 0;
 
-        filteredData.forEach((order, index) => {
+        const exportOrders = filterData.filter(order => order.orderStatus !== 'Cancelled' && order.orderStatus !== 'Returned' )
+        exportOrders.forEach((order, index) => {
             if (rowCount >= maxRowsPerPage) {
                 doc.addPage();
                 yPos = 30;

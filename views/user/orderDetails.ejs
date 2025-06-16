@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="/css/order-details.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+ 
 </head>
 <body>
     
@@ -22,6 +23,15 @@
         <%- include("../partials/user/profileSidebar.ejs") %>
         
         <div class="order-container">
+            <div class="breadcrumb">
+            <a href="/profile">Profile</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>My Orders</span>
+        </div>
+            <div class="page-title">
+                <i class="fa fa-thin fa-clipboard-list" style="color: #6366f1;"></i>
+                <h2>My Orders</h2>
+            </div>
             <% if (orders && orders.length > 0) { %>
                 <% orders.forEach(order => { %>
                     <div class="order-card">

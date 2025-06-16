@@ -1,6 +1,7 @@
 const Coupon = require("../../model/coupon")
 const Cart = require('../../model/cart')
 const Order = require("../../model/order")
+const User =  require("../../model/user")
 
 const applyCoupon = async (req, res, next) => {
     try {
@@ -100,10 +101,11 @@ const applyCoupon = async (req, res, next) => {
 const viewCouponPage = async (req, res, next) => {
     try {
         if (!req.session.user) return res.redirect("/login")
+            const user = await User.findById(req.session.user)
 
         const coupons = await Coupon.find({ isActive: true })
 
-        return res.render("user/viewCouponPage", { coupons })
+        return res.render("user/viewCouponPage", { coupons ,user})
     } catch (error) {
         console.error('Error fetching coupons:', error);
         next(error);

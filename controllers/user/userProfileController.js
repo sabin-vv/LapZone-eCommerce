@@ -299,10 +299,11 @@ const deleteAddress = async (req, res, next) => {
     }
 }
 
-const changePassword = (req, res, next) => {
+const changePassword = async  (req, res, next) => {
     try {
         if (!req.session.user) return res.redirect("/")
-        const user = req.session.user;
+        const user = await User.findById(req.session.user);
+        
         const username = req.session.username || req.session.user.fullname
 
         res.render("user/userchangePassword", { user, username, errors: null })

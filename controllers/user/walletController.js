@@ -24,7 +24,7 @@ const viewWalletPage = async (req, res, next) => {
             await wallet.save()
         }
 
-        return res.render("user/wallet", { wallet: wallet, })
+        return res.render("user/wallet", { wallet: wallet, user })
 
     } catch (error) {
         console.error('Error fetching wallet page:', error);

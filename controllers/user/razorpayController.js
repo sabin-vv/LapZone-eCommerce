@@ -10,57 +10,25 @@ const razorpay = new Razorpay({
 })
 
 const createRazoroay = async (req, res, next) => {
-  const { amount, shippingAddress } = req.body;
-  const userId = req.session.user
-
+  const { amount } = req.body;
   try {
-    const cart = await Cart.findOne({ userId }).populate('items.productId')
-    if (!cart)
-      return res.json({ success: false, message: "Cart is empty" })
-
     const order = await razorpay.orders.create({
       amount: parseInt(amount) * 100,
       currency: 'INR',
-      receipt: 'receipt_' + Date.now()
+      receipt: 'receipt_' + Date.now(),
     });
 
-    const orderId = 'LPZ-' + uuidv4().replace(/\D/g, '').slice(0, 15);
-
-    const newOrder = new Order({
-      orderId,
-      user: userId,
-      items: cart.items.map(item => ({
-        productId: item.productId._id,
-        productName: item.productId.name,
-        quantity: item.quantity,
-        price: item.productId.salePrice,
-        status: 'Ordered'
-      })),
-      subtotal: cart.items.reduce((sum, item) => sum + item.productId.salePrice * item.quantity, 0),
-      shippingFee: 50,
-      tax: Math.round(cart.items.reduce((sum, item) => sum + item.productId.salePrice * item.quantity, 0) * 0.05),
-      totalAmount: parseInt(amount),
-      paymentMethod: 'Online',
-      paymentStatus: 'Pending',
-      orderStatus: 'Processing',
-      statusHistory: [{ status: 'Processing', current: true }],
-      shippingAddress
-    });
-
-    await newOrder.save();
-
-    res.json({
+    return res.json({
       success: true,
       orderId: order.id,
       amount: order.amount,
-      key: process.env.RAZORPAY_KEY_ID
+      key: process.env.RAZORPAY_KEY_ID,
     });
   } catch (error) {
     console.error('Error creating Razorpay order:', error);
     next(error);
   }
-
-}
+};
 
 const retryRazorpay = async (req, res, next) => {
   try {

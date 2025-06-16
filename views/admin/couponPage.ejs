@@ -127,35 +127,38 @@
         }
 
         .section-title {
+            display: flex;
+            justify-content: space-between;
             padding: 20px;
             font-size: 18px;
             font-weight: 600;
             color: #333;
             border-bottom: 1px solid #eee;
+            
         }
         .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    transition: 0.4s;
-    border-radius: 34px;
-}
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 34px;
+        }
 
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 20px;
-    width: 20px;
-    left: 4px;
-    bottom: 3px;
-    background-color: white;
-    transition: 0.4s;
-    border-radius: 50%;
-}
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
 
         .table-container {
             overflow-x: auto;
@@ -305,24 +308,16 @@
         <!-- Main Content Wrapper -->
         <div class="content-wrapper">
             <!-- Filters Section -->
-            <div class="filters-section">
+           
+
+            <!-- Table Section -->
+            <div class="section-title">
+                <h2>All Coupons</h2>
                 <div class="search-box">
                     <input type="text" placeholder="Search coupon code..." id="searchInput">
                     <i class="fas fa-search"></i>
                 </div>
-                
-                <!-- <div class="filter-buttons">
-                    <button class="filters-toggle">
-                        <i class="fas fa-filter"></i> Filters
-                    </button>
-                    <button class="filter-btn active" data-filter="all">ALL</button>
-                    <button class="filter-btn" data-filter="active">ACTIVE</button>
-                    <button class="filter-btn" data-filter="inactive">INACTIVE</button>
-                </div> -->
             </div>
-
-            <!-- Table Section -->
-            <div class="section-title">Available coupons</div>
             
             <div class="table-container">
                 <table class="coupons-table">

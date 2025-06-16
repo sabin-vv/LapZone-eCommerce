@@ -74,20 +74,11 @@
                           </div>
                         </div>
                         <div class="address-details">
-                          <p class="mb-1">
-                            <%= defaultAddress.fullname %>
-                          </p>
-                          <p class="mb-1">
-                            <%= defaultAddress.addressLine %>
-                          </p>
-                          <p class="mb-1">
-                            <%= defaultAddress.city %>, <%= defaultAddress.district %>
-                          </p>
-                          <p class="mb-1">
-                            <%= defaultAddress.state %> - <%= defaultAddress.pincode %>
-                          </p>
-                          <p class="mb-0">Phone: (+91) <%= defaultAddress.mobile %>
-                          </p>
+                          <p class="mb-1"><%= defaultAddress.fullname %></p>
+                          <p class="mb-1"> <%= defaultAddress.addressLine %></p>
+                          <p class="mb-1"> <%= defaultAddress.city %>, <%= defaultAddress.district %></p>
+                          <p class="mb-1"> <%= defaultAddress.state %> - <%= defaultAddress.pincode %> </p>
+                          <p class="mb-0">Phone: (+91) <%= defaultAddress.mobile %></p>
                         </div>
                       </div>
                       <% } %>
@@ -122,20 +113,11 @@
                                     </div>
                                   </div>
                                   <div class="address-details">
-                                    <p class="mb-1">
-                                      <%= address.fullname %>
-                                    </p>
-                                    <p class="mb-1">
-                                      <%= address.addressLine %>
-                                    </p>
-                                    <p class="mb-1">
-                                      <%= address.city %>, <%= address.district %>
-                                    </p>
-                                    <p class="mb-1">
-                                      <%= address.state %> - <%= address.pincode %>
-                                    </p>
-                                    <p class="mb-0">Phone: (+91) <%= address.mobile %>
-                                    </p>
+                                    <p class="mb-1"><%= address.fullname %></p>
+                                    <p class="mb-1"><%= address.addressLine %></p>
+                                    <p class="mb-1"><%= address.city %>, <%= address.district %></p>
+                                    <p class="mb-1"><%= address.state %> - <%= address.pincode %> </p>
+                                    <p class="mb-0">Phone: (+91) <%= address.mobile %></p>
                                   </div>
                                 </div>
                                 <% }) %>
@@ -166,8 +148,7 @@
                     class="form-check-input me-2" />
                   <i class="bi bi-wallet payment-icon"></i>
                   <label for="Wallet" class="mb-0 flex-grow-1">LapZone Wallet</label>
-                  <span class="ms-auto badge bg-secondary">₹<%= wallet ? wallet.balance.toLocaleString('en-IN') : 0 %>
-                      Available</span>
+                  <span class="ms-auto badge bg-secondary">₹<%= wallet ? wallet.balance.toLocaleString('en-IN') : 0 %> Available</span>
                 </div>
 
                 <div class="payment-option" data-payment-method="Online">
@@ -194,11 +175,8 @@
                     <div class="checkout-section">
                       <% if (cart && cart.length> 0) { %> <% cart.forEach(item=> { %>
                           <div class="product-item">
-                            <% const mainImage=item.productId.images.find(img=> img.isMain
-                              === true) %>
-                              <img
-                                src="<%= mainImage?.url || 'https://placehold.co/80x80/cccccc/333333?text=No+Image' %>"
-                                alt="<%= item.productId.name %>" class="product-image" />
+                            <% const mainImage=item.productId.images.find(img=> img.isMain === true) %>
+                              <img src="<%= mainImage?.url || 'https://placehold.co/80x80/cccccc/333333?text=No+Image' %>"alt="<%= item.productId.name %>" class="product-image" />
                               <div class="product-details">
                                 <div class="product-name">
                                   <%= item.productId.name %>
@@ -229,10 +207,7 @@
                         <i class="bi bi-tags me-1"></i> View Coupons
                       </button>
 
-                      <button class="btn btn-primary coupon-button"
-                        onclick="applyCoupon(document.getElementById('couponCodeInput').value);">
-                        Apply
-                      </button>
+                      <button class="btn btn-primary coupon-button" onclick="applyCoupon(document.getElementById('couponCodeInput').value);"> Apply </button>
                     </div>
                     <div class="checkout-section mt-4">
                       <div class="order-summary-item">
@@ -266,13 +241,10 @@
                     <% } else { %>
                       <div class="checkout-card">
                         <h3 class="checkout-title">Order Summary</h3>
-                        <p class="text-muted text-center">
-                          No order summary available. Please add items to your cart.
-                        </p>
+                        <p class="text-muted text-center"> No order summary available. Please add items to your cart.</p>
                         <div class="text-center mt-3">
                           <a href="/cart" class="text-decoration-none text-blue-600 hover:text-blue-800">
-                            <i class="bi bi-arrow-left me-1"></i> Go to Cart
-                          </a>
+                            <i class="bi bi-arrow-left me-1"></i> Go to Cart </a>
                         </div>
                       </div>
                       <% } %>
@@ -292,9 +264,7 @@
 
     <div class="offcanvas offcanvas-end coupon-offcanvas" tabindex="-1" id="couponSidebar" aria-labelledby="couponSidebarLabel">
     <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="couponSidebarLabel">
-            Available Coupons
-        </h5>
+        <h5 class="offcanvas-title" id="couponSidebarLabel"> Available Coupons</h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body">
@@ -323,9 +293,7 @@
                             Valid until: <%= coupon.expiryDate.toLocaleDateString() %>
                         </div>
                         
-                        <button class="apply-coupon-btn" onclick="applyCoupon('<%= coupon.code %>')">
-                            Apply Coupon
-                        </button>
+                        <button class="apply-coupon-btn" onclick="applyCoupon('<%= coupon.code %>')"> Apply Coupon</button>
                     </div>
                 </div>
             <% }) %>
@@ -491,12 +459,8 @@
           <div class="modal-footer">
             <button type="submit" class="btn btn-primary">
               <span id="addAddressSpinner" class="spinner-border spinner-border-sm me-2 d-none" role="status"
-                aria-hidden="true"></span>
-              Save Address
-            </button>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-              Cancel
-            </button>
+                aria-hidden="true"></span> Save Address </button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"> Cancel</button>
           </div>
         </form>
       </div>
@@ -510,17 +474,15 @@
       // Add this to your existing JavaScript in the checkout page
 
       document.addEventListener("DOMContentLoaded", () => {
-        // Find all "Add New Address" buttons and attach event listeners
         const addAddressButtons = document.querySelectorAll(
           ".btn-outline-primary"
         );
-        const bootstrap = window.bootstrap; // Declare the bootstrap variable
-        const iziToast = window.iziToast; // Declare the iziToast variable
+        const bootstrap = window.bootstrap; 
+        const iziToast = window.iziToast; 
 
         addAddressButtons.forEach((button) => {
           if (button.textContent.includes("Add New Address")) {
             button.addEventListener("click", () => {
-              // Open the add address modal
               const addAddressModal = new bootstrap.Modal(
                 document.getElementById("addAddressModal")
               );
@@ -584,12 +546,10 @@
               position: "bottomRight",
             });
 
-            // Reload page to show new address
             setTimeout(() => {
               location.reload();
             }, 1000);
           } else if (result.errors) {
-            // Display validation errors
             for (const [key, msg] of Object.entries(result.errors)) {
               const errorField = document.getElementById(`newError-${key}`);
               if (errorField) {

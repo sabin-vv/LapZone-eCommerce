@@ -4,17 +4,29 @@ const salesReportPage = async (req, res, next) => {
     if (!req.session.admin) return res.redirect("/admin");
 
     try {
-        // Get basic data for initial page load
-        const orders = await Order.find()
+        const orders = await Order.find({orderStatus: { $nin: ['Cancelled', 'Returned'] }})
             .populate('user', 'fullname email')
             .populate('items.productId', 'productName images')
             .sort({ createdAt: -1 })
-            .limit(100); // Limit for initial load
+            .limit(100); 
 
         const totalOrders = await Order.countDocuments();
         const totalRevenue = await Order.aggregate([
-            { $group: { _id: null, total: { $sum: "$totalAmount" } } }
-        ]);
+            { $unwind: "$statusHistory" },
+            { $match: { "statusHistory.current": true } },
+            {
+                $match: {
+                "statusHistory.status": { $nin: ["Cancelled", "Returned"] },
+                paymentStatus: "Completed"
+                }
+            },
+            {
+                $group: {
+                _id: null,
+                total: { $sum: "$totalAmount" }
+                }
+            }
+            ]);
         const totalDiscount = await Order.aggregate([
             { $group: { _id: null, total: { $sum: "$discountAmount" } } }
         ]);
@@ -35,7 +47,6 @@ const getSalesReportData = async (req, res, next) => {
     try {
         const { filterType, startDate, endDate } = req.query;
 
-        // Build date filter based on filterType
         let dateFilter = {};
         const now = new Date();
 
@@ -78,13 +89,11 @@ const getSalesReportData = async (req, res, next) => {
                 break;
         }
 
-        // Fetch filtered orders
         const orders = await Order.find(dateFilter)
             .populate('user', 'fullname email')
             .populate('items.productId', 'productName images')
             .sort({ createdAt: -1 });
 
-        // Calculate summary
         const summary = {
             totalOrders: orders.length,
             totalRevenue: orders.reduce((sum, order) => sum + order.totalAmount, 0),

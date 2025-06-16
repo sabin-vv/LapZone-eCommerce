@@ -5,18 +5,37 @@
 }
 
 body {
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background: linear-gradient(135deg, #f1f3f4 0%, #e8eaf6 50%, #f3e5f5 100%);
   color: #2d3748;
   min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Overlay for mobile */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.sidebar-overlay.active {
+  display: block;
+  opacity: 1;
 }
 
 /* Sidebar Styles */
 .sidebar {
-  width: 250px;
+  margin: 2rem 0;
+  width: 280px;
   background: linear-gradient(145deg, #ffffff 0%, #f8fafc 50%, #ffffff 100%);
-  margin-top: 2rem;
   top: 0;
   left: 0;
   height: fit-content;
@@ -25,9 +44,9 @@ body {
   transform: translateX(0);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   border-right: 1px solid #e2e8f0;
+  border-radius: 15px;
   box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15), 0 2px 10px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(20px);
-  border-radius: 15px;
 }
 
 .sidebar::before {
@@ -37,11 +56,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    145deg,
-    rgba(99, 102, 241, 0.03) 0%,
-    rgba(236, 72, 153, 0.03) 100%
-  );
+  background: linear-gradient(145deg, rgba(99, 102, 241, 0.03) 0%, rgba(236, 72, 153, 0.03) 100%);
   pointer-events: none;
 }
 
@@ -54,11 +69,7 @@ body {
   gap: 16px;
   border-bottom: 1px solid rgba(226, 232, 240, 0.6);
   position: relative;
-  background: linear-gradient(
-    135deg,
-    rgba(99, 102, 241, 0.05) 0%,
-    rgba(236, 72, 153, 0.05) 100%
-  );
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(236, 72, 153, 0.05) 100%);
 }
 
 .logo-container::after {
@@ -68,13 +79,7 @@ body {
   left: 24px;
   right: 24px;
   height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    #6366f1,
-    #ec4899,
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, #6366f1, #ec4899, transparent);
   opacity: 0.3;
 }
 
@@ -137,12 +142,7 @@ body {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(99, 102, 241, 0.1),
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
   transition: left 0.6s ease;
 }
 
@@ -151,11 +151,7 @@ body {
 }
 
 .sidebar a:hover {
-  background: linear-gradient(
-    135deg,
-    rgba(99, 102, 241, 0.08) 0%,
-    rgba(236, 72, 153, 0.08) 100%
-  );
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(236, 72, 153, 0.08) 100%);
   color: #475569;
   border-color: rgba(99, 102, 241, 0.2);
   transform: translateX(8px) scale(1.02);
@@ -220,12 +216,7 @@ body {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(99, 102, 241, 0.1),
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
   transition: left 0.6s ease;
 }
 
@@ -245,16 +236,6 @@ body {
   transform: translateY(-1px) scale(1.01);
 }
 
-/* Account Button Special Styling */
-.sidebar button.account-btn {
-  margin-bottom: 12px;
-}
-
-.sidebar button.account-btn:hover {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  border-color: #10b981;
-}
-
 /* Logout Button Special Styling */
 form button.logout-btn {
   background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
@@ -269,24 +250,27 @@ form button.logout-btn:hover {
   border-color: #ef4444;
 }
 
-/* Main Content */
 
 
 /* Hamburger Button */
 .hamburger-btn {
   display: none;
   position: fixed;
-  top: 24px;
-  left: 24px;
+  top: 20px;
+  left: 20px;
   z-index: 1001;
   background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
   color: #ffffff;
   border: none;
-  padding: 14px;
+  padding: 12px;
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+  width: 48px;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
 }
 
 .hamburger-btn:hover {
@@ -294,26 +278,48 @@ form button.logout-btn:hover {
   box-shadow: 0 12px 35px rgba(99, 102, 241, 0.4);
 }
 
-/* Close Button */
-.close-btn {
-  display: none;
-  background: none;
-  border: none;
-  color: #64748b;
-  font-size: 24px;
-  cursor: pointer;
-  position: absolute;
-  top: 24px;
-  right: 24px;
+.hamburger-btn span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: #ffffff;
+  border-radius: 1px;
   transition: all 0.3s ease;
-  border-radius: 8px;
-  padding: 8px;
+  position: relative;
 }
 
-.close-btn:hover {
-  color: #ef4444;
-  background: rgba(239, 68, 68, 0.1);
-  transform: rotate(90deg) scale(1.1);
+.hamburger-btn span::before,
+.hamburger-btn span::after {
+  content: '';
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: #ffffff;
+  border-radius: 1px;
+  position: absolute;
+  transition: all 0.3s ease;
+}
+
+.hamburger-btn span::before {
+  top: -6px;
+}
+
+.hamburger-btn span::after {
+  bottom: -6px;
+}
+
+.hamburger-btn.active span {
+  background: transparent;
+}
+
+.hamburger-btn.active span::before {
+  transform: rotate(45deg);
+  top: 0;
+}
+
+.hamburger-btn.active span::after {
+  transform: rotate(-45deg);
+  bottom: 0;
 }
 
 /* Scrollbar Styling */
@@ -389,11 +395,7 @@ form button.logout-btn:hover {
   right: 10%;
   width: 200px;
   height: 200px;
-  background: linear-gradient(
-    135deg,
-    rgba(99, 102, 241, 0.1),
-    rgba(236, 72, 153, 0.1)
-  );
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(236, 72, 153, 0.1));
   border-radius: 50%;
   animation: float 6s ease-in-out infinite;
 }
@@ -405,18 +407,13 @@ form button.logout-btn:hover {
   right: 20%;
   width: 150px;
   height: 150px;
-  background: linear-gradient(
-    135deg,
-    rgba(139, 92, 246, 0.1),
-    rgba(16, 185, 129, 0.1)
-  );
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(16, 185, 129, 0.1));
   border-radius: 50%;
   animation: float 8s ease-in-out infinite reverse;
 }
 
 @keyframes float {
-  0%,
-  100% {
+  0%, 100% {
     transform: translateY(0px) rotate(0deg);
   }
   50% {
@@ -425,10 +422,24 @@ form button.logout-btn:hover {
 }
 
 /* Responsive Design */
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 260px;
+  }
+  
+  .main-content {
+    margin-left: 260px;
+  }
+}
+
 @media (max-width: 768px) {
+  .hamburger-btn {
+    display: flex;
+  }
+
   .sidebar {
     transform: translateX(-100%);
-    width: 260px;
+    width: 280px;
   }
 
   .sidebar.open {
@@ -437,15 +448,7 @@ form button.logout-btn:hover {
 
   .main-content {
     margin-left: 0;
-    padding: 24px 16px;
-  }
-
-  .hamburger-btn {
-    display: block;
-  }
-
-  .close-btn {
-    display: block;
+    padding: 80px 24px 24px;
   }
 
   .sidebar-logo {
@@ -473,7 +476,7 @@ form button.logout-btn:hover {
 
 @media (max-width: 480px) {
   .sidebar {
-    width: 240px;
+    width: 260px;
   }
 
   .sidebar-logo {
@@ -486,11 +489,37 @@ form button.logout-btn:hover {
   }
 
   .main-content {
-    padding: 16px 12px;
+    padding: 80px 16px 16px;
   }
 
   .demo-content {
     padding: 20px;
     border-radius: 16px;
+  }
+
+  .hamburger-btn {
+    width: 44px;
+    height: 44px;
+    top: 16px;
+    left: 16px;
+  }
+}
+
+/* Extra Small Screens */
+@media (max-width: 360px) {
+  .sidebar {
+    width: 240px;
+  }
+  
+  .sidebar-logo {
+    font-size: 20px;
+  }
+  
+  .logo-container {
+    padding: 20px 16px;
+  }
+  
+  .sidebar nav {
+    padding: 0 16px;
   }
 }

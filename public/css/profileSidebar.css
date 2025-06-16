@@ -1,192 +1,319 @@
+/* Enhanced Profile Sidebar Styles */
 .sidebar {
   margin-left: 2rem;
-  width: 280px;
+  width: 300px;
   flex-shrink: 0;
-  background-color: #ffffff;
-  padding: 24px 15px;
-  border-right: 1px solid #e5e7eb;
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+  padding: 0;
+  border: none;
   height: fit-content;
   position: sticky;
-  top: 0;
-  transition: all 0.3s ease;
-  border-radius: 15px;
-  overflow-y: auto;
+  top: 20px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 20px;
+  overflow: hidden;
   z-index: 100;
-  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15), 0 2px 10px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04),
+    0 0 0 1px rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+}
+
+.sidebar:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 25px 30px -5px rgba(0, 0, 0, 0.15),
+    0 15px 15px -5px rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.9);
 }
 
 .profile-header {
   display: flex;
   align-items: center;
-  padding: 0 24px 20px;
-  margin-bottom: 20px;
-  border-bottom: 1px solid #f3f4f6;
+  padding: 32px 24px 24px;
+  margin-bottom: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-bottom: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" patternUnits="userSpaceOnUse" width="100" height="100"><circle cx="20" cy="20" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="40" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="80" r="1.5" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+  opacity: 0.3;
 }
 
 .profile-pic {
-  width: 52px;
-  height: 52px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  margin-right: 14px;
+  margin-right: 16px;
   overflow: hidden;
-  background-color: #f3f4f6;
+  background: linear-gradient(145deg, #ffffff, #f1f5f9);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #e5e7eb;
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 
+    0 8px 16px rgba(0, 0, 0, 0.1),
+    inset 0 2px 4px rgba(255, 255, 255, 0.3);
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.profile-pic:hover {
+  transform: scale(1.05);
+  box-shadow: 
+    0 12px 20px rgba(0, 0, 0, 0.15),
+    inset 0 2px 4px rgba(255, 255, 255, 0.4);
 }
 
 .profile-pic svg {
-  width: 100%;
-  height: 100%;
-  fill: #6b7280;
+  width: 70%;
+  height: 70%;
+  fill: #64748b;
+  transition: all 0.3s ease;
+}
+
+.profile-pic:hover svg {
+  fill: #475569;
+  transform: scale(1.1);
 }
 
 .profile-name {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1f2937;
-  letter-spacing: 0.3px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.5px;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-  max-width: 170px;
+  max-width: 180px;
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-section {
+  margin-bottom: 0;
 }
 
 .sidebar-section h4 {
-  background: #2c3e50;
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
   color: white;
   margin: 0;
-  padding: 15px 20px;
-  font-size: 16px;
+  padding: 18px 24px;
+  font-size: 14px;
   font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar-section h4::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
 }
 
 .sidebar ul {
   list-style: none;
-  padding: 0;
+  padding: 8px 0;
   margin: 0;
-}
-
-.sidebar-link {
-  display: block;
-  width: 100%;
-  text-decoration: none;
-  color: #1f2937;
-  font-weight: 500;
-  border-radius: 8px;
-  transition: background-color 0.2s ease;
-}
-
-.sidebar ul a {
-  text-decoration: none;
-  color: #4b5563;
-  display: block;
-  transition: all 0.2s ease;
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
 }
 
 .sidebar ul li {
-  padding: 14px 24px;
+  margin: 4px 16px;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar ul li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  transition: width 0.3s ease;
+  z-index: 0;
+}
+
+.sidebar ul li:hover::before {
+  width: 4px;
+}
+
+.sidebar ul li.active::before {
+  width: 4px;
+  background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+}
+
+.sidebar-link {
   display: flex;
   align-items: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border-left: 3px solid transparent;
-}
-
-.sidebar ul li:hover {
-  background-color: #f9fafb;
-  border-left: 3px solid #e5e7eb;
-  transform: translateX(4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  -webkit-box: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.sidebar ul li.active {
-  background-color: #f3f4f6;
-  border-left: 3px solid #4f46e5;
-  transform: translateX(4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  -webkit-box: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.sidebar ul li.active a {
-  color: #4f46e5;
-  font-weight: 600;
-}
-
-.sidebar ul li i {
-  margin-right: 12px;
-  font-size: 18px;
-  width: 24px;
-  text-align: center;
-  color: #6b7280;
-  transition: all 0.2s ease;
-}
-
-.sidebar ul li:hover i,
-.sidebar ul li.active i {
-  color: #4f46e5;
-}
-
-.sidebar ul li a {
-  font-size: 15px;
+  width: 100%;
+  text-decoration: none;
+  color: #374151 !important;
   font-weight: 500;
+  padding: 16px 20px;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 1;
+  font-size: 15px;
   letter-spacing: 0.3px;
 }
 
-/* Separator for profile and account sections */
-.sidebar ul li.separator {
-  margin-top: 10px;
+.sidebar ul li:hover .sidebar-link {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(139, 92, 246, 0.08) 100%);
+  color: #1e40af !important;
+  transform: translateX(8px);
+  box-shadow: 
+    0 4px 12px rgba(59, 130, 246, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.sidebar ul li.active .sidebar-link {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+  color: #065f46 !important;
+  font-weight: 600;
+  transform: translateX(8px);
+  box-shadow: 
+    0 4px 12px rgba(16, 185, 129, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.sidebar ul li i {
+  margin-right: 16px;
+  font-size: 18px;
+  width: 20px;
+  text-align: center;
+  color: #6b7280;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar ul li:hover i {
+  color: #1e40af;
+  transform: scale(1.1);
+}
+
+.sidebar ul li.active i {
+  color: #065f46;
+  transform: scale(1.1);
+}
+
+/* Badge styling for counts */
+.sidebar-link:has([data-count])::after {
+  content: attr(data-count);
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  margin-left: auto;
+  min-width: 20px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+}
+
+/* Add this to ensure no browser default margins/padding interfere */
+body {
+  margin: 0;
   padding: 0;
-  height: 1px;
-  background-color: #f3f4f6;
-  pointer-events: none;
 }
 
-.sidebar ul li.separator:hover {
-  background-color: #f3f4f6;
-  border-left: 3px solid transparent;
+/* Ensure full edge alignment */
+.toggle-sidebar {
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+}
+.sidebar-section:not(:first-child) .sidebar ul {
+  padding-top: 8px;
 }
 
-/* Logout specific style */
-.sidebar ul li.logout a {
-  color: #ef4444;
+.sidebar-section:not(:last-child) .sidebar ul {
+  padding-bottom: 0;
+}
+.sidebar ul li:last-child .sidebar-link {
+  color: #dc2626 !important;
+  margin-top: 8px;
 }
 
-.sidebar ul li.logout i {
-  color: #ef4444;
+.sidebar ul li:last-child:hover .sidebar-link {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(239, 68, 68, 0.1) 100%);
+  color: #991b1b !important;
 }
 
-/* Toggle button - hidden by default */
+.sidebar ul li:last-child i {
+  color: #dc2626;
+}
+
+.sidebar ul li:last-child:hover i {
+  color: #991b1b;
+}
+
+/* Toggle button with enhanced styling - Half circle design */
 .toggle-sidebar {
   display: none;
   position: fixed;
   top: 50%;
   left: 0;
-  background-color: #e9e8f1;
-  color: black;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  color: white;
   border: none;
-  border-radius: 8px;
-  padding: 12px 15px;
-  font-size: 10px;
+  outline: none;
+  border-radius: 0 50px 50px 0;
+  width: 32px;
+  height: 64px;
+  font-size: 16px;
   cursor: pointer;
   z-index: 1002;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-  transition: all 0.2s ease;
-  
+  box-shadow: 
+    2px 4px 12px rgba(59, 130, 246, 0.3),
+    2px 2px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(-50%) translateX(0);
 }
 
 .toggle-sidebar:hover {
-  background-color: #a29ce9;
-  transform: translateY(-2px);
+  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+  transform: translateY(-50%) translateX(4px);
+  box-shadow: 
+    4px 8px 16px rgba(59, 130, 246, 0.4),
+    4px 4px 8px rgba(0, 0, 0, 0.15);
+  width: 36px;
 }
 
 .toggle-sidebar:active {
-  transform: translateY(0);
+  transform: translateY(-50%) translateX(2px);
+  width: 30px;
 }
 
-/* Sidebar overlay - hidden by default */
+/* Enhanced overlay */
 .sidebar-overlay {
   display: none;
   position: fixed;
@@ -194,10 +321,11 @@
   left: 0;
   width: 100%;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.5);
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.6) 100%);
+  backdrop-filter: blur(8px);
   z-index: 1000;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: all 0.3s ease;
   pointer-events: none;
 }
 
@@ -207,55 +335,186 @@
   pointer-events: all;
 }
 
-/* Responsive style for sidebar */
+/* Responsive enhancements */
 @media (max-width: 992px) {
   .sidebar {
     position: fixed;
     left: -100%;
     top: 50%;
     transform: translateY(-50%);
-    width: 280px;
-    height: 90vh;
-    max-height: 90vh;
+    width: 320px;
+    height: 85vh;
+    max-height: 95vh;
     overflow-y: auto;
-    border-radius: 12px;
-    transition: left 0.3s ease;
+    border-radius: 20px;
+    transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1001;
-    box-shadow: 5px 0 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 
+      20px 0 40px rgba(0, 0, 0, 0.2),
+      10px 0 20px rgba(0, 0, 0, 0.1);
+  }
+  .toggle-sidebar{
+    left: 0 !important;
+  }
+  .sidebar.active {
+    left: 16px;
+    max-height: 95vh;
   }
 }
 
-/* Mobile styles */
 @media (max-width: 768px) {
   .toggle-sidebar {
-    display: block !important;
+    left :0 !important;
+    display: flex !important;
   }
+  
   .sidebar {
     position: fixed;
     left: -100%;
-    z-index: 1001;
-    margin-left: 5px;
-    border-radius: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 280px;
+    height: auto;
+    max-height: none;
+    margin-left: 0;
+    border-radius: 20px;
     border-right: none;
-    transition: left 0.3s ease;
-    box-shadow: 5px 0 20px rgba(0, 0, 0, 0.3);
-    overflow-y: auto;
+    transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 
+      20px 0 40px rgba(0, 0, 0, 0.25),
+      10px 0 20px rgba(0, 0, 0, 0.15);
+    overflow-y: visible;
+    z-index: 1001;
   }
 
-  /* Show sidebar when active */
   .sidebar.active {
-    left: 0;
+    left: 16px;
   }
 
-  /* Ensure main content doesn't interfere */
-  .main-content {
-    position: relative;
+  /* Disable hover effects on mobile to prevent flickering */
+  .sidebar:hover {
+    transform: translateY(-50%);
+    box-shadow: 
+      20px 0 40px rgba(0, 0, 0, 0.25),
+      10px 0 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .profile-name {
+    font-size: 18px;
+    max-width: 140px;
+  }
+  
+  .sidebar ul li {
+    margin: 3px 12px;
+  }
+  
+  .sidebar-link {
+    padding: 14px 16px;
+    font-size: 14px;
+  }
+
+  /* Ensure toggle button stays above sidebar */
+  .toggle-sidebar {
+    z-index: 1002;
+    position: fixed;
+    top: 50%;
+    left: 12px;
+  }
+
+  /* Prevent sidebar from covering toggle button */
+  .sidebar.active {
+    left: 80px; /* Move sidebar further right to avoid toggle button */
   }
 }
 
-/* Ensure Bootstrap classes don't interfere */
+/* Smooth scrollbar for sidebar */
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: rgba(241, 245, 249, 0.5);
+  border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+}
+
+/* Disable hover transform on mobile to prevent flickering */
+@media (max-width: 768px) {
+  .sidebar ul li:hover .sidebar-link {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(139, 92, 246, 0.08) 100%);
+    color: #1e40af !important;
+    transform: none; /* Remove transform on mobile */
+    box-shadow: 
+      0 4px 12px rgba(59, 130, 246, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  }
+
+  .sidebar ul li.active .sidebar-link {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+    color: #065f46 !important;
+    font-weight: 600;
+    transform: none; /* Remove transform on mobile */
+    box-shadow: 
+      0 4px 12px rgba(16, 185, 129, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  }
+}
 @media (max-width: 767.98px) {
   .d-md-none {
-    display: block !important;
+    display: flex !important;
   }
+}
+
+/* Add subtle animations for page load */
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.sidebar {
+  animation: slideInFromLeft 0.6s ease-out;
+}
+
+.sidebar ul li {
+  animation: slideInFromLeft 0.6s ease-out;
+  animation-delay: calc(var(--index, 0) * 0.1s);
+}
+
+/* Add ripple effect on click */
+.sidebar-link {
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar-link::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(59, 130, 246, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.sidebar-link:active::after {
+  width: 300px;
+  height: 300px;
 }

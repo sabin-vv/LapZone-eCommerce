@@ -35,13 +35,14 @@
         .main-body {
             display: flex;
             min-height: 100vh;
-            margin-top: 2rem;
+            margin: 2rem 0;
             gap: 30px;
         }
 
         .main-content {
             flex-grow: 1;
             max-width: 800px;
+           
             
         }
         .profile-container {
@@ -267,6 +268,7 @@
             <input type="hidden" name="mobile" id="form-mobile">
         </form>
     </div>
+    <%- include("../partials/user/footer.ejs") %>
 
     <script>
         const userId = "<%= user._id %>";
@@ -279,16 +281,13 @@
             const form = document.getElementById('profile-form');
 
             if (editBtn.innerHTML.includes('EDIT')) {
-                // Switch to edit mode
                 fullName.disabled = false;
                 email.disabled = false;
                 phone.disabled = false;
                 editBtn.innerHTML = '<i class="fas fa-save"></i> SAVE';
                 
-                // Focus on the name field
                 fullName.focus();
             } else {
-                // Save changes
                 fullName.disabled = true;
                 email.disabled = true;
                 phone.disabled = true;
