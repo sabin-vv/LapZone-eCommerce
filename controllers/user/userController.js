@@ -199,7 +199,7 @@ const postSignUp = async (req, res, next) => {
             res.json("Otp send error")
 
         req.session.otp = otp
-        req.session.userData = { fullname, email, mobile, password, refferedBy };
+        req.session.userData = { fullname:fullname.trim(), email, mobile, password, refferedBy };
 
         res.render("user/mailverification", { data: email });
     } catch (error) {

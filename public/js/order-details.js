@@ -1,19 +1,16 @@
 
-// Cancel Item Modal
     function cancelItem(itemId) {
         document.getElementById('cancelItemId').value = itemId;
         const modal = new bootstrap.Modal(document.getElementById('cancelItemModal'));
         modal.show();
     }
 
-    // Return Item Modal
     function returnItem(itemId) {
         document.getElementById('returnItemId').value = itemId;
         const modal = new bootstrap.Modal(document.getElementById('returnItemModal'));
         modal.show();
     }
 
-    // Cancel Order Modal
     function cancelOrder(orderId) {
         document.getElementById('cancelOrderId').value = orderId;
         const modal = new bootstrap.Modal(document.getElementById('cancelOrderModal'));
@@ -36,7 +33,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
             card.classList.toggle('expanded');
 
-            // Update the expand/collapse icon
             if (card.classList.contains('expanded')) {
                 expandIcon.classList.remove('fa-chevron-down');
                 expandIcon.classList.add('fa-chevron-up');
@@ -47,9 +43,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    
-
-    // Handle cancel item confirmation
     document.getElementById('confirmCancelItem').addEventListener('click', function () {
         const itemId = document.getElementById('cancelItemId').value;
         const reason = document.getElementById('cancelReason').value;
@@ -100,7 +93,6 @@ document.addEventListener('DOMContentLoaded', function () {
         modal.hide();
     });
 
-    // Handle return item confirmation
     document.getElementById('confirmReturnItem').addEventListener('click', function () {
         const itemId = document.getElementById('returnItemId').value;
         const reason = document.getElementById('returnReason').value;
@@ -151,7 +143,6 @@ document.addEventListener('DOMContentLoaded', function () {
         modal.hide();
     });
 
-    // Handle cancel order confirmation
     document.getElementById('confirmCancelOrder').addEventListener('click', function () {
         const orderId = document.getElementById('cancelOrderId').value;
         const reason = document.getElementById('orderCancelReason').value;
@@ -204,7 +195,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     
 
-    // Handle return order confirmation
     document.getElementById('confirmReturnOrder').addEventListener('click', function () {
         const orderId = document.getElementById('returnOrderId').value;
         const reason = document.getElementById('orderReturnReason').value;

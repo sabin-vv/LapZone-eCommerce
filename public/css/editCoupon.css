@@ -1,0 +1,309 @@
+* {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background-color: #f8fafc;
+        color: #1e293b;
+      }
+      .coupon-dashboard {
+        display: flex;
+        min-height: 100vh;
+      }
+
+      .main-content {
+        flex: 1;
+        margin-left: 30px;
+        padding: 30px;
+        margin:2rem;
+        background-color: #f8fafc;
+        min-height: 100vh;
+        transition: margin-left 0.3s ease;
+        border-radius: 15px;
+        max-width: 900px;
+      }
+
+      .page-header {
+        margin-bottom: 32px;
+      }
+
+      .page-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 8px;
+      }
+
+      .breadcrumb {
+        color: #64748b;
+        font-size: 14px;
+      }
+
+      .breadcrumb a {
+        color: #06b6d4;
+        text-decoration: none;
+      }
+
+      .error-text {
+        font-size: 13px;
+        color: #e02424;
+        font-weight: 500;
+        font-style: italic;
+      }
+
+      .form-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+        overflow: hidden;
+        max-width: 800px;
+      }
+
+      .form-header {
+        background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+        color: white;
+        padding: 25px;
+        text-align: center;
+      }
+
+      .form-header h2 {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 5px;
+      }
+
+      .form-header p {
+        font-size: 14px;
+        opacity: 0.9;
+      }
+
+      .form-body {
+        padding: 30px;
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 25px;
+      }
+
+      .form-row.full-width {
+        grid-template-columns: 1fr;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .form-group label {
+        font-weight: 500;
+        color: #333;
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
+
+      .form-group label .required {
+        color: #dc3545;
+        margin-left: 3px;
+      }
+
+      .form-group input,
+      .form-group select,
+      .form-group textarea {
+        padding: 12px 15px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        background: #fff;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus,
+      .form-group textarea:focus {
+        outline: none;
+        border-color: #06b6d4;
+        box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+      }
+
+      .form-group input:invalid {
+        border-color: #dc3545;
+      }
+
+      .form-group .help-text {
+        font-size: 12px;
+        color: #666;
+        margin-top: 5px;
+      }
+
+      .form-group .error-text {
+        font-size: 12px;
+        color: #dc3545;
+        margin-top: 5px;
+      }
+
+      .input-group {
+        position: relative;
+      }
+
+      .input-group .input-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #666;
+        z-index: 1;
+      }
+
+      .input-group input {
+        padding-left: 45px;
+      }
+
+      .discount-preview {
+        background: #f8f9fa;
+        border: 2px dashed #dee2e6;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        margin-bottom: 25px;
+      }
+
+      .discount-preview h3 {
+        color: #333;
+        font-size: 16px;
+        margin-bottom: 10px;
+      }
+
+      .discount-preview .preview-value {
+        font-size: 24px;
+        font-weight: bold;
+        color: #28a745;
+        margin-bottom: 5px;
+      }
+
+      .discount-preview .preview-desc {
+        font-size: 12px;
+        color: #666;
+      }
+
+      .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .checkbox-group input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: #06b6d4;
+      }
+
+      .checkbox-group label {
+        margin: 0;
+        font-size: 14px;
+        cursor: pointer;
+      }
+
+      .form-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: flex-end;
+        padding-top: 25px;
+        border-top: 1px solid #e9ecef;
+      }
+
+      .btn {
+        padding: 12px 25px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(6, 182, 212, 0.4);
+      }
+
+      .btn-secondary {
+        background: #6c757d;
+        color: white;
+      }
+
+      .btn-secondary:hover {
+        background: #5a6268;
+      }
+
+      .alert {
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border: 1px solid transparent;
+      }
+
+      .alert-success {
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+        color: #155724;
+      }
+
+      .alert-error {
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+      }
+
+      .loading {
+        pointer-events: none;
+        opacity: 0.7;
+      }
+
+      .loading .btn-primary {
+        background: #6c757d;
+      }
+
+      @media (max-width: 768px) {
+        .main-content {
+          margin-left: 0;
+          padding: 16px;
+        }
+
+        .form-row {
+          grid-template-columns: 1fr;
+          gap: 15px;
+        }
+
+        .form-actions {
+          flex-direction: column;
+        }
+      }
+
+      .conditional-field {
+        opacity: 0.5;
+        pointer-events: none;
+        transition: all 0.3s ease;
+      }
+
+      .conditional-field.enabled {
+        opacity: 1;
+        pointer-events: auto;
+      }

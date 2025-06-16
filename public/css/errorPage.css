@@ -1,0 +1,204 @@
+ * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #333;
+        }
+
+        /* Main layout container */
+        .main-body {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 0;
+        }
+
+        .error-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            text-align: center;
+            max-width: 600px;
+            margin: 0 2rem;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .error-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
+        }
+
+        .error-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #ff6b6b;
+        }
+
+        .error-status {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #2f3542;
+            margin-bottom: 0.5rem;
+        }
+
+        .error-message {
+            font-size: 1.2rem;
+            color: #57606f;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .error-description {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-left: 4px solid #ff6b6b;
+        }
+
+        .error-description h3 {
+            color: #2f3542;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .error-description p {
+            color: #747d8c;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f1f2f6;
+            color: #2f3542;
+            border: 2px solid #ddd;
+        }
+
+        .btn-secondary:hover {
+            background: #e1e2e6;
+            transform: translateY(-2px);
+        }
+
+        .error-details {
+            background: #2f3542;
+            color: #fff;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            line-height: 1.4;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .error-details h4 {
+            color: #ff6b6b;
+            margin-bottom: 1rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .toggle-details {
+            background: none;
+            border: none;
+            color: #667eea;
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Header and footer styling (if needed) */
+        header, footer {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 1rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .main-body {
+                padding: 1rem 0;
+            }
+
+            .error-container {
+                margin: 0 1rem;
+                padding: 1.5rem;
+            }
+
+            .error-status {
+                font-size: 2.5rem;
+            }
+
+            .error-icon {
+                font-size: 3rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+
+        /* Status-specific styling */
+        .status-404 .error-icon::before { content: '🔍'; }
+        .status-403 .error-icon::before { content: '🚫'; }
+        .status-500 .error-icon::before { content: '⚠️'; }
+        .status-default .error-icon::before { content: '❌'; }
