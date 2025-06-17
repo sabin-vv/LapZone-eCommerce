@@ -38,7 +38,6 @@
                 </div>
             </div>
             <div class="container">
-                <!-- Filter and Sort -->
                 <div class="filter-sort">
                     <div class="filter">
                         <select name="category">
@@ -63,7 +62,6 @@
                     </div>
                 </div>
 
-                <!-- Products Table -->
                 <table class="products-table">
                     <thead>
                         <tr>
@@ -322,13 +320,11 @@
                                 `Product has been ${actionText}ed.`,
                                 'success'
                             ).then(() => {
-                                // Update slider text and class without reloading
                                 const slider = checkbox.nextElementSibling;
                                 slider.textContent = isActive ? 'LIST' : 'UNLIST';
                                 slider.className = `slider ${isActive ? 'listed' : 'unlisted'}`;
                             });
                         } else {
-                            // Revert checkbox state on failure
                             checkbox.checked = !isActive;
                             Swal.fire(
                                 'Error!',
@@ -347,7 +343,6 @@
                         );
                     });
                 } else {
-                    // Revert checkbox state if user cancels
                     checkbox.checked = !isActive;
                 }
             });

@@ -15,7 +15,6 @@
     <%- include('../partials/admin/sidebar.ejs') %>
 
     <div class="main-content">
-        <!-- Page Header -->
         <div class="page-header">
             <h1 class="page-title">Coupons</h1>
             
@@ -27,12 +26,8 @@
                 <a href="/admin/dashboard">Dashboard</a> > Coupons
             </div>
 
-        <!-- Main Content Wrapper -->
-        <div class="content-wrapper">
-            <!-- Filters Section -->
-           
+        <div class="content-wrapper">           
 
-            <!-- Table Section -->
             <div class="section-title">
                 <h2>All Coupons</h2>
                 <div class="search-box">
@@ -47,7 +42,6 @@
                         <tr>
                             <th>Code</th>
                             <th>Min purchase</th>
-                            
                             <th>Discount</th>
                             <th>Max redeemable</th>
                             <th>Active</th>
@@ -111,7 +105,6 @@
     </div>
 
     <script>
-        // Filter functionality
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -122,7 +115,6 @@
             });
         });
 
-        // Search functionality
         document.getElementById('searchInput').addEventListener('input', function() {
             const searchTerm = this.value.toLowerCase();
             const rows = document.querySelectorAll('.coupons-table tbody tr');
@@ -137,13 +129,11 @@
             });
         });
 
-        // Toggle status
         document.addEventListener('change', function(e) {
     if (e.target.type === 'checkbox' && e.target.closest('.status-toggle')) {
         const couponId = e.target.dataset.id;
         const isActive = e.target.checked;
 
-        // Optional: show loading feedback
         Swal.showLoading();
 
         fetch('/admin/coupons/toggle-status', {

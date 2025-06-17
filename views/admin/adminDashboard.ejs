@@ -11,7 +11,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
 </head>
 
 <body>
@@ -106,7 +105,6 @@
                     </div>
                 </div>
 
-                <!-- Sales Chart with Filter -->
                 <div class="chart-container">
                     <div class="chart-header">
                         <h2>Sales Overview</h2>
@@ -122,9 +120,7 @@
                     </div>
                 </div>
 
-                <!-- Top Products and Categories -->
                 <div class="top-items-container">
-                    <!-- Best Selling Products -->
                     <div class="top-items-card">
                         <h2>Best Selling Products</h2>
                         <div class="top-items-list" id="top-products">
@@ -132,7 +128,6 @@
                         </div>
                     </div>
 
-                    <!-- Best Selling Categories -->
                     <div class="top-items-card">
                         <h2>Best Selling Categories</h2>
                         <div class="top-items-list" id="top-categories">
@@ -141,9 +136,7 @@
                     </div>
                 </div>
 
-                <!-- Best Selling Brands and Ledger Book -->
                 <div class="top-items-container">
-                    <!-- Best Selling Brands -->
                     <div class="top-items-card">
                         <h2>Best Selling Brands</h2>
                         <div class="top-items-list" id="top-brands">
@@ -151,7 +144,6 @@
                         </div>
                     </div>
 
-                    <!-- Ledger Book Generator -->
                     <div class="top-items-card">
                         <h2>Ledger Book Generator</h2>
                         <div class="ledger-generator">
@@ -174,7 +166,6 @@
                     </div>
                 </div>
 
-                <!-- Recent Orders -->
                 <div class="recent-orders-card">
                     <h2>Recent Orders</h2>
                     <div class="recent-orders-list" id="recent-orders">
@@ -184,7 +175,6 @@
             </div>
     </div>
 
-    <!-- Floating Shapes for Background Effect -->
     <div class="floating-shapes"></div>
 
     <script>
@@ -432,40 +422,6 @@
         ledgerDisplay.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    // Sidebar functionality
-    // function setActiveSidebarLink() {
-    //     const currentPath = window.location.pathname;
-    //     const sidebarLinks = document.querySelectorAll('.sidebar-link');
-    //     const pathSegments = currentPath.split('/').filter(segment => segment);
-    //     const normalizedPath = pathSegments[pathSegments.length - 1] || 'admindashboard';
-
-    //     sidebarLinks.forEach(link => {
-    //         const href = link.getAttribute('href');
-    //         const page = link.getAttribute('data-page');
-
-    //         if (currentPath === href || normalizedPath === page ||
-    //             (href !== '#' && href.includes(normalizedPath))) {
-    //             link.classList.add('active');
-    //         } else {
-    //             link.classList.remove('active');
-    //         }
-    //     });
-    // }
-
-    // setActiveSidebarLink();
-
-    // const sidebarLinks = document.querySelectorAll('.sidebar-link');
-    // sidebarLinks.forEach(link => {
-    //     link.addEventListener('click', function (e) {
-    //         if (link.getAttribute('href') === '#') {
-    //             e.preventDefault();
-    //         }
-    //         sidebarLinks.forEach(l => l.classList.remove('active'));
-    //         this.classList.add('active');
-    //     });
-    // });
-
-    // Mobile sidebar toggle
     const hamburgerBtn = document.getElementById('hamburger-btn');
     const sidebar = document.getElementById('sidebar');
 
@@ -473,7 +429,6 @@
         sidebar.classList.toggle('open');
     });
 
-    // Close sidebar when clicking outside on mobile
     document.addEventListener('click', function (event) {
         const isClickInsideSidebar = sidebar.contains(event.target);
         const isClickOnHamburger = hamburgerBtn.contains(event.target);
@@ -483,7 +438,6 @@
         }
     });
 
-    // Chart filter functionality
     const filterButtons = document.querySelectorAll('.filter-btn');
     filterButtons.forEach(button => {
         button.addEventListener('click', function () {
@@ -493,7 +447,6 @@
         });
     });
 
-    // Initialize sales chart
     const salesChartCtx = document.getElementById('salesChart').getContext('2d');
     let salesChart;
 
@@ -569,20 +522,17 @@
         });
     }
 
-    // Fetch dashboard statistics
     async function fetchDashboardStats() {
         try {
             const response = await fetch('/admin/dashboard-stats');
             if (!response.ok) throw new Error('Failed to fetch dashboard stats');
             const data = await response.json();
 
-            // Update stats cards
             document.getElementById('total-sales').textContent = formatCurrency(data.totalSales);
             document.getElementById('total-orders').textContent = formatNumber(data.totalOrders);
             document.getElementById('total-customers').textContent = formatNumber(data.totalCustomers);
             document.getElementById('total-products').textContent = formatNumber(data.totalProducts);
 
-            // Update percentage changes
             document.getElementById('sales-change').textContent =
                 `${data.salesChange >= 0 ? '+' : ''}${data.salesChange}% from last month`;
             document.getElementById('sales-change').className =
@@ -608,7 +558,6 @@
         }
     }
 
-    // Fetch sales data for chart
     async function fetchSalesData(period) {
         try {
             const response = await fetch(`/admin/sales-data?period=${period}`);
@@ -620,7 +569,6 @@
         }
     }
 
-    // Update chart based on filter
     async function updateChart(filter) {
         const salesData = await fetchSalesData(filter);
         if (!salesData) return;
@@ -630,7 +578,6 @@
         salesChart.update();
     }
 
-    // Fetch top selling products
     async function fetchTopProducts() {
         try {
             const response = await fetch('/admin/top-products');
@@ -659,7 +606,6 @@
         }
     }
 
-    // Fetch top selling categories
     async function fetchTopCategories() {
         try {
             const response = await fetch('/admin/top-categories');
@@ -687,7 +633,6 @@
         }
     }
 
-    // Fetch top selling brands
     async function fetchTopBrands() {
         try {
             const response = await fetch('/admin/top-brands');
@@ -715,7 +660,6 @@
         }
     }
 
-    // Fetch recent orders
     async function fetchRecentOrders() {
         try {
             const response = await fetch('/admin/recent-orders');
@@ -748,21 +692,18 @@
         }
     }
 
-    // Ledger generator functionality
     const generateLedgerBtn = document.getElementById('generate-ledger');
     const downloadCsvBtn = document.getElementById('download-csv');
     const downloadPdfBtn = document.getElementById('download-pdf');
     const startDateInput = document.getElementById('start-date');
     const endDateInput = document.getElementById('end-date');
 
-    // Set default date values (current month)
     const today = new Date();
     const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
     startDateInput.valueAsDate = firstDayOfMonth;
     endDateInput.valueAsDate = today;
 
-    // Generate Ledger - UPDATED (no more alerts)
     generateLedgerBtn.addEventListener('click', async function() {
         const startDate = startDateInput.value;
         const endDate = endDateInput.value;
@@ -777,7 +718,6 @@
             return;
         }
 
-        // Show loading state
         generateLedgerBtn.innerHTML = `
             <svg class="animate-spin" width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2" stroke-dasharray="37.7" stroke-dashoffset="37.7">
@@ -801,20 +741,17 @@
             
             const result = await response.json();
             
-            // Display ledger data
             displayLedgerData(result.data);
             showNotification(`✅ Ledger generated successfully for ${startDate} to ${endDate}`, 'success');
             
         } catch (error) {
             handleError(error, 'generateLedger');
         } finally {
-            // Reset button state
             generateLedgerBtn.innerHTML = 'Generate Ledger';
             generateLedgerBtn.disabled = false;
         }
     });
 
-    // Download CSV - UPDATED (no more alerts)
     downloadCsvBtn.addEventListener('click', async function () {
         const startDate = startDateInput.value;
         const endDate = endDateInput.value;
@@ -824,7 +761,6 @@
             return;
         }
 
-        // Show loading state
         const originalText = downloadCsvBtn.textContent;
         downloadCsvBtn.innerHTML = `
             <svg class="animate-spin" width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -860,7 +796,6 @@
         }
     });
 
-    // Download PDF - UPDATED (no more alerts)
     downloadPdfBtn.addEventListener('click', async function () {
         const startDate = startDateInput.value;
         const endDate = endDateInput.value;
@@ -870,7 +805,6 @@
             return;
         }
 
-        // Show loading state
         const originalText = downloadPdfBtn.textContent;
         downloadPdfBtn.innerHTML = `
             <svg class="animate-spin" width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -889,7 +823,6 @@
             const blob = await response.blob();
             const url = window.URL.createObjectURL(blob);
             
-            // Open in new tab for HTML-based PDF
             window.open(url, '_blank');
             
             showNotification('📄 PDF report opened in new tab. You can print it as PDF from there.', 'info', 8000);
@@ -902,15 +835,12 @@
         }
     });
 
-    // Initialize dashboard
     async function initializeDashboard() {
         showLoading('Loading dashboard data...');
 
         try {
-            // Initialize chart first
             initializeChart();
 
-            // Fetch all data in parallel
             await Promise.all([
                 fetchDashboardStats(),
                 updateChart('yearly'),
@@ -918,10 +848,7 @@
                 fetchTopCategories(),
                 fetchTopBrands(),
                 fetchRecentOrders()
-            ]);
-
-            
-
+            ]);  
         } catch (error) {
             handleError(error, 'initializeDashboard');
         } finally {
@@ -929,14 +856,12 @@
         }
     }
 
-    // Auto-refresh data every 5 minutes
     setInterval(() => {
         fetchDashboardStats();
         fetchRecentOrders();
         showNotification('🔄 Dashboard data refreshed', 'info', 2000);
     }, 5 * 60 * 1000);
 
-    // Initialize dashboard on page load
     initializeDashboard();
 });
     </script>

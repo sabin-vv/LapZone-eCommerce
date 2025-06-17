@@ -17,9 +17,7 @@
     <div class="dashboard-container">
         <%- include("../partials/admin/sidebar.ejs") %>
         
-        <div class="main-content">
-            
-            
+        <div class="main-content"> 
             <div class="page-header">
                 <h1 class="page-title">
                     <i class="fas fa-chart-line"></i>
@@ -170,7 +168,6 @@
                 </div>
             </div>
             
-            <!-- Data Table -->
             <div class="table-card">
                 <div class="table-header">
                     <div class="table-title">Order Details</div>
@@ -248,9 +245,7 @@
         </div>
     </div>
     
-    <!-- Pass server data to JavaScript -->
     <script>
-        // Server data passed from EJS
         window.serverData = {
             orders: <%- JSON.stringify(orders || []) %>,
             totalOrders: <%= totalOrders || 0 %>,
@@ -264,18 +259,16 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     
     <script>
-        let allOrders = []; // Original data from server
-        let reportData = []; // Filtered data
-        let filteredData = []; // Table filtered data
+        let allOrders = []; 
+        let reportData = []; 
+        let filteredData = []; 
         let currentPage = 1;
         const pageSize = 10;
         let salesChart, paymentChart;
         let activeFilters = {};
         
-        // Initialize page when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
             
-            // Get data from server
             if (window.serverData && window.serverData.orders) {
                 allOrders = window.serverData.orders;
                 reportData = [...allOrders]; // Start with all data
@@ -292,7 +285,6 @@
             try {
                 
                 updateLastUpdated();
-                
                 initializeDatePickers();
                 initializeEventListeners();
                 
@@ -319,7 +311,6 @@
         }
         
         function initializeEventListeners() {
-            // Filter type change
             document.getElementById('filterType').addEventListener('change', function() {
                 const customRange = document.getElementById('customDateRange');
                 if (this.value === 'custom') {
@@ -333,10 +324,8 @@
                 }
             });
             
-            // Real-time search
             document.getElementById('searchInput').addEventListener('input', debounce(filterAndRenderTable, 300));
             
-            // Filter changes
             document.getElementById('statusFilter').addEventListener('change', filterAndRenderTable);
             document.getElementById('startDate').addEventListener('change', function() {
                 if (document.getElementById('filterType').value === 'custom') {
@@ -350,11 +339,9 @@
                 }
             });
             
-            // Chart type change
             document.getElementById('chartType').addEventListener('change', updateSalesChart);
         }
         
-        // Debounce function for performance
         function debounce(func, wait) {
             let timeout;
             return function executedFunction(...args) {
@@ -575,7 +562,6 @@
                     }
                 });
                 
-                // Hide loading and show chart
                 document.getElementById('salesChartLoading').style.display = 'none';
                 document.getElementById('salesChart').style.display = 'block';
                 
@@ -673,7 +659,6 @@
                     (order.user && order.user.email && order.user.email.toLowerCase().includes(searchTerm));
                 
                 const matchesStatus = !statusFilter || order.orderStatus === statusFilter;
-                
                 return matchesSearch && matchesStatus;
             });
             
@@ -1025,16 +1010,16 @@ function exportExcel() {
         const orderWs = XLSX.utils.aoa_to_sheet(orderData);
         
         orderWs['!cols'] = [
-            { width: 15 }, // Order ID
-            { width: 12 }, // Date
-            { width: 20 }, // Customer Name
-            { width: 25 }, // Customer Email
-            { width: 15 }, // Total Amount
-            { width: 15 }, // Discount Amount
-            { width: 15 }, // Final Amount
-            { width: 18 }, // Payment Method
-            { width: 15 }, // Order Status
-            { width: 20 }  // Created At
+            { width: 15 }, 
+            { width: 12 }, 
+            { width: 20 }, 
+            { width: 25 }, 
+            { width: 15 }, 
+            { width: 15 }, 
+            { width: 15 }, 
+            { width: 18 }, 
+            { width: 15 }, 
+            { width: 20 }  
         ];
         
         const headerRange = XLSX.utils.decode_range(orderWs['!ref']);

@@ -35,7 +35,6 @@
             <% if (orders && orders.length > 0) { %>
                 <% orders.forEach(order => { %>
                     <div class="order-card">
-                        <!-- Minimalistic Order Header (Always Visible) -->
                         <div class="order-header">
                             <div>
                                 <h2 class="order-title">Order #<%= order.orderId %></h2>
@@ -47,7 +46,6 @@
                             </div>
                         </div>
                         
-                        <!-- Minimalistic Order Summary (Always Visible) -->
                         <div class="order-summary-mini">
                             <div class="summary-mini-item">
                                 <span class="summary-mini-label">Items</span>
@@ -67,9 +65,7 @@
                             </div>
                         </div>
                         
-                        <!-- Expandable Order Content -->
                         <div class="order-content">
-                            <!-- Order meta information -->
                             <div class="order-meta">
                                 <div class="meta-item">
                                     <span class="meta-label">Order Status</span>
@@ -85,7 +81,6 @@
                                 </div>
                             </div>
                             
-                            <!-- Products table -->
                             <div class="table-responsive">
                                 <table class="product-table">
                                     <thead>
@@ -137,7 +132,6 @@
                                 </table>
                             </div>
                             
-                            <!-- Order summary -->
                             <div class="order-summary">
                                 <div class="summary-item">
                                     <span>Subtotal</span>
@@ -157,7 +151,6 @@
                                 </div>
                             </div>
                             
-                            <!-- Order timeline -->
                             <div class="order-timeline">
                                 <h3 class="section-title">Order Status Timeline</h3>
                                 <div class="tracking-timeline">
@@ -175,7 +168,6 @@
                                 </div>
                             </div>
                             
-                            <!-- Shipping and payment info -->
                             <div class="shipping-details">
                                 <div class="shipping-address">
                                     <h3 class="detail-title">Shipping Address</h3>
@@ -198,7 +190,6 @@
                                 </div>
                             </div>
                             
-                            <!-- Action buttons -->
                             <div class="order-actions">
                                 <% if (order.orderStatus === 'Delivered') { %>
                                     <a href="/profile/order/invoice/<%= order._id %>" class="btn-order-action btn btn-warning text-decoration-none">Download Invoice</a>
@@ -231,7 +222,6 @@
         </div>
     </div>
     
-    <!-- Cancel Item Modal -->
     <div class="modal fade" id="cancelItemModal" tabindex="-1" aria-labelledby="cancelItemModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -267,7 +257,6 @@
         </div>
     </div>
     
-    <!-- Return Item Modal -->
     <div class="modal fade" id="returnItemModal" tabindex="-1" aria-labelledby="returnItemModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -304,7 +293,6 @@
         </div>
     </div>
     
-    <!-- Cancel Order Modal -->
     <div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -342,7 +330,6 @@
         </div>
     </div>
 
-    <!-- Return Order Modal -->
     <div class="modal fade" id="returnOrderModal" tabindex="-1" aria-labelledby="returnOrderModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">

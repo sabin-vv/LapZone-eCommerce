@@ -38,7 +38,6 @@
                         const isExpiringSoon = !isExpired && ((new Date(coupon.expiryDate) - now) / (1000 * 60 * 60 * 24)) <= 3;
                         const isNew = ((now - new Date(coupon.startDate)) / (1000 * 60 * 60 * 24)) <= 3;
                         
-                        // Format dates
                         const startDate = new Date(coupon.startDate).toLocaleDateString('en-US', { 
                             day: 'numeric', 
                             month: 'short', 

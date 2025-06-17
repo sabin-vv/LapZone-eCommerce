@@ -16,10 +16,8 @@
 <body class="bg-gray-100 font-sans">
     <%- include("../partials/admin/header.ejs") %>
     <div class="flex min-h-screen">
-        <!-- Sidebar Partial -->
         <%- include("../partials/admin/sidebar.ejs") %>
 
-            <!-- Main Content -->
             <main class="main-content flex-1 p-6 md:ml-10">
                 <h1 class="text-2xl font-bold mb-6">Product Details</h1>
                 <form id="product-form" class="bg-white p-6 rounded-lg shadow-md" enctype="multipart/form-data"
@@ -144,7 +142,6 @@
                         </div>
                     
 
-                    <!-- Variants Section -->
                     <fieldset class="nested-fieldset mt-6">
                         <legend>Variants</legend>
                         <div id="variants-container" class="space-y-4">
@@ -182,12 +179,10 @@
                             Variant</button>
                     </fieldset>
 
-                    <!-- Ports Section -->
                     <fieldset class="nested-fieldset mt-6">
                         <legend>Ports</legend>
                        <% if(product.ports?.length ){ %>
                             
-                       
                         <div class="form-field-grid">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">USB Type-A</label>
@@ -218,11 +213,9 @@
                        <% } %>
                     </fieldset>
 
-                    <!-- Images Section -->
                     <fieldset class="nested-fieldset mt-6">
                         <legend class="font-semibold text-gray-700">Product Images</legend>
                         <div class="form-grid">
-                            <!-- Main Photo -->
                             <div class="image-container">
                                 <h2 class="text-lg font-medium mb-4">Main Photo</h2>
                                 <input type="hidden" name="productId" value="<%= product._id || '' %>">
@@ -247,7 +240,6 @@
                                     value="<%= product.images?.[0]?.url || '' %>">
                             </div>
 
-                            <!-- Additional Photos -->
                             <div class="image-container">
                                 <h2 class="text-lg font-medium mb-4">Additional Photos</h2>
                                 <div class="photo-grid">
@@ -284,7 +276,6 @@
                         </div>
                     </fieldset>
 
-                    <!-- Show in Shopping Page Checkbox -->
                     <div class="mt-6">
                         <label for="isActive" class="inline-flex items-center text-sm font-medium text-gray-700">
                             <input type="checkbox" id="isActive" name="isActive" <%=product.isActive !==false
@@ -293,7 +284,6 @@
                         </label>
                     </div>
 
-                    <!-- Submit and Cancel Buttons -->
                     <div class="mt-6 flex space-x-4">
                         <button type="submit"
                             class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Update</button>
@@ -538,7 +528,6 @@
             clearImage(currentPreview, currentText, currentAddButton, currentFileInput, currentDeleteButton);
         });
 
-        // Setup for main photo
         setupDragAndDrop(
             document.getElementById('main-drop'),
             document.getElementById('main-file'),
@@ -546,7 +535,6 @@
             document.querySelector('#main-drop .delete-image')
         );
 
-        // Setup for additional photos
         for (let i = 1; i <= 4; i++) {
             setupDragAndDrop(
                 document.getElementById(`additional-drop-${i}`),
@@ -556,7 +544,6 @@
             );
         }
 
-        // Form Validation
         const form = document.getElementById('product-form');
         form.addEventListener('submit', (e) => {
             let hasError = false;

@@ -63,16 +63,14 @@
 
     let countdownInterval;
 
-    // Auto-focus on OTP input
     otpInput.focus();
 
-    // Only allow numbers
     otpInput.addEventListener('input', function () {
         this.value = this.value.replace(/[^0-9]/g, '');
     });
 
     function startCountdown(expiryTime) {
-        clearInterval(countdownInterval); // stop any previous timer
+        clearInterval(countdownInterval); 
 
         countdownInterval = setInterval(() => {
             const now = Date.now();
@@ -91,7 +89,7 @@
                 timerElement.textContent = "00:00";
                 timerElement.style.background = "#e74c3c";
                 resendBtn.style.display = "inline";
-                localStorage.removeItem(EXPIRY_KEY); // cleanup
+                localStorage.removeItem(EXPIRY_KEY); 
             }
         }, 1000);
     }
@@ -237,7 +235,5 @@
         return false;
     }
 </script>
-
 </body>
-
 </html>

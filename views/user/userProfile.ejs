@@ -84,12 +84,10 @@
                 phone.disabled = true;
                 editBtn.innerHTML = '<i class="fas fa-edit"></i> EDIT';
                 
-                // Update hidden form fields
                 document.getElementById('form-name').value = fullName.value;
                 document.getElementById('form-email').value = email.value;
                 document.getElementById('form-mobile').value = phone.value;
                 
-                // Set form action and submit
                 form.action = `/profile/edit-profile/${userId}`;
                 form.submit();
             }

@@ -121,7 +121,6 @@
     <%- include("../partials/user/header.ejs") %>
 
     <div class="product-container">
-      <!-- Product Images -->
       <div class="product-images">
         <div id="mainImageContainer">
           <img src="<%= product.images.find(img => img.isMain)?.url || 'https://placehold.co/600x400' %>" alt="<%= product.name %>" class="main-image" id="mainImage" />
@@ -134,7 +133,6 @@
         </div>
       </div>
 
-      <!-- Product Details -->
       <div class="product-details">
         <nav class="breadcrumb" id="breadcrumb"></nav>
         <div class="product-title-section">

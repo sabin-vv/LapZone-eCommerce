@@ -27,7 +27,6 @@
         </div>
       </div>
 
-      <!-- Server-side error handling (EJS template) -->
       <% if (typeof error !== 'undefined' && error) { %>
         <div class="error-message">
           <i class="fas fa-exclamation-triangle"></i>
@@ -50,14 +49,12 @@
   </div>
 
   <script>
-    // Add loading state to button on form submission
     document.getElementById('forgotForm').addEventListener('submit', function(e) {
       const submitBtn = document.getElementById('submitBtn');
       submitBtn.classList.add('loading');
       submitBtn.innerHTML = 'Sending...';
     });
 
-    // Add floating label effect
     const emailInput = document.getElementById('email');
     const inputIcon = document.querySelector('.input-icon');
 
@@ -68,8 +65,6 @@
         inputIcon.style.color = '#a0aec0';
       }
     });
-
-    
 
     emailInput.addEventListener('focus', function() {
       this.style.borderColor = '#667eea';

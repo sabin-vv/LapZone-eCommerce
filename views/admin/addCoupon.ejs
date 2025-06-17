@@ -31,7 +31,6 @@
         </button>
 
         <div class="main-content">
-          <!-- Page Header -->
           <div class="page-header">
             <h1 class="page-title">Add New Coupon</h1>
             <div class="breadcrumb">
@@ -103,7 +102,6 @@
                           </div>
                         </div>
 
-                        <!-- Discount Preview -->
                         <div class="discount-preview" id="discountPreview" style="display: none">
                           <h3>Discount Preview</h3>
                           <div class="preview-value" id="previewValue">-</div>
@@ -112,7 +110,6 @@
                           </div>
                         </div>
 
-                        <!-- Purchase Requirements -->
                         <div class="form-row">
                           <div class="form-group">
                             <label for="maxDiscountAmount">Maximum Discount Amount (₹)</label>
@@ -143,7 +140,6 @@
                           </div>
                         </div>
 
-                        <!-- Date Range -->
                         <div class="form-row">
                           <div class="form-group">
                             <label for="startDate">Start Date <span class="required">*</span></label>
@@ -166,7 +162,6 @@
                           </div>
                         </div>
 
-                        <!-- Usage Limits -->
                         <div class="form-row">
                           <div class="form-group">
                             <div class="checkbox-group">
@@ -176,7 +171,6 @@
                           </div>
                         </div>
 
-                        <!-- Form Actions -->
                         <div class="form-actions">
                           <a href="/admin/coupons" class="btn btn-secondary">
                             <i class="fas fa-times"></i> Cancel
@@ -203,8 +197,7 @@
         .toISOString()
         .slice(0, 16);
 
-      document
-        .getElementById("discountType")
+      document.getElementById("discountType")
         .addEventListener("change", function () {
           const icon = document.getElementById("discountIcon");
           const maxDiscountGroup = document
@@ -228,7 +221,6 @@
           updatePreview();
         });
 
-      // Update preview when values change
       document
         .getElementById("discountValue")
         .addEventListener("input", updatePreview);
@@ -296,5 +288,4 @@
 
     </script>
 </body>
-
 </html>

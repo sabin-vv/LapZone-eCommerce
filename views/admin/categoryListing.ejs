@@ -154,11 +154,9 @@
                 cancelButtonText: 'Cancel',
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Update the hidden input value
                     isListedInput.value = isListed;
                     form.submit();
                 } else {
-                    // Revert checkbox state
                     checkbox.checked = !isListed;
                 }
             });
@@ -335,7 +333,6 @@
                     });
                 }
             });
-
         }
     </script>
 </body>

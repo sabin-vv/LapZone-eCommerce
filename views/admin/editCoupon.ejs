@@ -30,13 +30,11 @@
         padding: 10px;
         border-radius: 8px;
         cursor: pointer;
-      "
-    >
+      " >
       <i class="fas fa-bars"></i>
     </button>
 
     <div class="main-content">
-      <!-- Page Header -->
       <div class="page-header">
         <h1 class="page-title">Edit Coupon</h1>
         <div class="breadcrumb">
@@ -45,7 +43,6 @@
         </div>
       </div>
 
-      <!-- Form Container -->
       <div class="form-container">
         <div class="form-header">
           <h2><i class="fas fa-ticket-alt"></i> Edit Coupon</h2>
@@ -66,7 +63,6 @@
           <% } %>
 
           <form id="couponForm" action="/admin/coupons/edit/<%= coupon._id %>" method="POST">
-            <!-- Basic Information -->
             <div class="form-row">
               <div class="form-group">
                 <label for="code"
@@ -110,7 +106,6 @@
               </div>
             </div>
 
-            <!-- Discount Preview -->
             <div
               class="discount-preview"
               id="discountPreview"
@@ -122,7 +117,6 @@
               </div>
             </div>
 
-            <!-- Purchase Requirements -->
             <div class="form-row">
               <div class="form-group">
                 <label for="maxDiscountAmount"
@@ -165,7 +159,6 @@
               </div>
             </div>
 
-            <!-- Date Range -->
             <div class="form-row">
               <div class="form-group">
                 <label for="startDate">Start Date <span class="required">*</span></label>
@@ -186,7 +179,6 @@
               </div>
             </div>
 
-            <!-- Usage Limits -->
             <div class="form-row">
               <div class="form-group">
                 <div class="checkbox-group">
@@ -201,7 +193,6 @@
               </div>
             </div>
 
-            <!-- Form Actions -->
             <div class="form-actions">
               <a href="/admin/coupons" class="btn btn-secondary">
                 <i class="fas fa-times"></i> Cancel
@@ -217,7 +208,7 @@
     </div>
 
     <script>
-  document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function () {
     const now = new Date();
     const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
 
@@ -232,7 +223,6 @@
     const previewValue = document.getElementById("previewValue");
     const previewDesc = document.getElementById("previewDesc");
 
-    // Set default dates if empty
     if (!startInput.value) {
       startInput.value = now.toISOString().slice(0, 16);
     }
@@ -241,7 +231,6 @@
       expiryInput.value = nextWeek.toISOString().slice(0, 16);
     }
 
-    // Handle discount type change (icon + maxDiscount field toggle)
     function handleDiscountTypeChange() {
       if (discountType.value === "percentage") {
         discountIcon.className = "fas fa-percent input-icon";
@@ -257,7 +246,6 @@
       }
     }
 
-    // Update the discount preview box
     function updatePreview() {
       const value = parseFloat(discountValue.value) || 0;
       const maxCap = parseFloat(maxDiscountAmount.value) || null;
@@ -279,19 +267,16 @@
       }
     }
 
-    // Form submit - loading indicator
     document.getElementById("couponForm").addEventListener("submit", function () {
       this.classList.add("loading");
       document.querySelector(".btn-primary").innerHTML =
         '<i class="fas fa-spinner fa-spin"></i> Saving...';
     });
 
-    // Auto-uppercase for coupon code
     document.getElementById("code").addEventListener("input", function () {
       this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
     });
 
-    // Event listeners
     discountType.addEventListener("change", () => {
       handleDiscountTypeChange();
       updatePreview();
@@ -300,11 +285,9 @@
     discountValue.addEventListener("input", updatePreview);
     maxDiscountAmount.addEventListener("input", updatePreview);
 
-    // Initial state setup
     handleDiscountTypeChange();
     updatePreview();
   });
 </script>
-
   </body>
 </html>

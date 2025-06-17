@@ -11,12 +11,10 @@
     <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
 </head>
 <body>
-    <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <%- include("../partials/admin/sidebar.ejs") %>
     </aside>
 
-    <!-- Main Content -->
     <main class="main-content">
         <div class="page-header">
             <h1 class="page-title">Order Details</h1>
@@ -28,7 +26,6 @@
         </div>
 
         <div class="order-details-container">
-            <!-- Order Summary -->
             <div class="order-summary card">
                 <h2>Order #<%= order.orderId %></h2>
                 <div class="order-meta">
@@ -59,7 +56,6 @@
                 </div>
             </div>
 
-            <!-- Customer and Shipping Info -->
             <div class="info-cards-container">
                 <div class="customer-shipping card">
                     <div class="customer-info">
@@ -83,7 +79,6 @@
                 </div>
             </div>
 
-            <!-- Items Table -->
             <div class="items-table-container card">
                 <h3><i class="bi bi-box-seam"></i> Items</h3>
                 <div class="table-responsive">

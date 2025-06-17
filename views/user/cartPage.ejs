@@ -20,7 +20,6 @@
     <%- include("../partials/user/header.ejs") %>
     
     <div class="main-container">
-        <!-- Include the improved sidebar -->
         <%- include("../partials/user/profileSidebar.ejs") %>
         
         <div class="content-wrapper p-0 fade-in">
@@ -39,7 +38,6 @@
                     <% } %>
                 </div>
 
-                <!-- Cart Items -->
                 <div class="cart-items">
                     <% if(cart && cart.items && cart.items.length > 0) { %>
                         <% cart.items.forEach(function(item) { %>
@@ -72,7 +70,6 @@
                             </div>
                         <% }); %>
 
-                        <!-- Cart Summary -->
                         <div class="cart-summary">
                             <div class="summary-row">
                                 <div class="summary-label">SUBTOTAL</div>
@@ -95,7 +92,6 @@
                             Shipping, taxes, and discount codes calculated at checkout.
                         </div>
 
-                        <!-- Checkout Actions -->
                         <div class="checkout-actions">
                             <button  onclick="checkoutPage()" class="btn btn-primary checkout-btn">
                                 <i class="fas fa-shopping-bag"></i> Proceed to Checkout

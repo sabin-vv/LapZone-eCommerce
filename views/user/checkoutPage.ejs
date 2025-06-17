@@ -533,13 +533,11 @@
           const result = await response.json();
 
           if (result.success) {
-            // Close modal
             const modal = bootstrap.Modal.getInstance(
               document.getElementById("addAddressModal")
             );
             modal.hide();
 
-            // Show success message
             iziToast.success({
               title: "Success",
               message: "Address added successfully",
@@ -571,7 +569,6 @@
             position: "bottomRight",
           });
         } finally {
-          // Hide spinner and enable button regardless of result
           spinner.classList.add("d-none");
           submitButton.disabled = false;
         }
@@ -943,7 +940,6 @@
         }
       }
 
-      // Declare bootstrap and iziToast variables
       window.bootstrap = window.bootstrap || {};
       window.iziToast = window.iziToast || {};
     </script>
