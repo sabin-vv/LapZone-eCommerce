@@ -210,7 +210,6 @@ const emptyCart = async (req, res, next) => {
 
 }
 
-
 module.exports = {
     viewCartPage,
     addtoCart,
@@ -218,4 +217,3 @@ module.exports = {
     removecartItem,
     emptyCart,
 }
-

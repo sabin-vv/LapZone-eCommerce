@@ -324,7 +324,7 @@
       const basePrice = <%= product.salePrice %>;
       const variants = <%- JSON.stringify(product.variants) %>;
       const finalOffer = <%= Math.max(product.offer || 0, product.categoryId?.offer || 0) %>;
-      const finalOfferedPrice = (basePrice * finalOffer / 100);
+      const finalOfferedPrice = Math.round((basePrice * finalOffer / 100));
 
       let selectedRAM = null;
       let selectedStorage = null;
@@ -372,7 +372,8 @@
       if (selectedRAM && selectedStorage) {
         const variant = variants.find(v => v.RAM === selectedRAM && v.Storage === selectedStorage);
         if (variant) {
-          const finalPrice = basePrice + (variant.priceAdjustment || 0)- finalOfferedPrice;
+          const priceBeforeDiscount = basePrice + (variant.priceAdjustment || 0);
+          const finalPrice = Math.round(priceBeforeDiscount * (1 - finalOffer / 100))
           priceEl.textContent = finalPrice.toLocaleString("en-IN");
           hiddenInput.value = finalPrice;
           return;

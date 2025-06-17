@@ -41,6 +41,7 @@
                                 <p class="order-date">Placed on <%= order.createdAt.toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) %></p>
                             </div>
                             <div class="d-flex align-items-center">
+
                                 <span class="status-badge status-<%= order.orderStatus.toLowerCase() %>"><%= order.orderStatus %></span>
                                 <i class="fas fa-chevron-down expand-icon ms-3"></i>
                             </div>
@@ -191,10 +192,14 @@
                             </div>
                             
                             <div class="order-actions">
+                                <%
+                                const isAllDelivered = order.items.every(item => item.status === 'Delivered');
+                                const hasReturnRejected = order.statusHistory.some(s => s.status === 'Return Rejected');
+                                %>
                                 <% if (order.orderStatus === 'Delivered') { %>
                                     <a href="/profile/order/invoice/<%= order._id %>" class="btn-order-action btn btn-warning text-decoration-none">Download Invoice</a>
                                     
-                                    <% if (order.items.every(item => item.status === 'Delivered')) { %>
+                                    <% if (isAllDelivered && !hasReturnRejected ) { %>
                                     <button class="btn-order-action btn btn-danger text-decoration-none" onclick="returnOrder('<%= order._id %>')">Return</button>
                                     <% } %>
 
@@ -203,6 +208,9 @@
 
                                 <% } else if (order.items.every(item => item.status === 'Ordered')) { %>
                                     <button class="btn-order-action btn btn-danger" onclick="cancelOrder('<%= order.orderId %>')">Cancel Order</button>
+                                <% } %>
+                                <% if(order.paymentMethod === 'Online' && order.paymentStatus === 'Pending') { %>
+                                    <button class="btn-order-action btn btn-primary" onclick="retryPayment('<%= order.orderId %>')">Retry Payment</button>
                                 <% } %>
                             </div>
                         </div>
@@ -363,9 +371,11 @@
             </div>
         </div>
     </div>
+    
 
     <%- include("../partials/user/footer.ejs") %>
-    
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="/js/order-details.js"></script>
 </body>
 </html>

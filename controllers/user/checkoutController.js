@@ -20,6 +20,9 @@ const proceedToCheckoutPage = async (req, res, next) => {
 
     for (const item of cart.items) {
       const product = item.productId;
+      if (!product || !product.isActive || !product.isExisting)
+        return res.json({success: false, message: `${product?.name || "A product"} is not available for purchase`})
+       
       const variant = product.variants.find(v => v.RAM === item.ram && v.Storage === item.storage);
 
       if (!variant) return res.json({ success: false, message: "Invalid variant for product" });
@@ -42,12 +45,12 @@ const proceedToCheckoutPage = async (req, res, next) => {
 const viewCheckoutPage = async (req, res, next) => {
   try {
     if (!req.session.user) return res.redirect("/")
-      
+
     const userId = req.session.user;
     const addresses = await Address.find({ userId })
     const coupons = await Coupon.find().sort({ createdAt: -1 })
     const cart = await Cart.findOne({ userId }).populate('items.productId');
-    if(!cart)
+    if (!cart)
       return res.redirect('/cart')
 
     let wallet = await Wallet.findOne({ userId })
@@ -81,7 +84,7 @@ const viewCheckoutPage = async (req, res, next) => {
   }
 }
 
-const validateStock =  async (req, res) => {
+const validateStock = async (req, res) => {
   try {
     const userId = req.session.user;
     const cart = await Cart.findOne({ userId }).populate("items.productId");
@@ -230,7 +233,6 @@ const orderplace = async (req, res, next) => {
     next(error);
   }
 };
-
 
 const orderPage = async (req, res, next) => {
   try {

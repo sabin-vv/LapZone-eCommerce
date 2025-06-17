@@ -65,7 +65,6 @@ const listProducts = async (req, res, next) => {
       sort.name = -1
     }
 
-
     try {
 
       const wishlist = await Wishlist.findOne({ userId: req.session.user })
@@ -81,7 +80,7 @@ const listProducts = async (req, res, next) => {
 
       const totalProducts = await Product.countDocuments(query);
       const totalPages = Math.ceil(totalProducts / limit);
-      const categories = await Category.find().sort({ name: 1 });
+      const categories = await Category.find({ isListed: true, isExisting: true }).sort({ name: 1 });
 
       res.render("user/shoppingPage", {
         products,
@@ -94,6 +93,7 @@ const listProducts = async (req, res, next) => {
         graphics,
         searchQuery,
         query: {
+          category: categoryFilter,
           brand: brandFilter,
           ram: ramFilter,
           ssd: ssdFilter,

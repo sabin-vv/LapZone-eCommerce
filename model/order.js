@@ -23,6 +23,14 @@ const orderSchema = new mongoose.Schema({
             type: String,
             required: true
         },
+        ram: {
+            type: String, 
+            required: true
+        },
+        storage: {
+            type: String, 
+            required: true
+        },
         quantity: {
             type: Number,
             required: true,
@@ -38,9 +46,9 @@ const orderSchema = new mongoose.Schema({
             default: 'Ordered'
         },
         returnReason: {
-            type: String,      
+            type: String,
         },
-        returnComment :{
+        returnComment: {
             type: String
         },
         returnDate: {
@@ -101,20 +109,20 @@ const orderSchema = new mongoose.Schema({
     paymentStatus: {
         type: String,
         required: true,
-        enum: ['Pending', 'Completed', 'Cancelled','Refunded'],
+        enum: ['Pending', 'Completed', 'Cancelled', 'Refunded'],
         default: 'Pending'
     },
     orderStatus: {
         type: String,
         required: true,
-        enum: ['Processing', 'Shipped', 'Delivered', 'Cancelled','Returned'],
+        enum: ['Processing', 'Shipped', 'Delivered', 'Cancelled', 'Returned'],
         default: 'Processing'
     },
     statusHistory: [{
         status: {
             type: String,
             required: true,
-            enum: ['Ordered', 'Processing', 'Delivered', 'Cancelled', 'Returned', 'Cancel Requested', 'Return Requested','Shipped' ,'Cancel Rejected','Return Rejected' ]
+            enum: ['Ordered', 'Processing', 'Delivered', 'Cancelled', 'Returned', 'Cancel Requested', 'Return Requested', 'Shipped', 'Cancel Rejected', 'Return Rejected']
         },
         date: {
             type: Date,
@@ -125,16 +133,16 @@ const orderSchema = new mongoose.Schema({
             default: false
         }
     }],
-    coupon:{
-        code:String,
-        couponId:{
-            type:mongoose.Schema.Types.ObjectId,
-            ref:'coupon'
+    coupon: {
+        code: String,
+        couponId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'coupon'
         }
     },
-    discountAmount:{
-        type:Number,
-        default:0
+    discountAmount: {
+        type: Number,
+        default: 0
     }
 }, { timestamps: true });
 

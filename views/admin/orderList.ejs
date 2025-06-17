@@ -7,7 +7,6 @@
     <title>Admin Orders | LapZone</title>
     <link rel="stylesheet" href="/css/sidebar.css">
     <link rel="stylesheet" href="/css/orderList.css">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -27,10 +26,11 @@
         <div class="filters">
             <div class="search-container">
                 <i class="bi bi-search search-icon"></i>
-                <input type="text" class="search-input" placeholder="Search orders...">
+                <input type="text" class="search-input" name="search" value="<%= filters?.search || '' %>" placeholder="Search orders...">
             </div>
+            <form class="filters" method="GET" action="/admin/orders">
             <div class="filter-container">
-                <select class="filter-select">
+                <select name="status" class="filter-select">
                     <option value="">All Status</option>
                     <option value="processing">Processing</option>
                     <option value="shipped">Shipped</option>
@@ -38,7 +38,7 @@
                     <option value="cancelled">Cancelled</option>
                     <option value="returned">Returned</option>
                 </select>
-                <select class="filter-select">
+                <select name="payment" class="filter-select">
                     <option value="">All Payment Methods</option>
                     <option value="visa">Visa</option>
                     <option value="mastercard">Mastercard</option>
@@ -46,7 +46,7 @@
                     <option value="transfer">Transfer</option>
                     <option value="cod">COD</option>
                 </select>
-                <select class="filter-select">
+                <select name="date" class="filter-select">
                     <option value="">Date Range</option>
                     <option value="today">Today</option>
                     <option value="yesterday">Yesterday</option>
@@ -55,6 +55,7 @@
                     <option value="custom">Custom Range</option>
                 </select>
             </div>
+            </form>
             <div >
                 <button type="button" class="btn btn-danger" onclick="window.location.href= '/admin/orders/cancel-return-request' "> Cancel/Return Requests</button>
             </div>
@@ -171,6 +172,11 @@
     
 
     <script>
+         document.querySelectorAll('.filter-select').forEach(select => {
+            select.addEventListener('change', () => {
+            select.form.submit();
+            });
+        });
     document.addEventListener('DOMContentLoaded', () => {
         const selectElements = document.querySelectorAll('.order-status-select');
 

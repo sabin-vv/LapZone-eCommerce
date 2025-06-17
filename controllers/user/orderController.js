@@ -410,7 +410,7 @@ const cancelOrder = async (req, res, next) => {
 
         const { orderId, reason, comment } = req.body
 
-        const order = await Order.findOne({ orderId })
+        const order = await Order.findOne({ orderId }).populate('items.productId')
         if (!order)
             return res.json({ success: false, message: "Product not Found" })
 
@@ -421,12 +421,22 @@ const cancelOrder = async (req, res, next) => {
             return res.json({ success: false, message: 'Order is already canceled' });
         }
 
-        order.items.forEach(item => {
-            item.status = 'Cancelled';
+        for (const item of order.items) {
+            item.status = "Cancelled";
             item.cancelReason = reason;
             item.cancelComment = comment;
             item.cancelDate = new Date();
-        });
+
+            const product = item.productId;
+            const variant = product.variants.find(
+                (v) => v.RAM === item.ram && v.Storage === item.storage
+            );
+
+            if (variant) {
+                variant.stock += item.quantity;
+                await product.save(); 
+            }
+        }
 
         let refundAmount = 0;
         if (order.paymentStatus === 'Completed') {
@@ -465,7 +475,7 @@ const cancelOrder = async (req, res, next) => {
         });
 
 
-    } catch {
+    } catch(error) {
         console.error('Error canceling order:', error);
         next(error);
     }

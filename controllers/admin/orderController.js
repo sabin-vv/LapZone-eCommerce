@@ -4,33 +4,81 @@ const Wallet = require("../../model/wallet")
 
 
 const listOrders = async (req, res, next) => {
-    try {
-        if (!req.session.admin) return res.redirect("/admin")
+  try {
+    if (!req.session.admin) return res.redirect("/admin");
 
-        const page = parseInt(req.query.page) || 1;
-        const limit = 10;
-        const skip = (page - 1) * limit;
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+    const skip = (page - 1) * limit;
 
-        const [orders, totalCount] = await Promise.all([
-            Order.find()
-                .populate("user")
-                .populate("items.productId")
-                .sort({ createdAt: -1 })
-                .skip(skip)
-                .limit(limit),
-            Order.countDocuments()
-        ]);
+    const search = req.query.search?.trim() || "";
+    const status = req.query.status || "";
+    const payment = req.query.payment || "";
+    const dateRange = req.query.date || "";
 
-        const totalPages = Math.ceil(totalCount / limit);
+    const query = {};
 
-
-        res.render("admin/orderList", { orders, currentPage: page, totalPages })
-    } catch (error) {
-        console.error('Error fetching orders:', error);
-        next(error);
+    if (search) {
+      query.$or = [
+        { orderId: { $regex: search, $options: "i" } },
+        { "user.fullname": { $regex: search, $options: "i" } }
+      ];
     }
 
-}
+    if (status) {
+      query.orderStatus = { $regex: status, $options: "i" };
+    }
+
+    if (payment) {
+      query.paymentMethod = { $regex: payment, $options: "i" };
+    }
+
+    const now = new Date();
+    if (dateRange === "today") {
+      const start = new Date();
+      start.setHours(0, 0, 0, 0);
+      query.createdAt = { $gte: start };
+    } else if (dateRange === "yesterday") {
+      const start = new Date();
+      start.setDate(start.getDate() - 1);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date();
+      end.setHours(0, 0, 0, 0);
+      query.createdAt = { $gte: start, $lt: end };
+    } else if (dateRange === "last7days") {
+      const start = new Date();
+      start.setDate(start.getDate() - 7);
+      query.createdAt = { $gte: start };
+    } else if (dateRange === "last30days") {
+      const start = new Date();
+      start.setDate(start.getDate() - 30);
+      query.createdAt = { $gte: start };
+    }
+
+    const [orders, totalCount] = await Promise.all([
+      Order.find(query)
+        .populate("user")
+        .populate("items.productId")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      Order.countDocuments(query),
+    ]);
+
+    const totalPages = Math.ceil(totalCount / limit);
+
+    res.render("admin/orderList", {
+      orders,
+      currentPage: page,
+      totalPages,
+      filters: { search, status, payment, date: dateRange }
+    });
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    next(error);
+  }
+};
+
 
 const updateOrderStatus = async (req, res, next) => {
     if (!req.session.admin) return res.redirect("/admin");

@@ -110,7 +110,6 @@ const addtoCart = async (req, res, next) => {
       return res.status(400).json({ success: false, message: "Product not available" });
     }
 
-    // Find the selected variant by ID
     const selectedVariant = product.variants.id(variantId);
     if (!selectedVariant) {
       return res.status(400).json({ success: false, message: "Variant not found" });

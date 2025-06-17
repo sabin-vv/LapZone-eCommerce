@@ -10,9 +10,7 @@
     <link rel="stylesheet" href="/css/wishListPage.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <style>
-       
-    </style>
+    
 </head>
 
 <body>
@@ -39,7 +37,7 @@
                         <% } %>
                     </div>
                 </div>
-
+<!-- check-->
                 <div class="wishlist-grid">
                     <% if (wishlist && wishlist.length > 0) { %>
                         <% wishlist.forEach(item => { %>
@@ -107,12 +105,20 @@
                                             </div>
                                         </div>
                                     <% } %>
+                                    <%
+                                      const productOffer = item.productId.offer || 0;
+                                      const categoryOffer = item.productId.categoryId?.offer || 0;
+                                      const discount = Math.max(productOffer, categoryOffer);
+                                      const originalPrice = item.productId.salePrice || 0;
+                                      const finalPrice = Math.round(originalPrice * (1 - discount / 100));
+                                    %>
 
                                     <div class="product-price">
-                                        <span class="price">₹<%= item.productId.salePrice.toLocaleString() %></span>
-                                        <% if (item.productId.discount > 0) { %>
-                                            <span class="discount"><%= item.productId.discount %>% off</span>
-                                        <% } %>  
+                                        <span class="price">₹<%= finalPrice.toLocaleString() %></span>
+                                        <% if (discount > 0) { %>
+                                            <span class="discount"><%= discount %>% off</span>
+                                           
+                                        <% } %>
                                     </div>
                                     
                                     <div class="product-actions">
@@ -154,7 +160,7 @@
     <%- include("../partials/user/footer.ejs") %>
 
     <script>
-  document.addEventListener('DOMContentLoaded', function () {
+      document.addEventListener('DOMContentLoaded', function () {
     if (typeof Swal === 'undefined') {
       console.error('SweetAlert2 is not loaded.');
       return;
@@ -162,15 +168,21 @@
 
     const productVariants = {};
     const basePrices = {};
+    const offers = {}; 
 
     <% if (wishlist && wishlist.length > 0) { %>
-      <% wishlist.forEach(item => { %>
+      <% wishlist.forEach(item => {
+          const productOffer = item.productId.offer || 0;
+          const categoryOffer = item.productId.categoryId?.offer || 0;
+          const maxOffer = Math.max(productOffer, categoryOffer);
+      %>
         <% if (item.productId.variants) { %>
           productVariants['<%= item.productId._id %>'] = <%- JSON.stringify(item.productId.variants) %>;
         <% } %>
         basePrices['<%= item.productId._id %>'] = <%= item.productId.salePrice %>;
+        offers['<%= item.productId._id %>'] = <%= maxOffer %>; 
       <% }); %>
-    <% } %>
+    <% } %>;
 
     const menuToggle = document.querySelector('.menu-toggle');
     const sidebar = document.querySelector('.sidebar');
@@ -239,14 +251,16 @@
       if (allSelected && matchingVariant) {
         const basePrice = basePrices[productId] || 0;
         const priceAdjustment = matchingVariant.priceAdjustment || 0;
-        const variantPrice = Math.round(basePrice + priceAdjustment);
+
+        const discount = offers[productId] || 0;
+        const priceBeforeDiscount = basePrice + priceAdjustment;
+        const variantPrice = Math.round(priceBeforeDiscount * (1 - discount / 100));
 
         cartBtn.disabled = false;
         cartBtn.classList.remove('disabled');
         cartBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Add To Cart';
         cartBtn.dataset.variantId = matchingVariant._id;
 
-        // Show dynamic price and stock
         if (variantInfo) {
           const priceElement = variantInfo.querySelector('.variant-price');
           const stockElement = variantInfo.querySelector('.variant-stock');

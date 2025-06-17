@@ -68,7 +68,7 @@ const newCategory = async (req, res, next) => {
 
         const error = {}
 
-        if (!name)
+        if (!name || name.trim() === '')
             error['name'] = "Name cannot be Empty"
 
         if (!description)
@@ -166,17 +166,26 @@ const updateCategory = async (req, res, next) => {
 
         const categoryId = req.params.id
         const categoryData = req.body
+
         let error = {}
+        if (categoryData?.name.trim() === '') {
+            categoryData._id = categoryId
+            error['name'] = "name cannot be Empty"
+            return res.render("admin/editCategory", { category: categoryData, error, categoryId })
+        }
+
         const categoryNameExist = await Category.findOne({
-             name: { $regex: new RegExp(`^${categoryData.name.trim()}$`, 'i') },
+            name: { $regex: new RegExp(`^${categoryData.name.trim()}$`, 'i') },
             _id: { $ne: categoryId }
         })
         categoryData._id = categoryId
 
         if (categoryNameExist) {
+            categoryData._id = categoryId
             error['name'] = "Category Name Already Exist"
-            return res.render("admin/editCategory", { category: categoryData, error })
+            return res.render("admin/editCategory", { category: categoryData, error, categoryId })
         }
+
 
         const updateData = {
             name: categoryData.name,

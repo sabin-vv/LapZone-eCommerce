@@ -46,6 +46,7 @@
                     <div class="filter-group">
                         <label class="filter-label">Time Period</label>
                         <select id="filterType" class="filter-select">
+                            <option value="all">All Time</option>
                             <option value="daily">Today</option>
                             <option value="weekly">This Week</option>
                             <option value="monthly">This Month</option>
@@ -826,7 +827,7 @@
         const maxRowsPerPage = 30;
         let rowCount = 0;
 
-        const exportOrders = filterData.filter(order => order.orderStatus !== 'Cancelled' && order.orderStatus !== 'Returned' )
+        const exportOrders = filteredData.filter(order => order.orderStatus !== 'Cancelled' && order.orderStatus !== 'Returned' )
         exportOrders.forEach((order, index) => {
             if (rowCount >= maxRowsPerPage) {
                 doc.addPage();

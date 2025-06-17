@@ -15,6 +15,7 @@ const razorpayController = require("../controllers/user/razorpayController.js")
 const referralController = require("../controllers/user/referralController.js")
 
 
+
 router.get('/', userController.landingPage)
 router.get("/login", userController.loginPage)
 router.get('/signup', userController.signupPage)
@@ -105,6 +106,7 @@ router.post("/profile/apply-coupon", validateUserStatus, couponController.applyC
 router.get("/profile/coupon", validateUserStatus, couponController.viewCouponPage)
 
 router.get("/profile/referral", validateUserStatus, referralController.viewReferralPage)
+
 
 
 module.exports = router
