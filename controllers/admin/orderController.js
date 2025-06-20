@@ -1,6 +1,7 @@
 const Order = require("../../model/order")
 const Product = (require("../../model/products"))
 const Wallet = require("../../model/wallet")
+const Coupon = require("../../model/coupon")
 
 
 const listOrders = async (req, res, next) => {
@@ -78,7 +79,6 @@ const listOrders = async (req, res, next) => {
     next(error);
   }
 };
-
 
 const updateOrderStatus = async (req, res, next) => {
     if (!req.session.admin) return res.redirect("/admin");
@@ -391,98 +391,108 @@ const returnReject = async (req, res, next) => {
 }
 
 const cancelApprove = async (req, res, next) => {
-    try {
-        const { orderId, itemId } = req.body;
+  try {
+    const { orderId, itemId } = req.body;
 
-        const order = await Order.findById(orderId);
-        if (!order) {
-            return res.status(404).json({ error: 'Order not found' });
-        }
-
-
-        const item = order.items.id(itemId);
-        if (!item) {
-            return res.status(404).json({ error: 'Item not found' });
-        }
-
-        if (item.status === 'Cancelled') {
-            return res.json({
-                success: true,
-                message: 'Item already cancelled'
-            });
-        }
-
-        const subtotal = order.subtotal;
-        const shippingFee = order.shippingFee;
-        const totalTax = order.tax;
-        const totalAmount = order.totalAmount
-        const totalDiscount = order.discountAmount || 0;
-
-        const itemTotal = item.price * item.quantity
-
-        const itemDiscount = (itemTotal / subtotal) * totalDiscount
-        const itemTax = (itemTotal / subtotal) * totalTax;
-
-        const otherActiveItems = order.items.filter(i => i._id.toString() !== itemId && i.status !== 'Cancelled');
-        const refundShipping = otherActiveItems.length === 0 ? shippingFee : 0;
-
-        const refundAmount = Math.round(itemTotal - itemDiscount + itemTax + refundShipping);
-
-        item.status = 'Cancelled';
-        item.cancelDate = new Date();
-
-        await Product.findByIdAndUpdate(item.productId, { $inc: { count: item.quantity } });
-
-
-        let wallet = await Wallet.findOne({ userId: order.user })
-        if (!wallet) wallet = new Wallet({ userId: order.user, balance: 0, transactions: [] });
-
-        if (order.paymentStatus == 'Completed') {
-            wallet.balance += refundAmount
-
-            wallet.transactions.push({
-                type: 'credit',
-                amount: refundAmount,
-                description: `Refund for Order #${order.orderId}`,
-                date: new Date(),
-                createdAt: new Date()
-            });
-            await wallet.save()
-        }
-
-
-        await Product.findByIdAndUpdate(itemId,
-            {
-                $inc: { count: item.quantity }
-            });
-
-
-        const allItemsCancelled = order.items.every(item => item.status === 'Cancelled');
-        if (allItemsCancelled) {
-            order.orderStatus = 'Cancelled';
-        }
-
-
-        order.statusHistory.push({
-            status: 'Cancelled',
-            date: new Date(),
-            current: allItemsCancelled
-        });
-
-        await order.save();
-
-        res.json({
-            success: true,
-            message: `Cancel request approved successfully. ₹${Math.round(refundAmount)} refunded.`,
-            refundAmount: Math.round(refundAmount),
-            refundShipping: refundShipping
-        });
-
-    } catch (error) {
-        console.error('Error approving cancel request:', error);
-        next(error);
+    const order = await Order.findById(orderId).populate('items.productId');
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
     }
-}
+
+    const item = order.items.id(itemId);
+    if (!item) {
+      return res.status(404).json({ error: 'Item not found' });
+    }
+
+    if (item.status === 'Cancelled') {
+      return res.json({
+        success: true,
+        message: 'Item already cancelled'
+      });
+    }
+
+    item.status = 'Cancelled';
+    item.cancelDate = new Date();
+
+    const product = item.productId;
+    const variant = product.variants.find(v => v.RAM === item.ram && v.Storage === item.storage);
+    if (variant) {
+      variant.stock += item.quantity;
+      await product.save();
+    }
+
+    const itemTotal = item.price * item.quantity;
+
+    const activeItems = order.items.filter(i => i.status !== 'Cancelled');
+    const newSubtotal = activeItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
+
+    const originalSubtotal = order.subtotal;
+    const originalDiscount = order.discountAmount || 0;
+    const originalTax = order.tax || 0;
+    const shippingFee = order.shippingFee || 0;
+
+    const itemDiscount = (itemTotal / originalSubtotal) * originalDiscount;
+    const itemTax = (itemTotal / originalSubtotal) * originalTax;
+    const refundShipping = activeItems.length === 0 ? shippingFee : 0;
+
+    const refundAmount = Math.round(itemTotal - itemDiscount + itemTax + refundShipping);
+
+    if (order.paymentStatus === 'Completed') {
+      let wallet = await Wallet.findOne({ userId: order.user });
+      if (!wallet) {
+        wallet = new Wallet({ userId: order.user, balance: 0, transactions: [] });
+      }
+
+      wallet.balance += refundAmount;
+      wallet.transactions.push({
+        type: 'credit',
+        amount: refundAmount,
+        description: `Refund for Order #${order.orderId}`,
+        date: new Date(),
+        createdAt: new Date()
+      });
+      await wallet.save();
+    }
+
+    const allCancelled = order.items.every(i => i.status === 'Cancelled');
+    if (allCancelled) {
+      order.orderStatus = 'Cancelled';
+    }
+
+    order.statusHistory.forEach(s => s.current = false);
+    order.statusHistory.push({
+      status: 'Cancelled',
+      date: new Date(),
+      current: allCancelled
+    });
+
+    if (order.coupon) {
+      const coupon = await Coupon.findById(order.coupon);
+      if (coupon && newSubtotal < coupon.minAmount) {
+        order.coupon = null;
+        order.discountAmount = 0;
+      }
+    }
+
+    order.subtotal = newSubtotal;
+    order.tax = Math.round(newSubtotal * 0.05); 
+    order.totalAmount = order.subtotal + order.shippingFee - order.discountAmount + order.tax;
+
+    await order.save();
+
+    res.json({
+      success: true,
+      refundAmount,
+      refundShipping,
+      message: `Item cancelled. ₹${refundAmount} refunded.`,
+    });
+
+  } catch (error) {
+    console.error('Error approving cancel request:', error);
+    next(error);
+  }
+};
+
 
 const cancelReject = async (req, res, next) => {
     try {

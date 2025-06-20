@@ -113,6 +113,11 @@
         .profile-info:hover {
             box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
         }
+        .error-field {
+            color: red;
+            font-size: 12px;
+            margin-top: 5px;
+        }
 
         .form-group {
             margin-bottom: 25px;

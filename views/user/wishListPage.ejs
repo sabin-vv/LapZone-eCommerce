@@ -37,7 +37,7 @@
                         <% } %>
                     </div>
                 </div>
-<!-- check-->
+
                 <div class="wishlist-grid">
                     <% if (wishlist && wishlist.length > 0) { %>
                         <% wishlist.forEach(item => { %>
@@ -55,12 +55,11 @@
                                 
                                 <div class="product-info">
                                     <h3 class="product-title"><%= item.productId.name %></h3>
+                                    <div class="selected-variant-display text-sm text-gray-600 mt-1" style="display: none;"></div>
                                     
-                                    <!-- Variant Selector -->
                                     <% if (item.productId.variants && item.productId.variants.length > 0) { %>
                                         <div class="variant-selector" data-product-id="<%= item.productId._id %>">
                                             <% 
-                                            // Group variants by RAM and Storage
                                             const ramOptions = [...new Set(item.productId.variants.map(v => v.RAM))];
                                             const storageOptions = [...new Set(item.productId.variants.map(v => v.Storage))];
                                             %>
@@ -122,17 +121,10 @@
                                     </div>
                                     
                                     <div class="product-actions">
-                                        <button class="product-btn cart-btn" 
-                                                data-product-id="<%= item.productId._id %>"
-                                                <% if (item.productId.variants && item.productId.variants.length > 0) { %>
-                                                    disabled title="Please select variant first"
-                                                <% } %>>
-                                            <i class="fas fa-shopping-cart"></i> 
-                                            <% if (item.productId.variants && item.productId.variants.length > 0) { %>
-                                                Select Variant to Add
-                                            <% } else { %>
-                                                Add To Cart
-                                            <% } %>
+                                        <button class="product-btn cart-btn <%= item.productId.variants && item.productId.variants.length > 0 ? 'disabled' : '' %>"
+                                            data-product-id="<%= item.productId._id %>"
+                                            <%= item.productId.variants && item.productId.variants.length > 0 ? 'disabled' : '' %>>
+                                            <i class="fas fa-shopping-cart"></i> Add To Cart
                                         </button>
                                         <% if (item.productId.variants && item.productId.variants.length > 0) { %>
                                             <div class="variant-required-text">Select variant options above</div>
@@ -260,6 +252,12 @@
         cartBtn.classList.remove('disabled');
         cartBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Add To Cart';
         cartBtn.dataset.variantId = matchingVariant._id;
+
+        const variantDisplay = productCard.querySelector('.selected-variant-display');
+      if (variantDisplay) {
+        variantDisplay.textContent = `${matchingVariant.RAM} / ${matchingVariant.Storage}`;
+        variantDisplay.style.display = 'block';
+      }
 
         if (variantInfo) {
           const priceElement = variantInfo.querySelector('.variant-price');

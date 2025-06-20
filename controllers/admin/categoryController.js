@@ -172,6 +172,10 @@ const updateCategory = async (req, res, next) => {
             categoryData._id = categoryId
             error['name'] = "name cannot be Empty"
             return res.render("admin/editCategory", { category: categoryData, error, categoryId })
+        } else if (!/^[A-Za-z\s]+$/.test(categoryData?.name)) {
+            categoryData._id = categoryId
+            error['name'] = "Only letters are allowed"
+            return res.render("admin/editCategory", { category: categoryData, error, categoryId })
         }
 
         const categoryNameExist = await Category.findOne({

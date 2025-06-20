@@ -10,7 +10,7 @@ const profilePage = async (req, res, next) => {
 
         const userId = req.session.user
         const user = await User.findById(userId)
-        res.render("user/userProfile", { user })
+        res.render("user/userProfile", { user, error: null, formData: null })
     } catch (error) {
         console.error('Error fetching profile page:', error);
         next(error);
@@ -22,6 +22,17 @@ const editProfile = async (req, res, next) => {
         const userId = req.params.id || req.body.userId;
         req.session.userId = userId
         const { fullname, email, mobile } = req.body
+        let formData = req.body
+        formData.id = req.session.user
+
+        const error = {}
+        if (fullname.trim() === '') {
+            error['name'] = "Name cannot be empty"
+            return res.render("user/userProfile", { error, formData,userId })
+        } else if ((!/^[A-Za-z\s]+$/.test(fullname))) {
+            error['name'] = 'Only letters are allowed'
+            return res.render("user/userProfile", { error, formData,userId })
+        }
 
         const user = await User.findById(userId)
         if (email !== user.email) {
@@ -41,7 +52,7 @@ const editProfile = async (req, res, next) => {
             }
         }
 
-        await User.findByIdAndUpdate(userId,
+        await User.findByIdAndUpdate(req.session.user,
             { $set: { fullname, email, mobile } },
             { new: true }
         )
@@ -117,7 +128,7 @@ const addAddress = async (req, res, next) => {
             errors['fullname'] = "Name contain only letters and spaces"
         }
 
-        
+
         if (!/^\d+$/.test(mobile))
             errors['mobile'] = "Please enter valid mobile number"
 
@@ -216,7 +227,7 @@ const editAddress = async (req, res, next) => {
         if (!(/^[A-Za-z\s]{3,20}$/).test(fullname)) {
             errors['fullname'] = "Name contain only letters and spaces"
         }
-        
+
         const phoneRegex = /^[6-9]\d{9}$/;
         if (!/^\d+$/.test(mobile)) {
             errors['mobile'] = "Phone number should contain only digits";
@@ -299,11 +310,11 @@ const deleteAddress = async (req, res, next) => {
     }
 }
 
-const changePassword = async  (req, res, next) => {
+const changePassword = async (req, res, next) => {
     try {
         if (!req.session.user) return res.redirect("/")
         const user = await User.findById(req.session.user);
-        
+
         const username = req.session.username || req.session.user.fullname
 
         res.render("user/userchangePassword", { user, username, errors: null })

@@ -1,7 +1,7 @@
 const Coupon = require("../../model/coupon")
 const Cart = require('../../model/cart')
 const Order = require("../../model/order")
-const User =  require("../../model/user")
+const User = require("../../model/user")
 
 const applyCoupon = async (req, res, next) => {
     try {
@@ -37,7 +37,17 @@ const applyCoupon = async (req, res, next) => {
         const cart = await Cart.findOne({ userId: req.session.user }).populate("items.productId")
 
         const subtotal = cart.items.reduce((acc, item) => {
-            return acc + item.productId.salePrice * item.quantity;
+            const product = item.productId;
+            const quantity = item.quantity;
+
+            const productOffer = product.offer || 0;
+            const categoryOffer = product.categoryId?.offer || 0;
+            const maxOffer = Math.max(productOffer, categoryOffer);
+
+            const basePrice = product.salePrice;
+            const discountedPrice = Math.round(basePrice * (1 - maxOffer / 100));
+
+            return acc + discountedPrice * quantity;
         }, 0);
 
         if (coupon.minPurchaseAmount && subtotal < coupon.minPurchaseAmount) {
@@ -53,7 +63,7 @@ const applyCoupon = async (req, res, next) => {
         let discount = 0
 
         if (coupon.discountType === 'percentage') {
-            discount = totalAmount * coupon.discountValue / 100
+            discount = Math.round(totalAmount * coupon.discountValue / 100)
             if (discount > coupon.maxDiscountAmount) {
                 discount = coupon.maxDiscountAmount
             }
@@ -76,7 +86,7 @@ const applyCoupon = async (req, res, next) => {
         } else {
             discount = coupon.discountValue
             totalAmount -= discount
-            if(totalAmount < 0) 
+            if (totalAmount < 0)
                 return res.json({ success: false, message: "This coupon can't applied to this Order" });
             await Coupon.updateOne({ _id: coupon._id }, { $inc: { usedCount: 1 } });
             req.session.appliedCoupon = {
@@ -101,11 +111,11 @@ const applyCoupon = async (req, res, next) => {
 const viewCouponPage = async (req, res, next) => {
     try {
         if (!req.session.user) return res.redirect("/login")
-            const user = await User.findById(req.session.user)
+        const user = await User.findById(req.session.user)
 
         const coupons = await Coupon.find({ isActive: true })
 
-        return res.render("user/viewCouponPage", { coupons ,user})
+        return res.render("user/viewCouponPage", { coupons, user })
     } catch (error) {
         console.error('Error fetching coupons:', error);
         next(error);

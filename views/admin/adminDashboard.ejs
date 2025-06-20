@@ -49,7 +49,6 @@
                         <div class="stat-details">
                             <h3>Total Sales</h3>
                             <p class="stat-value" id="total-sales">Loading...</p>
-                            <p class="stat-change" id="sales-change">Loading...</p>
                         </div>
                     </div>
                     <div class="stat-card">
@@ -65,7 +64,6 @@
                         <div class="stat-details">
                             <h3>Total Orders</h3>
                             <p class="stat-value" id="total-orders">Loading...</p>
-                            <p class="stat-change" id="orders-change">Loading...</p>
                         </div>
                     </div>
                     <div class="stat-card">
@@ -82,7 +80,6 @@
                         <div class="stat-details">
                             <h3>Total Customers</h3>
                             <p class="stat-value" id="total-customers">Loading...</p>
-                            <p class="stat-change" id="customers-change">Loading...</p>
                         </div>
                     </div>
                     <div class="stat-card">
@@ -98,7 +95,6 @@
                         <div class="stat-details">
                             <h3>Total Products</h3>
                             <p class="stat-value" id="total-products">Loading...</p>
-                            <p class="stat-change" id="products-change">Loading...</p>
                         </div>
                     </div>
                 </div>
@@ -530,26 +526,6 @@
             document.getElementById('total-orders').textContent = formatNumber(data.totalOrders);
             document.getElementById('total-customers').textContent = formatNumber(data.totalCustomers);
             document.getElementById('total-products').textContent = formatNumber(data.totalProducts);
-
-            document.getElementById('sales-change').textContent =
-                `${data.salesChange >= 0 ? '+' : ''}${data.salesChange}% from last month`;
-            document.getElementById('sales-change').className =
-                `stat-change ${data.salesChange >= 0 ? 'positive' : 'negative'}`;
-
-            document.getElementById('orders-change').textContent =
-                `${data.ordersChange >= 0 ? '+' : ''}${data.ordersChange}% from last month`;
-            document.getElementById('orders-change').className =
-                `stat-change ${data.ordersChange >= 0 ? 'positive' : 'negative'}`;
-
-            document.getElementById('customers-change').textContent =
-                `${data.customersChange >= 0 ? '+' : ''}${data.customersChange}% from last month`;
-            document.getElementById('customers-change').className =
-                `stat-change ${data.customersChange >= 0 ? 'positive' : 'negative'}`;
-
-            document.getElementById('products-change').textContent =
-                `${data.productsChange >= 0 ? '+' : ''}${data.productsChange}% from last month`;
-            document.getElementById('products-change').className =
-                `stat-change ${data.productsChange >= 0 ? 'positive' : 'negative'}`;
 
         } catch (error) {
             handleError(error, 'fetchDashboardStats');

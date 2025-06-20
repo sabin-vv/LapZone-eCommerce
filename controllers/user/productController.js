@@ -76,11 +76,13 @@ const listProducts = async (req, res, next) => {
       const ssdvariants = await Product.distinct("variants.Storage");
       const ssds = [...new Set(ssdvariants.map(ssd => ssd.split(" ")[0]))];
       const graphics = await Product.distinct("graphics");
-
+      
 
       const totalProducts = await Product.countDocuments(query);
       const totalPages = Math.ceil(totalProducts / limit);
       const categories = await Category.find({ isListed: true, isExisting: true }).sort({ name: 1 });
+
+      const currentQueryString = req.originalUrl.split('?')[1] || '';
 
       res.render("user/shoppingPage", {
         products,
@@ -104,7 +106,8 @@ const listProducts = async (req, res, next) => {
         currentPage: page,
         totalPages,
         totalProducts,
-        wishlistIds
+        wishlistIds,
+        currentQueryString ,
       });
     } catch (error) {
       res.render("user/shoppingPage", {

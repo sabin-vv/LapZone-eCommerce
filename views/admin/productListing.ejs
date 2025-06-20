@@ -81,7 +81,7 @@
                             <tr>
                                 <td><img src="<%= product.images.find(image => image.isMain)?.url || '/images/placeholder.jpg' %>" alt="<%= product.name %>"></td>
                                 <td><%= product.name %></td>
-                                <td><%= product.category %></td>
+                                <td><%= product.categoryId.name %></td>
                                 <td>₹<%= product.salePrice.toLocaleString('en-IN') %></td>
                                 <td><%= product.variants && product.variants.length > 0
                                     ? product.variants.reduce((sum, v) => sum + (v.stock || 0), 0)

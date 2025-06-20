@@ -10,10 +10,6 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    category: {
-        type: String,
-        required: true
-    },
     color: {
         type: String,
         required: true
@@ -48,10 +44,6 @@ const productSchema = new mongoose.Schema({
         required: true
     },
     offer: Number,
-    count: {
-        type: Number,
-        
-    },
     isActive: {
         type: Boolean,
         default: true,

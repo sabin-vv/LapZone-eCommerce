@@ -86,57 +86,43 @@ const adminDashbaord = async (req, res, next) => {
 
 const getDashboardStats = async (req, res, next) => {
     try {
-        const now = new Date();
-        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-        const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-        const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
-
-        const currentMonthOrders = await Order.find({
-            orderDate: { $gte: startOfMonth },
-            orderStatus: { $ne: 'Cancelled' }
-        });
-
-        const lastMonthOrders = await Order.find({
-            orderDate: { $gte: startOfLastMonth, $lte: endOfLastMonth },
-            orderStatus: { $ne: 'Cancelled' }
-        });
-
-        const totalSales = currentMonthOrders.reduce((sum, order) => sum + order.totalAmount, 0);
-        const lastMonthSales = lastMonthOrders.reduce((sum, order) => sum + order.totalAmount, 0);
+        const sales = await Order.aggregate([
+            {
+                $match: {
+                    orderStatus: { $ne: 'Cancelled' },
+                    paymentStatus: 'Completed'
+                }
+            },
+            { $unwind: "$items" },
+            {
+                $match: {
+                    "items.status": { $ne: "Cancelled" }
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    total: {
+                        $sum: {
+                            $multiply: ["$items.quantity", "$items.price"]
+                        }
+                    }
+                }
+            }
+        ]);
+        const totalSales = sales.length > 0 ? sales[0].total : 0;
 
         const totalOrders = await Order.countDocuments({ orderStatus: { $ne: 'Cancelled' } });
-        const lastMonthOrdersCount = lastMonthOrders.length;
 
         const totalCustomers = await User.countDocuments({ isAdmin: false });
-        const lastMonthCustomers = await User.countDocuments({
-            isAdmin: false,
-            createdAt: { $gte: startOfLastMonth, $lte: endOfLastMonth }
-        });
 
         const totalProducts = await Product.countDocuments({ isExisting: true });
-        const lastMonthProducts = await Product.countDocuments({
-            isExisting: true,
-            createdAt: { $gte: startOfLastMonth, $lte: endOfLastMonth }
-        });
-
-        const salesChange = lastMonthSales > 0 ?
-            ((totalSales - lastMonthSales) / lastMonthSales * 100).toFixed(1) : 0;
-        const ordersChange = lastMonthOrdersCount > 0 ?
-            ((currentMonthOrders.length - lastMonthOrdersCount) / lastMonthOrdersCount * 100).toFixed(1) : 0;
-        const customersChange = lastMonthCustomers > 0 ?
-            ((totalCustomers - lastMonthCustomers) / lastMonthCustomers * 100).toFixed(1) : 0;
-        const productsChange = lastMonthProducts > 0 ?
-            ((totalProducts - lastMonthProducts) / lastMonthProducts * 100).toFixed(1) : 0;
 
         res.json({
             totalSales,
             totalOrders,
             totalCustomers,
             totalProducts,
-            salesChange: parseFloat(salesChange),
-            ordersChange: parseFloat(ordersChange),
-            customersChange: parseFloat(customersChange),
-            productsChange: parseFloat(productsChange)
         });
 
     } catch (error) {
@@ -290,6 +276,7 @@ const getTopCategories = async (req, res, next) => {
         const topCategories = await Order.aggregate([
             { $match: { orderStatus: { $ne: 'Cancelled' } } },
             { $unwind: '$items' },
+            { $match: { "items.status": { $ne: "Cancelled" } } },
             {
                 $lookup: {
                     from: 'products',
@@ -311,6 +298,7 @@ const getTopCategories = async (req, res, next) => {
             { $limit: 10 }
         ]);
 
+
         res.json(topCategories);
 
     } catch (error) {
@@ -318,6 +306,7 @@ const getTopCategories = async (req, res, next) => {
         next(error);
     }
 };
+
 
 const getTopBrands = async (req, res, next) => {
     try {

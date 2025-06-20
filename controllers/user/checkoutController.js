@@ -21,8 +21,8 @@ const proceedToCheckoutPage = async (req, res, next) => {
     for (const item of cart.items) {
       const product = item.productId;
       if (!product || !product.isActive || !product.isExisting)
-        return res.json({success: false, message: `${product?.name || "A product"} is not available for purchase`})
-       
+        return res.json({ success: false, message: `${product?.name || "A product"} is not available for purchase` })
+
       const variant = product.variants.find(v => v.RAM === item.ram && v.Storage === item.storage);
 
       if (!variant) return res.json({ success: false, message: "Invalid variant for product" });
@@ -60,7 +60,17 @@ const viewCheckoutPage = async (req, res, next) => {
     }
 
     const subtotal = cart.items.reduce((acc, item) => {
-      return acc + item.productId.salePrice * item.quantity;
+      const product = item.productId;
+      const quantity = item.quantity;
+
+      const productOffer = product.offer || 0;
+      const categoryOffer = product.categoryId?.offer || 0;
+      const maxOffer = Math.max(productOffer, categoryOffer);
+
+      const basePrice = product.salePrice;
+      const discountedPrice = Math.round(basePrice * (1 - maxOffer / 100));
+
+      return acc + discountedPrice * quantity;
     }, 0);
 
     const shippingFee = 50;
@@ -116,7 +126,8 @@ const orderplace = async (req, res, next) => {
     if (!req.session.user) return res.redirect("/");
 
     const userId = req.session.user;
-    const { shippingAddress, paymentMethod, total, appliedCoupon } = req.body;
+    const { shippingAddress, paymentMethod, total, appliedCoupon, razorpayDetails } = req.body;
+    console.log(appliedCoupon)
 
     const couponCode = appliedCoupon?.couponCode || null;
     const couponId = appliedCoupon?.couponId || null;
@@ -177,6 +188,7 @@ const orderplace = async (req, res, next) => {
       await wallet.save();
       paymentStatus = 'Completed';
     } else if (paymentMethod === 'Online') {
+      // For online payments, payment status will be updated after verification
       paymentStatus = 'Completed';
     } else if (paymentMethod === 'COD') {
       if (totalPrice > 1000) {
@@ -213,7 +225,11 @@ const orderplace = async (req, res, next) => {
       orderStatus: 'Processing',
       discountAmount,
       statusHistory: [{ status: 'Processing', current: true }],
-      coupon: couponCode ? { coupon: couponCode, couponId } : undefined,
+      coupon: couponCode ? { code: couponCode, couponId } : undefined,
+      ...(razorpayDetails && {
+        razorpayOrderId: razorpayDetails.razorpay_order_id,
+        razorpayPaymentId: razorpayDetails.razorpay_payment_id
+      })
     });
 
     await order.save();

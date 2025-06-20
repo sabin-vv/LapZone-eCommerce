@@ -12,6 +12,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
     <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="bg-gray-100 font-sans antialiased">
     <%- include("../partials/user/header.ejs") %>
@@ -244,37 +245,7 @@
                         <% }) %>
                     </div>
 
-                    <div class="mt-8 flex justify-center">
-                        <nav class="pagination" aria-label="Page navigation">
-                            <ul>
-                            <% if (currentPage > 1) { %>
-                                <li>
-                                <a href="/shop?page=<%= currentPage - 1 %>&search=<%= encodeURIComponent(searchQuery || '') %>&brand=<%= query.brand?.join(',') || '' %>&ram=<%= query.ram?.join(',') || '' %>&ssd=<%= query.ssd?.join(',') || '' %>&graphics=<%= query.graphics?.join(',') || '' %>&maxPrice=<%= query.maxPrice || '' %>&sort=<%= query.sort || 'popularity' %>">
-                                    Previous
-                                </a>
-                                </li>
-                            <% } %>
-
-                            <% for (let i = 1; i <= totalPages; i++) { %>
-                                <li>
-                                <a
-                                    href="/shop?page=<%= i %>&search=<%= encodeURIComponent(searchQuery || '') %>&brand=<%= query.brand?.join(',') || '' %>&ram=<%= query.ram?.join(',') || '' %>&ssd=<%= query.ssd?.join(',') || '' %>&graphics=<%= query.graphics?.join(',') || '' %>&maxPrice=<%= query.maxPrice || '' %>&sort=<%= query.sort || 'popularity' %>"
-                                    class="<%= currentPage === i ? 'active' : '' %>">
-                                    <%= i %>
-                                </a>
-                                </li>
-                            <% } %>
-
-                            <% if (currentPage < totalPages) { %>
-                                <li>
-                                <a href="/shop?page=<%= currentPage + 1 %>&search=<%= encodeURIComponent(searchQuery || '') %>&brand=<%= query.brand?.join(',') || '' %>&ram=<%= query.ram?.join(',') || '' %>&ssd=<%= query.ssd?.join(',') || '' %>&graphics=<%= query.graphics?.join(',') || '' %>&maxPrice=<%= query.maxPrice || '' %>&sort=<%= query.sort || 'popularity' %>">
-                                    Next
-                                </a>
-                                </li>
-                            <% } %>
-                            </ul>
-                        </nav>
-                    </div>
+                    <%- include("../partials/user/pagination", { currentQueryString, currentPage, totalPages }) %>
                 <% } %>
             </main>
         </div>
@@ -282,7 +253,6 @@
 
     <%- include("../partials/user/footer.ejs") %>
 
-    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function toggleSidebar() {
@@ -394,20 +364,31 @@
                     },
                     body: JSON.stringify({ productId })
                 });
+                 if(response.redirected && response.url.includes('/login')){ 
+                                    Swal.fire({
+                                        title: 'Please Login',
+                                        text: 'Please Login to add product to Cart',
+                                        icon: 'warning',
+                                        confirmButtonText: 'Login'
+                                    }).then((result) => {
+                                        window.location.href = "/login";
+                                    });
+                                    return
+                                }
                 const result = await response.json();
                 if (result.success) {
                     
-                    if(result.success === 'true'){
+                    if(result.success === true){
                                 iziToast.success({
                                 title: '',
-                                message: 'Product added to cart',
+                                message: result.message ||'Product added to cart',
                                 position: 'bottomRight',
                                 timeout: 2000
                             });
-                            }else if(result.success === 'false'){
+                            }else if(result.success === false){
                                 iziToast.warning({
                                 title: '',
-                                message: "Cart limit Reached",
+                                message: result.message || "Cart limit Reached",
                                 position: 'bottomRight',
                                 timeout: 2000
                             });
@@ -415,7 +396,7 @@
                 } else {
                     iziToast.error({
                             title: 'Error',
-                            message: 'Product Out of Stock',
+                            message: result.message || 'Product Out of Stock',
                             position: 'bottomRight',
                             timeout: 2000
                             });

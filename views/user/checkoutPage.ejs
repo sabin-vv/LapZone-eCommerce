@@ -701,7 +701,31 @@
             description: "Checkout Payment",
             order_id: orderId,
             handler: async function (response) {
-              await completeOrder(paymentMethod, response);
+              // First verify the payment
+              const verifyRes = await fetch("/user/verify-payment", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  razorpayPaymentId: response.razorpay_payment_id,
+                  razorpayOrderId: response.razorpay_order_id,
+                  razorpaySignature: response.razorpay_signature,
+                  orderId: response.razorpay_order_id
+                }),
+              });
+
+              const verifyResult = await verifyRes.json();
+              
+              if (verifyResult.success) {
+                // Payment verified, now complete the order
+                await completeOrder(paymentMethod, response);
+              } else {
+                Swal.fire({
+                  icon: "error",
+                  title: "Payment Verification Failed",
+                  text: verifyResult.message || "Payment could not be verified",
+                });
+                window.location.href = "/user/order-failed";
+              }
             },
             modal: {
               ondismiss: function () {
@@ -751,7 +775,7 @@
           .getElementById("orderTotalValue")
           .innerText.replace("₹", "")
           .replace(/,/g, "");
-        const appliedCoupon = window.appliedCoupon;
+        let appliedCoupon = window.appliedCoupon;
 
         const response = await fetch("/user/order", {
           method: "POST",
@@ -858,7 +882,6 @@
         const button = event.relatedTarget;
         const id = button.getAttribute("data-id");
 
-        // Populate modal fields with data from button
         document.getElementById("modalAddressId").value = button.getAttribute("data-id");
         document.getElementById("modalFullName").value =  button.getAttribute("data-name");
         document.getElementById("modalPhone").value =  button.getAttribute("data-phone");

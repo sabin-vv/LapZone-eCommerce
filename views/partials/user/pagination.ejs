@@ -1,0 +1,45 @@
+
+<link rel="stylesheet" href="/css/pagination.css">
+<% if (totalPages > 1) { 
+     const baseParams = new URLSearchParams();
+
+     if (typeof searchQuery !== 'undefined' && searchQuery) baseParams.set('search', searchQuery);
+
+     if (query.category?.length) query.category.forEach(cat => baseParams.append('category', cat));
+     if (query.brand?.length) baseParams.set('brand', query.brand.join(','));
+     if (query.ram?.length) baseParams.set('ram', query.ram.join(','));
+     if (query.ssd?.length) baseParams.set('ssd', query.ssd.join(','));
+     if (query.graphics?.length) baseParams.set('graphics', query.graphics.join(','));
+     if (query.maxPrice) baseParams.set('maxPrice', query.maxPrice);
+     if (query.sort) baseParams.set('sort', query.sort);
+%>
+
+<div class="mt-8 flex justify-center">
+  <nav class="pagination" aria-label="Page navigation">
+    <ul>
+      <% if (currentPage > 1) {
+           const prevParams = new URLSearchParams(baseParams);
+           prevParams.set('page', currentPage - 1);
+      %>
+        <li><a href="/shop?<%= prevParams.toString() %>">Previous</a></li>
+      <% } %>
+
+      <% for (let i = 1; i <= totalPages; i++) {
+           const pageParams = new URLSearchParams(baseParams);
+           pageParams.set('page', i);
+      %>
+        <li>
+          <a href="/shop?<%= pageParams.toString() %>" class="<%= currentPage === i ? 'active' : '' %>"><%= i %></a>
+        </li>
+      <% } %>
+
+      <% if (currentPage < totalPages) {
+           const nextParams = new URLSearchParams(baseParams);
+           nextParams.set('page', currentPage + 1);
+      %>
+        <li><a href="/shop?<%= nextParams.toString() %>">Next</a></li>
+      <% } %>
+    </ul>
+  </nav>
+</div>
+<% } %>

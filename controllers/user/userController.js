@@ -49,7 +49,6 @@ const landingPage = async (req, res, next) => {
         const products = await Product.find({ isActive: true, isExisting: true }).sort({ updatedAt: -1 }).limit(4).populate('categoryId')
         const gamingProducts = await Product.find({ isActive: true, isExisting: true, category: "Gaming Laptop" }).sort({ updatedAt: -1 }).limit(4).populate("categoryId")
 
-
         if (req.session.user) {
             return res.redirect("/home")
         }
