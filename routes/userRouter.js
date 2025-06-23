@@ -74,6 +74,7 @@ router.get("/cart", validateUserStatus, cartController.viewCartPage)
 router.post("/cart/update", validateUserStatus, cartController.cartUpdate)
 router.post("/cart/remove-item/:id", validateUserStatus, cartController.removecartItem)
 router.get("/cart/clear-cart", validateUserStatus, cartController.emptyCart)
+router.post("/cart/add-from-shop", validateUserStatus, cartController.addfromShop)
 
 router.post("/user/validate-stock", validateUserStatus, checkoutController.validateStock)
 router.post("/user/checkout", validateUserStatus, checkoutController.proceedToCheckoutPage)

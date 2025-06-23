@@ -14,6 +14,7 @@ const nocache = require("nocache")
 require('./utils/cron')
 const counts = require("./middlewares/counts")
 const errorHandler = require("./middlewares/errorHandler")
+require("./cornJobs/couponExpiry.js")
 
 
 

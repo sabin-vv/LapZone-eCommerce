@@ -5,79 +5,79 @@ const Coupon = require("../../model/coupon")
 
 
 const listOrders = async (req, res, next) => {
-  try {
-    if (!req.session.admin) return res.redirect("/admin");
+    try {
+        if (!req.session.admin) return res.redirect("/admin");
 
-    const page = parseInt(req.query.page) || 1;
-    const limit = 10;
-    const skip = (page - 1) * limit;
+        const page = parseInt(req.query.page) || 1;
+        const limit = 10;
+        const skip = (page - 1) * limit;
 
-    const search = req.query.search?.trim() || "";
-    const status = req.query.status || "";
-    const payment = req.query.payment || "";
-    const dateRange = req.query.date || "";
+        const search = req.query.search?.trim() || "";
+        const status = req.query.status || "";
+        const payment = req.query.payment || "";
+        const dateRange = req.query.date || "";
 
-    const query = {};
+        const query = {};
 
-    if (search) {
-      query.$or = [
-        { orderId: { $regex: search, $options: "i" } },
-        { "user.fullname": { $regex: search, $options: "i" } }
-      ];
+        if (search) {
+            query.$or = [
+                { orderId: { $regex: search, $options: "i" } },
+                { "user.fullname": { $regex: search, $options: "i" } }
+            ];
+        }
+
+        if (status) {
+            query.orderStatus = { $regex: status, $options: "i" };
+        }
+
+        if (payment) {
+            query.paymentMethod = { $regex: payment, $options: "i" };
+        }
+
+        const now = new Date();
+        if (dateRange === "today") {
+            const start = new Date();
+            start.setHours(0, 0, 0, 0);
+            query.createdAt = { $gte: start };
+        } else if (dateRange === "yesterday") {
+            const start = new Date();
+            start.setDate(start.getDate() - 1);
+            start.setHours(0, 0, 0, 0);
+            const end = new Date();
+            end.setHours(0, 0, 0, 0);
+            query.createdAt = { $gte: start, $lt: end };
+        } else if (dateRange === "last7days") {
+            const start = new Date();
+            start.setDate(start.getDate() - 7);
+            query.createdAt = { $gte: start };
+        } else if (dateRange === "last30days") {
+            const start = new Date();
+            start.setDate(start.getDate() - 30);
+            query.createdAt = { $gte: start };
+        }
+
+        const [orders, totalCount] = await Promise.all([
+            Order.find(query)
+                .populate("user")
+                .populate("items.productId")
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit),
+            Order.countDocuments(query),
+        ]);
+
+        const totalPages = Math.ceil(totalCount / limit);
+
+        res.render("admin/orderList", {
+            orders,
+            currentPage: page,
+            totalPages,
+            filters: { search, status, payment, date: dateRange }
+        });
+    } catch (error) {
+        console.error("Error fetching orders:", error);
+        next(error);
     }
-
-    if (status) {
-      query.orderStatus = { $regex: status, $options: "i" };
-    }
-
-    if (payment) {
-      query.paymentMethod = { $regex: payment, $options: "i" };
-    }
-
-    const now = new Date();
-    if (dateRange === "today") {
-      const start = new Date();
-      start.setHours(0, 0, 0, 0);
-      query.createdAt = { $gte: start };
-    } else if (dateRange === "yesterday") {
-      const start = new Date();
-      start.setDate(start.getDate() - 1);
-      start.setHours(0, 0, 0, 0);
-      const end = new Date();
-      end.setHours(0, 0, 0, 0);
-      query.createdAt = { $gte: start, $lt: end };
-    } else if (dateRange === "last7days") {
-      const start = new Date();
-      start.setDate(start.getDate() - 7);
-      query.createdAt = { $gte: start };
-    } else if (dateRange === "last30days") {
-      const start = new Date();
-      start.setDate(start.getDate() - 30);
-      query.createdAt = { $gte: start };
-    }
-
-    const [orders, totalCount] = await Promise.all([
-      Order.find(query)
-        .populate("user")
-        .populate("items.productId")
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit),
-      Order.countDocuments(query),
-    ]);
-
-    const totalPages = Math.ceil(totalCount / limit);
-
-    res.render("admin/orderList", {
-      orders,
-      currentPage: page,
-      totalPages,
-      filters: { search, status, payment, date: dateRange }
-    });
-  } catch (error) {
-    console.error("Error fetching orders:", error);
-    next(error);
-  }
 };
 
 const updateOrderStatus = async (req, res, next) => {
@@ -395,25 +395,20 @@ const cancelApprove = async (req, res, next) => {
     const { orderId, itemId } = req.body;
 
     const order = await Order.findById(orderId).populate('items.productId');
-    if (!order) {
-      return res.status(404).json({ error: 'Order not found' });
-    }
+    if (!order) return res.status(404).json({ error: 'Order not found' });
 
     const item = order.items.id(itemId);
-    if (!item) {
-      return res.status(404).json({ error: 'Item not found' });
-    }
+    if (!item) return res.status(404).json({ error: 'Item not found' });
 
     if (item.status === 'Cancelled') {
-      return res.json({
-        success: true,
-        message: 'Item already cancelled'
-      });
+      return res.json({ success: true, message: 'Item already cancelled' });
     }
 
+    // Mark item as cancelled
     item.status = 'Cancelled';
     item.cancelDate = new Date();
 
+    // Restock the product variant
     const product = item.productId;
     const variant = product.variants.find(v => v.RAM === item.ram && v.Storage === item.storage);
     if (variant) {
@@ -421,44 +416,67 @@ const cancelApprove = async (req, res, next) => {
       await product.save();
     }
 
+    const activeItems = order.items.filter(i => i.status !== 'Cancelled');
     const itemTotal = item.price * item.quantity;
 
-    const activeItems = order.items.filter(i => i.status !== 'Cancelled');
-    const newSubtotal = activeItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
-
-    const originalSubtotal = order.subtotal;
+    const originalSubtotal = order.subtotal || 1; // prevent division by 0
     const originalDiscount = order.discountAmount || 0;
-    const originalTax = order.tax || 0;
     const shippingFee = order.shippingFee || 0;
 
-    const itemDiscount = (itemTotal / originalSubtotal) * originalDiscount;
-    const itemTax = (itemTotal / originalSubtotal) * originalTax;
-    const refundShipping = activeItems.length === 0 ? shippingFee : 0;
+    let itemDiscount = 0;
+    let refundShipping = activeItems.length === 0 ? shippingFee : 0;
+    let updatedDiscount = originalDiscount;
+    let couponRemoved = false;
+    let refundAmount = 0;
+    let couponStillValid = true;
 
-    const refundAmount = Math.round(itemTotal - itemDiscount + itemTax + refundShipping);
+    if (order.coupon?.couponId) {
+      const coupon = await Coupon.findById(order.coupon.couponId);
 
-    if (order.paymentStatus === 'Completed') {
-      let wallet = await Wallet.findOne({ userId: order.user });
-      if (!wallet) {
-        wallet = new Wallet({ userId: order.user, balance: 0, transactions: [] });
+      // Check if coupon is still valid based on new subtotal
+      const remainingSubtotal = activeItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
+
+      if (coupon && remainingSubtotal < (coupon.minPurchaseAmount || 0)) {
+        const remainingItemsDiscount = (remainingSubtotal / originalSubtotal) * originalDiscount;
+        const recoveredDiscount = originalDiscount - remainingItemsDiscount;
+
+        // Subtract the recovered discount from the refund
+        refundAmount -= Math.round(recoveredDiscount);
+
+        updatedDiscount = 0;
+        couponRemoved = true;
+        couponStillValid = false;
+
+        order.coupon = { code: null, couponId: null };
+        order.discountAmount = 0;
       }
-
-      wallet.balance += refundAmount;
-      wallet.transactions.push({
-        type: 'credit',
-        amount: refundAmount,
-        description: `Refund for Order #${order.orderId}`,
-        date: new Date(),
-        createdAt: new Date()
-      });
-      await wallet.save();
     }
 
+    // Calculate proportional discount to reduce from refund if coupon still valid
+    if (couponStillValid) {
+      itemDiscount = (itemTotal / originalSubtotal) * originalDiscount;
+    }
+
+    refundAmount += Math.min(itemTotal - itemDiscount + refundShipping);
+
+    // If all items cancelled, refund full amount
     const allCancelled = order.items.every(i => i.status === 'Cancelled');
     if (allCancelled) {
       order.orderStatus = 'Cancelled';
+      refundAmount = order.totalAmount;
+    } else {
+      // Recalculate order values
+      const newSubtotal = activeItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
+      const newTax = Math.round(newSubtotal * 0.05);
+      const newTotal = newSubtotal + shippingFee + newTax - updatedDiscount;
+
+      order.subtotal = newSubtotal;
+      order.tax = newTax;
+      order.totalAmount = newTotal;
+      order.discountAmount = updatedDiscount;
     }
 
+    // Update status history
     order.statusHistory.forEach(s => s.current = false);
     order.statusHistory.push({
       status: 'Cancelled',
@@ -466,33 +484,48 @@ const cancelApprove = async (req, res, next) => {
       current: allCancelled
     });
 
-    if (order.coupon) {
-      const coupon = await Coupon.findById(order.coupon);
-      if (coupon && newSubtotal < coupon.minAmount) {
-        order.coupon = null;
-        order.discountAmount = 0;
+    await order.save();
+
+    // Refund logic (only if paid)
+    if (order.paymentStatus === 'Completed' && refundAmount > 0) {
+      try {
+        let wallet = await Wallet.findOne({ userId: order.user });
+        if (!wallet) {
+          wallet = new Wallet({ userId: order.user, balance: 0, transactions: [] });
+        }
+
+        wallet.balance += refundAmount;
+        wallet.transactions.push({
+          type: 'credit',
+          amount: refundAmount,
+          description: `Refund for Order #${order.orderId}`,
+          date: new Date(),
+          createdAt: new Date()
+        });
+
+        await wallet.save();
+      } catch (walletErr) {
+        console.error("Wallet refund failed:", walletErr);
+        return res.status(500).json({
+          success: false,
+          message: "Refund failed to process in wallet, but item was cancelled.",
+        });
       }
     }
 
-    order.subtotal = newSubtotal;
-    order.tax = Math.round(newSubtotal * 0.05); 
-    order.totalAmount = order.subtotal + order.shippingFee - order.discountAmount + order.tax;
-
-    await order.save();
-
-    res.json({
+    return res.json({
       success: true,
       refundAmount,
       refundShipping,
+      couponRemoved,
       message: `Item cancelled. ₹${refundAmount} refunded.`,
     });
 
   } catch (error) {
-    console.error('Error approving cancel request:', error);
+    console.error("Error approving cancel request:", error);
     next(error);
   }
 };
-
 
 const cancelReject = async (req, res, next) => {
     try {
@@ -546,5 +579,4 @@ module.exports = {
     returnReject,
     cancelApprove,
     cancelReject,
-
 }

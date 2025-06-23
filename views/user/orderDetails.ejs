@@ -146,6 +146,12 @@
                                     <span>Tax</span>
                                     <span>₹<%= order.tax.toLocaleString('en-IN') %></span>
                                 </div>
+                                <% if(order.discountAmount){ %>
+                                <div class="summary-item">
+                                    <span>Discount</span>
+                                    <span>- ₹<%= order.discountAmount.toLocaleString('en-IN') %></span>
+                                </div>
+                                <% } %>
                                 <div class="summary-item">
                                     <span>Total</span>
                                     <span>₹<%= order.totalAmount.toLocaleString('en-IN') %></span>

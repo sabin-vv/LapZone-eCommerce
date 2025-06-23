@@ -139,7 +139,6 @@ const listProducts = async (req, res, next) => {
     next(error);
   }
 };
-
 const viewProduct = async (req, res, next) => {
   try {
     if (!req.session.user) return res.redirect("/login");

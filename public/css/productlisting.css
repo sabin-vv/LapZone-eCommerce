@@ -372,6 +372,7 @@ input:not(:checked) + .slider {
 
 .offer button:hover {
     background-color: #111827;
+    color: white;
 }
 
 /* Pagination */

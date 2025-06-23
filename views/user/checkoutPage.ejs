@@ -219,8 +219,8 @@
                         <span>₹<%= order.shippingFee.toLocaleString('en-IN') %></span>
                       </div>
                       <div class="order-summary-item">
-                        <span>Tax</span>
-                        <span>₹<%= order.tax.toLocaleString('en-IN') %></span>
+                        <span >Tax</span>
+                        <span id="taxValue">₹<%= order.tax.toLocaleString('en-IN') %></span>
                       </div>
                       <div id="discountRow" class="d-none"></div>
                       <div class="order-total">
@@ -275,17 +275,17 @@
                         <div class="coupon-code"><%= coupon.code %></div>
                         
                         <% if (coupon.discountType === 'percentage') { %>
-                            <div class="discount-badge"><%= coupon.discountValue %>% OFF</div>
+                            <div class="discount-badge"><%= coupon.discountValue.toLocaleString('en-IN') %>% OFF</div>
                         <% } else { %>
-                            <div class="discount-badge fixed-discount">₹<%= coupon.discountValue %> OFF</div>
+                            <div class="discount-badge fixed-discount">₹<%= coupon.discountValue?.toLocaleString('en-IN') %> OFF</div>
                         <% } %>
                         
                         <div class="coupon-meta">
                             <% if (coupon.maxDiscountAmount) { %>
-                                <div class="max-discount">Save up to ₹<%= coupon.maxDiscountAmount %></div>
+                                <div class="max-discount">Save up to ₹<%= coupon.maxDiscountAmount?.toLocaleString('en-IN') %></div>
                             <% } %>
                             <% if (coupon.minPurchaseAmount) { %>
-                                <div class="min-purchase">Min ₹<%= coupon.minPurchaseAmount %></div>
+                                <div class="min-purchase">Min ₹<%= coupon.minPurchaseAmount.toLocaleString('en-IN') %></div>
                             <% } %>
                         </div>
                         
@@ -701,7 +701,6 @@
             description: "Checkout Payment",
             order_id: orderId,
             handler: async function (response) {
-              // First verify the payment
               const verifyRes = await fetch("/user/verify-payment", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -716,7 +715,6 @@
               const verifyResult = await verifyRes.json();
               
               if (verifyResult.success) {
-                // Payment verified, now complete the order
                 await completeOrder(paymentMethod, response);
               } else {
                 Swal.fire({
@@ -771,8 +769,7 @@
           phone: lines[4]?.innerText.replace("Phone: (+91) ", "").trim(),
         };
 
-        const total = document
-          .getElementById("orderTotalValue")
+        const total = document.getElementById("orderTotalValue")
           .innerText.replace("₹", "")
           .replace(/,/g, "");
         let appliedCoupon = window.appliedCoupon;
@@ -831,6 +828,10 @@
 
           if (result.success) {
             couponInput.value = couponCodeToApply;
+            const taxEl = document.getElementById("taxValue");
+            if (taxEl && result.tax !== undefined) {
+              taxEl.innerText = `₹${result.tax.toLocaleString("en-IN")}`;
+            }
             const totalEl = document.getElementById("orderTotalValue");
             if (totalEl && result.totalAmount !== undefined) {
               totalEl.innerText = `₹${result.totalAmount.toLocaleString("en-IN")}`;

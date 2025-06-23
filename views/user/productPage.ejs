@@ -167,12 +167,12 @@
 
           ₹<span id="dynamicPrice"><%= product.salePrice.toLocaleString('en-IN') %></span>
 
-          <% if (product.regularPrice && product.salePrice < product.regularPrice) { %>
+         <!-- <% if (product.regularPrice && product.salePrice < product.regularPrice) { %>
             <del>₹<%= product.regularPrice.toLocaleString('en-IN') %></del>
-          <% } %>
+          <% } %> --!>
         </div>
 
-          <div class="description">
+        <div class="description">
             <%= product.description || 'No description available.' %>
           </div>
         <div class="offers">
@@ -416,8 +416,9 @@
 
       async function addToCart(productId) {
         try {
-          const ram =selectedRAM;
+          const ram = selectedRAM;
           const storage =selectedStorage;
+          console.log("selectedRAM",selectedRAM)
           const price = document.getElementById("salePriceValue").value;
           const response = await fetch("/cart/add-to-cart", {
             method: "POST",

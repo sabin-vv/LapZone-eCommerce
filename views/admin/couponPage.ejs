@@ -54,10 +54,14 @@
                             <% coupons.forEach(coupon => { %>
                                 <tr>
                                     <td><strong><%= coupon.code %></strong></td>
-                                    <td> <%= coupon.minPurchaseAmount.toLocaleString('en-IN') %></td>
+                                    <td> <%= coupon.minPurchaseAmount?.toLocaleString('en-IN') %></td>
                                     <% if(coupon.discountType === 'percentage') {%>
-                                    <td><%= coupon.discountValue.toLocaleString('en-IN') %>%</td>
-                                    <td>₹<%= coupon.maxDiscountAmount.toLocaleString('en-IN') %></td>
+                                    <td><%= coupon.discountValue?.toLocaleString('en-IN') %>%</td>
+                                    <% if(coupon.maxDiscountAmount) { %>
+                                    <td>₹<%= coupon.maxDiscountAmount?.toLocaleString('en-IN') %></td>
+                                    <% }else{ %>
+                                        <td>N/A</td>
+                                        <% } %>
                                     <% } else { %>
                                     <td>₹<%= coupon.discountValue.toLocaleString('en-IN') %></td>
                                     <td>N/A</td>

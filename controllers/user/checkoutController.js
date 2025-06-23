@@ -48,8 +48,15 @@ const viewCheckoutPage = async (req, res, next) => {
 
     const userId = req.session.user;
     const addresses = await Address.find({ userId })
-    const coupons = await Coupon.find().sort({ createdAt: -1 })
-    const cart = await Cart.findOne({ userId }).populate('items.productId');
+    const coupons = await Coupon.find({ isActive: true }).sort({ createdAt: -1 })
+    const cart = await Cart.findOne({ userId })
+      .populate({
+        path: 'items.productId',
+        populate: {
+          path: 'categoryId',
+          model: 'category'
+        }
+      });
     if (!cart)
       return res.redirect('/cart')
 
@@ -61,13 +68,19 @@ const viewCheckoutPage = async (req, res, next) => {
 
     const subtotal = cart.items.reduce((acc, item) => {
       const product = item.productId;
+      const variant = product.variants.find(
+        v => v.RAM === item.ram && v.Storage === item.storage
+      );
+
+      if (!variant) return acc;
       const quantity = item.quantity;
+      const basePrice = product.salePrice + (variant.priceAdjustment || 0);
+
 
       const productOffer = product.offer || 0;
       const categoryOffer = product.categoryId?.offer || 0;
       const maxOffer = Math.max(productOffer, categoryOffer);
 
-      const basePrice = product.salePrice;
       const discountedPrice = Math.round(basePrice * (1 - maxOffer / 100));
 
       return acc + discountedPrice * quantity;
@@ -126,16 +139,16 @@ const orderplace = async (req, res, next) => {
     if (!req.session.user) return res.redirect("/");
 
     const userId = req.session.user;
-    const { shippingAddress, paymentMethod, total, appliedCoupon, razorpayDetails } = req.body;
-    console.log(appliedCoupon)
+    const { shippingAddress, paymentMethod, appliedCoupon, razorpayDetails } = req.body;
 
     const couponCode = appliedCoupon?.couponCode || null;
     const couponId = appliedCoupon?.couponId || null;
-    const discountAmount = appliedCoupon?.discount || 0;
 
-    const totalPrice = parseFloat(total.replace(/[₹,]/g, ''));
+    const cart = await Cart.findOne({ userId }).populate({
+      path: 'items.productId',
+      populate: { path: 'categoryId', model: 'category' }
+    });
 
-    const cart = await Cart.findOne({ userId }).populate('items.productId');
     if (!cart || cart.items.length === 0) {
       return res.status(400).json({ success: false, message: "Cart is empty." });
     }
@@ -157,59 +170,69 @@ const orderplace = async (req, res, next) => {
       if (variant.stock < item.quantity) {
         return res.json({
           success: false,
-          message: `Only ${variant.stock} left for ${product.name} `
+          message: `Only ${variant.stock} left for ${product.name}`
         });
       }
     }
 
+    const calculateFinalPrice = (product, variant) => {
+      const basePrice = product.salePrice + (variant?.priceAdjustment || 0);
+      const maxOffer = Math.max(product.offer || 0, product.categoryId?.offer || 0);
+      return Math.round(basePrice * (1 - maxOffer / 100));
+    };
+
     const orderId = 'LPZ-' + uuidv4().replace(/\D/g, '').slice(0, 15);
 
+    let subtotal = 0;
+    const orderItems = cart.items.map(item => {
+      const product = item.productId;
+      const variant = product.variants.find(v => v.RAM === item.ram && v.Storage === item.storage);
+      const finalPrice = calculateFinalPrice(product, variant);
+
+      subtotal += finalPrice * item.quantity;
+
+      return {
+        productId: product._id,
+        productName: product.name,
+        quantity: item.quantity,
+        ram: item.ram,
+        storage: item.storage,
+        price: finalPrice,
+        status: 'Ordered'
+      };
+    });
+
+    const shippingFee = 50;
+    let discountAmount = 0;
+
+    if (couponId && couponCode) {
+      const coupon = await Coupon.findById(couponId);
+      if (
+        coupon &&
+        coupon.code === couponCode &&
+        coupon.expiryDate > new Date() &&
+        subtotal >= coupon.minPurchaseAmount
+      ) {
+        if (coupon.discountType === 'percentage') {
+          discountAmount = Math.min(
+            Math.round((coupon.discountValue / 100) * subtotal),
+            coupon.maxDiscountAmount || Infinity
+          );
+        } else if (coupon.discountType === 'fixed') {
+          discountAmount = coupon.discountValue;
+        }
+      }
+    }
+
+    const tax = Math.round((subtotal - discountAmount) * 0.05);
+    const totalAmount = subtotal + shippingFee + tax - discountAmount;
+
+    let paymentStatus = 'Pending';
     let wallet = await Wallet.findOne({ userId });
     if (!wallet) {
       wallet = new Wallet({ userId, balance: 0 });
       await wallet.save();
     }
-
-    let paymentStatus = 'Pending';
-
-    if (paymentMethod === 'Wallet') {
-      if (wallet.balance < totalPrice) {
-        return res.json({ success: false, message: "Not Enough Money" });
-      }
-
-      wallet.balance -= totalPrice;
-      wallet.transactions.push({
-        type: 'debit',
-        amount: totalPrice,
-        description: `Purchase for Order #${orderId}`,
-        date: new Date(),
-        createdAt: new Date()
-      });
-      await wallet.save();
-      paymentStatus = 'Completed';
-    } else if (paymentMethod === 'Online') {
-      // For online payments, payment status will be updated after verification
-      paymentStatus = 'Completed';
-    } else if (paymentMethod === 'COD') {
-      if (totalPrice > 1000) {
-        return res.json({ success: false, message: "COD is not available for orders above ₹1000" });
-      }
-    }
-
-    const orderItems = cart.items.map(item => ({
-      productId: item.productId._id,
-      productName: item.productId.name,
-      quantity: item.quantity,
-      ram: item.ram,
-      storage: item.storage,
-      price: item.price,
-      status: 'Ordered'
-    }));
-
-    const subtotal = orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const shippingFee = 50;
-    const tax = Math.round(subtotal * 0.05);
-    let totalAmount = subtotal + shippingFee + tax - discountAmount;
 
     const order = new Order({
       orderId,
@@ -225,13 +248,52 @@ const orderplace = async (req, res, next) => {
       orderStatus: 'Processing',
       discountAmount,
       statusHistory: [{ status: 'Processing', current: true }],
-      coupon: couponCode ? { code: couponCode, couponId } : undefined,
+      coupon: discountAmount > 0 ? {
+        code: couponCode,
+        couponId: couponId
+      } : undefined,
       ...(razorpayDetails && {
         razorpayOrderId: razorpayDetails.razorpay_order_id,
         razorpayPaymentId: razorpayDetails.razorpay_payment_id
       })
     });
 
+    try {
+      await order.save();
+      console.log('Order created successfully:', orderId);
+    } catch (error) {
+      console.error('Error saving order:', error);
+      return res.status(500).json({ success: false, message: 'Error creating order' });
+    }
+
+    if (paymentMethod === 'Wallet') {
+      if (wallet.balance < totalAmount) {
+        return res.json({ success: false, message: "Insufficient wallet balance" });
+      }
+
+      wallet.balance -= totalAmount;
+      wallet.transactions.push({
+        type: 'debit',
+        amount: totalAmount,
+        description: `Purchase for Order #${orderId}`,
+        date: new Date(),
+        createdAt: new Date()
+      });
+      await wallet.save();
+      paymentStatus = 'Completed';
+    } else if (paymentMethod === 'Online') {
+      paymentStatus = 'Completed';
+    } else if (paymentMethod === 'COD' && totalAmount > 1000) {
+      return res.json({ success: false, message: "COD not available for orders above ₹1000" });
+    }
+
+    // Ensure payment status is 'Pending' if payment is not completed
+    if (paymentStatus !== 'Completed') {
+      paymentStatus = 'Pending';
+    }
+
+    // Update order payment status after payment attempt
+    order.paymentStatus = paymentStatus;
     await order.save();
 
     for (const item of cart.items) {
@@ -242,7 +304,12 @@ const orderplace = async (req, res, next) => {
     }
 
     await Cart.deleteOne({ userId });
-    res.json({ success: true, message: 'Order Placed', orderId });
+
+    if (paymentStatus === 'Completed') {
+      res.json({ success: true, message: 'Order Placed', orderId });
+    } else {
+      res.json({ success: false, message: 'Payment Failed, Order Created', orderId });
+    }
 
   } catch (error) {
     console.error('Error placing order:', error);

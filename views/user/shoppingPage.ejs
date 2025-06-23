@@ -215,13 +215,25 @@
                                         </div>
                                         <h3 class="text-lg font-semibold text-gray-800 mb-2 line-clamp-2"><%= product.name %></h3>
                                         <ul class="text-sm text-gray-600 mb-4">
-                                            <li><%= product.category %></li>
+                                            <li><%= product.categoryId.name %></li>
                                             <li><%= product.CPU %></li>
                                             <li><%= product.variants[0]?.RAM || 'N/A' %> RAM</li>
                                             <li><%= product.variants[0]?.Storage || 'N/A' %> Storage</li>
                                             <li><%= product.screen %></li>
                                         </ul>
-                                        <p class="align-self-center text-lg font-bold text-indigo-600 ">₹<%= product.salePrice.toLocaleString('en-IN') %></p>
+                                        <% 
+                                        %>
+                                        <% let item = product.variants.find(v => v.stock > 0) %>
+                                        <% let basePrice = product.salePrice + (item?.priceAdjustment || 0)
+                                        const discountedPrice = finalOffer > 0 
+                                            ? Math.round(basePrice * (1 - finalOffer / 100)) 
+                                            : basePrice;%>
+                                            <% if (finalOffer > 0) { %>
+                                            <p class="align-self-center text-sm text-muted mb-1">
+                                                <del>₹<%= basePrice.toLocaleString('en-IN') %></del>
+                                            </p>
+                                            <% } %>
+                                        <p class="align-self-center text-lg font-bold text-indigo-600 ">₹<%= discountedPrice.toLocaleString('en-IN') %></p>
                                     </div>
                                 </a>
                                 <div class="action-buttons flex justify-center gap-2 p-4 pt-0">
@@ -357,7 +369,7 @@
         async function addToCart(button) {
             const productId = button.dataset.productId;
             try {
-                const response = await fetch('/cart/add-to-cart', {
+                const response = await fetch('/cart/add-from-shop', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

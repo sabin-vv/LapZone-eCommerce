@@ -23,15 +23,18 @@ const productListing = async (req, res, next) => {
       query.name = { $regex: searchQuery, $options: "i" }
     }
     if (categoryFilter) {
-      query.category = categoryFilter
+      const category = await Category.findOne({ name: categoryFilter });
+      if (category) {
+        query.categoryId = category._id;
+      }
     }
     if (priceFilter) {
-      if (priceFilter === "0-500") {
-        query.salePrice = { $gte: 0, $lte: 500 }
-      } else if (priceFilter === "500-1000") {
-        query.salePrice = { $gte: 500, $lte: 1000 }
-      } else if (priceFilter === "1000+") {
-        query.salePrice = { $gte: 1000 }
+      if (priceFilter === "0-50000") {
+        query.salePrice = { $gte: 0, $lte: 50000 }
+      } else if (priceFilter === "50000-100000") {
+        query.salePrice = { $gte: 50000, $lte: 100000 }
+      } else if (priceFilter === "100000+") {
+        query.salePrice = { $gte: 100000 }
       }
     }
 
@@ -46,7 +49,7 @@ const productListing = async (req, res, next) => {
       sort.createdAt = -1
     }
 
-    const categories = await Category.find()
+    const categories = await Category.find({ isListed: true, isExisting: true }).sort({ name: 1 })
 
     const totalProducts = await Product.countDocuments(query)
     const totalPages = Math.ceil(totalProducts / limit)
