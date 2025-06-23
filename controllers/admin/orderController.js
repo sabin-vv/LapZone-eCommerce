@@ -404,7 +404,6 @@ const cancelApprove = async (req, res, next) => {
       return res.json({ success: true, message: 'Item already cancelled' });
     }
 
-    // Mark item as cancelled
     item.status = 'Cancelled';
     item.cancelDate = new Date();
 
@@ -416,64 +415,13 @@ const cancelApprove = async (req, res, next) => {
       await product.save();
     }
 
-    const activeItems = order.items.filter(i => i.status !== 'Cancelled');
     const itemTotal = item.price * item.quantity;
+    const refundAmount = itemTotal;
 
-    const originalSubtotal = order.subtotal || 1; // prevent division by 0
-    const originalDiscount = order.discountAmount || 0;
-    const shippingFee = order.shippingFee || 0;
-
-    let itemDiscount = 0;
-    let refundShipping = activeItems.length === 0 ? shippingFee : 0;
-    let updatedDiscount = originalDiscount;
-    let couponRemoved = false;
-    let refundAmount = 0;
-    let couponStillValid = true;
-
-    if (order.coupon?.couponId) {
-      const coupon = await Coupon.findById(order.coupon.couponId);
-
-      // Check if coupon is still valid based on new subtotal
-      const remainingSubtotal = activeItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
-
-      if (coupon && remainingSubtotal < (coupon.minPurchaseAmount || 0)) {
-        const remainingItemsDiscount = (remainingSubtotal / originalSubtotal) * originalDiscount;
-        const recoveredDiscount = originalDiscount - remainingItemsDiscount;
-
-        // Subtract the recovered discount from the refund
-        refundAmount -= Math.round(recoveredDiscount);
-
-        updatedDiscount = 0;
-        couponRemoved = true;
-        couponStillValid = false;
-
-        order.coupon = { code: null, couponId: null };
-        order.discountAmount = 0;
-      }
-    }
-
-    // Calculate proportional discount to reduce from refund if coupon still valid
-    if (couponStillValid) {
-      itemDiscount = (itemTotal / originalSubtotal) * originalDiscount;
-    }
-
-    refundAmount += Math.min(itemTotal - itemDiscount + refundShipping);
-
-    // If all items cancelled, refund full amount
+    // If all items cancelled, set order status to cancelled
     const allCancelled = order.items.every(i => i.status === 'Cancelled');
     if (allCancelled) {
       order.orderStatus = 'Cancelled';
-      refundAmount = order.totalAmount;
-    } else {
-      // Recalculate order values
-      const newSubtotal = activeItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
-      const newTax = Math.round(newSubtotal * 0.05);
-      const newTotal = newSubtotal + shippingFee + newTax - updatedDiscount;
-
-      order.subtotal = newSubtotal;
-      order.tax = newTax;
-      order.totalAmount = newTotal;
-      order.discountAmount = updatedDiscount;
     }
 
     // Update status history
@@ -516,8 +464,6 @@ const cancelApprove = async (req, res, next) => {
     return res.json({
       success: true,
       refundAmount,
-      refundShipping,
-      couponRemoved,
       message: `Item cancelled. ₹${refundAmount} refunded.`,
     });
 

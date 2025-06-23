@@ -616,6 +616,9 @@ body {
   color: var(--gray-500);
   margin-bottom: 24px;
 }
+.empty-state a {
+  text-decoration: none;
+}
 
 /* Modal Styling Enhancements */
 .modal-content {

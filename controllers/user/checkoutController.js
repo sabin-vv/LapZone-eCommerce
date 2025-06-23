@@ -257,14 +257,7 @@ const orderplace = async (req, res, next) => {
         razorpayPaymentId: razorpayDetails.razorpay_payment_id
       })
     });
-
-    try {
       await order.save();
-      console.log('Order created successfully:', orderId);
-    } catch (error) {
-      console.error('Error saving order:', error);
-      return res.status(500).json({ success: false, message: 'Error creating order' });
-    }
 
     if (paymentMethod === 'Wallet') {
       if (wallet.balance < totalAmount) {
@@ -287,12 +280,10 @@ const orderplace = async (req, res, next) => {
       return res.json({ success: false, message: "COD not available for orders above ₹1000" });
     }
 
-    // Ensure payment status is 'Pending' if payment is not completed
     if (paymentStatus !== 'Completed') {
       paymentStatus = 'Pending';
     }
 
-    // Update order payment status after payment attempt
     order.paymentStatus = paymentStatus;
     await order.save();
 
@@ -587,6 +578,147 @@ const orderSuccessPage = async (req, res) => {
   }
 }
 
+const createPendingOrder = async (req, res, next) => {
+  try {
+    if (!req.session.user) return res.redirect("/");
+
+    const userId = req.session.user;
+    const { shippingAddress, appliedCoupon, razorpayOrderId } = req.body;
+
+    const couponCode = appliedCoupon?.couponCode || null;
+    const couponId = appliedCoupon?.couponId || null;
+
+    const cart = await Cart.findOne({ userId }).populate({
+      path: 'items.productId',
+      populate: { path: 'categoryId', model: 'category' }
+    });
+
+    if (!cart || cart.items.length === 0) {
+      return res.status(400).json({ success: false, message: "Cart is empty." });
+    }
+
+    // Validate stock availability
+    for (const item of cart.items) {
+      const product = item.productId;
+      if (!product || !product.isActive || !product.isExisting) {
+        return res.json({ success: false, message: `Product not available` });
+      }
+
+      const variant = product.variants.find(v =>
+        v.RAM === item.ram && v.Storage === item.storage
+      );
+
+      if (!variant) {
+        return res.json({ success: false, message: `Variant not found for ${product.name}` });
+      }
+
+      if (variant.stock < item.quantity) {
+        return res.json({
+          success: false,
+          message: `Only ${variant.stock} left for ${product.name}`
+        });
+      }
+    }
+
+    const calculateFinalPrice = (product, variant) => {
+      const basePrice = product.salePrice + (variant?.priceAdjustment || 0);
+      const maxOffer = Math.max(product.offer || 0, product.categoryId?.offer || 0);
+      return Math.round(basePrice * (1 - maxOffer / 100));
+    };
+
+    const orderId = 'LPZ-' + uuidv4().replace(/\D/g, '').slice(0, 15);
+
+    let subtotal = 0;
+    const orderItems = cart.items.map(item => {
+      const product = item.productId;
+      const variant = product.variants.find(v => v.RAM === item.ram && v.Storage === item.storage);
+      const finalPrice = calculateFinalPrice(product, variant);
+
+      subtotal += finalPrice * item.quantity;
+
+      return {
+        productId: product._id,
+        productName: product.name,
+        quantity: item.quantity,
+        ram: item.ram,
+        storage: item.storage,
+        price: finalPrice,
+        status: 'Ordered'
+      };
+    });
+
+    const shippingFee = 50;
+    let discountAmount = 0;
+
+    if (couponId && couponCode) {
+      const coupon = await Coupon.findById(couponId);
+      if (
+        coupon &&
+        coupon.code === couponCode &&
+        coupon.expiryDate > new Date() &&
+        subtotal >= coupon.minPurchaseAmount
+      ) {
+        if (coupon.discountType === 'percentage') {
+          discountAmount = Math.min(
+            Math.round((coupon.discountValue / 100) * subtotal),
+            coupon.maxDiscountAmount || Infinity
+          );
+        } else if (coupon.discountType === 'fixed') {
+          discountAmount = coupon.discountValue;
+        }
+      }
+    }
+
+    const tax = Math.round((subtotal - discountAmount) * 0.05);
+    const totalAmount = subtotal + shippingFee + tax - discountAmount;
+
+    // Create order with pending payment status
+    const order = new Order({
+      orderId,
+      user: userId,
+      items: orderItems,
+      subtotal,
+      shippingFee,
+      tax,
+      totalAmount,
+      shippingAddress,
+      paymentMethod: 'Online',
+      paymentStatus: 'Pending',
+      orderStatus: 'Processing',
+      discountAmount,
+      statusHistory: [{ status: 'Processing', current: true }],
+      coupon: discountAmount > 0 ? {
+        code: couponCode,
+        couponId: couponId
+      } : undefined,
+      razorpayOrderId: razorpayOrderId
+    });
+
+    await order.save();
+
+    // Update product stock
+    for (const item of cart.items) {
+      await Product.updateOne(
+        { _id: item.productId._id, "variants.RAM": item.ram, "variants.Storage": item.storage },
+        { $inc: { "variants.$.stock": -item.quantity } }
+      );
+    }
+
+    // Clear cart
+    await Cart.deleteOne({ userId });
+
+    res.json({ 
+      success: true, 
+      message: 'Order created with pending payment status', 
+      orderId: order.orderId 
+    });
+
+  } catch (error) {
+    console.error('Error creating pending order:', error);
+    next(error);
+  }
+};
+
 module.exports = {
   proceedToCheckoutPage,
   viewCheckoutPage,
@@ -597,4 +729,5 @@ module.exports = {
   editAddress,
   addAddress,
   orderSuccessPage,
+  createPendingOrder,
 }

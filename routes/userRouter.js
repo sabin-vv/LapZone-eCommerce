@@ -80,6 +80,7 @@ router.post("/user/validate-stock", validateUserStatus, checkoutController.valid
 router.post("/user/checkout", validateUserStatus, checkoutController.proceedToCheckoutPage)
 router.get("/user/checkout",checkoutController.viewCheckoutPage)
 router.post("/user/order", validateUserStatus, checkoutController.orderplace)
+router.post("/user/create-pending-order", validateUserStatus, checkoutController.createPendingOrder)
 router.get("/user/order-page/:id", validateUserStatus, checkoutController.orderPage)
 router.get("/user/order-failed", validateUserStatus, checkoutController.orderFailurePafe)
 router.post('/profile/checkout-page/edit-address/:id', validateUserStatus, checkoutController.editAddress)
