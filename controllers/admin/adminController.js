@@ -112,17 +112,17 @@ const getDashboardStats = async (req, res, next) => {
         ]);
         const totalSales = sales.length > 0 ? Math.round(sales[0].total) : 0;
 
-        const totalOrders = await Order.countDocuments({ 
-            orderStatus: { $ne: 'Cancelled' } 
+        const totalOrders = await Order.countDocuments({
+            orderStatus: { $ne: 'Cancelled' }
         });
 
-        const totalCustomers = await User.countDocuments({ 
+        const totalCustomers = await User.countDocuments({
             isAdmin: false,
             isBlocked: { $ne: true }
         });
 
-        const totalProducts = await Product.countDocuments({ 
-            isExisting: true 
+        const totalProducts = await Product.countDocuments({
+            isExisting: true
         });
 
         res.json({
@@ -259,11 +259,11 @@ const getSalesData = async (req, res, next) => {
 const getTopProducts = async (req, res, next) => {
     try {
         const topProducts = await Order.aggregate([
-            { 
-                $match: { 
+            {
+                $match: {
                     orderStatus: { $ne: 'Cancelled' },
                     paymentStatus: 'Completed'
-                } 
+                }
             },
             { $unwind: '$items' },
             {
@@ -309,66 +309,66 @@ const getTopProducts = async (req, res, next) => {
 };
 
 const getTopCategories = async (req, res, next) => {
-  try {
-    const topCategories = await Order.aggregate([
-      { 
-        $match: { 
-          orderStatus: { $ne: 'Cancelled' },
-          paymentStatus: 'Completed'
-        } 
-      },
-      { $unwind: '$items' },
-      { $match: { "items.status": { $ne: "Cancelled" } } },
-      {
-        $lookup: {
-          from: 'products',
-          localField: 'items.productId',
-          foreignField: '_id',
-          as: 'productDetails'
-        }
-      },
-      { $unwind: '$productDetails' },
-      {
-        $lookup: {
-          from: 'categories',
-          localField: 'productDetails.categoryId',
-          foreignField: '_id',
-          as: 'categoryDetails'
-        }
-      },
-      { $unwind: '$categoryDetails' },
-      {
-        $group: {
-          _id: '$categoryDetails._id',
-          name: { $first: '$categoryDetails.name' },
-          totalSales: { $sum: '$items.quantity' },
-          totalRevenue: {
-            $sum: {
-              $multiply: ['$items.quantity', '$items.price']
-            }
-          }
-        }
-      },
-      { $sort: { totalRevenue: -1 } },
-      { $limit: 10 }
-    ]);
+    try {
+        const topCategories = await Order.aggregate([
+            {
+                $match: {
+                    orderStatus: { $ne: 'Cancelled' },
+                    paymentStatus: 'Completed'
+                }
+            },
+            { $unwind: '$items' },
+            { $match: { "items.status": { $ne: "Cancelled" } } },
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: 'items.productId',
+                    foreignField: '_id',
+                    as: 'productDetails'
+                }
+            },
+            { $unwind: '$productDetails' },
+            {
+                $lookup: {
+                    from: 'categories',
+                    localField: 'productDetails.categoryId',
+                    foreignField: '_id',
+                    as: 'categoryDetails'
+                }
+            },
+            { $unwind: '$categoryDetails' },
+            {
+                $group: {
+                    _id: '$categoryDetails._id',
+                    name: { $first: '$categoryDetails.name' },
+                    totalSales: { $sum: '$items.quantity' },
+                    totalRevenue: {
+                        $sum: {
+                            $multiply: ['$items.quantity', '$items.price']
+                        }
+                    }
+                }
+            },
+            { $sort: { totalRevenue: -1 } },
+            { $limit: 10 }
+        ]);
 
-    res.json(topCategories);
+        res.json(topCategories);
 
-  } catch (error) {
-    console.error('Error fetching top categories:', error);
-    next(error);
-  }
+    } catch (error) {
+        console.error('Error fetching top categories:', error);
+        next(error);
+    }
 };
 
 const getTopBrands = async (req, res, next) => {
     try {
         const topBrands = await Order.aggregate([
-            { 
-                $match: { 
+            {
+                $match: {
                     orderStatus: { $ne: 'Cancelled' },
                     paymentStatus: 'Completed'
-                } 
+                }
             },
             { $unwind: '$items' },
             {
@@ -407,7 +407,7 @@ const getTopBrands = async (req, res, next) => {
 
 const getRecentOrders = async (req, res, next) => {
     try {
-        const recentOrders = await Order.find()
+        const recentOrders = await Order.find({ orderStatus: { $ne: 'Cancelled' } })
             .populate('user', 'fullname')
             .sort({ orderDate: -1 })
             .limit(10)

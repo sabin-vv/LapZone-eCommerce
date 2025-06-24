@@ -407,7 +407,6 @@ const cancelApprove = async (req, res, next) => {
     item.status = 'Cancelled';
     item.cancelDate = new Date();
 
-    // Restock variant
     const product = item.productId;
     const variant = product.variants.find(v => v.RAM === item.ram && v.Storage === item.storage);
     if (variant) {
@@ -419,18 +418,15 @@ const cancelApprove = async (req, res, next) => {
     const originalSubtotal = order.subtotal;
     const originalDiscount = order.discountAmount || 0;
 
-    // Calculate refund
     let refundAmount = 0;
     let refundNote = '';
     let couponDiscountShare = 0;
 
-    // Check remaining items
     const remainingItems = order.items.filter(i => i.status !== 'Cancelled');
     const newSubtotal = remainingItems.reduce((sum, i) => sum + (i.price * i.quantity), 0);
 
     const allCancelled = remainingItems.length === 0;
 
-    // Handle refund
     if (allCancelled) {
       refundAmount = order.totalAmount;
 
@@ -444,13 +440,11 @@ const cancelApprove = async (req, res, next) => {
 
       refundNote = ' (full order refund)';
     } else {
-      // Recalculate tax
       const taxRate = 0.05;
       const newTax = Math.round(newSubtotal * taxRate);
       order.subtotal = newSubtotal;
       order.tax = newTax;
 
-      // Reapply or remove coupon
       if (order.coupon && (order.coupon.code || order.coupon)) {
         const couponCode = order.coupon.code || order.coupon;
         const coupon = await Coupon.findOne({
@@ -461,13 +455,11 @@ const cancelApprove = async (req, res, next) => {
         });
 
         if (!coupon || newSubtotal < coupon.minPurchaseAmount) {
-          // Coupon invalid now
           order.coupon = null;
           order.discountAmount = 0;
           couponDiscountShare = Math.round((itemTotal / originalSubtotal) * originalDiscount);
           refundNote = ` (₹${couponDiscountShare} deducted from refund as coupon removed)`;
         } else {
-          // Recalculate valid discount
           let newDiscount = 0;
           if (coupon.discountType === 'percentage') {
             newDiscount = Math.round((coupon.discountValue / 100) * newSubtotal);
@@ -482,13 +474,11 @@ const cancelApprove = async (req, res, next) => {
         }
       }
 
-      // Update total amount
       order.totalAmount = order.subtotal - order.discountAmount + order.shippingFee + order.tax;
 
       refundAmount = Math.round(itemTotal - couponDiscountShare);
     }
 
-    // Wallet refund
     if (order.paymentStatus === 'Completed' && refundAmount > 0) {
       let wallet = await Wallet.findOne({ userId: order.user });
       if (!wallet) wallet = new Wallet({ userId: order.user, balance: 0, transactions: [] });
@@ -505,7 +495,6 @@ const cancelApprove = async (req, res, next) => {
       await wallet.save();
     }
 
-    // Update status history
     order.statusHistory.forEach(s => s.current = false);
     order.statusHistory.push({
       status: 'Cancelled',
@@ -526,8 +515,6 @@ const cancelApprove = async (req, res, next) => {
     next(error);
   }
 };
-
-
 
 const cancelReject = async (req, res, next) => {
     try {
