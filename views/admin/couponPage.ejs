@@ -56,10 +56,10 @@
                                     <td><strong><%= coupon.code %></strong></td>
                                     <td> <%= coupon.minPurchaseAmount.toLocaleString('en-IN') %></td>
                                     <% if(coupon.discountType === 'percentage') {%>
-                                    <td><%= coupon.discountValue.toLocaleString('en-IN') %>%</td>
-                                    <td>₹<%= coupon.maxDiscountAmount.toLocaleString('en-IN') %></td>
+                                    <td><%= coupon.discountValue?.toLocaleString('en-IN') %>%</td>
+                                    <td>₹<%= coupon.maxDiscountAmount1?.toLocaleString('en-IN') %></td>
                                     <% } else { %>
-                                    <td>₹<%= coupon.discountValue.toLocaleString('en-IN') %></td>
+                                    <td>₹<%= coupon.discountValue?.toLocaleString('en-IN') %></td>
                                     <td>N/A</td>
                                     <% } %>
                                     <td>
@@ -72,7 +72,7 @@
                                             <span class="status-badge status-inactive">INACTIVE</span>
                                         <% } %>
                                     </td>
-                                    <td><%= new Date(coupon.expiryDate).toLocaleDateString('en-IN', {
+                                    <td><%= new Date(coupon.expiryDate)?.toLocaleDateString('en-IN', {
                                         year: 'numeric',
                                         month: 'long',   
                                         day: 'numeric'

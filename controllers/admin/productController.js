@@ -61,7 +61,7 @@ const productListing = async (req, res, next) => {
       )
     }
 
-    const products = await Product.find(query).sort(sort).skip(skip).limit(limit)
+    const products = await Product.find(query).sort(sort).skip(skip).limit(limit).populate("categoryId")
 
     res.render("admin/productListing", {
       products,
@@ -423,7 +423,7 @@ const editProduct = async (req, res, next) => {
     if (!req.session.admin) return res.redirect("/admin/login")
 
     const productId = req.params.id
-    const product = await Product.findById(productId)
+    const product = await Product.findById(productId).populate('categoryId')
     const categories = await Category.find()
 
     return res.render("admin/productDetails", { product, categories, errors: null, formData: null })
