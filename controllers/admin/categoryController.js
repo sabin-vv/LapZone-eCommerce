@@ -68,8 +68,11 @@ const newCategory = async (req, res, next) => {
 
         const error = {}
 
-        if (!name || name.trim() === '')
+        if (!name || name.trim() === ''){
             error['name'] = "Name cannot be Empty"
+        }else if (!/^[A-Za-z\s]+$/.test(name)){
+            error['name'] = "Only letters are allowed"
+        }
 
         if (!description)
             error['description'] = "Description cannot be Empty"

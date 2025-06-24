@@ -24,35 +24,29 @@
         </div>
 
         <div class="filters">
-            <div class="search-container">
-                <i class="bi bi-search search-icon"></i>
-                <input type="text" class="search-input" name="search" value="<%= filters?.search || '' %>" placeholder="Search orders...">
-            </div>
+            
             <form class="filters" method="GET" action="/admin/orders">
             <div class="filter-container">
                 <select name="status" class="filter-select">
-                    <option value="">All Status</option>
-                    <option value="processing">Processing</option>
-                    <option value="shipped">Shipped</option>
-                    <option value="delivered">Delivered</option>
-                    <option value="cancelled">Cancelled</option>
-                    <option value="returned">Returned</option>
+                    <option value="" <%= !filters?.status ? "selected" : "" %>>All Status</option>
+                    <option value="Processing" <%= filters?.status === "Processing" ? "selected" : "" %>>Processing</option>
+                    <option value="Shipped" <%= filters?.status === "Shipped" ? "selected" : "" %>>Shipped</option>
+                    <option value="Delivered" <%= filters?.status === "Delivered" ? "selected" : "" %>>Delivered</option>
+                    <option value="Cancelled" <%= filters?.status === "Cancelled" ? "selected" : "" %>>Cancelled</option>
+                    <option value="Returned" <%= filters?.status === "Returned" ? "selected" : "" %>>Returned</option>
                 </select>
                 <select name="payment" class="filter-select">
                     <option value="">All Payment Methods</option>
-                    <option value="visa">Visa</option>
-                    <option value="mastercard">Mastercard</option>
-                    <option value="paypal">Paypal</option>
-                    <option value="transfer">Transfer</option>
-                    <option value="cod">COD</option>
+                    <option value="Online" <%= filters?.payment === "Online" ? "selected" : "" %>>Online</option>
+                    <option value="COD" <%= filters?.payment === "COD" ? "selected" : "" %>>COD</option>
+                    <option value="Wallet" <%= filters?.payment === "Wallet" ? "selected" : "" %>>Wallet</option>
                 </select>
                 <select name="date" class="filter-select">
-                    <option value="">Date Range</option>
-                    <option value="today">Today</option>
-                    <option value="yesterday">Yesterday</option>
-                    <option value="last7days">Last 7 Days</option>
-                    <option value="last30days">Last 30 Days</option>
-                    <option value="custom">Custom Range</option>
+                    <option value="" <%= !filters?.date ? 'selected' : '' %>>Date Range</option>
+                    <option value="today" <%= filters?.date === 'today' ? 'selected' : '' %>>Today</option>
+                    <option value="yesterday" <%= filters?.date === 'yesterday' ? 'selected' : '' %>>Yesterday</option>
+                    <option value="last7days" <%= filters?.date === 'last7days' ? 'selected' : '' %>>Last 7 Days</option>
+                    <option value="last30days" <%= filters?.date === 'last30days' ? 'selected' : '' %>>Last 30 Days</option>
                 </select>
             </div>
             </form>
@@ -113,7 +107,11 @@
                             </td>
                            <td>
                                 <% const currentStatus = order.orderStatus.trim(); %>
-                                <% const isDisabled = currentStatus === 'Cancelled' || currentStatus === 'Delivered' || currentStatus === 'Returned'; %>
+                                <%  const isDisabled = 
+                                        currentStatus === 'Cancelled' || 
+                                        currentStatus === 'Delivered' || 
+                                        currentStatus === 'Returned' || 
+                                        (order.paymentMethod === 'Online' && order.paymentStatus === 'Pending'); %>
                                 <% const statuses = ['Processing', 'Shipped', 'Delivered', 'Cancelled','Returned']; %>
                                 <% const lastStatus = order.statusHistory?.[order.statusHistory.length - 1]; %>
 

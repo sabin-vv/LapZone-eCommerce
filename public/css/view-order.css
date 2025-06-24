@@ -3,13 +3,15 @@ body {
     margin: 0;
     padding: 0;
     background-color: #f8f9fa;
-    display: flex;
     min-height: 100vh;
     color: #333;
 }
+.dashboard {
+    display: flex;
+    gap: 30px;
+}
 
 .main-content {
-    margin-left: 250px;
     padding: 25px;
     flex: 1;
     transition: margin-left 0.3s;

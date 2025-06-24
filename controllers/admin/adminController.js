@@ -110,13 +110,20 @@ const getDashboardStats = async (req, res, next) => {
                 }
             }
         ]);
-        const totalSales = sales.length > 0 ? sales[0].total : 0;
+        const totalSales = sales.length > 0 ? Math.round(sales[0].total) : 0;
 
-        const totalOrders = await Order.countDocuments({ orderStatus: { $ne: 'Cancelled' } });
+        const totalOrders = await Order.countDocuments({ 
+            orderStatus: { $ne: 'Cancelled' } 
+        });
 
-        const totalCustomers = await User.countDocuments({ isAdmin: false });
+        const totalCustomers = await User.countDocuments({ 
+            isAdmin: false,
+            isBlocked: { $ne: true }
+        });
 
-        const totalProducts = await Product.countDocuments({ isExisting: true });
+        const totalProducts = await Product.countDocuments({ 
+            isExisting: true 
+        });
 
         res.json({
             totalSales,
@@ -149,10 +156,15 @@ const getSalesData = async (req, res, next) => {
 
                     const orders = await Order.find({
                         orderDate: { $gte: yearStart, $lt: yearEnd },
-                        orderStatus: { $ne: 'Cancelled' }
+                        orderStatus: { $ne: 'Cancelled' },
+                        paymentStatus: 'Completed'
                     });
 
-                    const yearSales = orders.reduce((sum, order) => sum + order.totalAmount, 0);
+                    const yearSales = orders.reduce((sum, order) => {
+                        const validItems = order.items.filter(item => item.status !== 'Cancelled');
+                        const orderTotal = validItems.reduce((itemSum, item) => itemSum + (item.quantity * item.price), 0);
+                        return sum + orderTotal;
+                    }, 0);
                     data.push(yearSales);
                 }
                 break;
@@ -167,10 +179,15 @@ const getSalesData = async (req, res, next) => {
 
                     const orders = await Order.find({
                         orderDate: { $gte: monthStart, $lt: monthEnd },
-                        orderStatus: { $ne: 'Cancelled' }
+                        orderStatus: { $ne: 'Cancelled' },
+                        paymentStatus: 'Completed'
                     });
 
-                    const monthSales = orders.reduce((sum, order) => sum + order.totalAmount, 0);
+                    const monthSales = orders.reduce((sum, order) => {
+                        const validItems = order.items.filter(item => item.status !== 'Cancelled');
+                        const orderTotal = validItems.reduce((itemSum, item) => itemSum + (item.quantity * item.price), 0);
+                        return sum + orderTotal;
+                    }, 0);
                     data.push(monthSales);
                 }
                 break;
@@ -188,10 +205,15 @@ const getSalesData = async (req, res, next) => {
 
                     const orders = await Order.find({
                         orderDate: { $gte: weekStart, $lt: weekEnd },
-                        orderStatus: { $ne: 'Cancelled' }
+                        orderStatus: { $ne: 'Cancelled' },
+                        paymentStatus: 'Completed'
                     });
 
-                    const weekSales = orders.reduce((sum, order) => sum + order.totalAmount, 0);
+                    const weekSales = orders.reduce((sum, order) => {
+                        const validItems = order.items.filter(item => item.status !== 'Cancelled');
+                        const orderTotal = validItems.reduce((itemSum, item) => itemSum + (item.quantity * item.price), 0);
+                        return sum + orderTotal;
+                    }, 0);
                     data.push(weekSales);
                 }
                 break;
@@ -209,10 +231,15 @@ const getSalesData = async (req, res, next) => {
 
                     const orders = await Order.find({
                         orderDate: { $gte: date, $lt: nextDay },
-                        orderStatus: { $ne: 'Cancelled' }
+                        orderStatus: { $ne: 'Cancelled' },
+                        paymentStatus: 'Completed'
                     });
 
-                    const daySales = orders.reduce((sum, order) => sum + order.totalAmount, 0);
+                    const daySales = orders.reduce((sum, order) => {
+                        const validItems = order.items.filter(item => item.status !== 'Cancelled');
+                        const orderTotal = validItems.reduce((itemSum, item) => itemSum + (item.quantity * item.price), 0);
+                        return sum + orderTotal;
+                    }, 0);
                     data.push(daySales);
                 }
                 break;
@@ -232,8 +259,18 @@ const getSalesData = async (req, res, next) => {
 const getTopProducts = async (req, res, next) => {
     try {
         const topProducts = await Order.aggregate([
-            { $match: { orderStatus: { $ne: 'Cancelled' } } },
+            { 
+                $match: { 
+                    orderStatus: { $ne: 'Cancelled' },
+                    paymentStatus: 'Completed'
+                } 
+            },
             { $unwind: '$items' },
+            {
+                $match: {
+                    "items.status": { $ne: "Cancelled" }
+                }
+            },
             {
                 $group: {
                     _id: '$items.productId',
@@ -274,7 +311,12 @@ const getTopProducts = async (req, res, next) => {
 const getTopCategories = async (req, res, next) => {
   try {
     const topCategories = await Order.aggregate([
-      { $match: { orderStatus: { $ne: 'Cancelled' } } },
+      { 
+        $match: { 
+          orderStatus: { $ne: 'Cancelled' },
+          paymentStatus: 'Completed'
+        } 
+      },
       { $unwind: '$items' },
       { $match: { "items.status": { $ne: "Cancelled" } } },
       {
@@ -322,8 +364,18 @@ const getTopCategories = async (req, res, next) => {
 const getTopBrands = async (req, res, next) => {
     try {
         const topBrands = await Order.aggregate([
-            { $match: { orderStatus: { $ne: 'Cancelled' } } },
+            { 
+                $match: { 
+                    orderStatus: { $ne: 'Cancelled' },
+                    paymentStatus: 'Completed'
+                } 
+            },
             { $unwind: '$items' },
+            {
+                $match: {
+                    "items.status": { $ne: "Cancelled" }
+                }
+            },
             {
                 $lookup: {
                     from: 'products',

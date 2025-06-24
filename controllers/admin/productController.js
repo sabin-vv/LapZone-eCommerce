@@ -8,8 +8,7 @@ const sharp = require("sharp")
 const productListing = async (req, res, next) => {
   try {
     if (!req.session.admin) return res.redirect("/admin");
-
-
+    
     const searchQuery = req.query.search ? req.query.search.trim() : ""
     const categoryFilter = req.query.category ? req.query.category.trim() : ""
     const priceFilter = req.query.price ? req.query.price.trim() : ""
@@ -29,14 +28,22 @@ const productListing = async (req, res, next) => {
       }
     }
     if (priceFilter) {
-      if (priceFilter === "0-50000") {
-        query.salePrice = { $gte: 0, $lte: 50000 }
-      } else if (priceFilter === "50000-100000") {
-        query.salePrice = { $gte: 50000, $lte: 100000 }
-      } else if (priceFilter === "100000+") {
-        query.salePrice = { $gte: 100000 }
-      }
-    }
+  switch (priceFilter) {
+    case "0-50000":
+      query.salePrice = { $gte: 0, $lte: 50000 };
+      break;
+    case "50000-100000":
+      query.salePrice = { $gte: 50000, $lte: 100000 };
+      break;
+    case "100000+":
+    case "100000plus":
+    case "100000":
+      query.salePrice = { $gte: 100000 };
+      break;
+    default:
+      break;
+  }
+}
 
     query.isExisting = true
 

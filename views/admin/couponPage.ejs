@@ -23,9 +23,8 @@
         </button>
         </div>
         <div class="breadcrumb">
-                <a href="/admin/dashboard">Dashboard</a> > Coupons
+                
             </div>
-
         <div class="content-wrapper">           
 
             <div class="section-title">
@@ -76,11 +75,7 @@
                                             <span class="status-badge status-inactive">INACTIVE</span>
                                         <% } %>
                                     </td>
-                                    <td><%= new Date(coupon.expiryDate).toLocaleDateString('en-IN', {
-                                        year: 'numeric',
-                                        month: 'long',   
-                                        day: 'numeric'
-                                        }); %></td>
+                                    <td><%= new Date(coupon.expiryDate).toLocaleDateString('en-IN'); %></td>
                                     <td>
                                         <div class="action-buttons">
                                             <button class="action-btn btn-edit" onclick="editCoupon('<%= coupon._id %>')">
