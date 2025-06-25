@@ -172,6 +172,39 @@
           font-size: 1.25rem;
         }
 
+        /* Price Section Styling */
+        .price-section {
+          margin-top: auto;
+          padding-top: 0.5rem;
+        }
+
+        .price-section .text-decoration-line-through {
+          font-size: 0.95rem;
+          color: #6b7280 !important;
+          margin-bottom: 0.25rem;
+        }
+
+        .price-section .fw-bold {
+          font-size: 1.3rem;
+          color: var(--primary-color) !important;
+        }
+
+        .price-section .text-success {
+          font-size: 0.8rem;
+          color: var(--success) !important;
+          font-weight: 600;
+          margin-top: 0.25rem;
+          display: block;
+        }
+
+        /* Enhanced offer styling */
+        .price-section small.text-success {
+          background-color: rgba(16, 185, 129, 0.1);
+          padding: 0.2rem 0.5rem;
+          border-radius: 12px;
+          border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
         .product .rating-container {
           display: flex;
           align-items: center;
