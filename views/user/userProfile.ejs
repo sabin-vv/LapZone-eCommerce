@@ -17,13 +17,12 @@
 
         <div class="main-content">
             <div class="profile-container">
-            <div class="breadcrumb">
-                <a href="/profile">Profile</a>
-                <i class="fas fa-chevron-right"></i>
-                <span>My Profile</span>
-            </div>
+                <div class="breadcrumb">
+                    <a href="/profile">Profile</a>
+                    <i class="fas fa-chevron-right"></i>
+                    <span>My Profile</span>
+                </div>
             <div class="welcome">Hello, <span><%= user.fullname || username %></span>!</div>
-            
             
                 <div class="profile-head">
                     <div class="profile-title">Personal Information</div>
@@ -32,17 +31,18 @@
                 <div class="profile-info">
                     <div class="form-group">
                         <label for="full-name">Full Name</label>
-                        <input type="text" id="full-name" name="fullname" value="<%= user.fullname || username %>" disabled>
+                        <input type="text" id="full-name" name="fullname" value="<%= formData ? formData.fullname : (user.fullname || username) %>" disabled>
+                        <p class="error-field"><%= error ? error.name : '' %></p>
                     </div>
                     
                     <div class="form-group">
                         <label for="email">Email Address</label>
-                        <input type="email" id="email" name="email" value="<%= user.email %>" disabled>
+                        <input type="email" id="email" name="email" value="<%=formData ? formData.email : user.email %>" disabled>
                     </div>
                     
                     <div class="form-group">
                         <label for="phone">Phone Number</label>
-                        <input type="text" id="phone" maxlength="10" name="mobile" value="<%= user.mobile%>" disabled>
+                        <input type="text" id="phone" maxlength="10" name="mobile" value="<%=formData ? formData.mobile: user.mobile%>" disabled>
                     </div>
                     
                     <button class="edit-btn" onclick="toggleEdit()">
@@ -61,9 +61,7 @@
     </div>
     <%- include("../partials/user/footer.ejs") %>
 
-    <script>
-        const userId = "<%= user._id %>";
-        
+    <script>    
         function toggleEdit() {
             const fullName = document.getElementById('full-name');
             const email = document.getElementById('email');
@@ -76,7 +74,6 @@
                 email.disabled = false;
                 phone.disabled = false;
                 editBtn.innerHTML = '<i class="fas fa-save"></i> SAVE';
-                
                 fullName.focus();
             } else {
                 fullName.disabled = true;
@@ -88,7 +85,7 @@
                 document.getElementById('form-email').value = email.value;
                 document.getElementById('form-mobile').value = phone.value;
                 
-                form.action = `/profile/edit-profile/${userId}`;
+                form.action = `/profile/edit-profile/<%= formData ? formData.id : user._id %>`;
                 form.submit();
             }
         }

@@ -21,7 +21,7 @@ const newCoupon = (req, res, next) => {
     try {
         if (!req.session.admin) return res.redirect("/admin")
 
-        res.render('admin/addCoupon', { errorfield: null ,formData:null })
+        res.render('admin/addCoupon', { errorfield: null, formData: null })
     } catch (error) {
         console.error('Error fetching coupons:', error);
         next(error);
@@ -50,12 +50,12 @@ const addCoupon = async (req, res, next) => {
             if (numericValue < 0 || numericValue > 100) {
                 errorfield['discountValue'] = 'Discount Value should be between 0 and 100';
             }
-        }else if(discountType === 'fixed') {
+        } else if (discountType === 'fixed') {
             if (isNaN(discountValue)) {
                 errorfield['discountValue'] = 'Discount Value must be a number'
-            }else if(discountValue < 0) {  
+            } else if (discountValue < 0) {
                 errorfield['discountValue'] = 'Discount Value should be positive'
-            }else if(minPurchaseAmount < discountValue) {
+            } else if (minPurchaseAmount < discountValue) {
                 errorfield['minPurchaseAmount'] = 'Minimum Purchase Amount should be greater than or equal to Discount Value'
             }
         }
@@ -70,7 +70,7 @@ const addCoupon = async (req, res, next) => {
             errorfield['expiryDate'] = 'Expiry Date should greater than start Date'
 
         if (errorfield && Object.keys(errorfield).length > 0)
-            return res.render("admin/addCoupon", { errorfield ,formData})
+            return res.render("admin/addCoupon", { errorfield, formData })
 
         const coupon = await Coupon.findOne({ code })
 
@@ -132,7 +132,13 @@ const editCoupon = async (req, res, next) => {
         if (!coupon)
             return res.render("admin/couponPage", { error: "Coupon Not Found" })
 
-        return res.render("admin/editCoupon", { coupon, errorfield: null })
+        return res.render("admin/editCoupon", {
+            coupon: {
+                ...coupon.toObject(),
+                startDateISO: coupon.startDate?.toISOString().slice(0, 16),
+                expiryDateISO: coupon.expiryDate?.toISOString().slice(0, 16),
+            }, errorfield : null
+        })
     } catch (error) {
         console.error('Error fetching coupons:', error);
         next(error);
@@ -154,7 +160,7 @@ const updateCoupon = async (req, res, next) => {
         if (!code || code.trim() === '') {
             errorfield['code'] = `Coupon cannot be Empty`;
         }
-        if (!discountValue){
+        if (!discountValue) {
             errorfield['discountValue'] = 'Discount Value cannot be Empty'
         } else if (isNaN(discountValue)) {
             errorfield['discountValue'] = 'Discount Value must be a number'
@@ -163,12 +169,12 @@ const updateCoupon = async (req, res, next) => {
             if (numericValue < 0 || numericValue > 100) {
                 errorfield['discountValue'] = 'Discount Value should be between 0 and 100';
             }
-        }else if(discountType === 'fixed') {
+        } else if (discountType === 'fixed') {
             if (isNaN(discountValue)) {
                 errorfield['discountValue'] = 'Discount Value must be a number'
-            }else if(discountValue < 0) {  
+            } else if (discountValue < 0) {
                 errorfield['discountValue'] = 'Discount Value should be positive'
-            }else if(minPurchaseAmount < discountValue) {
+            } else if (minPurchaseAmount < discountValue) {
                 errorfield['minPurchaseAmount'] = 'Minimum Purchase Amount should be greater than or equal to Discount Value'
             }
         }
@@ -184,7 +190,7 @@ const updateCoupon = async (req, res, next) => {
             errorfield['expiryDate'] = 'Expiry Date should greater than start Date'
 
         if (errorfield && Object.keys(errorfield).length > 0)
-            return res.render("admin/editCoupon", { errorfield ,formData:req.body,coupon})
+            return res.render("admin/editCoupon", { errorfield, formData: req.body, coupon })
 
         const existingCoupon = await Coupon.findOne({
             code: code.trim().toUpperCase(),

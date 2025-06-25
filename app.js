@@ -1,19 +1,19 @@
-require("dotenv").config()
+
 const express = require('express')
 const app = express()
 const path = require('path')
 const passport = require("./config/passport")
-require("dotenv").config()
 const methodOverride = require('method-override');
 const connectDB = require("./config/db")
-connectDB();
 const userRouter = require("./routes/userRouter")
 const adminRouter = require('./routes/adminRouter')
 const session = require("express-session")
 const nocache = require("nocache")
-require('./utils/cron')
 const counts = require("./middlewares/counts")
 const errorHandler = require("./middlewares/errorHandler")
+connectDB();
+require("dotenv").config()
+require("./cornJobs/couponExpiry.js")
 
 
 

@@ -68,8 +68,11 @@ const newCategory = async (req, res, next) => {
 
         const error = {}
 
-        if (!name || name.trim() === '')
+        if (!name || name.trim() === ''){
             error['name'] = "Name cannot be Empty"
+        }else if (!/^[A-Za-z\s]+$/.test(name)){
+            error['name'] = "Only letters are allowed"
+        }
 
         if (!description)
             error['description'] = "Description cannot be Empty"
@@ -171,6 +174,10 @@ const updateCategory = async (req, res, next) => {
         if (categoryData?.name.trim() === '') {
             categoryData._id = categoryId
             error['name'] = "name cannot be Empty"
+            return res.render("admin/editCategory", { category: categoryData, error, categoryId })
+        } else if (!/^[A-Za-z\s]+$/.test(categoryData?.name)) {
+            categoryData._id = categoryId
+            error['name'] = "Only letters are allowed"
             return res.render("admin/editCategory", { category: categoryData, error, categoryId })
         }
 

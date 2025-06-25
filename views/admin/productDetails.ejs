@@ -27,7 +27,7 @@
                         <div>
                             <label for="name" class="block text-sm font-medium text-gray-700">Product Name</label>
                             <input type="text" id="name" name="name"  class="mt-1 block w-full custom-input"
-                                value="<%= product.name || '' %>">
+                                value="<%=formData ? formData.name : product.name || '' %>">
                                 <p data-error="name" class="text-red-500 text-xs italic">
                             <%=errors? errors.name : '' %>
                             </p>
@@ -47,7 +47,7 @@
                                 <option value="" <%=!product || !product.category ? 'selected' : '' %>>Select Category
                                 </option>
                                 <% categories.forEach(category=> { %>
-                                    <option value="<%= category.name %>" <%=product && product.category===category.name
+                                    <option value="<%= category.name %>" <%=product && product.categoryId.name===category.name
                                         ? 'selected' : '' %>><%= category.name %>
                                     </option>
                                     <% }) %>
@@ -144,6 +144,9 @@
 
                     <fieldset class="nested-fieldset mt-6">
                         <legend>Variants</legend>
+                        <% if (errors && errors.variants && typeof errors.variants === 'string') { %>
+                            <p class="text-red-500 text-xs italic mb-4"><%= errors.variants %></p>
+                        <% } %>
                         <div id="variants-container" class="space-y-4">
                             <% (product.variants?.length ? product.variants : [{}]).forEach((variant, index)=> { %>
                                 <div class="variant form-variant-grid" data-index="<%= index %>">
@@ -151,21 +154,33 @@
                                         <label>RAM</label>
                                         <input type="text" name="variants[<%= index %>][RAM]"
                                             value="<%= variant.RAM || '' %>"  class="custom-input">
+                                        <% if (errors && errors.variants && Array.isArray(errors.variants) && errors.variants[index] && errors.variants[index].RAM) { %>
+                                            <p class="text-red-500 text-xs italic"><%= errors.variants[index].RAM %></p>
+                                        <% } %>
                                     </div>
                                     <div>
                                         <label>Storage</label>
                                         <input type="text" name="variants[<%= index %>][Storage]"
                                             value="<%= variant.Storage || '' %>"  class="custom-input">
+                                        <% if (errors && errors.variants && Array.isArray(errors.variants) && errors.variants[index] && errors.variants[index].Storage) { %>
+                                            <p class="text-red-500 text-xs italic"><%= errors.variants[index].Storage %></p>
+                                        <% } %>
                                     </div>
                                     <div>
                                         <label>Price Adjustment</label>
                                         <input type="number" name="variants[<%= index %>][priceAdjustment]"
                                             value="<%= variant.priceAdjustment || '' %>" class="custom-input">
+                                        <% if (errors && errors.variants && Array.isArray(errors.variants) && errors.variants[index] && errors.variants[index].priceAdjustment) { %>
+                                            <p class="text-red-500 text-xs italic"><%= errors.variants[index].priceAdjustment %></p>
+                                        <% } %>
                                     </div>
                                     <div>
                                         <label>Stock</label>
                                         <input type="number" name="variants[<%= index %>][stock]"
-                                            value="<%= variant.stock  %>" class="custom-input">
+                                            value="<%= variant.stock  %>" class="custom-input" min="0" step="1">
+                                        <% if (errors && errors.variants && Array.isArray(errors.variants) && errors.variants[index] && errors.variants[index].stock) { %>
+                                            <p class="text-red-500 text-xs italic"><%= errors.variants[index].stock %></p>
+                                        <% } %>
                                     </div>
                                     <div class="flex items-end">
                                         <button type="button"
@@ -325,22 +340,22 @@
                 <div>
                     <label for="variant-ram-${variantIndex}" class="block text-sm font-medium text-gray-700">RAM</label>
                     <input type="text" id="variant-ram-${variantIndex}" name="variants[${variantIndex}][RAM]" class="mt-1 block w-full custom-input"  aria-describedby="variant-ram-${variantIndex}-error">
-                    <p id="variant-ram-${variantIndex}-error" data-error="variants[${variantIndex}][RAM]" class="text-red-500 text-xs italic hidden"></p>
+                    <p id="variant-ram-${variantIndex}-error" data-error="variants[${variantIndex}][RAM]" class="text-red-500 text-xs italic"></p>
                 </div>
                 <div>
                     <label for="variant-storage-${variantIndex}" class="block text-sm font-medium text-gray-700">Storage</label>
                     <input type="text" id="variant-storage-${variantIndex}" name="variants[${variantIndex}][Storage]" class="mt-1 block w-full custom-input"  aria-describedby="variant-storage-${variantIndex}-error">
-                    <p id="variant-storage-${variantIndex}-error" data-error="variants[${variantIndex}][Storage]" class="text-red-500 text-xs italic hidden"></p>
+                    <p id="variant-storage-${variantIndex}-error" data-error="variants[${variantIndex}][Storage]" class="text-red-500 text-xs italic"></p>
                 </div>
                 <div>
                     <label for="variant-priceAdjustment-${variantIndex}" class="block text-sm font-medium text-gray-700">Price Adjustment</label>
                     <input type="number" id="variant-priceAdjustment-${variantIndex}" name="variants[${variantIndex}][priceAdjustment]" class="mt-1 block w-full custom-input" step="0.01" aria-describedby="variant-priceAdjustment-${variantIndex}-error">
-                    <p id="variant-priceAdjustment-${variantIndex}-error" data-error="variants[${variantIndex}][priceAdjustment]" class="text-red-500 text-xs italic hidden"></p>
+                    <p id="variant-priceAdjustment-${variantIndex}-error" data-error="variants[${variantIndex}][priceAdjustment]" class="text-red-500 text-xs italic"></p>
                 </div>
                 <div>
                     <label for="variant-stock-${variantIndex}" class="block text-sm font-medium text-gray-700">Stock</label>
-                    <input type="number" id="variant-stock-${variantIndex}" name="variants[${variantIndex}][stock]" class="mt-1 block w-full custom-input" step="0.01" aria-describedby="variant-stock-${variantIndex}-error">
-                    <p id="variant-stock-${variantIndex}-error" data-error="variants[${variantIndex}][stock]" class="text-red-500 text-xs italic hidden"></p>
+                    <input type="number" id="variant-stock-${variantIndex}" name="variants[${variantIndex}][stock]" class="mt-1 block w-full custom-input" step="1" min="0" aria-describedby="variant-stock-${variantIndex}-error">
+                    <p id="variant-stock-${variantIndex}-error" data-error="variants[${variantIndex}][stock]" class="text-red-500 text-xs italic"></p>
                 </div>
                 <div class="flex items-end">
                     <button type="button" class="remove-variant inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" data-index="${variantIndex}" aria-label="Remove variant">Remove</button>

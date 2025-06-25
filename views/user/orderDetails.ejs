@@ -121,7 +121,7 @@
                                                 <td data-label="Action" class="product-actions">
                                                     <% if(item.status === 'Delivered' && order.items.length > 1){ %>
                                                          <button class="btn-action btn-return" onclick="returnItem('<%= item._id %>')">Return</button>
-                                                    <% }else if (item.status === 'Ordered'&& order.items.length > 1) { %>
+                                                    <% }else if (item.status === 'Ordered'&& order.items.length > 1 && order.paymentStatus == 'Completed') { %>
                                                         <button class="btn-action btn-cancel" onclick="cancelItem('<%= item._id %>')">Cancel</button>
                                                     <% } else if (item.status === 'CANCEL_REQUESTED') { %>
                                                         <span class="action-status">Cancel requested</span>
@@ -146,6 +146,12 @@
                                     <span>Tax</span>
                                     <span>₹<%= order.tax.toLocaleString('en-IN') %></span>
                                 </div>
+                                <% if(order.discountAmount){ %>
+                                <div class="summary-item">
+                                    <span>Discount</span>
+                                    <span>- ₹<%= order.discountAmount.toLocaleString('en-IN') %></span>
+                                </div>
+                                <% } %>
                                 <div class="summary-item">
                                     <span>Total</span>
                                     <span>₹<%= order.totalAmount.toLocaleString('en-IN') %></span>
@@ -206,7 +212,7 @@
                                 <% } else if (order.orderStatus === 'Cancelled') { %>
                                     <span class="action-status text-muted">Cancelled</span>
 
-                                <% } else if (order.items.every(item => item.status === 'Ordered')) { %>
+                                <% } else if (order.items.every(item => item.status === 'Ordered') && order.paymentStatus === 'Completed') { %>
                                     <button class="btn-order-action btn btn-danger" onclick="cancelOrder('<%= order.orderId %>')">Cancel Order</button>
                                 <% } %>
                                 <% if(order.paymentMethod === 'Online' && order.paymentStatus === 'Pending') { %>

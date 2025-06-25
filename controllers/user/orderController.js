@@ -434,8 +434,23 @@ const cancelOrder = async (req, res, next) => {
 
             if (variant) {
                 variant.stock += item.quantity;
-                await product.save(); 
+                await product.save();
             }
+        }
+        const remainingItems = order.items.filter(item => item.status !== 'Cancelled');
+        const remainingSubtotal = remainingItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+        if (order.coupon) {
+            const coupon = await Coupon.findOne({ code: order.coupon });
+            if (coupon && remainingSubtotal < coupon.minPurchaseAmount) {
+                order.discountAmount = 0;
+                order.coupon = null;
+                order.totalAmount = remainingSubtotal + order.shippingCharge + order.taxAmount;
+            } else {
+                order.totalAmount = remainingSubtotal - order.discountAmount + order.shippingCharge + order.taxAmount;
+            }
+        } else {
+            order.totalAmount = remainingSubtotal + order.shippingCharge + order.taxAmount;
         }
 
         let refundAmount = 0;
@@ -475,7 +490,7 @@ const cancelOrder = async (req, res, next) => {
         });
 
 
-    } catch(error) {
+    } catch (error) {
         console.error('Error canceling order:', error);
         next(error);
     }

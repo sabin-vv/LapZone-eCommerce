@@ -8,8 +8,7 @@ const sharp = require("sharp")
 const productListing = async (req, res, next) => {
   try {
     if (!req.session.admin) return res.redirect("/admin");
-
-
+    
     const searchQuery = req.query.search ? req.query.search.trim() : ""
     const categoryFilter = req.query.category ? req.query.category.trim() : ""
     const priceFilter = req.query.price ? req.query.price.trim() : ""
@@ -23,17 +22,28 @@ const productListing = async (req, res, next) => {
       query.name = { $regex: searchQuery, $options: "i" }
     }
     if (categoryFilter) {
-      query.category = categoryFilter
-    }
-    if (priceFilter) {
-      if (priceFilter === "0-500") {
-        query.salePrice = { $gte: 0, $lte: 500 }
-      } else if (priceFilter === "500-1000") {
-        query.salePrice = { $gte: 500, $lte: 1000 }
-      } else if (priceFilter === "1000+") {
-        query.salePrice = { $gte: 1000 }
+      const category = await Category.findOne({ name: categoryFilter });
+      if (category) {
+        query.categoryId = category._id;
       }
     }
+    if (priceFilter) {
+  switch (priceFilter) {
+    case "0-50000":
+      query.salePrice = { $gte: 0, $lte: 50000 };
+      break;
+    case "50000-100000":
+      query.salePrice = { $gte: 50000, $lte: 100000 };
+      break;
+    case "100000+":
+    case "100000plus":
+    case "100000":
+      query.salePrice = { $gte: 100000 };
+      break;
+    default:
+      break;
+  }
+}
 
     query.isExisting = true
 
@@ -46,11 +56,7 @@ const productListing = async (req, res, next) => {
       sort.createdAt = -1
     }
 
-    const categories = await Product.aggregate([
-      { $group: { _id: "$category" } },
-      { $project: { name: "$_id", _id: 0 } },
-      { $sort: { updatedAt: -1 } },
-    ])
+    const categories = await Category.find({ isListed: true, isExisting: true }).sort({ name: 1 })
 
     const totalProducts = await Product.countDocuments(query)
     const totalPages = Math.ceil(totalProducts / limit)
@@ -61,9 +67,10 @@ const productListing = async (req, res, next) => {
       )
     }
 
-    const products = await Product.find(query).sort(sort).skip(skip).limit(limit).populate("categoryId")
+    const products = await Product.find(query).sort(sort).skip(skip).limit(limit).populate('categoryId')
 
     res.render("admin/productListing", {
+      categories,
       products,
       categories,
       searchQuery,
@@ -81,12 +88,11 @@ const productListing = async (req, res, next) => {
     next(error);
   }
 }
-
 const newProduct = async (req, res, next) => {
   try {
     if (!req.session.admin) return res.redirect("/admin");
 
-    const categories = await Category.find().sort({ name: 1 })
+    const categories = await Category.find({ isListed: true, isExisting: true }).sort({ name: 1 })
 
     res.render("admin/addProduct", { categories, errors: null, formData: null })
   } catch (error) {
@@ -94,11 +100,9 @@ const newProduct = async (req, res, next) => {
     next(error);
   }
 }
-
 const addProduct = async (req, res, next) => {
   try {
     if (!req.session.admin) return res.redirect("/admin")
-
 
     const requiredFields = [
       "name",
@@ -305,7 +309,6 @@ const addProduct = async (req, res, next) => {
         continue
       }
 
-
       processedFiles.set(bufferHash, images.length)
 
       const uploadOptions = {
@@ -373,13 +376,13 @@ const addProduct = async (req, res, next) => {
     if (uploadErrors.length > 0) {
       errors.imageUpload = uploadErrors.join("; ")
     }
-    const category = await Category.findOne({ name: req.body.category })
+    const category = await Category.findOne({ name: req.body.category, isListed: true, isExisting: true })
 
 
     const productData = {
       name: req.body.name,
       modelNumber: req.body.modelNumber,
-      category: req.body.category,
+      categoryId: category._id,
       color: req.body.color,
       description: req.body.description,
       categoryId: category._id,
@@ -417,14 +420,13 @@ const addProduct = async (req, res, next) => {
     next(error);
   }
 }
-
 const editProduct = async (req, res, next) => {
   try {
     if (!req.session.admin) return res.redirect("/admin/login")
 
     const productId = req.params.id
     const product = await Product.findById(productId).populate('categoryId')
-    const categories = await Category.find()
+    const categories = await Category.find({ isListed: true, isExisting: true }).sort({ name: 1 })
 
     return res.render("admin/productDetails", { product, categories, errors: null, formData: null })
   } catch (error) {
@@ -432,10 +434,8 @@ const editProduct = async (req, res, next) => {
     next(error);
   }
 }
-
 const updateProduct = async (req, res, next) => {
   try {
-
     if (!req.session.admin) return res.redirect("/admin");
 
     const productId = req.params.id;
@@ -456,22 +456,90 @@ const updateProduct = async (req, res, next) => {
       "warranty",
     ];
     const errors = {};
+    const { regularPrice, salePrice } = req.body;
     requiredFields.forEach((field) => {
       if (!req.body[field] || req.body[field].trim() === "") {
         errors[field] = `${field} is required`;
       }
     });
 
-    const numericFields = ["regularPrice", "salePrice",];
-    numericFields.forEach((field) => {
-      if (req.body[field] && isNaN(Number(req.body[field]))) {
-        errors.push(`Field '${field}' must be a valid number`);
-      }
-    });
+
+    if (regularPrice && (isNaN(regularPrice) || regularPrice < 0)) {
+      errors.regularPrice = "Regular price must be a non-negative number";
+    }
+
+    if (salePrice && (isNaN(salePrice) || salePrice < 0)) {
+      errors.salePrice = "Sale price must be a non-negative number";
+    }
+
+    const sale = parseFloat(salePrice);
+    const regular = parseFloat(regularPrice);
+    if (!isNaN(sale) && !isNaN(regular) && sale > regular) {
+      errors.salePrice = "Sale price cannot be greater than regular price";
+    }
+    let variantsArray = req.body.variants || [];
+
+    if (typeof variantsArray === 'object') {
+      variantsArray = Array.isArray(variantsArray) ? variantsArray : Object.values(variantsArray);
+    }
+
+    if (variantsArray.length === 0) {
+      errors.variants = "At least one variant is required";
+    } else {
+      const variantErrors = [];
+      variantsArray.forEach((variant, index) => {
+        if (!variant || typeof variant !== "object") return;
+
+        const vErr = {};
+
+        if (!variant.RAM || typeof variant.RAM !== "string" || variant.RAM.trim() === "") {
+          vErr.RAM = "RAM is required";
+        } else if (!/^\d+\s*(GB|TB)\b.*$/i.test(variant.RAM.trim())) {
+          vErr.RAM = 'RAM must be in format "number GB" or "number TB"';
+        }
+
+        if (!variant.Storage || typeof variant.Storage !== "string" || variant.Storage.trim() === "") {
+          vErr.Storage = "Storage is required";
+        } else if (!/^\d+\s*(GB|TB)\b.*$/i.test(variant.Storage.trim())) {
+          vErr.Storage = 'Storage must be in format "number GB" or "number TB"';
+        }
+
+        const adjustment = parseFloat(variant.priceAdjustment);
+        if (variant.priceAdjustment && isNaN(adjustment)) {
+          vErr.priceAdjustment = "Price adjustment must be a number";
+        } else if (adjustment < 0) {
+          vErr.priceAdjustment = "Price adjustment cannot be negative";
+        } else if (!isNaN(sale) && sale + adjustment < 0) {
+          vErr.priceAdjustment = "Final price after adjustment must be valid";
+        }
+
+        const stock = parseInt(variant.stock);
+        if (variant.stock === "" || variant.stock === undefined || variant.stock === null) {
+          vErr.stock = "Stock is required";
+        } else if (isNaN(stock)) {
+          vErr.stock = "Stock must be a number";
+        } else if (stock < 0) {
+          vErr.stock = "Stock cannot be negative";
+        }
+        variantErrors.push(Object.keys(vErr).length > 0 ? vErr : null);
+        const cleanVariantErrors = variantErrors.map(err => err || null);
+        if (cleanVariantErrors.some(e => e)) {
+          errors.variants = cleanVariantErrors;
+        }
+        if (Object.keys(vErr).length > 0) {
+          variantErrors[index] = vErr;
+        }
+      });
+    }
+
+    const category = await Category.findOne({ name: req.body.category, isListed: true, isExisting: true },);
+    if (!category) {
+      errors.category = 'Please select a category';
+    }
 
     if (Object.keys(errors).length > 0) {
       const product = await Product.findById(productId);
-      const categories = await Product.aggregate([{ $group: { _id: "$category" } }, { $sort: { _id: 1 } }]);
+      const categories = await Category.find({ isListed: true, isExisting: true }).sort({ name: 1 })
       return res.render("admin/productDetails", {
         product,
         categories,
@@ -532,7 +600,6 @@ const updateProduct = async (req, res, next) => {
       });
     }
 
-
     const ports = [];
     if (req.body.ports && req.body.ports[0]) {
       const portData = req.body.ports[0];
@@ -546,13 +613,9 @@ const updateProduct = async (req, res, next) => {
       if (Object.keys(portObj).length > 0) ports.push(portObj);
     }
 
-    const category = await Category.findOne({ name: req.body.category })
-
-
     const productData = {
       name: req.body.name,
       modelNumber: req.body.modelNumber,
-      category: req.body.category,
       color: req.body.color,
       description: req.body.description,
       categoryId: category._id,
@@ -579,7 +642,7 @@ const updateProduct = async (req, res, next) => {
     if (!updatedProduct) {
       errors.push("Product not found");
       const product = await Product.findById(productId);
-      const categories = await Category.find().sort({ name: 1 });
+      const categories = await Category.find({ isListed: true, isExisting: true }).sort({ name: 1 })
       return res.render("admin/productDetails", {
         product,
         categories,
@@ -601,7 +664,6 @@ const updateProduct = async (req, res, next) => {
     });
   }
 };
-
 const toggleProduct = async (req, res, next) => {
   try {
     if (!req.session.admin) return res.redirect("/admin");
@@ -621,7 +683,6 @@ const toggleProduct = async (req, res, next) => {
     next(error);
   }
 }
-
 const softDelete = async (req, res, next) => {
   try {
     if (!req.session.admin) return res.redirect("/admin");

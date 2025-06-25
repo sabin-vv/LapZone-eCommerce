@@ -48,9 +48,9 @@
                         </select>
                         <select name="price">
                             <option value="">Price</option>
-                            <option value="0-500" <%= query.price === '0-500' ? 'selected' : '' %>>₹0 - ₹500</option>
-                            <option value="500-1000" <%= query.price === '500-1000' ? 'selected' : '' %>>₹500 - ₹1000</option>
-                            <option value="1000+" <%= query.price === '1000+' ? 'selected' : '' %>>₹1000+</option>
+                            <option value="0-50000" <%= query.price === '0-50000' ? 'selected' : '' %>>₹0 - ₹50000</option>
+                            <option value="50000-100000" <%= query.price === '50000-100000' ? 'selected' : '' %>>₹50000 - ₹100000</option>
+                            <option value="100000+" <%= query.price === '100000+' ? 'selected' : '' %>>₹100000+</option>
                         </select>
                     </div>
                     <div class="sort">
@@ -81,7 +81,7 @@
                             <tr>
                                 <td><img src="<%= product.images.find(image => image.isMain)?.url || '/images/placeholder.jpg' %>" alt="<%= product.name %>"></td>
                                 <td><%= product.name %></td>
-                                <td><%= product.category %></td>
+                                <td><%= product.categoryId.name %></td>
                                 <td>₹<%= product.salePrice.toLocaleString('en-IN') %></td>
                                 <td><%= product.variants && product.variants.length > 0
                                     ? product.variants.reduce((sum, v) => sum + (v.stock || 0), 0)

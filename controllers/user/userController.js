@@ -5,6 +5,7 @@ const nodemailer = require("nodemailer")
 const Product = require("../../model/products")
 const Wishlist = require("../../model/wishlist")
 const Wallet = require("../../model/wallet")
+const Category = require("../../model/category")
 
 
 function generateReferralCode() {
@@ -47,8 +48,8 @@ const contactUsPage = (req, res, next) => {
 const landingPage = async (req, res, next) => {
     try {
         const products = await Product.find({ isActive: true, isExisting: true }).sort({ updatedAt: -1 }).limit(4).populate('categoryId')
-        const gamingProducts = await Product.find({ isActive: true, isExisting: true, category: "Gaming Laptop" }).sort({ updatedAt: -1 }).limit(4).populate("categoryId")
-
+        const gamingCategory = await Category.findOne({name:'Gaming Laptop'})
+        const gamingProducts = await Product.find({ isActive: true, isExisting: true,categoryId:gamingCategory._id }).sort({ updatedAt: -1 }).limit(4).populate("categoryId")
 
         if (req.session.user) {
             return res.redirect("/home")
@@ -327,7 +328,8 @@ const homePage = async (req, res, next) => {
             const wishlist = await Wishlist.findOne({ userId: user })
             const wishlistIds = wishlist?.items.map(item => item.productId.toString())
 
-            const gamingProducts = await Product.find({ isActive: true, isExisting: true, category: "Gaming Laptop" }).sort({ updatedAt: -1 }).limit(4).populate("categoryId")
+            const gamingCategory = await Category.findOne({name:"Gaming Laptop"})
+            const gamingProducts = await Product.find({ isActive: true, isExisting: true,categoryId : gamingCategory._id }).sort({ updatedAt: -1 }).limit(4).populate("categoryId")
             return res.render("user/landingPage", { user, products, gamingProducts, username, wishlistIds })
         }
         else

@@ -219,8 +219,8 @@
                         <span>₹<%= order.shippingFee.toLocaleString('en-IN') %></span>
                       </div>
                       <div class="order-summary-item">
-                        <span>Tax</span>
-                        <span>₹<%= order.tax.toLocaleString('en-IN') %></span>
+                        <span >Tax</span>
+                        <span id="taxValue">₹<%= order.tax.toLocaleString('en-IN') %></span>
                       </div>
                       <div id="discountRow" class="d-none"></div>
                       <div class="order-total">
@@ -275,17 +275,17 @@
                         <div class="coupon-code"><%= coupon.code %></div>
                         
                         <% if (coupon.discountType === 'percentage') { %>
-                            <div class="discount-badge"><%= coupon.discountValue %>% OFF</div>
+                            <div class="discount-badge"><%= coupon.discountValue.toLocaleString('en-IN') %>% OFF</div>
                         <% } else { %>
-                            <div class="discount-badge fixed-discount">₹<%= coupon.discountValue %> OFF</div>
+                            <div class="discount-badge fixed-discount">₹<%= coupon.discountValue?.toLocaleString('en-IN') %> OFF</div>
                         <% } %>
                         
                         <div class="coupon-meta">
                             <% if (coupon.maxDiscountAmount) { %>
-                                <div class="max-discount">Save up to ₹<%= coupon.maxDiscountAmount %></div>
+                                <div class="max-discount">Save up to ₹<%= coupon.maxDiscountAmount?.toLocaleString('en-IN') %></div>
                             <% } %>
                             <% if (coupon.minPurchaseAmount) { %>
-                                <div class="min-purchase">Min ₹<%= coupon.minPurchaseAmount %></div>
+                                <div class="min-purchase">Min ₹<%= coupon.minPurchaseAmount.toLocaleString('en-IN') %></div>
                             <% } %>
                         </div>
                         
@@ -701,11 +701,76 @@
             description: "Checkout Payment",
             order_id: orderId,
             handler: async function (response) {
-              await completeOrder(paymentMethod, response);
+              const verifyRes = await fetch("/user/verify-payment", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  razorpayPaymentId: response.razorpay_payment_id,
+                  razorpayOrderId: response.razorpay_order_id,
+                  razorpaySignature: response.razorpay_signature,
+                  orderId: response.razorpay_order_id
+                }),
+              });
+
+              const verifyResult = await verifyRes.json();
+              
+              if (verifyResult.success) {
+                await completeOrder(paymentMethod, response);
+              } else {
+                Swal.fire({
+                  icon: "error",
+                  title: "Payment Verification Failed",
+                  text: verifyResult.message || "Payment could not be verified",
+                });
+                window.location.href = "/user/order-failed";
+              }
             },
             modal: {
-              ondismiss: function () {
-                window.location.href = "/user/order-failed";
+              ondismiss: async function () {
+                try {
+                  const selectedAddressCard = document.querySelector(".address-card.selected");
+                  if (!selectedAddressCard) {
+                    window.location.href = "/user/order-failed";
+                    return;
+                  }
+
+                  const addressDetails = selectedAddressCard.querySelector(".address-details");
+                  const lines = addressDetails.querySelectorAll("p");
+
+                  const shippingAddress = {
+                    fullName: lines[0]?.innerText.trim() || "",
+                    addressLine: lines[1]?.innerText.trim() || "",
+                    city: lines[2]?.innerText.split(",")[0].trim(),
+                    district: lines[2]?.innerText.split(",")[1].trim(),
+                    state: lines[3]?.innerText.split("-")[0].trim(),
+                    postCode: lines[3]?.innerText.split("-")[1].trim(),
+                    phone: lines[4]?.innerText.replace("Phone: (+91) ", "").trim(),
+                  };
+
+                  const appliedCoupon = window.appliedCoupon || {};
+
+                  const response = await fetch("/user/create-pending-order", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      shippingAddress,
+                      appliedCoupon,
+                      razorpayOrderId: orderId
+                    }),
+                  });
+
+                  const result = await response.json();
+                  
+                  if (result.success) {
+                    // Redirect to order failure page even though order was created
+                    window.location.href = "/user/order-failed";
+                  } else {
+                    window.location.href = "/user/order-failed";
+                  }
+                } catch (error) {
+                  console.error("Error creating pending order:", error);
+                  window.location.href = "/user/order-failed";
+                }
               },
             },
             prefill: {
@@ -747,11 +812,10 @@
           phone: lines[4]?.innerText.replace("Phone: (+91) ", "").trim(),
         };
 
-        const total = document
-          .getElementById("orderTotalValue")
+        const total = document.getElementById("orderTotalValue")
           .innerText.replace("₹", "")
           .replace(/,/g, "");
-        const appliedCoupon = window.appliedCoupon;
+        let appliedCoupon = window.appliedCoupon;
 
         const response = await fetch("/user/order", {
           method: "POST",
@@ -807,6 +871,10 @@
 
           if (result.success) {
             couponInput.value = couponCodeToApply;
+            const taxEl = document.getElementById("taxValue");
+            if (taxEl && result.tax !== undefined) {
+              taxEl.innerText = `₹${result.tax.toLocaleString("en-IN")}`;
+            }
             const totalEl = document.getElementById("orderTotalValue");
             if (totalEl && result.totalAmount !== undefined) {
               totalEl.innerText = `₹${result.totalAmount.toLocaleString("en-IN")}`;
@@ -858,7 +926,6 @@
         const button = event.relatedTarget;
         const id = button.getAttribute("data-id");
 
-        // Populate modal fields with data from button
         document.getElementById("modalAddressId").value = button.getAttribute("data-id");
         document.getElementById("modalFullName").value =  button.getAttribute("data-name");
         document.getElementById("modalPhone").value =  button.getAttribute("data-phone");
