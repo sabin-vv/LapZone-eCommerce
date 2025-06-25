@@ -39,7 +39,6 @@ const addtoCart = async (req, res, next) => {
       return res.status(400).json({ success: false, message: "Product not available" });
     }
 
-    // Find variant matching user's selected RAM and Storage
     const selectedVariant = product.variants.find(
       v => v.RAM === ram && v.Storage === storage
     );
@@ -52,7 +51,6 @@ const addtoCart = async (req, res, next) => {
       return res.status(400).json({ success: false, message: "Selected variant is out of stock" });
     }
 
-    // Calculate final price with offer
     const basePrice = product.salePrice + (selectedVariant.priceAdjustment || 0);
     const productOffer = product.offer || 0;
     const categoryOffer = product.categoryId?.offer || 0;
@@ -101,8 +99,10 @@ const addtoCart = async (req, res, next) => {
     }
 
     await cart.save();
+    const updatedcartCount = await Cart.findOne({ userId });
+    const count = updatedcartCount ? updatedcartCount.items.length : 0
 
-    return res.status(200).json({ success: true, message: "Product added to cart" });
+    return res.status(200).json({ success: true, message: "Product added to cart", count });
 
   } catch (error) {
     console.error("Error adding to cart:", error);
@@ -224,7 +224,7 @@ const emptyCart = async (req, res, next) => {
 
 const addfromShop = async (req, res, next) => {
   try {
-    if (!req.session.user) return res.redirect("/")
+    if (!req.session.user) return res.status(401).json({ success: false, message: "Unauthorized", redirectTo: "/login" });
 
     const userId = req.session.user
     const { productId } = req.body
@@ -243,7 +243,7 @@ const addfromShop = async (req, res, next) => {
     const basePrice = product.salePrice + (variant.priceAdjustment || 0);
     const finalPrice = Math.round(basePrice * (1 - maxOffer / 100));
 
-    let cart = await Cart.findOne({ userId});
+    let cart = await Cart.findOne({ userId });
     if (!cart) {
       cart = new Cart({
         userId,
@@ -280,7 +280,10 @@ const addfromShop = async (req, res, next) => {
       }
     }
     await cart.save();
-    return res.json({ success: true, message: "Product added to cart" });
+
+    const updatedcartCount = await Cart.findOne({ userId });
+    const count = updatedcartCount ? updatedcartCount.items.length : 0
+    return res.json({ success: true, message: "Product added to cart", count });
 
   } catch (error) {
     console.error('Error adding from shop:', error);

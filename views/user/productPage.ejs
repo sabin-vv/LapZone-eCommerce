@@ -408,14 +408,23 @@
 
           const result = await response.json();
 
-           if (response.ok && result.success === true) {
+          if (response.ok && result.success === true) {
+            const cartBadge = document.querySelector('.cart-badge')
+              if(typeof result.count === 'number' && result.count >= 0){
+                  cartBadge.innerText = result.count;
+                  if (result.count > 0) {
+                       cartBadge.classList.remove('d-none');
+                  } else {
+                       cartBadge.classList.add('d-none');
+                  }
+              }
               iziToast.success({
                 title: "Success",
                 message: result.message || "Product added to cart",
                 position: "bottomRight",
                 timeout: 2000,
               });
-            } else {
+          } else {
               iziToast.warning({
                 title: "Notice",
                 message: result.message || "Could not add to cart",
@@ -445,6 +454,15 @@
           .then((response) => response.json())
           .then((result) => {
             if (result.success) {
+              const badgeCount = document.querySelector('.wishlist-badge')
+              if(typeof result.count === 'number' && result.count >= 0){
+                  badgeCount.innerText = result.count;
+                  if (result.count > 0) {
+                       badgeCount.classList.remove('d-none');
+                      } else {
+                           badgeCount.classList.add('d-none');
+                      }
+              }
               if (result.action === "added") {
                 iziToast.success({
                   title: "",

@@ -322,7 +322,15 @@
                 });
                 const result = await response.json();
                 if (result.success) {
-                    
+                    const badgeCount = document.querySelector('.wishlist-badge')
+                    if(typeof result.count === 'number' && result.count >= 0){
+                        badgeCount.innerText = result.count;
+                        if (result.count > 0) {
+                            badgeCount.classList.remove('d-none');
+                            } else {
+                                badgeCount.classList.add('d-none');
+                            }
+                    }
                     if (result.action == 'added') {
                                 iziToast.success({
                                 title: '',
@@ -389,7 +397,15 @@
                                 }
                 const result = await response.json();
                 if (result.success) {
-                    
+                    const cartBadge = document.querySelector('.cart-badge')
+                    if(typeof result.count === 'number' && result.count >= 0){
+                        cartBadge.innerText = result.count;
+                        if (result.count > 0) {
+                            cartBadge.classList.remove('d-none');
+                        } else {
+                            cartBadge.classList.add('d-none');
+                        }
+                    }
                     if(result.success === true){
                                 iziToast.success({
                                 title: '',
