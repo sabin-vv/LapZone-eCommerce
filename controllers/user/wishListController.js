@@ -11,7 +11,6 @@ const toggleWishList = async (req, res, next) => {
         if (!req.session.user) return res.status(401).json({ success: false, notLoggedIn: true })
            
         const { productId } = req.body
-
         const userId = req.session.user
 
         const existing = await Wishlist.findOne({ userId: userId, 'items.productId': productId })
@@ -27,25 +26,20 @@ const toggleWishList = async (req, res, next) => {
         const wishlistExist = await Wishlist.findOne({ userId: userId })
 
         if (wishlistExist) {
-
             wishlistExist.items.push({ productId })
             await wishlistExist.save()
-
         } else {
             const wishlist = new Wishlist({
                 userId: userId,
                 items: [{ productId: productId }]
             })
-
             await wishlist.save()
         }
-
         return res.json({ success: true, action: "added" })
     } catch (error) {
         console.error('Error toggling wishlist:', error);
         next(error);
     }
-
 }
 
 const viewWishlist = async (req, res, next) => {

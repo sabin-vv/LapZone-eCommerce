@@ -171,6 +171,12 @@ body {
 .offers li {
     margin-bottom: 0.25rem;
 }
+.stockout {
+    color: #dc2626;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--error-color);
+}
 
 .variant-selector {
     display: grid;

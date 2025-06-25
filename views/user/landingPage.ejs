@@ -62,51 +62,47 @@
                                 <a href="/shop/product/<%= product._id %>" class="text-decoration-none text-dark">
                                     <img src="<%= mainImage?.url || '/images/default.jpg' %>" alt="<%= product.name %> laptop" class="card-img-top">
                                 <div class="product-details d-flex justify-content-between">
-                                                            <div class="rating-container">
-                                                                <div class="rating-stars">
-                                                                    <i class="bi bi-star-fill"></i>
-                                                                    <i class="bi bi-star-fill"></i>
-                                                                    <i class="bi bi-star-fill"></i>
-                                                                    <i class="bi bi-star-fill"></i>
-                                                                    <i class="bi bi-star-half"></i>
-                                                                </div>
-                                                                <span>4.5</span>
-                                                            </div>
-                                                            <button class="btn btn-sm wishlist-btn"
-                                                                data-product-id="<%= product._id %>"
-                                                                title="Add to wishlist"
-                                                                onclick="event.stopPropagation()">
-                                                                <i
-                                                                    class="bi <%= isWishlisted ? 'bi-heart-fill' : 'bi-heart' %> fs-4 text-danger"></i>
-                                                            </button>
-                                                        </div>
+                                    <div class="rating-container">
+                                        <div class="rating-stars">
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-half"></i>
+                                        </div>
+                                        <span>4.5</span>
+                                    </div>
+                                    <button class="btn btn-sm wishlist-btn" data-product-id="<%= product._id %>" title="Add to wishlist"  onclick="event.stopPropagation()">
+                                    <i class="bi <%= isWishlisted ? 'bi-heart-fill' : 'bi-heart' %> fs-4 text-danger"></i>
+                                    </button>
+                                </div>
 
-                                                        <div class="card-body text-center">
-                                                            <h5 class="card-title">
-                                                                <%= product.name %>
-                                                            </h5>
-                                                            <p class="card-text">
-                                                                <i class="bi bi-cpu me-1"></i>
-                                                                <%= product.CPU %> <br>
-                                                                    <i class="bi bi-memory me-1"></i>
-                                                                    <%= variant?.RAM || 'N/A' %> <br>
-                                                                        <i class="bi bi-hdd me-1"></i>
-                                                                        <%= variant?.Storage || 'N/A' %>
-                                                            </p>
-                                                           <%
-                                                            const basePrice = product.salePrice + (variant?.priceAdjustment || 0);
-                                                            const discountedPrice = Math.round(basePrice * (1 - finalOffer / 100));
-                                                            %>
-                                                            <p class="card-text fw-bold text-primary">
-                                                            ₹<%= discountedPrice.toLocaleString('en-IN') %>
-                                                            </p>
-                                                        </div>
-                                                    </a>
-
-                                                    <button type="submit" class="cart-btn btn btn-outline-primary"
-                                                        data-product-id="<%= product._id %>" title="Add to Cart">
-                                                        <i class="bi bi-cart-plus me-2"></i> Add to Cart
-                                                    </button>
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">
+                                        <%= product.name %>
+                                    </h5>
+                                     <p class="card-text">
+                                        <i class="bi bi-cpu me-1"></i>
+                                        <%= product.CPU %> <br>
+                                            <i class="bi bi-memory me-1"></i>
+                                            <%= variant?.RAM || 'N/A' %> <br>
+                                                <i class="bi bi-hdd me-1"></i>
+                                                <%= variant?.Storage || 'N/A' %>
+                                                </p>
+                                                <%
+                                                const basePrice = product.salePrice + (variant?.priceAdjustment || 0);
+                                                const discountedPrice = Math.round(basePrice * (1 - finalOffer / 100));
+                                                %>
+                                                <p class="card-text fw-bold text-primary">
+                                                ₹<%= discountedPrice.toLocaleString('en-IN') %>
+                                                </p>
+                                            </div>
+                                        </a>
+                                        <% const available = product.variants.find(v => v.stock > 0) %>
+                                <button type="submit" class="cart-btn btn btn-outline-primary"
+                                    data-product-id="<%= product._id %>" title="Add to Cart" <%= available ? '' : 'disabled' %>>
+                                    <i class="bi bi-cart-plus me-2"></i> Add to Cart
+                                </button>
                             </div>
                         </div>
                         <% }) %>
@@ -182,8 +178,7 @@
                                         data-product-id="<%= product._id %>"
                                         title="Add to wishlist"
                                         onclick="event.stopPropagation()">
-                                        <i
-                                            class="bi <%= isWishlisted ? 'bi-heart-fill' : 'bi-heart' %> fs-4 text-danger"></i>
+                                        <i class="bi <%= isWishlisted ? 'bi-heart-fill' : 'bi-heart' %> fs-4 text-danger"></i>
                                     </button>
                                 </div>
                                 <div class="card-body text-center">
@@ -202,7 +197,7 @@
                                     </p>
                                 </div>
                             </a>
-
+                            <% const available = product.variants.find(v => v.stock > 0) %>
                             <button type="submit"
                                 class="cart-btn btn btn-outline-primary"
                                 data-product-id="<%= product._id %>"

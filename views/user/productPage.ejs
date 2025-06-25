@@ -141,19 +141,6 @@
             <i class="bi <%= isWishlisted ? 'bi-heart-fill' : 'bi-heart' %> wishlist-icon" onclick="addToWishlist('<%= product._id %>', this)"  title="Add to Wishlist" ></i>
           </div>
         </div>
-        <div class="rating">
-          <% if(product.rating){ %>
-          <% for (let i=1; i <=5; i++) { %> <% if (i
-          <=Math.floor(product.rating)) { %>
-          <span>★</span>
-          <% } else if (i===Math.ceil(product.rating) && product.rating % 1
-          !==0) { %>
-          <span>☆</span>
-          <% } else { %>
-          <span>☆</span>
-          <% } %> <% } %>
-          <span class="text-muted ms-2" >(<%= product.rating.toLocaleString('en-IN', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) %>/5)</span> <% } %>
-        </div>
 
         <% const productOffer = product.offer || 0; 
         const categoryOffer = product.categoryId?.offer || 0; 
@@ -167,10 +154,10 @@
 
           ₹<span id="dynamicPrice"><%= product.salePrice.toLocaleString('en-IN') %></span>
 
-         <!-- <% if (product.regularPrice && product.salePrice < product.regularPrice) { %>
+        <!-- <% if (product.regularPrice && product.salePrice < product.regularPrice) { %>
             <del>₹<%= product.regularPrice.toLocaleString('en-IN') %></del>
-          <% } %> --!>
-        </div>
+          <% }  %>  -->
+        </div> 
 
         <div class="description">
             <%= product.description || 'No description available.' %>
@@ -184,18 +171,15 @@
             <% } %>
           </ul>
         </div>
-        <input
-          type="hidden" id="salePriceValue" name="salePrice" value="<%= product.salePrice %>" />
+        <input type="hidden" id="salePriceValue" name="salePrice" value="<%= product.salePrice %>" />
+         <% const available = product.variants.find(v => v.stock > 0) %>
         <div class="variant-selector">
           <div>RAM</div>
           <% const uniqueRAMs = [...new Set(product.variants.map(variant => variant.RAM))]; %>
           <div class="variant-options" id="ram-options">
             <% uniqueRAMs.forEach(ram => {
               const hasStock = product.variants.some(v => v.RAM === ram && v.stock > 0); %>
-              <button
-                class="variant-btn <%= !hasStock ? 'disabled' : '' %>"
-                data-ram="<%= ram %>"
-                onclick="<%= hasStock ? `selectRAM('${ram}', this)` : '' %>"
+              <button class="variant-btn <%= !hasStock ? 'disabled' : '' %>" data-ram="<%= ram %>" onclick="<%= hasStock ? `selectRAM('${ram}', this)` : '' %>"
                 <%= !hasStock ? 'disabled' : '' %>>
                 <%= ram %>
               </button>
@@ -219,10 +203,12 @@
           </div>
         </div>
 
+        <% if(!available){ %>
+        <span class="stockout">Out of stock</span>
+        <% }  %>
+
         <div class="action-buttons">
-          <button
-            class="add-to-cart-btn mt-0 btn btn-warning"
-            onclick="addToCart('<%= product._id %>')">Add to Cart <i class="bi bi-cart-plus"></i>
+          <button class="add-to-cart-btn mt-0 btn btn-warning" <%= available ? '' : 'disabled' %> onclick="addToCart('<%= product._id %>')">Add to Cart <i class="bi bi-cart-plus"></i>
           </button>
         </div>
       </div>
@@ -298,13 +284,6 @@
             <img src="<%= mainImage?.url || '/default-image.jpg' %>" alt="<%= suggestion.name %>" />
             <div class="card-body">
               <h5><%= suggestion.name %></h5>
-              <div class="rating">
-                <% for (let i=1; i <=5; i++) { %>
-                <span class="<%= i <= suggestion.rating ? 'filled' : '' %>">
-                  <%= i <=suggestion.rating ? '★' : '☆' %>
-                </span>
-                <% } %>
-              </div>
               <p class="card-text">
                 <%= suggestion.description.substring(0, 100) %>...
               </p>

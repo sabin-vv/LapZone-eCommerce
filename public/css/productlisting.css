@@ -152,13 +152,21 @@
 }
 
 /* Filter and Sort Section */
+.filter-form {
+    margin-bottom: 1.5rem;
+}
+
 .filter-sort {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
     flex-wrap: wrap;
     gap: 1rem;
+    padding: 1rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1rem;
 }
 
 .filter, .sort {
@@ -177,12 +185,54 @@
     color: #374151;
     background-color: #fff;
     cursor: pointer;
-    transition: border-color 0.3s ease;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .filter select:focus, .sort select:focus {
     outline: none;
     border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.filter select:hover, .sort select:hover {
+    border-color: #9ca3af;
+}
+
+/* Filter Actions */
+.filter-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.apply-filter-btn, .clear-filter-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.apply-filter-btn {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.apply-filter-btn:hover {
+    background-color: #2563eb;
+    transform: translateY(-1px);
+}
+
+.clear-filter-btn {
+    background-color: #6b7280;
+    color: white;
+}
+
+.clear-filter-btn:hover {
+    background-color: #4b5563;
+    transform: translateY(-1px);
 }
 
 /* Table Styles */
@@ -417,6 +467,7 @@ input:not(:checked) + .slider {
     .filter, .sort {
         flex: 1;
         max-width: none;
+        
     }
 
     .search-container {
@@ -442,6 +493,23 @@ input:not(:checked) + .slider {
     .filter-sort {
         flex-direction: column;
         align-items: stretch;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .filter, .sort {
+        max-width: none;
+        flex-direction: column;
+    }
+
+    .filter-actions {
+        justify-content: center;
+        margin-top: 1rem;
+    }
+
+    .apply-filter-btn, .clear-filter-btn {
+        flex: 1;
+        min-width: 120px;
     }
 
     .products-table {

@@ -47,7 +47,7 @@
                                 <option value="" <%=!product || !product.category ? 'selected' : '' %>>Select Category
                                 </option>
                                 <% categories.forEach(category=> { %>
-                                    <option value="<%= category.name %>" <%=product && product.categoryId.name===category.name
+                                    <option value="<%= category.name %>" <%=product && product.categoryId.name === category.name
                                         ? 'selected' : '' %>><%= category.name %>
                                     </option>
                                     <% }) %>
