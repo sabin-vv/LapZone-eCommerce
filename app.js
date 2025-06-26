@@ -58,6 +58,12 @@ app.use(counts)
 app.use("/", userRouter)
 app.use("/admin",adminRouter)
 
+app.use((req, res, next) => {
+    const error = new Error(`Page not found - ${req.originalUrl}`);
+    error.status = 404;
+    next(error);
+});
+
 app.use(errorHandler);
 
 app.listen(process.env.PORT, () => {

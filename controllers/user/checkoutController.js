@@ -325,8 +325,8 @@ const orderPage = async (req, res, next) => {
 }
 
 const orderFailurePafe = (req, res) => {
-
-  res.render("user/orderFailurePage")
+  const orderId = req.query.orderId || null;
+  res.render("user/orderFailurePage", { orderId })
 }
 
 const editAddress = async (req, res) => {

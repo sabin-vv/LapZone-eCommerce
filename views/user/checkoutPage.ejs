@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast@1.4.0/dist/css/iziToast.min.css" />
+  <link rel="stylesheet" href="/css/izitoast-styles.css" />
   <script src="https://cdn.jsdelivr.net/npm/izitoast@1.4.0/dist/js/iziToast.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -466,6 +467,8 @@
       </div>
     </div>
 
+    <%- include("../partials/user/footer.ejs") %>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
       xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
       crossorigin="anonymous"></script>
@@ -763,7 +766,7 @@
                   
                   if (result.success) {
                     // Redirect to order failure page even though order was created
-                    window.location.href = "/user/order-failed";
+                    window.location.href = `/user/order-failed?orderId=${result.orderId}`;
                   } else {
                     window.location.href = "/user/order-failed";
                   }

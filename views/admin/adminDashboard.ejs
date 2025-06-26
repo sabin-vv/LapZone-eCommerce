@@ -674,9 +674,13 @@
 
     const today = new Date();
     const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const todayString = today.toISOString().split('T')[0]; 
 
     startDateInput.valueAsDate = firstDayOfMonth;
     endDateInput.valueAsDate = today;
+
+    startDateInput.setAttribute('max', todayString);
+    endDateInput.setAttribute('max', todayString);
 
     generateLedgerBtn.addEventListener('click', async function() {
         const startDate = startDateInput.value;
@@ -688,7 +692,7 @@
         }
 
         if (new Date(startDate) > new Date(endDate)) {
-            showNotification('⚠️ Start date cannot be after end date', 'error');
+            showNotification(' Start date cannot be after end date', 'error');
             return;
         }
 

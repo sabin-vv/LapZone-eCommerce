@@ -8,15 +8,17 @@
     <link rel="stylesheet" href="/css/header.css">
     <link rel="stylesheet" href="/css/profileSidebar.css">
     <link rel="stylesheet" href="/css/wishListPage.css">
+    <link rel="stylesheet" href="/css/universal-floating-elements.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
 </head>
 
 <body>
-    <%- include("../partials/user/header.ejs") %>
+    <div class="page-container">
+        <%- include("../partials/user/header.ejs") %>
 
-    <div class="main-container">
+        <div class="main-container">
         <%- include("../partials/user/profileSidebar.ejs") %>
 
         <div class="content">
@@ -147,8 +149,8 @@
                 </div>
             </div>
         </div>
+        </div> 
     </div>
-
     <%- include("../partials/user/footer.ejs") %>
 
     <script>

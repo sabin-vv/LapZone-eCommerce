@@ -2,23 +2,25 @@ const Wishlist = require("../../model/wishlist")
 const Cart = require("../../model/cart")
 const Product = require("../../model/products")
 const mongoose = require("mongoose")
+const User = require("../../model/user")
 
 const viewCartPage = async (req, res, next) => {
   try {
     if (!req.session.user) return res.redirect("/login")
 
     const userId = req.session.user
+    const user = await User.findById(userId)
     const cart = await Cart.findOne({ userId }).populate('items.productId')
 
     if (!cart)
-      return res.render("user/cartPage", { cart: null, })
+      return res.render("user/cartPage", { cart: null, user })
 
     const totalPrice = cart.items.reduce((total, item) => {
       const itemPrice = item.price || item.productId.salePrice
       return total += (itemPrice * item.quantity)
     }, 0)
 
-    return res.render("user/cartPage", { cart, totalPrice })
+    return res.render("user/cartPage", { cart, totalPrice , user })
   } catch (error) {
     console.error('Error fetching cart:', error);
     next(error);

@@ -1,0 +1,229 @@
+/* iziToast Custom Styling for LapZone */
+.iziToast {
+    background: #ffffff !important;
+    border: none !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    min-height: 60px !important;
+    padding: 16px 20px !important;
+    margin-bottom: 12px !important;
+    animation: slideInFromRight 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    border-left: 4px solid #6366f1 !important;
+}
+
+@keyframes slideInFromRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Success toast - green */
+.iziToast.iziToast-color-green {
+    border-left-color: #10b981 !important;
+    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%) !important;
+}
+
+.iziToast.iziToast-color-green .iziToast-icon {
+    color: #059669 !important;
+}
+
+.iziToast.iziToast-color-green .iziToast-message {
+    color: #065f46 !important;
+}
+
+.iziToast.iziToast-color-green .iziToast-title {
+    color: #064e3b !important;
+}
+
+/* Error toast - teal/cyan */
+.iziToast.iziToast-color-red {
+    border-left-color: #06b6d4 !important;
+    background: linear-gradient(135deg, #cffafe 0%, #a5f3fc 100%) !important;
+}
+
+.iziToast.iziToast-color-red .iziToast-icon {
+    color: #0891b2 !important;
+}
+
+.iziToast.iziToast-color-red .iziToast-message {
+    color: #164e63 !important;
+}
+
+.iziToast.iziToast-color-red .iziToast-title {
+    color: #0c4a6e !important;
+}
+
+/* Warning toast - orange */
+.iziToast.iziToast-color-yellow {
+    border-left-color: #f59e0b !important;
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important;
+}
+
+.iziToast.iziToast-color-yellow .iziToast-icon {
+    color: #d97706 !important;
+}
+
+.iziToast.iziToast-color-yellow .iziToast-message {
+    color: #92400e !important;
+}
+
+.iziToast.iziToast-color-yellow .iziToast-title {
+    color: #78350f !important;
+}
+
+/* Info toast - blue */
+.iziToast.iziToast-color-blue {
+    border-left-color: #3b82f6 !important;
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important;
+}
+
+.iziToast.iziToast-color-blue .iziToast-icon {
+    color: #2563eb !important;
+}
+
+.iziToast.iziToast-color-blue .iziToast-message {
+    color: #1e40af !important;
+}
+
+.iziToast.iziToast-color-blue .iziToast-title {
+    color: #1e3a8a !important;
+}
+
+/* Toast text styling */
+.iziToast .iziToast-message {
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    line-height: 1.5 !important;
+    margin: 0 !important;
+}
+
+.iziToast .iziToast-title {
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    margin-bottom: 4px !important;
+}
+
+/* Icon styling */
+.iziToast .iziToast-icon {
+    width: 22px !important;
+    height: 22px !important;
+    margin-right: 12px !important;
+    font-size: 18px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Close button */
+.iziToast .iziToast-close {
+    background: rgba(107, 114, 128, 0.1) !important;
+    border: none !important;
+    border-radius: 6px !important;
+    color: #6b7280 !important;
+    font-size: 16px !important;
+    width: 24px !important;
+    height: 24px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s ease !important;
+}
+
+.iziToast .iziToast-close:hover {
+    background: rgba(107, 114, 128, 0.2) !important;
+    color: #374151 !important;
+}
+
+/* Progress bar */
+.iziToast .iziToast-progressbar {
+    height: 3px !important;
+    background: rgba(0, 0, 0, 0.05) !important;
+    border-radius: 0 0 12px 12px !important;
+    margin: 12px -20px -16px -20px !important;
+}
+
+.iziToast.iziToast-color-green .iziToast-progressbar > div {
+    background: #10b981 !important;
+}
+
+.iziToast.iziToast-color-red .iziToast-progressbar > div {
+    background: #06b6d4 !important;
+}
+
+.iziToast.iziToast-color-yellow .iziToast-progressbar > div {
+    background: #f59e0b !important;
+}
+
+.iziToast.iziToast-color-blue .iziToast-progressbar > div {
+    background: #3b82f6 !important;
+}
+
+/* Hover effect */
+.iziToast:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12), 0 4px 10px rgba(0, 0, 0, 0.08) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Custom icons for actions */
+.iziToast.iziToast-color-green .iziToast-icon::before {
+    content: "✓";
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.iziToast.iziToast-color-red .iziToast-icon::before {
+    content: "!";
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.iziToast.iziToast-color-yellow .iziToast-icon::before {
+    content: "⚠";
+    font-size: 16px;
+}
+
+.iziToast.iziToast-color-blue .iziToast-icon::before {
+    content: "ℹ";
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* Mobile responsive for toasts */
+@media (max-width: 768px) {
+    .iziToast {
+        margin: 8px !important;
+        border-radius: 10px !important;
+        min-height: 56px !important;
+        padding: 14px 16px !important;
+        max-width: calc(100vw - 32px) !important;
+    }
+    
+    .iziToast .iziToast-message {
+        font-size: 13px !important;
+    }
+    
+    .iziToast .iziToast-title {
+        font-size: 14px !important;
+    }
+    
+    .iziToast .iziToast-icon {
+        width: 20px !important;
+        height: 20px !important;
+        margin-right: 10px !important;
+        font-size: 16px !important;
+    }
+}
+
+/* Toast positioning */
+.iziToast-wrapper-bottomRight {
+    bottom: 20px !important;
+    right: 20px !important;
+    z-index: 9999 !important;
+}

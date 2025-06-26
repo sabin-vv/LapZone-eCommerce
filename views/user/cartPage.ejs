@@ -7,19 +7,20 @@
     <title>LapZone - Cart</title>
     <link rel="stylesheet" href="/css/header.css">
     <link rel="stylesheet" href="/css/profileSidebar.css">
-    <link rel="stylesheet" href="/css/cartpage.css">
-    
+    <link rel="stylesheet" href="/css/cartPage.css">
+    <link rel="stylesheet" href="/css/universal-floating-elements.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
+    <link rel="stylesheet" href="/css/izitoast-styles.css">
     <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
 </head>
 
 <body>
-    <%- include("../partials/user/header.ejs") %>
-    
-    <div class="main-container">
+    <div class="page-container">
+        <%- include("../partials/user/header.ejs") %>
+        
+        <div class="main-container">
         <%- include("../partials/user/profileSidebar.ejs") %>
         
         <div class="content-wrapper p-0 fade-in">
@@ -59,9 +60,9 @@
                                 </div>
                                 <div class="item-actions">
                                     <div class="quantity-control">
-                                        <button class="quantity-btn" onclick="updateQuantity('<%= item._id %>', -1)">−</button>
+                                        <button class="quantity-btn" data-dir="decrement" onclick="updateQuantity('<%= item._id %>', -1)"  <%= item.quantity <= 1 ? 'disabled' : '' %>>−</button>
                                         <input type="number" class="quantity-input" min="1" max="5" value="<%= item.quantity %>" readonly>
-                                        <button class="quantity-btn" onclick="updateQuantity('<%= item._id %>', 1)">+</button>
+                                        <button class="quantity-btn" data-dir="increment" onclick="updateQuantity('<%= item._id %>', 1)" <%= item.quantity >= 5 ? 'disabled' : '' %>>+</button>
                                     </div>
                                     <button class="remove-btn" onclick="removeItem('<%= item.id %>')">
                                         <i class="fas fa-times"></i> Remove
@@ -93,12 +94,12 @@
                         </div>
 
                         <div class="checkout-actions">
-                            <button  onclick="checkoutPage()" class="btn btn-primary checkout-btn">
-                                <i class="fas fa-shopping-bag"></i> Proceed to Checkout
-                            </button>
                             <a href="/shop" class="btn btn-secondary checkout-btn">
                                 <i class="fas fa-arrow-left"></i> Continue Shopping
                             </a>
+                            <button  onclick="checkoutPage()" class="btn btn-primary checkout-btn">
+                                <i class="fas fa-shopping-bag"></i> Proceed to Checkout
+                            </button>
                         </div>
                     <% } else { %>
                         <div class="empty-cart-message">
@@ -115,9 +116,10 @@
                 </div>
             </div>
         </div>
-    </div>
+        </div>
 
-    <%- include("../partials/user/footer.ejs") %>
+        <%- include("../partials/user/footer.ejs") %>
+    </div>
     
     <script>
         
@@ -181,6 +183,12 @@
                     const updatedItem = data.cart.items.find(item => item._id === itemId);
                     if (updatedItem) {
                         inputElem.value = updatedItem.quantity;
+                        const quantityControl = inputElem.closest('.quantity-control');
+                        const incrementBtn = quantityControl.querySelector('[data-dir="increment"]');
+                        const decrementBtn = quantityControl.querySelector('[data-dir="decrement"]');
+
+                        incrementBtn.disabled = updatedItem.quantity >= 5;
+                        decrementBtn.disabled = updatedItem.quantity <= 1;
                         updateCartSummary(data.cart);
                     }
                     iziToast.success({

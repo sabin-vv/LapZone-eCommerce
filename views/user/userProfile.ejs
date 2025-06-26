@@ -8,11 +8,13 @@
     <link rel="stylesheet" href="/css/profileSidebar.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <link rel="stylesheet" href="/css/userProfile.css">
+    <link rel="stylesheet" href="/css/universal-floating-elements.css">
 </head>
 
 <body>
-    <%- include("../partials/user/header.ejs") %>
-    <div class="main-body">
+    <div class="page-container">
+        <%- include("../partials/user/header.ejs") %>
+        <div class="main-body">
         <%- include("../partials/user/profileSidebar.ejs") %>
 
         <div class="main-content">
@@ -58,8 +60,9 @@
             <input type="hidden" name="email" id="form-email">
             <input type="hidden" name="mobile" id="form-mobile">
         </form>
+        </div>
+        <%- include("../partials/user/footer.ejs") %>
     </div>
-    <%- include("../partials/user/footer.ejs") %>
 
     <script>    
         function toggleEdit() {

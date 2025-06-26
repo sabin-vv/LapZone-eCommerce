@@ -287,7 +287,7 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         modal: {
           ondismiss: function () {
-            window.location.href = '/user/order-failed';
+            window.location.href = `/user/order-failed?orderId=${orderId}`;
           }
         },
         prefill: {

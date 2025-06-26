@@ -34,13 +34,22 @@
         <p class="subtitle">We couldn't process your payment. This could be due to insufficient funds, an expired card, or a network issue. Please check your payment details and try again.</p>
         
         <div class="button-group">
-            <a href="/cart" class="btn btn-primary">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-                </svg>
-                Retry Payment
-            </a>
+            <% if (orderId) { %>
+                <button onclick="retryPayment('<%= orderId %>')" class="btn btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                    </svg>
+                    Retry Payment
+                </button>
+            <% } else { %>
+                <a href="/cart" class="btn btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m0 0H17M9 19.5a.5.5 0 1 1 0 1 .5.5 0 0 1 0-1zm8 0a.5.5 0 1 1 0 1 .5.5 0 0 1 0-1z"></path>
+                    </svg>
+                    Go to Cart
+                </button>
+            <% } %>
             <a href="/profile/order" class="btn btn-secondary">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -57,5 +66,120 @@
             Need help? <a href="/support" class="help-link">Contact Support</a> or check our <a href="/faq" class="help-link">FAQ</a>
         </div>
     </div>
+
+    <!-- Include Razorpay SDK -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <!-- Include SweetAlert2 for notifications -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        async function retryPayment(orderId) {
+            try {
+                // Show loading
+                Swal.fire({
+                    title: 'Processing...',
+                    text: 'Please wait while we prepare your payment',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                const res = await fetch('/user/retry-razorpay', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ orderId })
+                });
+
+                const data = await res.json();
+                
+                if (!data.razorpayOrderId) {
+                    throw new Error(data.message || 'Failed to create payment order');
+                }
+
+                // Close loading dialog
+                Swal.close();
+
+                const { razorpayOrderId, amount, key, user } = data;
+
+                const options = {
+                    key,
+                    amount,
+                    currency: "INR",
+                    name: "LapZone",
+                    description: "Retry Payment",
+                    order_id: razorpayOrderId,
+                    handler: async function (response) {
+                        try {
+                            // Show processing payment
+                            Swal.fire({
+                                title: 'Verifying Payment...',
+                                text: 'Please wait while we verify your payment',
+                                allowOutsideClick: false,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
+                            });
+
+                            const verifyRes = await fetch('/user/verify-payment', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    razorpayPaymentId: response.razorpay_payment_id,
+                                    razorpayOrderId: response.razorpay_order_id,
+                                    razorpaySignature: response.razorpay_signature,
+                                    orderId
+                                })
+                            });
+
+                            const verifyData = await verifyRes.json();
+                            
+                            if (verifyData.success) {
+                                window.location.href = `/user/order-success/${orderId}`;
+                            } else {
+                                throw new Error(verifyData.message || 'Payment verification failed');
+                            }
+                        } catch (error) {
+                            console.error('Payment verification error:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Payment Verification Failed',
+                                text: error.message || 'Something went wrong during payment verification'
+                            });
+                        }
+                    },
+                    modal: {
+                        ondismiss: function () {
+                            Swal.fire({
+                                icon: 'info',
+                                title: 'Payment Cancelled',
+                                text: 'You can retry the payment anytime from your orders page.',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    },
+                    prefill: {
+                        name: user.name || '',
+                        email: user.email || '',
+                        contact: user.phone || ''
+                    },
+                    theme: {
+                        color: "#3399cc"
+                    }
+                };
+
+                const rzp = new Razorpay(options);
+                rzp.open();
+
+            } catch (err) {
+                console.error('Retry payment error:', err);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Retry Failed',
+                    text: err.message || 'Something went wrong while retrying payment. Please try again.'
+                });
+            }
+        }
+    </script>
 </body>
 </html>
