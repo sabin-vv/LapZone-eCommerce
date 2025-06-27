@@ -308,6 +308,17 @@
                     },
                     body: JSON.stringify({ productId })
                 });
+                if(response.redirected && response.url.includes('/login')){ 
+                                    Swal.fire({
+                                        title: 'Please Login',
+                                        text: 'Please Login to add product to Cart',
+                                        icon: 'warning',
+                                        confirmButtonText: 'Login'
+                                    }).then((result) => {
+                                        window.location.href = "/login";
+                                    });
+                                    return
+                                }
                 const result = await response.json();
                 if (result.success) {
                     const badgeCount = document.querySelector('.wishlist-badge')
