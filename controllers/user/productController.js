@@ -23,7 +23,15 @@ const listProducts = async (req, res, next) => {
       query.name = { $regex: searchQuery, $options: "i" };
     }
     if (categoryFilter.length > 0) {
-      query.category = { $in: categoryFilter };
+      const matchedCategories = await Category.find({
+        name: { $in: categoryFilter },
+        isListed: true,
+        isExisting: true
+      }, '_id');
+
+      query.categoryId = {
+        $in: matchedCategories.map(cat => cat._id)
+      };
     }
     if (brandFilter.length > 0) {
       query.brand = { $in: brandFilter };
@@ -48,7 +56,6 @@ const listProducts = async (req, res, next) => {
     if (maxPrice) {
       query.salePrice = { $lte: maxPrice };
     }
-
 
     const sort = {};
     if (sortOption === "popularity") {
@@ -76,7 +83,7 @@ const listProducts = async (req, res, next) => {
       const ssdvariants = await Product.distinct("variants.Storage");
       const ssds = [...new Set(ssdvariants.map(ssd => ssd.split(" ")[0]))];
       const graphics = await Product.distinct("graphics");
-      
+
 
       const totalProducts = await Product.countDocuments(query);
       const totalPages = Math.ceil(totalProducts / limit);
@@ -107,7 +114,7 @@ const listProducts = async (req, res, next) => {
         totalPages,
         totalProducts,
         wishlistIds,
-        currentQueryString ,
+        currentQueryString,
       });
     } catch (error) {
       res.render("user/shoppingPage", {

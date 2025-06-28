@@ -186,8 +186,6 @@ const addProduct = async (req, res, next) => {
 
         if (variant.priceAdjustment && isNaN(variant.priceAdjustment)) {
           variantErrors.priceAdjustment = "Price adjustment must be a number"
-        } else if (variant.priceAdjustment < 0) {
-          variantErrors.priceAdjustment = "Price adjustment cannot be negative"
         } else if (req.body.salePrice + variant.priceAdjustment < 0)
           variantErrors.priceAdjustment = "Please enter a vaid price for selling";
 
@@ -507,8 +505,6 @@ const updateProduct = async (req, res, next) => {
         const adjustment = parseFloat(variant.priceAdjustment);
         if (variant.priceAdjustment && isNaN(adjustment)) {
           vErr.priceAdjustment = "Price adjustment must be a number";
-        } else if (adjustment < 0) {
-          vErr.priceAdjustment = "Price adjustment cannot be negative";
         } else if (!isNaN(sale) && sale + adjustment < 0) {
           vErr.priceAdjustment = "Final price after adjustment must be valid";
         }
