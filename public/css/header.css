@@ -1,6 +1,6 @@
 /* Professional Header Styling for LapZone */
 header {
-    background: rgb(33, 29, 29);
+    background: #000000;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -97,17 +97,109 @@ header {
     font-size: 1rem;
 }
 
-/* Icons (Cart, Wishlist) */
-.navbar a.text-light {
-    margin: 0 0.3rem;
-    padding: 0.6rem;
-    border-radius: 6px;
+/* Icons (Cart, Wishlist) - Glossy Black Background */
+.navbar .icon-link {
+    margin: 0 0.2rem;
+    padding: 0.5rem;
+    border-radius: 8px;
     transition: all 0.3s ease;
+    min-width: 40px;
+    min-height: 40px;
+    text-decoration: none;
+    background: linear-gradient(145deg, #2c2c2c, #1a1a1a);
+    border: none;
+    box-shadow: 
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.navbar a.text-light:hover {
-    color: rgb(104, 104, 224) !important;
+.navbar .icon-link:hover {
+    color: #ffffff !important;
+    transform: translateY(-2px);
+    background: linear-gradient(145deg, #3a3a3a, #2c2c2c);
+    box-shadow: 
+        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+        0 4px 12px rgba(0, 0, 0, 0.4),
+        0 0 20px rgba(52, 152, 219, 0.3);
+}
+
+.navbar .icon-link:active {
+    transform: translateY(0);
+    background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
+}
+
+/* User Dropdown Button Styling */
+.user-dropdown-btn {
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    min-height: 40px;
+}
+
+.user-dropdown-btn:hover {
+    background-color: rgba(52, 152, 219, 0.15);
+    border-color: rgba(52, 152, 219, 0.3);
     transform: translateY(-1px);
+}
+
+.user-dropdown-btn:focus {
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+/* Login Button - Unique Styling */
+.login-btn {
+    border-radius: 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: 2px solid transparent;
+    color: #ffffff !important;
+    padding: 0.6rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.login-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+        0 8px 25px rgba(102, 126, 234, 0.4),
+        0 0 20px rgba(118, 75, 162, 0.3);
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.login-btn:hover::before {
+    left: 100%;
+}
+
+.login-btn:active {
+    transform: translateY(0);
+    box-shadow: 
+        0 4px 15px rgba(102, 126, 234, 0.3),
+        inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.login-btn:focus {
+    outline: none;
+    box-shadow: 
+        0 0 0 3px rgba(102, 126, 234, 0.3),
+        0 8px 25px rgba(102, 126, 234, 0.4);
 }
 
 /* Badge styling for cart and wishlist */
@@ -143,6 +235,66 @@ header {
 .navbar .badge:hover {
     transform: scale(1.1);
     transition: transform 0.2s ease;
+}
+
+/* Touch-friendly improvements */
+@media (hover: none) and (pointer: coarse) {
+    .navbar .icon-link,
+    .user-dropdown-btn,
+    .login-btn {
+        min-width: 44px;
+        min-height: 44px;
+    }
+    
+    .navbar .icon-link:hover,
+    .user-dropdown-btn:hover,
+    .login-btn:hover {
+        transform: none;
+    }
+    
+    .navbar .icon-link:active,
+    .user-dropdown-btn:active,
+    .login-btn:active {
+        background-color: rgba(52, 152, 219, 0.25);
+        transform: scale(0.95);
+    }
+}
+
+/* Focus states for accessibility */
+.navbar .icon-link:focus,
+.user-dropdown-btn:focus,
+.login-btn:focus {
+    outline: 2px solid #3498db;
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .navbar .icon-link,
+    .user-dropdown-btn,
+    .login-btn {
+        border: 2px solid currentColor;
+    }
+    
+    .navbar .badge {
+        border: 1px solid white;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .navbar .icon-link,
+    .user-dropdown-btn,
+    .login-btn,
+    .navbar .badge {
+        transition: none;
+    }
+    
+    .navbar .icon-link:hover,
+    .user-dropdown-btn:hover,
+    .login-btn:hover {
+        transform: none;
+    }
 }
 
 /* User Dropdown */
@@ -221,48 +373,55 @@ a.btn-outline-light:hover {
 }
 
 /* Mobile Header Styling */
-.mobile-header-wrapper {
-    display: flex;
-    flex-direction: column;
+.mobile-logo {
+    font-size: 1.5rem !important;
+    margin-right: 0 !important;
 }
 
-.mobile-header-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.mobile-search-bar {
-    width: 100%;
-}
-
-.mobile-search-bar form {
-    width: 100%;
-}
-
-.mobile-search-bar .search-bar {
-    width: 100%;
-}
-
-.mobile-search-bar .search-bar:focus {
-    width: 100%;
-}
-
-.mobile-nav .nav-pills {
+.mobile-nav {
     background-color: rgba(255, 255, 255, 0.05);
     border-radius: 8px;
-    overflow: hidden;
+    padding: 0.25rem;
+    margin-top: 0.5rem;
+}
+
+.mobile-nav .nav {
+    margin: 0;
+}
+
+.mobile-nav .nav-item {
+    flex: 1;
 }
 
 .mobile-nav .nav-link {
     margin: 0;
-    border-radius: 0;
+    border-radius: 6px;
     text-align: center;
-    padding: 0.8rem;
+    padding: 0.6rem 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    color: #ecf0f1 !important;
+}
+
+.mobile-nav .nav-link:hover {
+    background-color: rgba(52, 152, 219, 0.2);
+    color: #ffffff !important;
 }
 
 .mobile-nav .nav-link.active {
     background-color: #3498db;
+    color: #ffffff !important;
+}
+
+/* Mobile Search Bar Styling */
+.search-btn {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.6rem;
 }
 
 /* Responsive Design */
@@ -283,50 +442,328 @@ a.btn-outline-light:hover {
 
 @media (max-width: 767.98px) {
     .navbar-dark {
-        padding: 0.8rem;
+        padding: 0.75rem 0.5rem;
     }
     
-    .mobile-header-wrapper {
-        gap: 0.5rem;
+    /* Mobile layout improvements */
+    .mobile-logo {
+        font-size: 1.4rem !important;
     }
     
-    .navbar-brand {
-        font-size: 1.6rem;
-        margin-right: 0;
+    /* Mobile icon adjustments */
+    .navbar .icon-link {
+        margin: 0;
+        padding: 0.5rem;
+        min-width: 40px;
+        min-height: 40px;
+        border-radius: 8px;
+        background: linear-gradient(145deg, #2c2c2c, #1a1a1a);
+        border: none;
+        box-shadow: 
+            inset 0 1px 0 rgba(255, 255, 255, 0.1),
+            0 2px 4px rgba(0, 0, 0, 0.3);
     }
     
-    .navbar a.text-light {
-        margin: 0 0.4rem;
-        padding: 0.4rem;
+    .navbar .icon-link i {
+        font-size: 1.2rem;
     }
     
-    .btn-sm.btn-outline-light {
-        padding: 0.3rem 0.8rem;
+    .user-dropdown-btn {
+        min-height: 40px;
+        min-width: 40px;
+        padding: 0.5rem;
+        border-radius: 8px;
+    }
+    
+    .user-dropdown-btn i {
+        font-size: 1.2rem;
+    }
+    
+    .login-btn {
+        min-height: 40px;
+        min-width: 40px;
+        padding: 0.5rem;
         font-size: 0.875rem;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: 2px solid transparent;
+    }
+    
+    .login-btn i {
+        font-size: 1.1rem;
+    }
+    
+    /* Search bar mobile optimization */
+    .search-bar {
+        font-size: 0.9rem;
+        padding: 0.6rem 0.8rem;
+        border-radius: 8px;
+    }
+    
+    .search-btn {
+        min-width: 40px;
+        min-height: 40px;
+        border-radius: 8px;
+    }
+    
+    /* Mobile navigation styling */
+    .mobile-nav {
+        margin-top: 0.75rem;
+        padding: 0.5rem;
+    }
+    
+    .mobile-nav .nav-link {
+        padding: 0.7rem 0.5rem;
+        font-size: 0.85rem;
+    }
+    
+    /* Badge adjustments for mobile */
+    .navbar .badge {
+        top: -4px;
+        right: -4px;
+        min-width: 18px;
+        height: 18px;
+        font-size: 0.7rem;
+        padding: 2px 5px;
+    }
+    
+    /* Spacing adjustments */
+    .d-flex.gap-2 {
+        gap: 0.5rem !important;
     }
 }
 
 @media (max-width: 576px) {
     .navbar-dark {
-        padding: 0.6rem;
+        padding: 0.5rem 0.25rem;
     }
     
-    .navbar-brand {
-        font-size: 1.4rem;
+    /* Extra small mobile logo */
+    .mobile-logo {
+        font-size: 1.25rem !important;
     }
     
+    /* Compact search bar for small screens */
     .search-bar {
-        font-size: 0.9rem;
-        padding: 0.5rem 0.8rem;
+        font-size: 0.85rem;
+        padding: 0.5rem 0.7rem;
+        border-radius: 6px;
+    }
+    
+    .search-btn {
+        min-width: 36px;
+        min-height: 36px;
+        padding: 0.5rem;
+        border-radius: 6px;
+    }
+    
+    /* Compact mobile navigation */
+    .mobile-nav {
+        margin-top: 0.5rem;
+        padding: 0.25rem;
     }
     
     .mobile-nav .nav-link {
-        font-size: 0.9rem;
-        padding: 0.6rem;
+        font-size: 0.8rem;
+        padding: 0.5rem 0.25rem;
     }
     
-    .navbar a.text-light {
-        margin: 0 0.3rem;
+    /* Smaller mobile icons */
+    .navbar .icon-link {
+        margin: 0;
+        padding: 0.4rem;
+        min-width: 36px;
+        min-height: 36px;
+        border-radius: 6px;
+        background: linear-gradient(145deg, #2c2c2c, #1a1a1a);
+        border: none;
+        box-shadow: 
+            inset 0 1px 0 rgba(255, 255, 255, 0.1),
+            0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    .navbar .icon-link i {
+        font-size: 1.1rem;
+    }
+    
+    .user-dropdown-btn {
+        min-height: 36px;
+        min-width: 36px;
+        padding: 0.4rem;
+        border-radius: 6px;
+    }
+    
+    .user-dropdown-btn i {
+        font-size: 1.1rem;
+    }
+    
+    .login-btn {
+        min-height: 36px;
+        min-width: 36px;
+        padding: 0.4rem;
+        font-size: 0.8rem;
+        border-radius: 18px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: 2px solid transparent;
+    }
+    
+    .login-btn i {
+        font-size: 1rem;
+    }
+    
+    /* Smaller badges for compact layout */
+    .navbar .badge {
+        top: -3px;
+        right: -3px;
+        min-width: 16px;
+        height: 16px;
+        font-size: 0.65rem;
+        padding: 1px 4px;
+    }
+    
+    /* Tighter spacing */
+    .d-flex.gap-2 {
+        gap: 0.25rem !important;
+    }
+    
+    /* Reduce margins between sections */
+    .mb-2 {
+        margin-bottom: 0.5rem !important;
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+    .navbar-dark {
+        padding: 0.4rem 0.2rem;
+    }
+    
+    .mobile-logo {
+        font-size: 1.1rem !important;
+    }
+    
+    .search-bar {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.6rem;
+    }
+    
+    .search-btn {
+        min-width: 32px;
+        min-height: 32px;
+        padding: 0.4rem;
+    }
+    
+    .mobile-nav {
+        margin-top: 0.4rem;
+        padding: 0.2rem;
+    }
+    
+    .mobile-nav .nav-link {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.2rem;
+    }
+    
+    .navbar .icon-link {
+        min-width: 32px;
+        min-height: 32px;
+        padding: 0.35rem;
+        background: linear-gradient(145deg, #2c2c2c, #1a1a1a);
+        border: none;
+        box-shadow: 
+            inset 0 1px 0 rgba(255, 255, 255, 0.1),
+            0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    .navbar .icon-link i {
+        font-size: 1rem;
+    }
+    
+    .user-dropdown-btn {
+        min-height: 32px;
+        min-width: 32px;
+        padding: 0.35rem;
+    }
+    
+    .user-dropdown-btn i {
+        font-size: 1rem;
+    }
+    
+    .login-btn {
+        min-height: 32px;
+        min-width: 32px;
+        padding: 0.35rem;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: 2px solid transparent;
+    }
+    
+    .login-btn i {
+        font-size: 0.9rem;
+    }
+    
+    .navbar .badge {
+        top: -2px;
+        right: -2px;
+        min-width: 14px;
+        height: 14px;
+        font-size: 0.6rem;
+        padding: 1px 3px;
+    }
+}
+
+/* Improved touch targets for mobile */
+@media (max-width: 768px) {
+    /* Ensure all interactive elements meet minimum touch target size */
+    .navbar .icon-link,
+    .user-dropdown-btn,
+    .login-btn,
+    .search-btn {
+        min-width: 44px;
+        min-height: 44px;
+    }
+    
+    /* Better spacing for touch interaction */
+    .mobile-nav .nav-link {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+/* Landscape orientation optimizations */
+@media (max-width: 768px) and (orientation: landscape) {
+    .navbar-dark {
+        padding: 0.3rem 0.5rem;
+    }
+    
+    .mobile-nav {
+        margin-top: 0.3rem;
+        padding: 0.2rem;
+    }
+    
+    .mobile-nav .nav-link {
+        padding: 0.4rem 0.3rem;
+        min-height: 36px;
+    }
+    
+    .mb-2 {
+        margin-bottom: 0.3rem !important;
+    }
+}
+
+/* Landscape orientation adjustments */
+@media (max-height: 500px) and (orientation: landscape) {
+    .navbar .icon-link,
+    .user-dropdown-btn,
+    .login-btn {
+        min-height: 28px;
+        padding: 0.2rem 0.4rem;
+    }
+    
+    .navbar .icon-link i,
+    .user-dropdown-btn i {
+        font-size: 1rem;
     }
 }
 
@@ -448,5 +885,123 @@ a.btn-outline-light:hover {
     .breadcrumb {
         font-size: 12px;
         flex-wrap: wrap;
+    }
+}
+
+/* Fix icon centering for wishlist and cart icons - Perfect centering within borders */
+.navbar .icon-link {
+    padding: 0 !important;
+    margin: 0 0.2rem !important;
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative !important;
+    box-sizing: border-box !important;
+}
+
+/* Ensure icons are perfectly centered within their containers */
+.navbar .icon-link i {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+    text-align: center !important;
+}
+
+/* Desktop specific centering for wide screens */
+@media (min-width: 768px) {
+    .navbar .icon-link {
+        width: 48px !important;
+        height: 48px !important;
+        min-width: 48px !important;
+        min-height: 48px !important;
+        border-radius: 8px !important;
+    }
+    
+    .navbar .icon-link i {
+        font-size: 1.25rem !important;
+    }
+}
+
+/* Override any conflicting mobile styles for desktop */
+@media (min-width: 992px) {
+    .navbar .icon-link {
+        width: 50px !important;
+        height: 50px !important;
+        min-width: 50px !important;
+        min-height: 50px !important;
+    }
+    
+    .navbar .icon-link i {
+        font-size: 1.3rem !important;
+    }
+}
+
+
+/* Update badge positioning for properly centered icons */
+.navbar .badge {
+    position: absolute !important;
+    top: -6px !important;
+    right: -6px !important;
+    z-index: 10 !important;
+}
+
+/* Desktop badge positioning */
+@media (min-width: 768px) {
+    .navbar .badge {
+        top: -8px !important;
+        right: -8px !important;
+        min-width: 20px !important;
+        height: 20px !important;
+        font-size: 0.75rem !important;
+    }
+}
+
+@media (min-width: 992px) {
+    .navbar .badge {
+        top: -10px !important;
+        right: -10px !important;
+        min-width: 22px !important;
+        height: 22px !important;
+        font-size: 0.8rem !important;
+    }
+}
+
+
+/* Update badge positioning for properly centered icons */
+.navbar .badge {
+    position: absolute !important;
+    top: -6px !important;
+    right: -6px !important;
+    z-index: 10 !important;
+}
+
+/* Desktop badge positioning */
+@media (min-width: 768px) {
+    .navbar .badge {
+        top: -8px !important;
+        right: -8px !important;
+        min-width: 20px !important;
+        height: 20px !important;
+        font-size: 0.75rem !important;
+    }
+}
+
+@media (min-width: 992px) {
+    .navbar .badge {
+        top: -10px !important;
+        right: -10px !important;
+        min-width: 22px !important;
+        height: 22px !important;
+        font-size: 0.8rem !important;
     }
 }

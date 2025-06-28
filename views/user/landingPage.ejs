@@ -24,11 +24,55 @@
         <%- include("../partials/user/header.ejs") %>
 
         <section class="hero position-relative">
-            <img src="/Banners/beatsnoop.com-v7784.jpg" alt="Premium Laptops" class="w-100 img-fluid">
-            <div class="hero-content">
-                <h1>Upgrade Your Computing Experience</h1>
-                <p>Discover the perfect blend of power, design, and innovation with our premium laptop collection</p>
-                <a href="/shop" class="btn btn-primary btn-lg">Shop Now</a>
+            <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="4000">
+                <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="3" aria-label="Slide 4"></button>
+                </div>
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <img src="/Banners/dell-yNvVnPcurD8-unsplash.jpg" alt="Premium Laptops" class="d-block w-100">
+                        <div class="carousel-caption hero-content">
+                            <h1>Upgrade Your Computing Experience</h1>
+                            <p>Discover the perfect blend of power, design, and innovation with our premium laptop collection</p>
+                            <a href="/shop" class="btn btn-primary btn-lg">Shop Now</a>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <img src="/Banners/clayton-malquist-P2iaN5Kqk-4-unsplash.jpg" alt="Gaming Laptops" class="d-block w-100">
+                        <div class="carousel-caption hero-content">
+                            <h1>Ultimate Gaming Performance</h1>
+                            <p>Experience lightning-fast performance with our premium gaming laptops designed for victory</p>
+                            <a href="/shop" class="btn btn-primary btn-lg">Explore Gaming</a>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <img src="/Banners/dell-unsplash.jpg" alt="Professional Laptops" class="d-block w-100">
+                        <div class="carousel-caption hero-content">
+                            <h1>Professional Excellence</h1>
+                            <p>Powerful workstations and business laptops for professionals who demand the best</p>
+                            <a href="/shop" class="btn btn-primary btn-lg">View Professional</a>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <img src="/Banners/jakob-owens-15IJv-APJSE-unsplash.jpg" alt="Latest Technology" class="d-block w-100">
+                        <div class="carousel-caption hero-content">
+                            <h1>Latest Technology</h1>
+                            <p>Stay ahead with cutting-edge laptops featuring the newest processors and innovations</p>
+                            <a href="/shop" class="btn btn-primary btn-lg">Discover Latest</a>
+                        </div>
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
             </div>
         </section>
 
@@ -39,8 +83,7 @@
             </div>
 
             <% if (products && products.length) { %>
-                <div
-                    class="product-list row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 justify-content-center">
+                <div class="product-list row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4 justify-content-center">
                     <% products.forEach(product=> {
                         const mainImage = product.images.find(img => img.isMain);
                         const variant = product.variants?.find(v => v.stock > 0) || product.variants?.[0];
@@ -135,8 +178,7 @@
             </div>
 
             <% if (gamingProducts && gamingProducts.length) { %>
-                <div
-                    class="product-list row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 justify-content-center">
+                    <div class="product-list row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4 justify-content-center">
                     <% gamingProducts.forEach(product=> {
                         const mainImage = product.images.find(img => img.isMain);
                         const variant = product.variants?.find(v => v.stock > 0) || product.variants?.[0];

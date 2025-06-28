@@ -1,0 +1,119 @@
+/* Carousel Responsive Styles */
+
+/* Tablet and Mobile Responsive Styles for Carousel */
+@media (max-width: 768px) {
+  .hero, .banner-2 {
+    height: 450px !important;
+  }
+
+  .hero-content h1 {
+    font-size: 2.5rem !important;
+  }
+  
+  .hero-content p {
+    font-size: 1.1rem !important;
+    max-width: 90% !important;
+  }
+
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    width: 2rem !important;
+    height: 2rem !important;
+  }
+
+  .carousel-indicators [data-bs-target] {
+    width: 10px !important;
+    height: 10px !important;
+    margin: 0 4px !important;
+  }
+}
+
+/* Small Mobile Responsive Styles for Carousel */
+@media (max-width: 576px) {
+  .hero, .banner-2 {
+    height: 400px !important;
+  }
+
+  .hero-content h1 {
+    font-size: 2rem !important;
+    line-height: 1.2 !important;
+  }
+  
+  .hero-content p {
+    font-size: 1rem !important;
+    max-width: 95% !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  .hero-content .btn {
+    padding: 0.75rem 1.5rem !important;
+    font-size: 1rem !important;
+  }
+
+  .carousel-control-prev,
+  .carousel-control-next {
+    width: 8% !important;
+  }
+
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    width: 1.5rem !important;
+    height: 1.5rem !important;
+  }
+
+  .carousel-indicators {
+    bottom: 20px !important;
+  }
+
+  .carousel-indicators [data-bs-target] {
+    width: 8px !important;
+    height: 8px !important;
+    margin: 0 3px !important;
+  }
+}
+
+/* Extra Small Mobile Responsive Styles */
+@media (max-width: 480px) {
+  .hero, .banner-2 {
+    height: 350px !important;
+  }
+
+  .hero-content h1 {
+    font-size: 1.8rem !important;
+    line-height: 1.1 !important;
+    margin-bottom: 0.75rem !important;
+  }
+  
+  .hero-content p {
+    font-size: 0.9rem !important;
+    max-width: 98% !important;
+    margin-bottom: 1.25rem !important;
+    line-height: 1.4 !important;
+  }
+
+  .hero-content .btn {
+    padding: 0.6rem 1.25rem !important;
+    font-size: 0.9rem !important;
+  }
+
+  .carousel-control-prev,
+  .carousel-control-next {
+    width: 10% !important;
+  }
+
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    width: 1.25rem !important;
+    height: 1.25rem !important;
+  }
+
+  .carousel-indicators {
+    bottom: 15px !important;
+  }
+
+  .carousel-indicators [data-bs-target] {
+    width: 6px !important;
+    height: 6px !important;
+    margin: 0 2px !important;
+  }
+}
