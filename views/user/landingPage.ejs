@@ -83,7 +83,7 @@
             </div>
 
             <% if (products && products.length) { %>
-                <div class="product-list row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4 justify-content-center">
+                <div class="product-list row row-cols-2 row-cols-sm-2 row-cols-lg-4 g-4 justify-content-center">
                     <% products.forEach(product=> {
                         const mainImage = product.images.find(img => img.isMain);
                         const variant = product.variants?.find(v => v.stock > 0) || product.variants?.[0];
@@ -335,9 +335,13 @@
                                         title: 'Please Login',
                                         text: 'Please Login to add product to Wishlist',
                                         icon: 'warning',
-                                        confirmButtonText: 'Login'
+                                        confirmButtonText: 'Login',
+                                        showCancelButton: true,
+                                        cancelButtonText: 'Cancel'
                                     }).then((result) => {
-                                        window.location.href = "/login";
+                                        if (result.isConfirmed) {
+                                            window.location.href = "/login";
+                                        }
                                     });
                                     return 
                                 }
@@ -410,9 +414,13 @@
                                         title: 'Please Login',
                                         text: 'Please Login to add product to Cart',
                                         icon: 'warning',
-                                        confirmButtonText: 'Login'
+                                        confirmButtonText: 'Login',
+                                        showCancelButton: true,
+                                        cancelButtonText: 'Cancel'
                                     }).then((result) => {
-                                        window.location.href = "/login";
+                                        if (result.isConfirmed) {
+                                            window.location.href = "/login";
+                                        }
                                     });
                                     return
                                 }

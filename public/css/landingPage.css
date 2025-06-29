@@ -584,11 +584,11 @@ body {
   }
 }
 
-/* Single card on extra small screens for better mobile experience */
+/* Two cards on extra small screens for mobile experience */
 @media (max-width: 575.98px) {
   .product-list .col {
-    flex: 0 0 100% !important;
-    max-width: 100% !important;
+    flex: 0 0 50% !important;
+    max-width: 50% !important;
   }
 }
 
@@ -1006,53 +1006,59 @@ body {
 
 @media (max-width: 576px) {
   .product.card {
-    height: 450px !important;
-    max-width: 100% !important;
-    margin: 0 1rem !important;
+    height: 420px !important;
+    max-width: 95% !important;
+    margin: 0 auto 1rem auto !important;
   }
 
   .product .card-img-top {
-    height: 160px !important;
+    height: 140px !important;
   }
 
   .product .card-body {
-    height: 210px !important;
-    padding: 0.875rem !important;
+    height: 200px !important;
+    padding: 0.75rem !important;
   }
 
   .product .card-title {
-    font-size: 0.95rem !important;
-    height: 2.2rem !important;
+    font-size: 0.85rem !important;
+    height: 2rem !important;
+    line-height: 1.2 !important;
   }
 
   .product .card-text {
-    font-size: 1rem !important;
-    height: 3.6rem !important;
+    font-size: 0.7rem !important;
+    height: 3.2rem !important;
+    line-height: 1.3 !important;
   }
 
   .price-section {
-    height: 3rem !important;
+    height: 2.8rem !important;
   }
 
   .price-section .fw-bold {
-    font-size: 1.2rem !important;
+    font-size: 1rem !important;
+  }
+
+  .price-section .text-decoration-line-through {
+    font-size: 0.75rem !important;
   }
 
   .cart-btn {
-    font-size: 0.8rem !important;
-    padding: 0.5rem 0.7rem !important;
-    height: 38px !important;
+    font-size: 0.75rem !important;
+    padding: 0.4rem 0.6rem !important;
+    height: 36px !important;
   }
 
   .offer-badge,
   .feature-badge {
-    font-size: 0.7rem !important;
-    padding: 0.3rem 0.6rem !important;
+    font-size: 0.6rem !important;
+    padding: 0.25rem 0.4rem !important;
   }
 
   .wishlist-btn {
-    width: 36px !important;
-    height: 36px !important;
+    width: 32px !important;
+    height: 32px !important;
   }
 }
 
@@ -1148,33 +1154,35 @@ body {
 /* Mobile fixes - Override previous mobile styles */
 @media (max-width: 576px) {
   .product.card {
-    height: 480px !important;
-    max-width: 70% !important;
-    margin: 0 auto !important;
+    height: 420px !important;
+    max-width: 95% !important;
+    margin: 0 auto 1rem auto !important;
   }
 
   .product .card-img-top {
-    height: 160px !important;
+    height: 140px !important;
   }
 
   .product .card-body {
-    height: 240px !important;
-    padding: 1rem !important;
+    height: 200px !important;
+    padding: 0.75rem !important;
   }
 
   .product .card-title {
-    font-size: 0.95rem !important;
-    height: 2.4rem !important;
+    font-size: 0.85rem !important;
+    height: 2rem !important;
+    line-height: 1.2 !important;
   }
 
   .product .card-text {
-    font-size: 0.75rem !important;
-    height: 3.6rem !important;
+    font-size: 0.7rem !important;
+    height: 3.2rem !important;
+    line-height: 1.3 !important;
   }
 
   /* Fix price section display */
   .price-section {
-    height: 4rem !important;
+    height: 2.8rem !important;
     margin-top: auto !important;
     display: flex !important;
     flex-direction: column !important;
@@ -1183,19 +1191,19 @@ body {
   }
 
   .price-section .original-price-space {
-    height: 1.2rem !important;
-    margin-bottom: 0.25rem !important;
+    height: 1rem !important;
+    margin-bottom: 0.2rem !important;
   }
 
   .price-section .text-decoration-line-through {
-    font-size: 0.8rem !important;
-    height: 1rem !important;
-    margin-bottom: 0.25rem !important;
+    font-size: 0.75rem !important;
+    height: 0.9rem !important;
+    margin-bottom: 0.2rem !important;
     display: block !important;
   }
 
   .price-section .fw-bold {
-    font-size: 1.1rem !important;
+    font-size: 1rem !important;
     margin: 0 !important;
     display: block !important;
     color: #3563e9 !important;
@@ -1203,40 +1211,40 @@ body {
   }
 
   .cart-btn {
-    font-size: 0.8rem !important;
-    padding: 0.6rem 0.8rem !important;
-    height: 40px !important;
+    font-size: 0.75rem !important;
+    padding: 0.4rem 0.6rem !important;
+    height: 36px !important;
     margin-top: 0.5rem !important;
     width: 90% !important;
   }
 
   /* Adjust offer badge for mobile */
   .offer-badge {
-    font-size: 0.65rem !important;
+    font-size: 0.6rem !important;
     padding: 0.25rem 0.4rem !important;
-    top: 10px !important;
-    left: 10px !important;
-    max-width: 60px !important;
+    top: 8px !important;
+    left: 8px !important;
+    max-width: 70px !important;
     text-align: center !important;
     line-height: 1.1 !important;
-    border-radius: 15px !important;
+    border-radius: 12px !important;
     width: fit-content;
   }
 
   .feature-badge {
-    font-size: 0.65rem !important;
+    font-size: 0.6rem !important;
     padding: 0.25rem 0.4rem !important;
-    top: 10px !important;
-    right: 10px !important;
-    max-width: 45px !important;
+    top: 8px !important;
+    right: 8px !important;
+    max-width: 40px !important;
     text-align: center !important;
     line-height: 1.1 !important;
-    border-radius: 15px !important;
+    border-radius: 12px !important;
   }
 
   .wishlist-btn {
-    width: 36px !important;
-    height: 36px !important;
+    width: 32px !important;
+    height: 32px !important;
   }
 
   .product-details {
@@ -1246,105 +1254,6 @@ body {
   }
 }
 
-/* Mobile fixes - Override previous mobile styles */
-@media (max-width: 576px) {
-  .product.card {
-    height: 480px !important;
-    max-width: 70% !important;
-    margin: 0 auto !important;
-  }
-
-  .product .card-img-top {
-    height: 160px !important;
-  }
-
-  .product .card-body {
-    height: 240px !important;
-    padding: 1rem !important;
-  }
-
-  .product .card-title {
-    font-size: 0.95rem !important;
-    height: 2.4rem !important;
-  }
-
-  .product .card-text {
-    font-size: 0.75rem !important;
-    height: 3.6rem !important;
-  }
-
-  /* Fix price section display */
-  .price-section {
-    height: 4rem !important;
-    margin-top: auto !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: flex-end !important;
-    padding-top: 0.5rem !important;
-  }
-
-  .price-section .original-price-space {
-    height: 1.2rem !important;
-    margin-bottom: 0.25rem !important;
-  }
-
-  .price-section .text-decoration-line-through {
-    font-size: 0.8rem !important;
-    height: 1rem !important;
-    margin-bottom: 0.25rem !important;
-    display: block !important;
-  }
-
-  .price-section .fw-bold {
-    font-size: 1.1rem !important;
-    margin: 0 !important;
-    display: block !important;
-    color: #3563e9 !important;
-    font-weight: 700 !important;
-  }
-
-  .cart-btn {
-    font-size: 0.8rem !important;
-    padding: 0.6rem 0.8rem !important;
-    height: 40px !important;
-    margin-top: 0.5rem !important;
-    width: 90% !important;
-  }
-
-  /* Adjust offer badge for mobile */
-  .offer-badge {
-    font-size: 0.65rem !important;
-    padding: 0.25rem 0.4rem !important;
-    top: 10px !important;
-    left: 10px !important;
-    max-width: 60px !important;
-    text-align: center !important;
-    line-height: 1.1 !important;
-    border-radius: 15px !important;
-  }
-
-  .feature-badge {
-    font-size: 0.65rem !important;
-    padding: 0.25rem 0.4rem !important;
-    top: 10px !important;
-    right: 10px !important;
-    max-width: 45px !important;
-    text-align: center !important;
-    line-height: 1.1 !important;
-    border-radius: 15px !important;
-  }
-
-  .wishlist-btn {
-    width: 36px !important;
-    height: 36px !important;
-  }
-
-  .product-details {
-    top: 5px !important;
-    right: 5px !important;
-    padding: 0.25rem !important;
-  }
-}
 
 /* Enhanced price section fixes for all screen sizes */
 .product .price-section {
@@ -1477,7 +1386,7 @@ body {
 
 @media (max-width: 576px) {
   .product .card-text {
-    font-size: 0.85rem !important;
+    font-size: 0.7rem !important;
   }
 
   .product .price-section {

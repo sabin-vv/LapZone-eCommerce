@@ -58,9 +58,9 @@ header {
     border-radius: 6px;
     border: 1px solid #bdc3c7;
     padding: 0.6rem 1rem;
-    width: 280px;
+    width: 100%;
     background-color: #ffffff;
-    transition: all 0.3s ease;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
     font-size: 0.95rem;
 }
 
@@ -68,7 +68,6 @@ header {
     border-color: #3498db;
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
     outline: none;
-    width: 300px;
 }
 
 .search-bar::placeholder {
@@ -426,14 +425,6 @@ a.btn-outline-light:hover {
 
 /* Responsive Design */
 @media (max-width: 991px) {
-    .search-bar {
-        width: 220px;
-    }
-
-    .search-bar:focus {
-        width: 240px;
-    }
-
     .navbar-brand {
         font-size: 1.8rem;
         margin-right: 1rem;
