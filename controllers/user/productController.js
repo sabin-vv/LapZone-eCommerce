@@ -148,16 +148,14 @@ const listProducts = async (req, res, next) => {
 };
 const viewProduct = async (req, res, next) => {
   try {
-    if (!req.session.user) return res.redirect("/login");
-
-    const user = req.session.user;
-    const username = user.fullname
+    const user = req.session?.user;
+    const username = user?.fullname
     const productId = req.params.id;
 
     const product = await Product.findById(productId).populate('categoryId')
     const suggesionCategory = product.categoryId;
 
-    const productSuggesions = await Product.find({ categoryId: suggesionCategory, _id: { $ne: productId } })
+    const productSuggesions = await Product.find({ categoryId: suggesionCategory, _id: { $ne: productId } }).limit(4)
 
     const wishlist = await Wishlist.findOne({ userId: user });
 

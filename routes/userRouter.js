@@ -44,7 +44,7 @@ router.post("/logout", userController.userLogout)
 
 
 router.get("/shop", productController.listProducts)
-router.get("/shop/product/:id", validateUserStatus, productController.viewProduct)
+router.get("/shop/product/:id", productController.viewProduct)
 
 
 router.get("/profile", validateUserStatus, userProfileController.profilePage)
