@@ -83,7 +83,7 @@
             </div>
 
             <% if (products && products.length) { %>
-                <div class="product-list row row-cols-2 row-cols-sm-2 row-cols-lg-4 g-4 justify-content-center">
+                <div class="product-list row row-cols-1  row-cols-lg-4 g-4 justify-content-center">
                     <% products.forEach(product=> {
                         const mainImage = product.images.find(img => img.isMain);
                         const variant = product.variants?.find(v => v.stock > 0) || product.variants?.[0];

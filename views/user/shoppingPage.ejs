@@ -187,7 +187,7 @@
                 <% if (products.length === 0) { %>
                     <p class="text-gray-600 text-center py-10">No products found.</p>
                 <% } else { %>
-                    <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                    <div class="grid grid-cols-1 gap-4 sm:gap-6">
                         <% products.forEach(product => { %>
                             <div class="product-card bg-white rounded-xl shadow-md overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1 <%= product.variants.every(v => v.stock === 0) ? 'out-of-stock' : '' %>">
                                 <% 
