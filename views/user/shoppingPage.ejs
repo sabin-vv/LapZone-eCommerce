@@ -183,11 +183,10 @@
                         </select>
                     </div>
                 </div>
-
                 <% if (products.length === 0) { %>
                     <p class="text-gray-600 text-center py-10">No products found.</p>
                 <% } else { %>
-                    <div class="grid grid-cols-1 gap-4 sm:gap-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         <% products.forEach(product => { %>
                             <div class="product-card bg-white rounded-xl shadow-md overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1 <%= product.variants.every(v => v.stock === 0) ? 'out-of-stock' : '' %>">
                                 <% 
@@ -226,7 +225,7 @@
                                     </div>
                                 </a>
                                 <div class="action-buttons flex justify-center gap-2 p-4 pt-0">
-                                    <button class="flex items-center justify-center px-3 py-2 btn btn-secondary wishlist-btn text-gray-600 hover:text-red-500 transition-colors"
+                                    <button class="flex items-center justify-center px-4 py-2 btn btn-secondary wishlist-btn text-gray-600 hover:text-red-500 transition-colors flex-1"
                                             data-product-id="<%= product._id %>"
                                             title="Add to wishlist" aria-label="Add to wishlist"
                                             onclick="event.stopPropagation(); toggleWishlist(this)">
@@ -234,14 +233,14 @@
                                             if (typeof wishlistIds !=='undefined' ){
                                                 isWishlisted=wishlistIds?.includes(product._id.toString()) } %>
                                         <i class="bi <%= isWishlisted ?  'bi-heart-fill' : 'bi-heart' %> text-xl"></i>
-                                        <span class="ml-2 text-sm font-medium hidden md:inline">WishList</span>
+                                        <span class="ml-2 text-sm font-medium">WishList</span>
                                     </button>
-                                    <button class="flex items-center justify-center px-3 py-2 btn btn-warning cart-btn text-gray-600 hover:text-indigo-500 transition-colors"
+                                    <button class="flex items-center justify-center px-4 py-2 btn btn-warning cart-btn text-gray-600 hover:text-indigo-500 transition-colors flex-1"
                                             data-product-id="<%= product._id %>"
                                             title="Add to cart" aria-label="Add to cart"
                                             onclick="event.stopPropagation(); addToCart(this)">
                                         <i class="bi bi-cart-plus text-xl"></i>
-                                        <span class="ml-2 text-sm font-medium hidden md:inline">Add to Cart</span>
+                                        <span class="ml-2 text-sm font-medium">Add to Cart</span>
                                     </button>
                                 </div>
                             </div>

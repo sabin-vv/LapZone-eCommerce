@@ -571,8 +571,8 @@ body {
 /* Ensure even number layout - Force 2 cards on medium screens */
 @media (min-width: 576px) and (max-width: 991.98px) {
   .product-list .col {
-    flex: 0 0 100% !important;
-    max-width: 100% !important;
+    flex: 0 0 50% !important;
+    max-width: 50% !important;
   }
 }
 
