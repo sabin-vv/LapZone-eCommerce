@@ -29,41 +29,43 @@
                   <button type="button"class="clear-btn" onclick="window.location.href='/admin/customers'">Clear</button>
                 </form>
               </div>
-              <table class="product-table" id="productTable">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Mobile</th>
-                    <th>Joining Date</th>
-                    <th>Status</th>
-                    <th>Block/Unblock</th>
-                    
-                  </tr>
-                </thead>
-                <tbody id="productList">
-                  <% users.forEach(user=> { %>
-                  <tr data-user-id="<%= user._id %>">
-                    <td><%= user.fullname %></td>
-                    <td><%= user.email %></td>
-                    <td><%= user.mobile %></td>
-                    <td>
-                      <%= user.createdAt.toLocaleString('en-IN', { dateStyle:'medium' , timeStyle: 'short' }) %>
-                    </td>
-                    <td class="status">
-                      <%= user.isBlocked ? "Blocked" : "Active" %>
-                    </td>
-                    <td>
-                      <label class="switch">
-                        <input type="checkbox" <%=user.isBlocked ? 'checked' :'' %> onchange="confirmBlockUnblock(this)"data-user-id="<%= user._id %>">
-                        <span class="slider"></span>
-                      </label>
-                    </td>
-                   
-                  </tr>
-                  <% }) %>
-                </tbody>
-              </table>
+              <div class="table-container">
+                <table class="product-table" id="productTable">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Mobile</th>
+                      <th>Joining Date</th>
+                      <th>Status</th>
+                      <th>Block/Unblock</th>
+                      
+                    </tr>
+                  </thead>
+                  <tbody id="productList">
+                    <% users.forEach(user=> { %>
+                    <tr data-user-id="<%= user._id %>">
+                      <td><%= user.fullname %></td>
+                      <td><%= user.email %></td>
+                      <td><%= user.mobile %></td>
+                      <td>
+                        <%= user.createdAt.toLocaleString('en-IN', { dateStyle:'medium' , timeStyle: 'short' }) %>
+                      </td>
+                      <td class="status">
+                        <%= user.isBlocked ? "Blocked" : "Active" %>
+                      </td>
+                      <td>
+                        <label class="switch">
+                          <input type="checkbox" <%=user.isBlocked ? 'checked' :'' %> onchange="confirmBlockUnblock(this)"data-user-id="<%= user._id %>">
+                          <span class="slider"></span>
+                        </label>
+                      </td>
+                     
+                    </tr>
+                    <% }) %>
+                  </tbody>
+                </table>
+              </div>
               <div class="pagination">
                 <% if (currentPage> 1) { %>
                 <a href="?page=<%= currentPage - 1 %>"
