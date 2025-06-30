@@ -468,11 +468,6 @@ body {
       inset 0 1px 0 rgba(255, 255, 255, 0.7);
   }
 }
-@media (max-width: 767.98px) {
-  .d-md-none {
-    display: flex !important;
-  }
-}
 
 /* Add subtle animations for page load */
 @keyframes slideInFromLeft {
