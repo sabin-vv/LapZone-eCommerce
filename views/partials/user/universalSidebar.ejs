@@ -1,3 +1,5 @@
+<% if (user) { %>
+<!-- Logged-in User Sidebar -->
 <div class="sidebar">
     <div class="profile-header">
         <div class="profile-pic">
@@ -15,8 +17,8 @@
         <h4>My Profile</h4>
         <ul>
             <li><a href="/profile/address" class="sidebar-link"> <i class="fa-solid fa-location-dot me-2"></i>My Address</a></li>
-            <li><a href="/profile/order" class="sidebar-link"><i class="fa-solid fa-box me-2"></i>My Order (<%= orderCount %>)</a></li>
-            <li><a href="/wishlist" class="sidebar-link"><i class="fa-solid fa-heart me-2"></i>My Wishlist (<%= wishlistCount %>)</a></li>
+            <li><a href="/profile/order" class="sidebar-link"><i class="fa-solid fa-box me-2"></i>My Order (<%= orderCount || 0 %>)</a></li>
+            <li><a href="/wishlist" class="sidebar-link"><i class="fa-solid fa-heart me-2"></i>My Wishlist (<%= wishlistCount || 0 %>)</a></li>
         </ul>
     </div>
     
@@ -27,11 +29,52 @@
             <li><a href="/profile/change-password" class="sidebar-link"><i class="fa-solid fa-key me-2"></i>Change password</a></li>
             <li><a href="/profile/referral" class="sidebar-link"> <i class="fa-solid fa-user-plus me-2"></i>Referral Code</a></li>
             <li><a href="/profile/logout" class="sidebar-link"> <i class="fa-solid fa-arrow-right-from-bracket me-2"></i>Log out</a></li>
-
         </ul>
     </div>
 </div>
+<% } else { %>
+<!-- Guest User Sidebar -->
+<div class="sidebar guest-sidebar">
+    <div class="profile-header guest-header">
+        <div class="profile-pic guest-pic">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.88 122.88">
+                <title>Guest User</title>
+                <path d="M61.44,0A61.46,61.46,0,1,1,18,18,61.21,61.21,0,0,1,61.44,0ZM49.28,71.35c.26-2.18-6.23-10.54-7.41-14.54-2.54-4-3.44-10.46-.68-14.73,1.11-1.69.63-3.16.63-5.51,0-23.24,40.7-23.24,40.7,0,0,2.94-.67,3.63.92,6,2.66,3.86,1.29,10.72-1,14.3C81,61,74.24,69,74.71,71.37c.42,11.92-25.5,11.53-25.43,0v0Zm-31,20.07c3.25-3.6,9.09-3.76,16.17-7.36a74.7,74.7,0,0,0,7.75-4.53c8.22,10.08,15,21.16,12.78,34.05a52.65,52.65,0,0,0,6.44.4c.55,0,1.09,0,1.64,0-.5-15.14,8.38-26.21,17.79-35.63A68.55,68.55,0,0,0,96.33,86c4.62,1.54,7.39,2.53,9,4.3a52.54,52.54,0,1,0-87,1.08Z" />
+            </svg>
+        </div>
+        <div class="profile-name guest-name">
+         Guest
+        </div>
+    </div>
+    
+    <div class="sidebar-section">
+        <h4>Account</h4>
+        <ul>
+            <li><a href="/login" class="sidebar-link"> <i class="fa-solid fa-sign-in-alt me-2"></i>Login</a></li>
+            <li><a href="/signup" class="sidebar-link"><i class="fa-solid fa-user-plus me-2"></i>Sign Up</a></li>
+        </ul>
+    </div>
+    
+    <div class="sidebar-section">
+        <h4>Browse</h4>
+        <ul>
+            <li><a href="/" class="sidebar-link"><i class="fa-solid fa-home me-2"></i>Home</a></li>
+            <li><a href="/shop" class="sidebar-link"><i class="fa-solid fa-store me-2"></i>Shop</a></li>
+            <li><a href="/about" class="sidebar-link"><i class="fa-solid fa-info-circle me-2"></i>About Us</a></li>
+        </ul>
+    </div>
+    
+    <div class="sidebar-section">
+        <h4>Quick Access</h4>
+        <ul>
+            <li><a href="/wishlist" class="sidebar-link"><i class="fa-solid fa-heart me-2"></i>Wishlist (<%= wishlistCount || 0 %>)</a></li>
+            <li><a href="/cart" class="sidebar-link"><i class="fa-solid fa-shopping-cart me-2"></i>Cart (<%= cartCount || 0 %>)</a></li>
+        </ul>
+    </div>
+</div>
+<% } %>
 
+<!-- Universal Toggle Button (Always Visible) -->
 <button class="toggle-sidebar d-md-none" aria-label="Toggle sidebar"></button>
 
 <div class="sidebar-overlay"></div>
@@ -44,6 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const currentPath = window.location.pathname;
     const menuItems = document.querySelectorAll('.sidebar ul li a');
     
+    // Highlight current page
     menuItems.forEach(item => {
         if (item.getAttribute('href') === currentPath) {
             item.parentElement.classList.add('active');
@@ -70,15 +114,15 @@ document.addEventListener('DOMContentLoaded', function() {
         if (overlay) {
             overlay.classList.add('active');
         }
-        
     }
     
+    // Toggle button functionality
     if (toggleBtn) {
         toggleBtn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
             
-            const isOpen = sidebar.classList.contains('active');
+            const isOpen = sidebar && sidebar.classList.contains('active');
 
             if (isOpen) {
                 closeSidebar();
@@ -123,5 +167,4 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
-
 </script>

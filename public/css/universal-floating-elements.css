@@ -110,3 +110,29 @@ body::before {
     left: -50px;
   }
 }
+
+/* Floating Elements Disabled State */
+body.floating-disabled::before {
+  display: none !important;
+}
+
+body.floating-disabled .page-container::before,
+body.floating-disabled .page-container::after {
+  display: none !important;
+}
+
+/* Smooth transition when toggling */
+body {
+  transition: background 0.3s ease;
+}
+
+.page-container::before,
+.page-container::after {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+body.floating-disabled .page-container::before,
+body.floating-disabled .page-container::after {
+  opacity: 0;
+  transform: scale(0);
+}

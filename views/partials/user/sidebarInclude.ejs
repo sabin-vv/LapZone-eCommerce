@@ -1,0 +1,39 @@
+<link rel="stylesheet" href="/css/profileSidebar.css">
+
+<%- include('./universalSidebar.ejs') %>
+
+<style>
+.page-content,
+.main-content,
+.container,
+.content-wrapper,
+.content {
+  position: relative;
+}
+
+/* Show toggle button on all mobile devices */
+@media (max-width: 768px) {
+  .toggle-sidebar {
+    display: flex !important;
+    position: fixed !important;
+    top: 135px !important;
+    left: 15px !important;
+    z-index: 1002 !important;
+  }
+}
+
+/* Responsive positioning for smaller screens */
+@media (max-width: 576px) {
+  .toggle-sidebar {
+    top: 135px !important;
+    left: 12px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .toggle-sidebar {
+    top: 135px !important;
+    left: 10px !important;
+  }
+}
+</style>

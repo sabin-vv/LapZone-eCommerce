@@ -789,7 +789,7 @@ a.btn-outline-light:hover {
 .breadcrumb {
     display: flex;
     gap: 5px;
-    margin-bottom: 20px;
+    margin-top: 20px;
     color: #64748b;
     font-size: 14px;
     align-items: center;
@@ -864,7 +864,7 @@ a.btn-outline-light:hover {
     
     .breadcrumb {
         font-size: 13px;
-        margin-bottom: 15px;
+        margin-top: 15px;
     }
 }
 
@@ -994,5 +994,136 @@ a.btn-outline-light:hover {
         min-width: 22px !important;
         height: 22px !important;
         font-size: 0.8rem !important;
+    }
+}
+
+/* Floating Toggle Button Styles */
+.floating-toggle-container {
+    position: fixed;
+    top: 80px;
+    left: 20px;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+.floating-toggle-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 
+        0 4px 15px rgba(102, 126, 234, 0.4),
+        0 0 20px rgba(118, 75, 162, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    pointer-events: all;
+    position: relative;
+    overflow: hidden;
+}
+
+.floating-toggle-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.floating-toggle-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 
+        0 8px 25px rgba(102, 126, 234, 0.5),
+        0 0 30px rgba(118, 75, 162, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+.floating-toggle-btn:hover::before {
+    left: 100%;
+}
+
+.floating-toggle-btn:active {
+    transform: translateY(-1px) scale(0.95);
+    box-shadow: 
+        0 4px 15px rgba(102, 126, 234, 0.3),
+        inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.floating-toggle-btn i {
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+}
+
+.floating-toggle-btn:hover i {
+    transform: rotate(15deg) scale(1.1);
+}
+
+/* Responsive adjustments for toggle button */
+@media (max-width: 768px) {
+    .floating-toggle-container {
+        top: 80px;
+        left: 15px;
+    }
+    
+    .floating-toggle-btn {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .floating-toggle-btn i {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .floating-toggle-container {
+        top: 80px;
+        left: 10px;
+    }
+    
+    .floating-toggle-btn {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .floating-toggle-btn i {
+        font-size: 1rem;
+    }
+}
+
+/* Accessibility improvements */
+.floating-toggle-btn:focus {
+    outline: 2px solid #3498db;
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .floating-toggle-btn {
+        border: 3px solid white;
+        background: #000;
+        color: white;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .floating-toggle-btn,
+    .floating-toggle-btn i,
+    .floating-toggle-btn::before {
+        transition: none;
+    }
+    
+    .floating-toggle-btn:hover {
+        transform: none;
     }
 }

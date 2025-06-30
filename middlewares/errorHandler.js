@@ -5,6 +5,10 @@ module.exports = (err, req, res, next) => {
   const status = err.status || 500;
   const message = err.message || 'Something went wrong!';
 
+  if (req.originalUrl.includes('/.well-known/') || req.originalUrl.includes('/favicon.ico')) {
+    return res.status(404).end();
+  }
+
   if (req.originalUrl.startsWith('/admin')) {
     return res.status(status).render('admin/errorPage', {
       wishlistCount: 0,
@@ -13,11 +17,13 @@ module.exports = (err, req, res, next) => {
       status,
       error: process.env.NODE_ENV === 'development' ? err.stack : { message: 'Internal Server Error' },
     });
-  }else if (req.xhr || req.headers.accept.includes('application/json')) {
-    return res.status(status).json({ success: false, message,
+  } else if (req.xhr || (req.headers.accept && req.headers.accept.includes('application/json'))) {
+    return res.status(status).json({ 
+      success: false, 
+      message,
       error: process.env.NODE_ENV === 'development' ? err.stack : { message: 'Internal Server Error' }
-     });
-  }else{
+    });
+  } else {
     return res.status(status).render('user/errorPage', {
       wishlistCount: 0,
       cartCount: 0,
@@ -26,5 +32,4 @@ module.exports = (err, req, res, next) => {
       error: process.env.NODE_ENV === 'development' ? err.stack : { message: 'Internal Server Error' }
     });
   }
-
 };

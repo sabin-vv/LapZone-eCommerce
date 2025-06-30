@@ -102,44 +102,78 @@ body {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-/* Order Header Styling */
+/* Enhanced Order Header Styling */
 .order-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 24px;
-  background:#e7d6d6;
+  padding: 18px 24px;
+  background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
   cursor: pointer;
-  border-bottom: 1px solid var(--gray-200);
+  border-bottom: 1px solid #94a3b8;
   position: relative;
   transition: var(--transition);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .order-header:hover {
-  background: #f5f7ff;
+  background: linear-gradient(135deg, #cbd5e1 0%, #b4bcc8 100%);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.order-header > div:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .order-title {
-  font-size: 18px;
+  font-size: 19px;
   font-weight: 600;
   margin: 0;
-  color: var(--gray-800);
+  color: #1e293b;
+  letter-spacing: 0.2px;
 }
 
 .order-date {
   font-size: 14px;
-  color: var(--gray-500);
-  margin: 4px 0 0 0;
+  color: #475569;
+  margin: 0;
+  font-weight: 500;
+}
+
+.order-header > div:last-child {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
 .expand-icon {
   font-size: 18px;
-  color: var(--gray-500);
+  color: #475569;
   transition: var(--transition);
+  background: rgba(255, 255, 255, 0.7);
+  padding: 8px;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.expand-icon:hover {
+  background: rgba(255, 255, 255, 0.9);
+  color: #334155;
+  border-color: rgba(148, 163, 184, 0.5);
 }
 
 .order-card.expanded .expand-icon {
   transform: rotate(180deg);
+  background: rgba(255, 255, 255, 0.8);
+  color: #334155;
+  border-color: rgba(148, 163, 184, 0.4);
 }
 
 /* Mini Summary Row */
@@ -177,51 +211,72 @@ body {
   color: var(--primary-color);
 }
 
-/* Status Badges */
+/* Enhanced Status Badges */
 .status-badge {
   display: inline-flex;
   align-items: center;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 25px;
+  font-size: 13px;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  border: 2px solid transparent;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: var(--transition);
+}
+
+.order-header .status-badge {
+  background: rgba(255, 255, 255, 0.95);
+  color: #1e293b;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .status-ordered {
-  background-color: #e0f2fe;
+  background: linear-gradient(135deg, #e0f2fe, #bae6fd);
   color: #0369a1;
+  border-color: #0ea5e9;
 }
 
 .status-shipped {
-  background-color: #dbeafe;
-  color: #2563eb;
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  color: #1d4ed8;
+  border-color: #3b82f6;
 }
 
 .status-delivered {
-  background-color: #dcfce7;
-  color: #16a34a;
+  background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+  color: #15803d;
+  border-color: #22c55e;
 }
 
 .status-cancelled {
-  background-color: #fee2e2;
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
   color: #dc2626;
+  border-color: #ef4444;
 }
 
 .status-returned {
-  background-color: #fff7ed;
+  background: linear-gradient(135deg, #fff7ed, #fed7aa);
   color: #ea580c;
+  border-color: #f97316;
 }
 
 .status-processing {
-  background-color: #f3e8ff;
-  color: #7e22ce;
+  background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
+  color: #7c3aed;
+  border-color: #8b5cf6;
 }
 
 .status-cancel_requested, .status-return_requested {
-  background-color: #fef3c7;
-  color: #b45309;
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  color: #d97706;
+  border-color: #f59e0b;
+}
+
+.status-badge:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Order Content (Expanded View) */
@@ -680,18 +735,46 @@ body {
 
 @media (max-width: 768px) {
   .order-header {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    align-items: center;
+    padding: 16px 20px;
+    gap: 12px;
+  }
+  
+  .order-header > div:first-child {
+    flex: 1;
+    gap: 4px;
+  }
+  
+  .order-title {
+    font-size: 17px;
+    font-weight: 600;
+  }
+  
+  .order-date {
+    font-size: 13px;
   }
   
   .order-header > div:last-child {
-    align-self: flex-end;
-    margin-top: -30px;
+    gap: 12px;
+    align-self: center;
+  }
+  
+  .status-badge {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+  
+  .expand-icon {
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
   }
 
   .order-summary-mini {
     flex-wrap: wrap;
     gap: 16px;
+    padding: 12px 20px;
   }
   
   .summary-mini-item {
