@@ -29,6 +29,14 @@ body {
 .product-images {
     flex: 1;
     min-width: 300px;
+    max-width: 100%;
+}
+
+#mainImageContainer {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    position: relative;
 }
 .breadcrumb {
     font-size: 0.95rem;
@@ -443,6 +451,49 @@ body {
     .product-container {
         flex-direction: column;
         padding: 0 0.5rem;
+        margin: 1rem auto;
+    }
+
+    .product-images {
+        width: 100%;
+        max-width: 100%;
+        min-width: unset;
+        margin: 0;
+        padding: 0;
+    }
+
+    #mainImageContainer {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 auto;
+        box-sizing: border-box;
+    }
+
+    .product-images .main-image {
+        width: 100%;
+        max-width: 100%;
+        height: 300px;
+        object-fit: contain;
+    }
+
+    .product-images .d-flex.flex-wrap {
+        justify-content: center;
+        margin: 1rem 0;
+        padding: 0;
+    }
+
+    .product-images .thumbnail {
+        width: 60px;
+        height: 45px;
+        margin: 0.25rem;
+    }
+
+    .product-details {
+        width: 100%;
+        max-width: 100%;
+        min-width: unset;
+        margin: 0;
+        padding: 1rem 0.5rem;
     }
 
     .suggestions-grid {
@@ -451,5 +502,39 @@ body {
 
     .suggestion img {
         height: 140px;
+    }
+}
+
+@media (max-width: 480px) {
+    .product-container {
+        padding: 0 0.25rem;
+        margin: 0.5rem auto;
+    }
+
+    #mainImageContainer {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0;
+        margin: 0;
+    }
+
+    .product-images .main-image {
+        height: 250px;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .product-images .thumbnail {
+        width: 50px;
+        height: 40px;
+        margin: 0.2rem;
+    }
+
+    .product-details {
+        padding: 0.75rem 0.25rem;
+    }
+
+    .product-details h1 {
+        font-size: 1.5rem;
     }
 }
