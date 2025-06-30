@@ -33,7 +33,10 @@
                 </div>
                 <div class="carousel-inner">
                     <div class="carousel-item active">
-                        <img src="/Banners/dell-yNvVnPcurD8-unsplash.jpg" alt="Premium Laptops" class="d-block w-100">
+                        <picture>
+                            <source srcset="/Banners/dell-yNvVnPcurD8-unsplash.jpg" type="image/webp">
+                            <img src="/Banners/dell-yNvVnPcurD8-unsplash.jpg" alt="Premium Laptops" class="d-block w-100" loading="eager">
+                        </picture>
                         <div class="carousel-caption hero-content">
                             <h1>Upgrade Your Computing Experience</h1>
                             <p>Discover the perfect blend of power, design, and innovation with our premium laptop collection</p>
@@ -41,7 +44,10 @@
                         </div>
                     </div>
                     <div class="carousel-item">
-                        <img src="/Banners/clayton-malquist-P2iaN5Kqk-4-unsplash.jpg" alt="Gaming Laptops" class="d-block w-100">
+                        <picture>
+                            <source srcset="/Banners/clayton-malquist-P2iaN5Kqk-4-unsplash.jpg" type="image/webp">
+                            <img src="/Banners/clayton-malquist-P2iaN5Kqk-4-unsplash.jpg" alt="Gaming Laptops" class="d-block w-100" loading="lazy">
+                        </picture>
                         <div class="carousel-caption hero-content">
                             <h1>Ultimate Gaming Performance</h1>
                             <p>Experience lightning-fast performance with our premium gaming laptops designed for victory</p>
@@ -49,7 +55,10 @@
                         </div>
                     </div>
                     <div class="carousel-item">
-                        <img src="/Banners/dell-unsplash.jpg" alt="Professional Laptops" class="d-block w-100">
+                        <picture>
+                            <source srcset="/Banners/dell-unsplash.jpg" type="image/webp">
+                            <img src="/Banners/dell-unsplash.jpg" alt="Professional Laptops" class="d-block w-100" loading="lazy">
+                        </picture>
                         <div class="carousel-caption hero-content">
                             <h1>Professional Excellence</h1>
                             <p>Powerful workstations and business laptops for professionals who demand the best</p>
@@ -57,7 +66,10 @@
                         </div>
                     </div>
                     <div class="carousel-item">
-                        <img src="/Banners/jakob-owens-15IJv-APJSE-unsplash.jpg" alt="Latest Technology" class="d-block w-100">
+                        <picture>
+                            <source srcset="/Banners/jakob-owens-15IJv-APJSE-unsplash.jpg" type="image/webp">
+                            <img src="/Banners/jakob-owens-15IJv-APJSE-unsplash.jpg" alt="Latest Technology" class="d-block w-100" loading="lazy">
+                        </picture>
                         <div class="carousel-caption hero-content">
                             <h1>Latest Technology</h1>
                             <p>Stay ahead with cutting-edge laptops featuring the newest processors and innovations</p>
@@ -163,7 +175,10 @@
         </section>
 
         <section class="banner-2 position-relative">
-            <img src="/Banners/steptodown.com667448.jpg" alt="Gaming Laptops" class="w-100 img-fluid">
+            <picture>
+                <source srcset="/Banners/compressed/steptodown.com667448.webp" type="image/webp">
+                <img src="/Banners/steptodown.com667448.jpg" alt="Gaming Laptops" class="w-100 img-fluid" loading="lazy">
+            </picture>
             <div class="hero-content">
                 <h1>Ultimate Gaming Performance</h1>
                 <p>Experience lightning-fast performance with our premium gaming laptops</p>
@@ -312,7 +327,41 @@
                 crossorigin="anonymous"></script>
 
             <script>
+                // Image optimization and lazy loading
                 document.addEventListener('DOMContentLoaded', () => {
+                    // Handle lazy loading for images
+                    const lazyImages = document.querySelectorAll('img[loading="lazy"]');
+                    
+                    if ('IntersectionObserver' in window) {
+                        const imageObserver = new IntersectionObserver((entries, observer) => {
+                            entries.forEach(entry => {
+                                if (entry.isIntersecting) {
+                                    const img = entry.target;
+                                    img.classList.add('loaded');
+                                    observer.unobserve(img);
+                                }
+                            });
+                        });
+                        
+                        lazyImages.forEach(img => imageObserver.observe(img));
+                    } else {
+                        // Fallback for browsers without IntersectionObserver
+                        lazyImages.forEach(img => img.classList.add('loaded'));
+                    }
+                    
+                    // Preload next carousel images
+                    const carousel = document.getElementById('heroCarousel');
+                    if (carousel) {
+                        carousel.addEventListener('slide.bs.carousel', function (e) {
+                            const nextSlide = e.relatedTarget;
+                            const img = nextSlide.querySelector('img');
+                            if (img && img.loading === 'lazy') {
+                                img.loading = 'eager';
+                            }
+                        });
+                    }
+                    
+                    // Wishlist functionality
                     document.querySelectorAll('.wishlist-btn').forEach(btn => {
                         btn.addEventListener('click', async function (e) {
                             e.stopPropagation();
