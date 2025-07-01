@@ -6,21 +6,21 @@ const User = require("../../model/user")
 
 const viewCartPage = async (req, res, next) => {
   try {
-    if (!req.session.user) return res.redirect("/login")
+    if (!req.session.user) return res.status(302).redirect("/login")
 
     const userId = req.session.user
     const user = await User.findById(userId)
     const cart = await Cart.findOne({ userId }).populate('items.productId')
 
     if (!cart)
-      return res.render("user/cartPage", { cart: null, user })
+      return res.status(200).render("user/cartPage", { cart: null, user })
 
     const totalPrice = cart.items.reduce((total, item) => {
       const itemPrice = item.price || item.productId.salePrice
       return total += (itemPrice * item.quantity)
     }, 0)
 
-    return res.render("user/cartPage", { cart, totalPrice , user })
+    return res.status(200).render("user/cartPage", { cart, totalPrice , user })
   } catch (error) {
     console.error('Error fetching cart:', error);
     next(error);
@@ -31,7 +31,7 @@ const viewCartPage = async (req, res, next) => {
 
 const addtoCart = async (req, res, next) => {
   try {
-    if (!req.session.user) return res.redirect("/");
+    if (!req.session.user) return res.status(302).redirect("/");
 
     const { productId, ram, storage } = req.body;
     const userId = req.session.user;

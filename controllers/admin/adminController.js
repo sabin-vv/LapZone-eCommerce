@@ -7,9 +7,9 @@ const puppeteer = require("puppeteer")
 const getadminLogin = (req, res, next) => {
     try {
         if (req.session.admin)
-            return res.render("admin/adminDashboard")
+            return res.status(200).render("admin/adminDashboard")
 
-        res.render("admin/adminlogin", { error: null })
+        res.status(200).render("admin/adminlogin", { error: null })
 
     } catch (err) {
         console.error("Error in getadminLogin:", err);
@@ -20,29 +20,29 @@ const getadminLogin = (req, res, next) => {
 const login = async (req, res, next) => {
     try {
         if (req.session.admin)
-            return res.render("admin/adminDashboard")
+            return res.status(200).render("admin/adminDashboard")
 
         const { email, password } = req.body
 
         if (!email || !password)
-            return res.render("admin/adminlogin", { error: "All Fields re Required" })
+            return res.status(400).render("admin/adminlogin", { error: "All Fields re Required" })
 
         const user = await User.findOne({ email })
         if (!user)
-            return res.render("admin/adminlogin", { error: "Account not Found" })
+            return res.status(404).render("admin/adminlogin", { error: "Account not Found" })
 
         if (!user.isAdmin)
-            return res.render("admin/adminlogin", { error: "Unauthorized Access" })
+            return res.status(403).render("admin/adminlogin", { error: "Unauthorized Access" })
 
         const isMatch = await bcrypt.compare(password, user.password)
         if (!isMatch)
-            return res.render("admin/adminlogin", { error: "Invalid Credentials" })
+            return res.status(401).render("admin/adminlogin", { error: "Invalid Credentials" })
 
         req.session.admin = email
-        res.redirect("/admin/dashboard")
+        res.status(302).redirect("/admin/dashboard")
     } catch (error) {
-        console.error("Error in login:", err);
-        next(err);
+        console.error("Error in login:", error);
+        next(error);
     }
 }
 
@@ -51,10 +51,10 @@ const adminLogout = (req, res, next) => {
         req.session.destroy(err => {
             if (err) {
                 console.log("Cannot destroy the Session : ", err)
-                return res.ststus(500).send("Account Logout Failed Due to some Errors")
+                return res.status(500).send("Account Logout Failed Due to some Errors")
             }
             res.clearCookie('session-id')
-            return res.redirect("/admin/login")
+            return res.status(302).redirect("/admin/login")
         })
 
     } catch (error) {
@@ -66,7 +66,7 @@ const adminLogout = (req, res, next) => {
 const adminDashbaord = async (req, res, next) => {
     try {
         if (!req.session.admin)
-            return res.render("admin/adminlogin", { error: null })
+            return res.status(401).render("admin/adminlogin", { error: null })
 
         const productCount = await Product.countDocuments()
         const userCount = await User.countDocuments()
@@ -76,7 +76,7 @@ const adminDashbaord = async (req, res, next) => {
         ])
         const totalSales = Math.round(sales[0]?.total)
 
-        return res.render("admin/adminDashboard", { productCount, userCount, orderCount, totalSales })
+        return res.status(200).render("admin/adminDashboard", { productCount, userCount, orderCount, totalSales })
 
     } catch (error) {
         console.error('Error fetching dashboard stats:', error);
@@ -125,7 +125,7 @@ const getDashboardStats = async (req, res, next) => {
             isExisting: true
         });
 
-        res.json({
+        res.status(200).json({
             totalSales,
             totalOrders,
             totalCustomers,
@@ -248,7 +248,7 @@ const getSalesData = async (req, res, next) => {
                 return res.status(400).json({ error: 'Invalid period specified' });
         }
 
-        res.json({ labels, data });
+        res.status(200).json({ labels, data });
 
     } catch (error) {
         console.error('Error fetching sales data:', error);
@@ -300,7 +300,7 @@ const getTopProducts = async (req, res, next) => {
             }
         ]);
 
-        res.json(topProducts);
+        res.status(200).json(topProducts);
 
     } catch (error) {
         console.error('Error fetching top products:', error);
@@ -353,7 +353,7 @@ const getTopCategories = async (req, res, next) => {
             { $limit: 10 }
         ]);
 
-        res.json(topCategories);
+        res.status(200).json(topCategories);
 
     } catch (error) {
         console.error('Error fetching top categories:', error);
@@ -397,7 +397,7 @@ const getTopBrands = async (req, res, next) => {
             { $limit: 10 }
         ]);
 
-        res.json(topBrands);
+        res.status(200).json(topBrands);
 
     } catch (error) {
         console.error('Error fetching top brands:', error);
@@ -421,7 +421,7 @@ const getRecentOrders = async (req, res, next) => {
             orderDate: order.orderDate
         }));
 
-        res.json(formattedOrders);
+        res.status(200).json(formattedOrders);
 
     } catch (error) {
         console.error('Error fetching recent orders:', error);
@@ -454,7 +454,7 @@ const generateLedger = async (req, res, next) => {
             }))
         };
 
-        res.json({ success: true, data: ledgerData });
+        res.status(200).json({ success: true, data: ledgerData });
 
     } catch (error) {
         console.error('Error generating ledger:', error);

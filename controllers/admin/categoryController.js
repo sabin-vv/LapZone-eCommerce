@@ -5,7 +5,7 @@ const mongoose = require("mongoose")
 const categoryListing = async (req, res, next) => {
     try {
         if (!req.session.admin)
-            return res.redirect("/admin/login")
+            return res.status(302).redirect("/admin/login")
 
         const searchQuery = req.query.search ? req.query.search.trim() : '';
         const page = parseInt(req.query.page) || 1;
@@ -23,7 +23,7 @@ const categoryListing = async (req, res, next) => {
 
         query.isExisting = true
         if (page < 1 || (totalPages > 0 && page > totalPages)) {
-            return res.redirect(`/admin/category?search=${encodeURIComponent(searchQuery)}&page=1`);
+            return res.status(302).redirect(`/admin/category?search=${encodeURIComponent(searchQuery)}&page=1`);
         }
 
         const category = await Category.find(query)
@@ -36,7 +36,7 @@ const categoryListing = async (req, res, next) => {
         }])
 
 
-        res.render("admin/categoryListing", {
+        res.status(200).render("admin/categoryListing", {
             category, searchQuery, currentPage: page,
             totalPages,
             limit,
@@ -50,9 +50,9 @@ const categoryListing = async (req, res, next) => {
 
 const addCategory = (req, res, next) => {
     try {
-        if (!req.session.admin) return res.redirect("/admin");
+        if (!req.session.admin) return res.status(302).redirect("/admin");
 
-        res.render("admin/addCategory", { error: null, category: null })
+        res.status(200).render("admin/addCategory", { error: null, category: null })
     } catch (error) {
         console.error('Error fetching categories:', error);
         next(error);
@@ -62,7 +62,7 @@ const addCategory = (req, res, next) => {
 
 const newCategory = async (req, res, next) => {
     try {
-        if (!req.session.admin) return res.redirect("/admin");
+        if (!req.session.admin) return res.status(302).redirect("/admin");
 
         const { name, description, offer, isListed } = req.body
 
@@ -78,7 +78,7 @@ const newCategory = async (req, res, next) => {
             error['description'] = "Description cannot be Empty"
 
         if (Object.keys(error).length > 0)
-            return res.render("admin/addCategory", { error, category: null })
+            return res.status(400).render("admin/addCategory", { error, category: null })
 
         const escapeRegex = (text) => text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 
@@ -89,7 +89,7 @@ const newCategory = async (req, res, next) => {
 
         if (existcategory) {
             error['name'] = "Category Already Exist"
-            return res.render("admin/addCategory", { error, category: null })
+            return res.status(409).render("admin/addCategory", { error, category: null })
         }
 
         const category = new Category({
@@ -101,7 +101,7 @@ const newCategory = async (req, res, next) => {
 
         category.save()
 
-        res.redirect("/admin/category")
+        res.status(302).redirect("/admin/category")
     } catch (error) {
         console.error('Error fetching categories:', error);
         next(error);
@@ -211,18 +211,18 @@ const updateCategory = async (req, res, next) => {
 
 const softdeleteCategory = async (req, res, next) => {
     try {
-        if (!req.session.admin) return res.redirect("/admin");
+        if (!req.session.admin) return res.status(302).redirect("/admin");
 
         const categoryId = req.params.id
         const category = await Category.findById(categoryId)
 
         if (!category)
-            return res.json({ success: false, message: "Category not Found" })
+            return res.status(404).json({ success: false, message: "Category not Found" })
 
         category.isExisting = false
         await category.save()
 
-        return res.json({ success: true, message: "Category Deleted Succesfully" })
+        return res.status(200).json({ success: true, message: "Category Deleted Succesfully" })
     } catch (error) {
         console.error('Error fetching categories:', error);
         next(error);

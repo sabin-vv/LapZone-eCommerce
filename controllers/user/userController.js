@@ -19,7 +19,7 @@ function generateReferralCode() {
 
 const aboutPage = (req, res, next) => {
     try {
-        res.render("user/about",{
+        res.status(200).render("user/about",{
         user: res.locals.user,
         username: res.locals.username,
         wishlistCount: res.locals.wishlistCount || 0,
@@ -65,8 +65,8 @@ const landingPage = async (req, res, next) => {
 const loginPage = (req, res, next) => {
     try {
         if (req.session.user)
-            return res.redirect("/home")
-        res.render("user/userLogin", { error: null });
+            return res.status(302).redirect("/home")
+        res.status(200).render("user/userLogin", { error: null });
     } catch (error) {
         console.error('Error fetching login page:', error);
         next(error);
@@ -294,22 +294,22 @@ const postLoginPage = async (req, res, next) => {
         const { email, password } = req.body;
 
         if (!email || !password)
-            return res.render("user/userLogin", { error: "All fields are required" })
+            return res.status(400).render("user/userLogin", { error: "All fields are required" })
 
         const user = await User.findOne({ email })
         if (!user)
-            return res.render("user/userLogin", { error: "User does not exist" })
+            return res.status(404).render("user/userLogin", { error: "User does not exist" })
         if (user.isBlocked)
-            return res.render("user/userLogin", { error: "your Account is  Temporarily BLOCKED" })
+            return res.status(403).render("user/userLogin", { error: "your Account is  Temporarily BLOCKED" })
 
         const passMatch = await bcrypt.compare(password, user.password)
         if (!passMatch)
-            return res.render("user/userLogin", { error: "Invalid Credentials" })
+            return res.status(401).render("user/userLogin", { error: "Invalid Credentials" })
 
         req.session.user = user._id
         req.session.username = user.fullname
 
-        res.redirect("/home")
+        res.status(302).redirect("/home")
 
     } catch (error) {
         console.error('Error fetching signup page:', error);
@@ -465,8 +465,8 @@ const checkReferralCode = async (req, res, next) => {
 
         const user = await User.findOne({ referralCode: code })
         if (!user)
-            return res.json({ success: false, message: "Invalid Referral Code" })
-        return res.json({ success: true })
+            return res.status(404).json({ success: false, message: "Invalid Referral Code" })
+        return res.status(200).json({ success: true })
     } catch (error) {
         console.error('Error fetching verifyEmail page:', error);
         next(error);
