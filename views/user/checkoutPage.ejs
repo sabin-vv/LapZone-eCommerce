@@ -131,14 +131,16 @@
                               </div>
                               <% } %>
                                 <% } else { %>
-                                  <div class="address-actions justify-content-end">
-                                    <button class="btn btn-outline-primary">
+                                  <div class="alert alert-warning text-center" role="alert">
+                                    <i class="bi bi-exclamation-triangle me-2"></i>
+                                    <strong>No shipping address found!</strong><br>
+                                    Please add a shipping address to continue with your order.
+                                  </div>
+                                  <div class="address-actions justify-content-center">
+                                    <button class="btn btn-primary">
                                       <i class="bi bi-plus-circle me-2"></i> Add New Address
                                     </button>
                                   </div>
-                                  <p class="text-muted mt-3 text-center">
-                                    No addresses found. Please add a new address.
-                                  </p>
                                   <% } %>
               </div>
 
@@ -613,6 +615,15 @@
         const resultMessage = document.getElementById("result-message");
         const onlinePaymentRadio = document.getElementById("Online");
 
+        // Ensure at least one address is selected if addresses are available
+        if (addressCards.length > 0) {
+          const selectedAddress = document.querySelector(".address-card.selected");
+          if (!selectedAddress) {
+            // If no address is selected, select the first one
+            addressCards[0].classList.add("selected");
+          }
+        }
+
         addressCards.forEach((card) => {
           card.addEventListener("click", function (e) {
             if (e.target.tagName !== "BUTTON" && !e.target.closest("button")) {
@@ -643,8 +654,38 @@
       });
 
       async function placeOrder() {
+        // Check if any addresses are available
+        const addressCards = document.querySelectorAll(".address-card");
+        if (addressCards.length === 0) {
+          Swal.fire({
+            icon: "warning",
+            title: "No Address Available",
+            text: "Please add a shipping address before placing your order.",
+            confirmButtonText: "Add Address",
+            showCancelButton: true,
+            cancelButtonText: "Cancel"
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // Open the add address modal
+              const addAddressModal = new bootstrap.Modal(document.getElementById("addAddressModal"));
+              addAddressModal.show();
+            }
+          });
+          return;
+        }
 
+        // Check if an address is selected
         const selectedAddressCard = document.querySelector(".address-card.selected");
+        if (!selectedAddressCard) {
+          Swal.fire({
+            icon: "warning",
+            title: "No Address Selected",
+            text: "Please select a shipping address before placing your order.",
+            confirmButtonText: "OK"
+          });
+          return;
+        }
+
         const addressDetails = selectedAddressCard.querySelector(".address-details");
         const lines = addressDetails.querySelectorAll("p");
 
@@ -795,11 +836,34 @@
       }
 
       async function completeOrder(paymentMethod, razorpayDetails = null) {
-        const selectedAddressCard = document.querySelector(
-          ".address-card.selected"
-        );
-        if (!selectedAddressCard)
-          return Swal.fire({ icon: "error", title: "Select an address" });
+        // Check if any addresses are available
+        const addressCards = document.querySelectorAll(".address-card");
+        if (addressCards.length === 0) {
+          return Swal.fire({
+            icon: "warning",
+            title: "No Address Available",
+            text: "Please add a shipping address before placing your order.",
+            confirmButtonText: "Add Address",
+            showCancelButton: true,
+            cancelButtonText: "Cancel"
+          }).then((result) => {
+            if (result.isConfirmed) {
+              const addAddressModal = new bootstrap.Modal(document.getElementById("addAddressModal"));
+              addAddressModal.show();
+            }
+          });
+        }
+
+        // Check if an address is selected
+        const selectedAddressCard = document.querySelector(".address-card.selected");
+        if (!selectedAddressCard) {
+          return Swal.fire({
+            icon: "warning",
+            title: "No Address Selected",
+            text: "Please select a shipping address before placing your order.",
+            confirmButtonText: "OK"
+          });
+        }
 
         const addressDetails =
           selectedAddressCard.querySelector(".address-details");
