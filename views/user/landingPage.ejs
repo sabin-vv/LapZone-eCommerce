@@ -327,9 +327,22 @@
                 crossorigin="anonymous"></script>
 
             <script>
-                // Image optimization and lazy loading
+                // Utility function to update badge counts
+                function updateBadgeCount(badgeClass, count) {
+                    const badges = document.querySelectorAll(`.${badgeClass}`);
+                    badges.forEach(badge => {
+                        if(typeof count === 'number' && count >= 0){
+                            badge.innerText = count;
+                            if (count > 0) {
+                                badge.classList.remove('d-none');
+                            } else {
+                                badge.classList.add('d-none');
+                            }
+                        }
+                    });
+                }
+
                 document.addEventListener('DOMContentLoaded', () => {
-                    // Handle lazy loading for images
                     const lazyImages = document.querySelectorAll('img[loading="lazy"]');
                     
                     if ('IntersectionObserver' in window) {
@@ -345,11 +358,9 @@
                         
                         lazyImages.forEach(img => imageObserver.observe(img));
                     } else {
-                        // Fallback for browsers without IntersectionObserver
                         lazyImages.forEach(img => img.classList.add('loaded'));
                     }
                     
-                    // Preload next carousel images
                     const carousel = document.getElementById('heroCarousel');
                     if (carousel) {
                         carousel.addEventListener('slide.bs.carousel', function (e) {
@@ -397,15 +408,8 @@
                                 const result = await response.json();
 
                                 if (result.success) {
-                                    const badgeCount = document.querySelector('.wishlist-badge')
-                                    if(typeof result.count === 'number' && result.count >= 0){
-                                        badgeCount.innerText = result.count;
-                                        if (result.count > 0) {
-                                            badgeCount.classList.remove('d-none');
-                                            } else {
-                                                badgeCount.classList.add('d-none');
-                                            }
-                                    }
+                                    // Update wishlist badge count in header (both mobile and desktop)
+                                    updateBadgeCount('wishlist-badge', result.count);
                                     if (result.action == 'added') {
                                         iziToast.success({
                                             title: '',
@@ -475,15 +479,8 @@
                                 }
                                 const result = await response.json();                           
                                 if (result.success) {   
-                                    const cartBadge = document.querySelector('.cart-badge')
-                                    if(typeof result.count === 'number' && result.count >= 0){
-                                        cartBadge.innerText = result.count;
-                                        if (result.count > 0) {
-                                            cartBadge.classList.remove('d-none');
-                                        } else {
-                                            cartBadge.classList.add('d-none');
-                                        }
-                                    }
+                                    // Update cart badge count in header (both mobile and desktop)
+                                    updateBadgeCount('cart-badge', result.count);
                                     if (result.success === true) {
                                         iziToast.success({
                                             title: '',
