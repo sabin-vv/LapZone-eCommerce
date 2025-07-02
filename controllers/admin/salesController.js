@@ -4,13 +4,19 @@ const salesReportPage = async (req, res, next) => {
     if (!req.session.admin) return res.redirect("/admin");
 
     try {
-        const orders = await Order.find({orderStatus: { $nin: ['Cancelled', 'Returned'] }})
+        const orders = await Order.find({
+            orderStatus: { $nin: ['Cancelled', 'Returned'] },
+            paymentStatus: "Completed"
+        })
             .populate('user', 'fullname email')
             .populate('items.productId', 'productName images')
             .sort({ createdAt: -1 })
             .limit(100); 
 
-        const totalOrders = await Order.countDocuments();
+        const totalOrders = await Order.countDocuments({
+            orderStatus: { $nin: ['Cancelled', 'Returned'] },
+            paymentStatus: "Completed"
+        });
         const totalRevenue = await Order.aggregate([
             { $unwind: "$statusHistory" },
             { $match: { "statusHistory.current": true } },
@@ -28,6 +34,12 @@ const salesReportPage = async (req, res, next) => {
             }
             ]);
         const totalDiscount = await Order.aggregate([
+            {
+                $match: {
+                    orderStatus: { $nin: ['Cancelled', 'Returned'] },
+                    paymentStatus: "Completed"
+                }
+            },
             { $group: { _id: null, total: { $sum: "$discountAmount" } } }
         ]);
 
@@ -89,7 +101,11 @@ const getSalesReportData = async (req, res, next) => {
                 break;
         }
 
-        const orders = await Order.find(dateFilter)
+        const orders = await Order.find({
+            ...dateFilter,
+            orderStatus: { $nin: ['Cancelled', 'Returned'] },
+            paymentStatus: "Completed"
+        })
             .populate('user', 'fullname email')
             .populate('items.productId', 'productName images')
             .sort({ createdAt: -1 });
