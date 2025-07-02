@@ -340,7 +340,9 @@ const addProduct = async (req, res, next) => {
           })
           if (file.path) {
             try {
-              fs.unlinkSync(file.path)
+              if (fs.existsSync(file.path)) {
+                fs.unlinkSync(file.path)
+              }
             } catch (unlinkErr) {
               console.warn(`Warning: Could not delete temporary file ${file.path}:`, unlinkErr.message)
             }
@@ -572,7 +574,9 @@ const updateProduct = async (req, res, next) => {
             url: result.secure_url,
             isMain: i === 0,
           };
-          fs.unlinkSync(file.path);
+          if (fs.existsSync(file.path)) {
+            fs.unlinkSync(file.path);
+          }
         }
       }
     }
