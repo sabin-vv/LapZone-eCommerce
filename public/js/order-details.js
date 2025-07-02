@@ -1,4 +1,3 @@
-
     function cancelItem(itemId) {
         document.getElementById('cancelItemId').value = itemId;
         const modal = new bootstrap.Modal(document.getElementById('cancelItemModal'));

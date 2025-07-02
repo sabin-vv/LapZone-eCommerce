@@ -19,7 +19,6 @@ const createRazorpay = async (req, res, next) => {
     if (!cart)
       return res.status(404).json({ message: 'Cart not found' });
 
-    // Only create Razorpay order, don't create database order yet
     const order = await razorpay.orders.create({
       amount: parseInt(amount) * 100,
       currency: 'INR',

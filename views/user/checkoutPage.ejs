@@ -476,8 +476,6 @@
       crossorigin="anonymous"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script>
-      // Add this to your existing JavaScript in the checkout page
-
       document.addEventListener("DOMContentLoaded", () => {
         const addAddressButtons = document.querySelectorAll(
           ".btn-outline-primary"
@@ -615,11 +613,9 @@
         const resultMessage = document.getElementById("result-message");
         const onlinePaymentRadio = document.getElementById("Online");
 
-        // Ensure at least one address is selected if addresses are available
         if (addressCards.length > 0) {
           const selectedAddress = document.querySelector(".address-card.selected");
           if (!selectedAddress) {
-            // If no address is selected, select the first one
             addressCards[0].classList.add("selected");
           }
         }
@@ -654,7 +650,6 @@
       });
 
       async function placeOrder() {
-        // Check if any addresses are available
         const addressCards = document.querySelectorAll(".address-card");
         if (addressCards.length === 0) {
           Swal.fire({
@@ -666,15 +661,12 @@
             cancelButtonText: "Cancel"
           }).then((result) => {
             if (result.isConfirmed) {
-              // Open the add address modal
               const addAddressModal = new bootstrap.Modal(document.getElementById("addAddressModal"));
               addAddressModal.show();
             }
           });
           return;
         }
-
-        // Check if an address is selected
         const selectedAddressCard = document.querySelector(".address-card.selected");
         if (!selectedAddressCard) {
           Swal.fire({
@@ -709,6 +701,15 @@
         const appliedCoupon = window.appliedCoupon;
         const amountText = document.getElementById("orderTotalValue").innerText;
         const totalAmount = parseInt(amountText.replace(/[₹,]/g, ""));
+        if (totalAmount > 500000) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Limit Exceeded',
+            text: 'Order total exceeds the ₹5,00,000 limit. Please chose products under  ₹5,00,000',
+            confirmButtonText: 'OK'
+          });
+          return;
+        }
 
         if (appliedCoupon && Object.keys(appliedCoupon).length > 0) {
           amount = appliedCoupon.discount;
@@ -899,7 +900,6 @@
         const result = await response.json();
 
         if (result.success) {
-          Swal.fire({ icon: "success", title: "Order Placed", timer: 1500 });
           window.location.href = `/user/order-page/${result.orderId}`;
         } else {
           Swal.fire({

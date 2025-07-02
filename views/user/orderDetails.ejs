@@ -40,9 +40,8 @@
                                     <h2 class="order-title">Order #<%= order.orderId %></h2>
                                     <p class="order-date">Placed on <%= order.createdAt.toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) %></p>
                                 </div>
-                                <div class="d-flex align-items-center">
-
-                                    <span class="status-badge status-<%= order.orderStatus.toLowerCase() %>"><%= order.orderStatus %></span>
+                                <div class="d-flex align-items-center minimal">
+                                    <span class="status-badge status-<%= order.orderStatus.toLowerCase().replace(/\s+/g, '_') %>"><%= order.orderStatus %></span>
                                     <i class="fas fa-chevron-down expand-icon ms-3"></i>
                                 </div>
                             </div>
@@ -116,7 +115,7 @@
                                                     <td data-label="Quantity"><%= item.quantity %></td>
                                                     <td data-label="Price" class="product-price">₹<%= item.price.toLocaleString('en-IN') %></td>
                                                     <td data-label="Status" class="product-status">
-                                                        <span class="status-badge status-<%= item.status.toLowerCase() %>"><%= item.status %></span>
+                                                        <span class="status-badge status-<%= item.status.toLowerCase().replace(/\s+/g, '_') %>"><%= item.status %></span>
                                                     </td>
                                                     <td data-label="Action" class="product-actions">
                                                         <% if(item.status === 'Delivered' && order.items.length > 1){ %>
@@ -377,8 +376,7 @@
                 </div>
             </div>
         </div>
-    </div>
-    
+    </div> 
 
     <%- include("../partials/user/footer.ejs") %>
 

@@ -58,7 +58,6 @@ body {
   margin: 0 5px;
 }
 
-
 .order-container {
   width: 100%;
   max-width: 1200px;
@@ -74,7 +73,6 @@ body {
 }
 
 
-/* Order Header & Title */
 .page-title {
   font-size: 30px;
   font-weight: 700;
@@ -87,7 +85,6 @@ body {
   gap: 12px;
 }
 
-/* Order Card Styling */
 .order-card {
   background: white;
   border-radius: 12px;
@@ -102,13 +99,12 @@ body {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-/* Enhanced Order Header Styling */
 .order-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 18px 24px;
-  background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+  background: linear-gradient(135deg, #8ba1be 0%, #cacbce 100%);
   cursor: pointer;
   border-bottom: 1px solid #94a3b8;
   position: relative;
@@ -117,7 +113,7 @@ body {
 }
 
 .order-header:hover {
-  background: linear-gradient(135deg, #cbd5e1 0%, #b4bcc8 100%);
+  background: linear-gradient(135deg, #cbd5e1 0%, #8ba1be 100%);
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
 }
 
@@ -176,7 +172,6 @@ body {
   border-color: rgba(148, 163, 184, 0.4);
 }
 
-/* Mini Summary Row */
 .order-summary-mini {
   display: flex;
   justify-content: space-between;
@@ -211,7 +206,6 @@ body {
   color: var(--primary-color);
 }
 
-/* Enhanced Status Badges */
 .status-badge {
   display: inline-flex;
   align-items: center;
@@ -225,6 +219,34 @@ body {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: var(--transition);
 }
+.minimal .status-processing {
+  background-color: #ff8800 !important; 
+  color: #ffffff !important;
+}
+.minimal.status-pending {
+  background-color: #6c757d !important;
+  color: #ffffff !important;
+}
+
+.minimal .status-shipped {
+  background-color: #007bff !important; 
+  color: #ffffff !important;
+}
+
+.minimal .status-delivered {
+  background-color: #28a745 !important; 
+  color: #ffffff !important;
+}
+
+.minimal .status-cancelled {
+  background-color: #dc3545 !important; 
+  color: #ffffff !important;
+}
+
+.minimal .status-returned {
+  background-color: #343a40 !important; 
+  color: #ffffff !important;
+}
 
 .order-header .status-badge {
   background: rgba(255, 255, 255, 0.95);
@@ -232,11 +254,16 @@ body {
   border: 1px solid rgba(148, 163, 184, 0.4);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-
 .status-ordered {
   background: linear-gradient(135deg, #e0f2fe, #bae6fd);
   color: #0369a1;
   border-color: #0ea5e9;
+}
+
+.status-processing {
+  background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
+  color: #7c3aed;
+  border-color: #8b5cf6;
 }
 
 .status-shipped {
@@ -263,16 +290,40 @@ body {
   border-color: #f97316;
 }
 
-.status-processing {
-  background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
-  color: #7c3aed;
-  border-color: #8b5cf6;
+.status-failed {
+  background: linear-gradient(135deg, #fef2f2, #fecaca);
+  color: #dc2626;
+  border-color: #ef4444;
 }
 
 .status-cancel_requested, .status-return_requested {
   background: linear-gradient(135deg, #fef3c7, #fde68a);
   color: #d97706;
   border-color: #f59e0b;
+}
+
+.status-cancel_rejected, .status-return_rejected {
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+  color: #dc2626;
+  border-color: #ef4444;
+}
+
+.status-pending {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  color: #d97706;
+  border-color: #f59e0b;
+}
+
+.status-completed {
+  background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+  color: #15803d;
+  border-color: #22c55e;
+}
+
+.status-refunded {
+  background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+  color: #0369a1;
+  border-color: #0ea5e9;
 }
 
 .status-badge:hover {
