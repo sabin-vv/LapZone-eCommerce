@@ -423,7 +423,12 @@
                     fileInput.files = files;
                     handleImage(files[0], fileInput, preview, text, addButton, deleteButton);
                 } else {
-                    showError(fileInput.name, 'Please upload an image file.');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid File Type',
+                        text: 'Please select an image file (jpg, jpeg, png) for updating the product.',
+                        confirmButtonColor: '#dc2626'
+                    });
                 }
             });
 
@@ -439,7 +444,12 @@
                         handleImage(file, fileInput, preview, text, addButton, deleteButton);
                     }
                 } else {
-                    showError(fileInput.name, 'Please upload an image file.');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid File Type',
+                        text: 'Please select an image file (jpg, jpeg, png) for updating the product.',
+                        confirmButtonColor: '#dc2626'
+                    });
                     clearImage(preview, text, addButton, fileInput, deleteButton);
                 }
             });

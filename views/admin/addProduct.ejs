@@ -470,10 +470,14 @@
 
         const handleFile = (file) => {
             if (!file.type.startsWith('image/')) {
+                const pageTitle = document.querySelector('h1').textContent.trim();
+                const isEditPage = pageTitle.includes('Product Details') || pageTitle.includes('Edit');
+                const actionText = isEditPage ? 'updating the product' : 'adding a new product';
+                
                 Swal.fire({
                     icon: 'error',
                     title: 'Invalid File Type',
-                    text: 'Please select an image file (jpg, jpeg, png).',
+                    text: `Please select an image file (jpg, jpeg, png) for ${actionText}.`,
                     confirmButtonColor: '#dc2626'
                 });
                 return;
