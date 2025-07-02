@@ -5,17 +5,17 @@ const customerController = require("../controllers/admin/customerController")
 const categoryController = require("../controllers/admin/categoryController")
 const productController = require("../controllers/admin/productController")
 const upload = require("../middlewares/multer")
-const orderController = require("../controllers/admin/orderController");
+const orderController = require("../controllers/admin/orderController")
 const offerController = require("../controllers/admin/offerController")
-const couponController  = require("../controllers/admin/couponController")
+const couponController = require("../controllers/admin/couponController")
 const salesController = require("../controllers/admin/salesController")
 
 
 router.get("/login", adminController.getadminLogin)
 router.post("/login", adminController.login)
 router.post("/adminlogout", adminController.adminLogout)
-router.get("/", adminController.adminDashbaord)
-router.get("/dashboard", adminController.adminDashbaord)
+router.get("/", adminController.adminDashboard)
+router.get("/dashboard", adminController.adminDashboard)
 router.get("/admindashboard", adminController.getDashboard)
 router.get("/dashboard-stats", adminController.getDashboardStats);
 router.get("/sales-data", adminController.getSalesData);
@@ -79,15 +79,15 @@ router.post("/product/remove-offer/:id", offerController.removeProductOffer)
 router.post("/category/add-offer/:id", offerController.addCategoryOffer)
 router.post("/category/remove-offer/:id", offerController.removeCategoryOffer)
 
-router.get("/coupons",couponController.viewCouponPage)
-router.get("/coupons/add",couponController.newCoupon)
-router.post ("/coupons/add" ,couponController.addCoupon)
+router.get("/coupons", couponController.viewCouponPage)
+router.get("/coupons/add", couponController.newCoupon)
+router.post("/coupons/add", couponController.addCoupon)
 router.post("/coupons/toggle-status", couponController.couponStatusChange)
-router.get("/coupons/edit/:id",couponController.editCoupon)
-router.post("/coupons/edit/:id" ,couponController.updateCoupon)
-router.post("/coupons/delete/:id",couponController.deleteCoupon)
+router.get("/coupons/edit/:id", couponController.editCoupon)
+router.post("/coupons/edit/:id", couponController.updateCoupon)
+router.post("/coupons/delete/:id", couponController.deleteCoupon)
 
-router.get("/sales-report",salesController.salesReportPage)
-router.get('/sales-report-data', salesController.getSalesReportData);
+router.get("/sales-report", salesController.salesReportPage)
+router.get("/sales-report-data", salesController.getSalesReportData)
 
 module.exports = router

@@ -10,7 +10,7 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET
 })
 
-const createRazoroay = async (req, res, next) => {
+const createRazorpay = async (req, res, next) => {
   const { amount, shippingAddress } = req.body;
   const userId = req.session.user
   try {
@@ -110,7 +110,7 @@ const verifyPayment = async (req, res, next) => {
 
 
 module.exports = {
-  createRazoroay,
+  createRazorpay,
   retryRazorpay,
   verifyPayment,
 

@@ -324,7 +324,7 @@ const orderPage = async (req, res, next) => {
   }
 }
 
-const orderFailurePafe = (req, res) => {
+const orderFailurePage = (req, res) => {
   const orderId = req.query.orderId || null;
   res.render("user/orderFailurePage", { orderId })
 }
@@ -725,7 +725,7 @@ module.exports = {
   validateStock,
   orderplace,
   orderPage,
-  orderFailurePafe,
+  orderFailurePage,
   editAddress,
   addAddress,
   orderSuccessPage,

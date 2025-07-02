@@ -78,7 +78,7 @@ const signupPage = (req, res, next) => {
         if (req.session.user)
             return res.redirect("/home")
 
-        return res.render("user/userSignup", { errors: null, message: null, error: null });
+        return res.render("user/userSignUp", { errors: null, message: null, error: null });
     } catch (error) {
         console.error('Error fetching signup page:', error);
         next(error);

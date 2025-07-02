@@ -6,13 +6,13 @@ const productController = require("../controllers/user/productController")
 const validateUserStatus = require("../middlewares/userAuthCheck")
 const userProfileController = require("../controllers/user/userProfileController")
 const wishListController = require("../controllers/user/wishListController")
-const cartController = require("../controllers/user/cartController.js")
-const checkoutController = require('../controllers/user/checkoutController')
-const OrderController = require("../controllers/user/orderController.js")
-const walletController = require("../controllers/user/walletController.js")
-const couponController = require('../controllers/user/couponController.js')
-const razorpayController = require("../controllers/user/razorpayController.js")
-const referralController = require("../controllers/user/referralController.js")
+const cartController = require("../controllers/user/cartController")
+const checkoutController = require("../controllers/user/checkoutController")
+const orderController = require("../controllers/user/orderController")
+const walletController = require("../controllers/user/walletController")
+const couponController = require("../controllers/user/couponController")
+const razorpayController = require("../controllers/user/razorpayController")
+const referralController = require("../controllers/user/referralController")
 
 
 
@@ -78,28 +78,28 @@ router.post("/cart/add-from-shop", validateUserStatus, cartController.addfromSho
 
 router.post("/user/validate-stock", validateUserStatus, checkoutController.validateStock)
 router.post("/user/checkout", validateUserStatus, checkoutController.proceedToCheckoutPage)
-router.get("/user/checkout",checkoutController.viewCheckoutPage)
+router.get("/user/checkout", checkoutController.viewCheckoutPage)
 router.post("/user/order", validateUserStatus, checkoutController.orderplace)
 router.post("/user/create-pending-order", validateUserStatus, checkoutController.createPendingOrder)
 router.get("/user/order-page/:id", validateUserStatus, checkoutController.orderPage)
-router.get("/user/order-failed", validateUserStatus, checkoutController.orderFailurePafe)
+router.get("/user/order-failed", validateUserStatus, checkoutController.orderFailurePage)
 router.post('/profile/checkout-page/edit-address/:id', validateUserStatus, checkoutController.editAddress)
 router.post("/profile/checkout-page/add-address", validateUserStatus, checkoutController.addAddress)
 
 
-router.get("/profile/order", validateUserStatus, OrderController.viewOrders)
-router.post("/profile/order/cancel-item", validateUserStatus, OrderController.cancelitem)
-router.post("/profile/order/cancel", validateUserStatus, OrderController.cancelOrder)
-router.get("/profile/order/invoice/:id", validateUserStatus, OrderController.downloadInvoice)
-router.post("/profile/order/return-item", validateUserStatus, OrderController.returnProduct)
-router.post("/profile/order/return", validateUserStatus, OrderController.returnOrder)
+router.get("/profile/order", validateUserStatus, orderController.viewOrders)
+router.post("/profile/order/cancel-item", validateUserStatus, orderController.cancelitem)
+router.post("/profile/order/cancel", validateUserStatus, orderController.cancelOrder)
+router.get("/profile/order/invoice/:id", validateUserStatus, orderController.downloadInvoice)
+router.post("/profile/order/return-item", validateUserStatus, orderController.returnProduct)
+router.post("/profile/order/return", validateUserStatus, orderController.returnOrder)
 
 
 router.get("/profile/wallet", validateUserStatus, walletController.viewWalletPage)
 router.post("/profile/wallet/add", validateUserStatus, walletController.addMoneyToWallet)
 
 
-router.post("/user/create-razorpay-order", razorpayController.createRazoroay)
+router.post("/user/create-razorpay-order", razorpayController.createRazorpay)
 router.post("/user/retry-razorpay", razorpayController.retryRazorpay)
 router.post("/user/verify-payment", razorpayController.verifyPayment)
 router.get("/user/order-success/:id", validateUserStatus, checkoutController.orderSuccessPage)

@@ -63,7 +63,7 @@ const adminLogout = (req, res, next) => {
     }
 }
 
-const adminDashbaord = async (req, res, next) => {
+const adminDashboard = async (req, res, next) => {
     try {
         if (!req.session.admin)
             return res.status(401).render("admin/adminlogin", { error: null })
@@ -612,7 +612,7 @@ const getDashboard = (req, res, next) => {
 module.exports = {
     getadminLogin,
     login,
-    adminDashbaord,
+    adminDashboard,
     getDashboard,
     adminLogout,
     getDashboardStats,
