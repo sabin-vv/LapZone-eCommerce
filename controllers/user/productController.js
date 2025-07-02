@@ -57,26 +57,64 @@ const listProducts = async (req, res, next) => {
       query.salePrice = { $lte: maxPrice };
     }
 
-    const sort = {};
-    if (sortOption === "popularity") {
-      sort.rating = -1;
-    } else if (sortOption === "newest") {
-      sort.createdAt = -1;
-    } else if (sortOption === "price-asc") {
-      sort.salePrice = 1;
-    } else if (sortOption === "price-desc") {
-      sort.salePrice = -1;
-    } else if (sortOption === 'name-asc') {
-      sort.name = 1
-    } else if (sortOption === 'name-desc') {
-      sort.name = -1
+    let products;
+    const wishlist = await Wishlist.findOne({ userId: req.session.user })
+    const wishlistIds = wishlist ? wishlist.items.map(item => item.productId.toString()) : []
+
+    // For price sorting, use client-side calculation to match frontend exactly
+    if (sortOption === "price-asc" || sortOption === "price-desc") {
+      // Get all products first
+      const allProducts = await Product.find(query).populate('categoryId');
+      
+      // Calculate final price for each product (matching frontend logic exactly)
+      const productsWithFinalPrice = allProducts.map(product => {
+        const productOffer = product.offer || 0;
+        const categoryOffer = product.categoryId?.offer || 0;
+        const finalOffer = Math.max(productOffer, categoryOffer);
+        
+        // Find first variant with stock > 0 (exactly like frontend)
+        const item = product.variants.find(v => v.stock > 0);
+        const basePrice = product.salePrice + (item?.priceAdjustment || 0);
+        const finalPrice = finalOffer > 0 
+          ? Math.round(basePrice * (1 - finalOffer / 100)) 
+          : basePrice;
+        
+        return {
+          ...product.toObject(),
+          finalPrice: finalPrice
+        };
+      });
+      
+      // Sort by final price
+      if (sortOption === "price-asc") {
+        productsWithFinalPrice.sort((a, b) => a.finalPrice - b.finalPrice);
+      } else {
+        productsWithFinalPrice.sort((a, b) => b.finalPrice - a.finalPrice);
+      }
+      
+      // Apply pagination
+      products = productsWithFinalPrice.slice(skip, skip + limit);
+      
+    } else {
+      const sort = {};
+      if (sortOption === "popularity") {
+        sort.rating = -1;
+      } else if (sortOption === "newest") {
+        sort.createdAt = -1;
+      } else if (sortOption === 'name-asc') {
+        sort.name = 1;
+      } else if (sortOption === 'name-desc') {
+        sort.name = -1;
+      }
+      
+      products = await Product.find(query)
+        .sort(sort)
+        .skip(skip)
+        .limit(limit)
+        .populate('categoryId');
     }
 
     try {
-
-      const wishlist = await Wishlist.findOne({ userId: req.session.user })
-      const wishlistIds = wishlist ? wishlist.items.map(item => item.productId.toString()) : []
-      const products = await Product.find(query).sort(sort).skip(skip).limit(limit).populate('categoryId')
       const brands = await Product.distinct("brand");
       const ramvariants = await Product.distinct("variants.RAM");
       const rams = [...new Set(ramvariants.map(ram => ram.split(" ")[0]))];
