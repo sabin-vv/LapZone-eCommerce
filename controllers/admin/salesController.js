@@ -18,21 +18,19 @@ const salesReportPage = async (req, res, next) => {
             paymentStatus: "Completed"
         });
         const totalRevenue = await Order.aggregate([
-            { $unwind: "$statusHistory" },
-            { $match: { "statusHistory.current": true } },
             {
                 $match: {
-                "statusHistory.status": { $nin: ["Cancelled", "Returned"] },
-                paymentStatus: "Completed"
+                    orderStatus: { $nin: ['Cancelled', 'Returned'] },
+                    paymentStatus: "Completed"
                 }
             },
             {
                 $group: {
-                _id: null,
-                total: { $sum: "$totalAmount" }
+                    _id: null,
+                    total: { $sum: "$totalAmount" }
                 }
             }
-            ]);
+        ]);
         const totalDiscount = await Order.aggregate([
             {
                 $match: {

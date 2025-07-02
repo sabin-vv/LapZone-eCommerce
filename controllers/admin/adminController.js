@@ -68,13 +68,22 @@ const adminDashbaord = async (req, res, next) => {
         if (!req.session.admin)
             return res.status(401).render("admin/adminlogin", { error: null })
 
-        const productCount = await Product.countDocuments()
-        const userCount = await User.countDocuments()
-        const orderCount = await Order.countDocuments()
+        const productCount = await Product.countDocuments({ isExisting: true })
+        const userCount = await User.countDocuments({ isAdmin: false, isBlocked: { $ne: true } })
+        const orderCount = await Order.countDocuments({
+            orderStatus: { $nin: ['Cancelled', 'Returned'] },
+            paymentStatus: "Completed"
+        })
         const sales = await Order.aggregate([
+            {
+                $match: {
+                    orderStatus: { $nin: ['Cancelled', 'Returned'] },
+                    paymentStatus: "Completed"
+                }
+            },
             { $group: { _id: null, total: { $sum: "$totalAmount" } } }
         ])
-        const totalSales = Math.round(sales[0]?.total)
+        const totalSales = Math.round(sales[0]?.total || 0)
 
         return res.status(200).render("admin/adminDashboard", { productCount, userCount, orderCount, totalSales })
 
@@ -89,7 +98,7 @@ const getDashboardStats = async (req, res, next) => {
         const sales = await Order.aggregate([
             {
                 $match: {
-                    orderStatus: { $ne: 'Cancelled' },
+                    orderStatus: { $nin: ['Cancelled', 'Returned'] },
                     paymentStatus: 'Completed'
                 }
             },
@@ -113,7 +122,8 @@ const getDashboardStats = async (req, res, next) => {
         const totalSales = sales.length > 0 ? Math.round(sales[0].total) : 0;
 
         const totalOrders = await Order.countDocuments({
-            orderStatus: { $ne: 'Cancelled' }
+            orderStatus: { $nin: ['Cancelled', 'Returned'] },
+            paymentStatus: "Completed"
         });
 
         const totalCustomers = await User.countDocuments({
@@ -155,8 +165,8 @@ const getSalesData = async (req, res, next) => {
                     const yearEnd = new Date(year + 1, 0, 1);
 
                     const orders = await Order.find({
-                        orderDate: { $gte: yearStart, $lt: yearEnd },
-                        orderStatus: { $ne: 'Cancelled' },
+                        createdAt: { $gte: yearStart, $lt: yearEnd },
+                        orderStatus: { $nin: ['Cancelled', 'Returned'] },
                         paymentStatus: 'Completed'
                     });
 
@@ -178,8 +188,8 @@ const getSalesData = async (req, res, next) => {
                     const monthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 1);
 
                     const orders = await Order.find({
-                        orderDate: { $gte: monthStart, $lt: monthEnd },
-                        orderStatus: { $ne: 'Cancelled' },
+                        createdAt: { $gte: monthStart, $lt: monthEnd },
+                        orderStatus: { $nin: ['Cancelled', 'Returned'] },
                         paymentStatus: 'Completed'
                     });
 
@@ -204,8 +214,8 @@ const getSalesData = async (req, res, next) => {
                     labels.push(`Week ${4 - i}`);
 
                     const orders = await Order.find({
-                        orderDate: { $gte: weekStart, $lt: weekEnd },
-                        orderStatus: { $ne: 'Cancelled' },
+                        createdAt: { $gte: weekStart, $lt: weekEnd },
+                        orderStatus: { $nin: ['Cancelled', 'Returned'] },
                         paymentStatus: 'Completed'
                     });
 
@@ -230,8 +240,8 @@ const getSalesData = async (req, res, next) => {
                     labels.push(date.toLocaleDateString('en-US', { weekday: 'short' }));
 
                     const orders = await Order.find({
-                        orderDate: { $gte: date, $lt: nextDay },
-                        orderStatus: { $ne: 'Cancelled' },
+                        createdAt: { $gte: date, $lt: nextDay },
+                        orderStatus: { $nin: ['Cancelled', 'Returned'] },
                         paymentStatus: 'Completed'
                     });
 
@@ -261,7 +271,7 @@ const getTopProducts = async (req, res, next) => {
         const topProducts = await Order.aggregate([
             {
                 $match: {
-                    orderStatus: { $ne: 'Cancelled' },
+                    orderStatus: { $nin: ['Cancelled', 'Returned'] },
                     paymentStatus: 'Completed'
                 }
             },
@@ -313,7 +323,7 @@ const getTopCategories = async (req, res, next) => {
         const topCategories = await Order.aggregate([
             {
                 $match: {
-                    orderStatus: { $ne: 'Cancelled' },
+                    orderStatus: { $nin: ['Cancelled', 'Returned'] },
                     paymentStatus: 'Completed'
                 }
             },
@@ -366,7 +376,7 @@ const getTopBrands = async (req, res, next) => {
         const topBrands = await Order.aggregate([
             {
                 $match: {
-                    orderStatus: { $ne: 'Cancelled' },
+                    orderStatus: { $nin: ['Cancelled', 'Returned'] },
                     paymentStatus: 'Completed'
                 }
             },
@@ -407,9 +417,12 @@ const getTopBrands = async (req, res, next) => {
 
 const getRecentOrders = async (req, res, next) => {
     try {
-        const recentOrders = await Order.find({ orderStatus: { $ne: 'Cancelled' } })
+        const recentOrders = await Order.find({ 
+            orderStatus: { $nin: ['Cancelled', 'Returned'] },
+            paymentStatus: 'Completed'
+        })
             .populate('user', 'fullname')
-            .sort({ orderDate: -1 })
+            .sort({ createdAt: -1 })
             .limit(10)
             .select('orderId user totalAmount orderStatus orderDate');
 
@@ -434,11 +447,13 @@ const generateLedger = async (req, res, next) => {
         const { startDate, endDate } = req.body;
 
         const orders = await Order.find({
-            orderDate: {
+            createdAt: {
                 $gte: new Date(startDate),
                 $lte: new Date(endDate)
-            }
-        }).populate('user', 'fullname email').sort({ orderDate: -1 });
+            },
+            orderStatus: { $nin: ['Cancelled', 'Returned'] },
+            paymentStatus: 'Completed'
+        }).populate('user', 'fullname email').sort({ createdAt: -1 });
 
         const ledgerData = {
             period: { startDate, endDate },
@@ -467,10 +482,12 @@ const downloadLedgerCsv = async (req, res, next) => {
         const { startDate, endDate } = req.query;
 
         const orders = await Order.find({
-            orderDate: {
+            createdAt: {
                 $gte: new Date(startDate),
                 $lte: new Date(endDate)
-            }
+            },
+            orderStatus: { $nin: ['Cancelled', 'Returned'] },
+            paymentStatus: 'Completed'
         }).populate('user', 'fullname email');
 
         let csvContent = 'Order ID,Customer Name,Email,Amount,Status,Date\n';
@@ -494,13 +511,20 @@ const downloadLedgerPdf = async (req, res, next) => {
         const { startDate, endDate } = req.query;
 
         const orders = await Order.find({
-            orderDate: {
+            createdAt: {
                 $gte: new Date(startDate),
                 $lte: new Date(endDate)
-            }
-        }).populate('user', 'fullname email').sort({ orderDate: -1 });
+            },
+            orderStatus: { $nin: ['Cancelled', 'Returned'] },
+            paymentStatus: 'Completed'
+        }).populate('user', 'fullname email').sort({ createdAt: -1 });
 
-        const totalRevenue = orders.reduce((sum, order) => sum + order.totalAmount, 0);
+        // Calculate revenue using item-level calculation (excluding cancelled items)
+        const totalRevenue = orders.reduce((sum, order) => {
+            const validItems = order.items.filter(item => item.status !== 'Cancelled');
+            const orderTotal = validItems.reduce((itemSum, item) => itemSum + (item.quantity * item.price), 0);
+            return sum + orderTotal;
+        }, 0);
 
         const htmlContent = `
         <!DOCTYPE html>
