@@ -2,7 +2,7 @@ const Order = require("../../model/order")
 const User = require("../../model/user")
 const puppeteer = require("puppeteer")
 const Wallet = require("../../model/wallet")
-
+const Coupon = require("../../model/coupon")
 
 async function generateInvoicePDF(order) {
     const browser = await puppeteer.launch({
@@ -440,17 +440,25 @@ const cancelOrder = async (req, res, next) => {
         const remainingItems = order.items.filter(item => item.status !== 'Cancelled');
         const remainingSubtotal = remainingItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
+        const shippingFee = Number(order.shippingFee) || 0;
+        const tax = Number(order.tax) || 0;
+        const discountAmount = Number(order.discountAmount) || 0;
+
         if (order.coupon) {
             const coupon = await Coupon.findOne({ code: order.coupon });
             if (coupon && remainingSubtotal < coupon.minPurchaseAmount) {
                 order.discountAmount = 0;
                 order.coupon = null;
-                order.totalAmount = remainingSubtotal + order.shippingCharge + order.taxAmount;
+                order.totalAmount = remainingSubtotal + shippingFee + tax;
             } else {
-                order.totalAmount = remainingSubtotal - order.discountAmount + order.shippingCharge + order.taxAmount;
+                order.totalAmount = remainingSubtotal - discountAmount + shippingFee + tax;
             }
         } else {
-            order.totalAmount = remainingSubtotal + order.shippingCharge + order.taxAmount;
+            order.totalAmount = remainingSubtotal + shippingFee + tax;
+        }
+
+        if (isNaN(order.totalAmount)) {
+            order.totalAmount = 0;
         }
 
         let refundAmount = 0;

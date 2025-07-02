@@ -6,22 +6,41 @@ const User = require("../model/user")
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "/auth/google/callback"
+    callbackURL: process.env.GOOGLE_CALLBACK_URL || "http://localhost:3000/auth/google/callback"
 },
     async function (accessToken, refreshToken, profile, done) {
-        let user = await User.findOne({ googleId: profile.id })
-        if (user.isBlocked)
-            return done(null, false, { message: "User is Blocked" })
-        if (user) {
-            return done(null, user)
-        } else {
-            user = new User({
-                fullname: profile.displayName,
-                email: profile.emails[0].value,
-                googleId: profile.id
-            })
-            await user.save()
-            return done(null, user)
+        try {
+            let user = await User.findOne({ googleId: profile.id })
+            
+            if (user) {
+                if (user.isBlocked) {
+                    return done(null, false, { message: "User is Blocked" })
+                }
+                return done(null, user)
+            } else {
+                // Check if user exists with same email
+                const existingUser = await User.findOne({ email: profile.emails[0].value })
+                if (existingUser) {
+                    if (existingUser.isBlocked) {
+                        return done(null, false, { message: "User is Blocked" })
+                    }
+                    // Link Google account to existing user
+                    existingUser.googleId = profile.id
+                    await existingUser.save()
+                    return done(null, existingUser)
+                }
+                
+                // Create new user
+                user = new User({
+                    fullname: profile.displayName,
+                    email: profile.emails[0].value,
+                    googleId: profile.id
+                })
+                await user.save()
+                return done(null, user)
+            }
+        } catch (error) {
+            return done(error, null)
         }
     }
 ));

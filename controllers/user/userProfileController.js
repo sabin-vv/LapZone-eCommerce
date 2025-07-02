@@ -317,7 +317,7 @@ const changePassword = async (req, res, next) => {
 
         const username = req.session.username || req.session.user.fullname
 
-        res.render("user/userchangePassword", { user, username, errors: null })
+        res.render("user/userChangePassword", { user, username, errors: null })
     } catch (error) {
         console.error('Error fetching profile page:', error);
         next(error);
