@@ -584,7 +584,6 @@
       }
 
       function addToWishlist(productId, icon) {
-        // Check if user is logged in
         const isLoggedIn = <%= user ? 'true' : 'false' %>;
         
         if (!isLoggedIn) {
