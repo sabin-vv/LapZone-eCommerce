@@ -23,36 +23,31 @@
             align-items: center;
             justify-content: center;
             line-height: 1;
-            
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
-        /* Container for icons with badges */
         .navbar .position-relative {
             position: relative;
             display: inline-block;
         }
 
-        /* Ensure the icon links have relative positioning */
         .navbar a[href="/wishlist"],
         .navbar a[href="/cart"] {
             position: relative;
             display: inline-block;
         }
 
-        /* Optional: Hover effect for badges */
         .navbar .badge:hover {
             transform: scale(1.1);
             transition: transform 0.2s ease;
         }
 
-        /* Alternative colored badges */
         .navbar .badge.wishlist-badge {
-            background-color: #e91e63; /* Pink for wishlist */
+            background-color: #e91e63; 
         }
 
         .navbar .badge.cart-badge {
-            background-color: #ff5722; /* Orange-red for cart */
+            background-color: #ff5722; 
         }
     </style>
 </head>
@@ -60,27 +55,21 @@
     <header class="">
         <nav class="navbar navbar-expand-md navbar-dark px-2 px-md-3 py-2">
             <div class="container-fluid">
-                <!-- Mobile Layout -->
                 <div class="d-md-none w-100">
-                    <!-- Top row: Logo and User/Cart icons -->
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <a class="navbar-brand fw-bold fst-italic text-light mobile-logo" href="/">LapZone</a>
                         
-                        <!-- Mobile Icons -->
                         <div class="d-flex align-items-center gap-2">
-                            <!-- Wishlist Icon -->
                             <a href="/wishlist" class="text-light position-relative icon-link d-flex align-items-center justify-content-center" aria-label="Wishlist" title="Wishlist">
                                 <i class="bi bi-heart"></i>
                                 <span class="badge wishlist-badge <%= (!wishlistCount || wishlistCount === 0) ? 'd-none' : '' %>"><%= wishlistCount %></span>
                             </a>
 
-                            <!-- Cart Icon -->
                             <a href="/cart" class="text-light position-relative icon-link d-flex align-items-center justify-content-center" aria-label="Cart" title="Shopping Cart">
                                 <i class="bi bi-cart2"></i>
                                 <span class="badge cart-badge <%= (!cartCount || cartCount === 0) ? 'd-none' : '' %>"><%= cartCount %></span>
                             </a>
 
-                            <!-- User Account Section -->
                             <% if (user) { %>
                             <div class="dropdown">
                                 <button class="btn text-light p-2 d-flex align-items-center user-dropdown-btn" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="User Account">
@@ -100,7 +89,6 @@
                         </div>
                     </div>
 
-                    <!-- Search Bar Row -->
                     <div class="mb-2">
                         <form action="/shop" method="GET" class="d-flex w-100">
                             <input type="text" name="search" class="form-control search-bar flex-grow-1" placeholder="What are you looking for?" aria-label="Search products">
@@ -110,7 +98,6 @@
                         </form>
                     </div>
 
-                    <!-- Navigation Links Row -->
                     <div class="mobile-nav">
                         <ul class="nav justify-content-center w-100">
                             <li class="nav-item flex-fill"><a class="nav-link text-light text-center" href="/">Home</a></li>
@@ -120,18 +107,15 @@
                     </div>
                 </div>
 
-                <!-- Desktop Layout -->
                 <div class="d-none d-md-flex w-100 align-items-center">
                     <a class="navbar-brand fw-bold fst-italic fs-2 text-light me-4" href="/">LapZone</a>
 
-                    <!-- Desktop Navigation -->
                     <ul class="navbar-nav me-4">
                         <li class="nav-item"><a class="nav-link text-light" href="/">Home</a></li>
                         <li class="nav-item"><a class="nav-link text-light" href="/shop">Shop</a></li>
                         <li class="nav-item"><a class="nav-link text-light" href="/about">About</a></li>
                     </ul>
 
-                    <!-- Desktop Search Bar -->
                     <form action="/shop" method="GET" class="d-flex align-items-center flex-grow-1" style="max-width: 400px;">
                         <input type="text" name="search" class="form-control search-bar" placeholder="What are you looking for?" aria-label="Search products">
                         <button type="submit" class="btn btn-outline-light ms-2">
@@ -139,24 +123,19 @@
                         </button>
                     </form>
 
-                    <!-- Spacer to push icons to the end -->
                     <div class="flex-grow-1"></div>
 
-                    <!-- Desktop Icons - Positioned at the end -->
                     <div class="d-flex align-items-center gap-2">
-                        <!-- Wishlist Icon -->
                         <a href="/wishlist" class="text-light position-relative icon-link d-flex align-items-center justify-content-center" aria-label="Wishlist" title="Wishlist">
                             <i class="bi bi-heart fs-4"></i>
                             <span class="badge wishlist-badge <%= (!wishlistCount || wishlistCount === 0) ? 'd-none' : '' %>"><%= wishlistCount %></span>
                         </a>
 
-                        <!-- Cart Icon -->
                         <a href="/cart" class="text-light position-relative icon-link d-flex align-items-center justify-content-center" aria-label="Cart" title="Shopping Cart">
                             <i class="bi bi-cart2 fs-4"></i>
                             <span class="badge cart-badge <%= (!cartCount || cartCount === 0) ? 'd-none' : '' %>"><%= cartCount %></span>
                         </a>
 
-                        <!-- User Account Section -->
                         <% if (user) { %>
                         <div class="dropdown">
                             <button class="btn text-light p-2 d-flex align-items-center gap-2 user-dropdown-btn" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="User Account">
@@ -178,30 +157,6 @@
                 </div>
             </div>
         </nav>
-    </header>
-
-    
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const logoutItem = document.querySelector('.logout-item');
-            if (logoutItem) {
-                logoutItem.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    try {
-                        const response = await fetch('/profile/logout', { method: 'POST' });
-                        if (response.ok) {
-                            window.location.href = '/login';
-                        } else {
-                            console.error('Logout failed:', response.statusText);
-                        }
-                    } catch (err) {
-                        console.error('Logout error:', err);
-                    }
-                });
-            }
-
-                    });
-        
-    </script>
+    </header>   
 </body>
 </html>

@@ -132,11 +132,22 @@ const editCoupon = async (req, res, next) => {
         if (!coupon)
             return res.render("admin/couponPage", { error: "Coupon Not Found" })
 
+        // Format dates properly for datetime-local input (local timezone)
+        const formatDateTimeLocal = (date) => {
+            if (!date) return '';
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${year}-${month}-${day}T${hours}:${minutes}`;
+        };
+
         return res.render("admin/editCoupon", {
             coupon: {
                 ...coupon.toObject(),
-                startDateISO: coupon.startDate?.toISOString().slice(0, 16),
-                expiryDateISO: coupon.expiryDate?.toISOString().slice(0, 16),
+                startDateISO: formatDateTimeLocal(coupon.startDate),
+                expiryDateISO: formatDateTimeLocal(coupon.expiryDate),
             }, errorfield : null
         })
     } catch (error) {
@@ -182,12 +193,9 @@ const updateCoupon = async (req, res, next) => {
         const dateNow = new Date();
         dateNow.setSeconds(0, 0)
 
-        if (new Date(startDate) < dateNow)
-            errorfield['startDate'] = 'Start Date cannot be in the past'
+        // No start date validation when updating - allow any start date
         if (new Date(expiryDate) < dateNow)
             errorfield['expiryDate'] = 'Expiry Date cannot be in tha past'
-        if (new Date(expiryDate) < startDate)
-            errorfield['expiryDate'] = 'Expiry Date should greater than start Date'
 
         if (errorfield && Object.keys(errorfield).length > 0)
             return res.render("admin/editCoupon", { errorfield, formData: req.body, coupon })
