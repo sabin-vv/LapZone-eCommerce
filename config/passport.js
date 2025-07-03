@@ -18,19 +18,16 @@ passport.use(new GoogleStrategy({
                 }
                 return done(null, user)
             } else {
-                // Check if user exists with same email
                 const existingUser = await User.findOne({ email: profile.emails[0].value })
                 if (existingUser) {
                     if (existingUser.isBlocked) {
                         return done(null, false, { message: "User is Blocked" })
                     }
-                    // Link Google account to existing user
                     existingUser.googleId = profile.id
                     await existingUser.save()
                     return done(null, existingUser)
                 }
                 
-                // Create new user
                 user = new User({
                     fullname: profile.displayName,
                     email: profile.emails[0].value,

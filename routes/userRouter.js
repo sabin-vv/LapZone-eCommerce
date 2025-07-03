@@ -30,6 +30,7 @@ router.get("/contact-us", userController.contactUsPage)
 router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }))
 router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: "/login" }), (req, res) => {
     req.session.user = req.user;
+    req.session.username = req.user.fullname;
     res.redirect('/home')
 })
 
