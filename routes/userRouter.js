@@ -27,11 +27,23 @@ router.post("/signup/referral-code", userController.checkReferralCode)
 router.get("/about", userController.aboutPage)
 router.get("/contact-us", userController.contactUsPage)
 
-router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }))
-router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: "/login" }), (req, res) => {
-    req.session.user = req.user;
-    req.session.username = req.user.fullname;
-    res.redirect('/home')
+router.get('/auth/google', passport.authenticate('google', { 
+    scope: ['profile', 'email'],
+    prompt: 'select_account'  // Force account selection every time
+}))
+
+router.get('/auth/google/callback', passport.authenticate('google', { 
+    failureRedirect: "/login",
+    failureMessage: true 
+}), (req, res) => {
+    try {
+        req.session.user = req.user._id;
+        req.session.username = req.user.fullname;
+        res.redirect('/home');
+    } catch (error) {
+        console.error('OAuth callback error:', error);
+        res.redirect('/login');
+    }
 })
 
 router.post("/login", userController.postLoginPage)
