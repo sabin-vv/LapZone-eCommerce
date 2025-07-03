@@ -399,7 +399,7 @@
         suggestion.images.find(img => img.isMain); const variant =
         suggestion.variants?.[0]; %>
         <div class="suggestion">
-          <a href="/products/<%= suggestion._id %>">
+          <a href="/shop/product/<%= suggestion._id %>">
             <img src="<%= mainImage?.url || '/default-image.jpg' %>" alt="<%= suggestion.name %>" />
             <div class="card-body">
               <h5><%= suggestion.name %></h5>
