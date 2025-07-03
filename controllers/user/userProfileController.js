@@ -28,10 +28,10 @@ const editProfile = async (req, res, next) => {
         const error = {}
         if (fullname.trim() === '') {
             error['name'] = "Name cannot be empty"
-            return res.render("user/userProfile", { error, formData,userId })
+            return res.render("user/userProfile", { error, formData, userId })
         } else if ((!/^[A-Za-z\s]+$/.test(fullname))) {
             error['name'] = 'Only letters are allowed'
-            return res.render("user/userProfile", { error, formData,userId })
+            return res.render("user/userProfile", { error, formData, userId })
         }
 
         const user = await User.findById(userId)
@@ -123,15 +123,12 @@ const addAddress = async (req, res, next) => {
 
         const errors = {}
 
-
         if (!(/^[A-Za-z\s]{3,20}$/).test(fullname)) {
             errors['fullname'] = "Name contain only letters and spaces"
         }
 
-
         if (!/^\d+$/.test(mobile))
             errors['mobile'] = "Please enter valid mobile number"
-
         if (addressLine.trim().length < 10) {
             errors['addressLine'] = "Address Line should be minimum 10 characters"
         }
@@ -167,6 +164,13 @@ const addAddress = async (req, res, next) => {
         if (Object.keys(errors).length > 0) {
 
             return res.render("user/addAddress", { errors, user, username: user.fullname, address: null })
+        }
+        
+        if (isdefault === "true" || isdefault === true) {
+            await Address.updateMany(
+                { userId: userId, isdefault: true },
+                { $set: { isdefault: false } }
+            );
         }
 
         const addressData = {
