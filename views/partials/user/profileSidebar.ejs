@@ -90,7 +90,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Overlay click to close sidebar
     if (overlay) {
         overlay.addEventListener('click', function(e) {
             e.preventDefault();
@@ -98,27 +97,23 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Close sidebar when clicking on sidebar links (mobile)
     const sidebarLinks = document.querySelectorAll('.sidebar a');
     sidebarLinks.forEach(link => {
         link.addEventListener('click', function() {
-            // Only close on mobile
-            if (window.innerWidth <= 768) {
-                setTimeout(closeSidebar, 150);
+            if (window.innerWidth <= 992) {
+                // Removed auto-close - let navigation happen naturally
             }
         });
     });
     
-    // Close sidebar with Escape key
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && sidebar && sidebar.classList.contains('active')) {
             closeSidebar();
         }
     });
     
-    // Close sidebar when window is resized to desktop
     window.addEventListener('resize', function() {
-        if (window.innerWidth > 768 && sidebar && sidebar.classList.contains('active')) {
+        if (window.innerWidth > 992 && sidebar && sidebar.classList.contains('active')) {
             closeSidebar();
         }
     });

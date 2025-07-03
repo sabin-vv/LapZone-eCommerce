@@ -14,6 +14,7 @@
 <body>
     <div class="page-container">
         <%- include("../partials/user/header.ejs") %>
+        <div class="main-container">
         <div class="main-body">
         <%- include("../partials/user/profileSidebar.ejs") %>
 
@@ -61,8 +62,10 @@
             <input type="hidden" name="mobile" id="form-mobile">
         </form>
         </div>
-        <%- include("../partials/user/footer.ejs") %>
+        </div>
+        
     </div>
+    <%- include("../partials/user/footer.ejs") %>
 
     <script>    
         function toggleEdit() {
