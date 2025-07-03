@@ -12,40 +12,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/orderSuccessfullPage.css">
+    <link rel="stylesheet" href="/css/universal-floating-elements.css">
 </head>
 <body>
     <%- include("../partials/user/header.ejs") %>
     <div class="main-content">
         <%- include("../partials/user/profileSidebar.ejs") %>
 
-        <div class="order-success-container">
-            <div class="progress-container fade-in">
-                <div class="checkout-steps">
-                    <div class="steps-line"></div>
-                    <div class="steps-progress"></div>
-                    
-                    <div class="checkout-step">
-                        <div class="step-number">✓</div>
-                        <div class="step-name">Cart</div>
-                    </div>
-                    
-                    <div class="checkout-step">
-                        <div class="step-number">✓</div>
-                        <div class="step-name">Checkout</div>
-                    </div>
-                    
-                    <div class="checkout-step">
-                        <div class="step-number">✓</div>
-                        <div class="step-name">Payment</div>
-                    </div>
-                    
-                    <div class="checkout-step">
-                        <div class="step-number">✓</div>
-                        <div class="step-name">Confirmation</div>
-                    </div>
-                </div>
-            </div>
-
+        <div class="order-success-container">         
             <div class="success-card fade-in">
                 <div class="success-icon">
                     <i class="bi bi-check-circle-fill"></i>
@@ -135,5 +109,6 @@
             </div>
         </div>
     </div>
+    <%- include("../partials/user/footer.ejs") %>
 </body>
 </html>

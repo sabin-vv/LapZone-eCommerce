@@ -553,7 +553,8 @@ const orderSuccessPage = async (req, res) => {
     if (!req.session.user) return res.redirect("/")
 
     const orderId = req.params.id
-    const user = req.session.user
+    const userId = req.session.user
+    const user = await User.findById(userId)
 
     const order = await Order.findOne({ orderId })
     if (!order) return res.status(404).render("user/404");
