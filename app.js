@@ -1,4 +1,3 @@
-
 const express = require('express')
 const app = express()
 const path = require('path')
@@ -14,7 +13,6 @@ const errorHandler = require("./middlewares/errorHandler")
 connectDB();
 require("dotenv").config()
 require("./cornJobs/couponExpiry.js")
-
 
 
 app.use(nocache())
@@ -58,7 +56,6 @@ app.use(counts)
 app.use("/", userRouter)
 app.use("/admin",adminRouter)
 
-// Handle Chrome DevTools and other system requests
 app.get('/.well-known/appspecific/com.chrome.devtools.json', (req, res) => {
     res.status(404).end();
 });
@@ -67,7 +64,6 @@ app.get('/favicon.ico', (req, res) => {
     res.status(404).end();
 });
 
-// Handle other .well-known requests
 app.use('/.well-known', (req, res) => {
     res.status(404).end();
 });

@@ -11,7 +11,7 @@ const razorpay = new Razorpay({
 })
 
 const createRazorpay = async (req, res, next) => {
-  const { amount, shippingAddress } = req.body;
+  const { amount } = req.body;
   const userId = req.session.user
   try {
 
@@ -93,7 +93,6 @@ const verifyPayment = async (req, res, next) => {
       return res.status(400).json({ success: false, message: "Invalid payment signature" });
     }
 
-    // Payment is verified, return success
     res.json({ 
       success: true, 
       message: "Payment verified successfully",

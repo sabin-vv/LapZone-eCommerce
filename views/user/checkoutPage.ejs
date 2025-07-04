@@ -740,7 +740,7 @@
           const res = await fetch("/user/create-razorpay-order", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ amount: totalAmount, shippingAddress }),
+            body: JSON.stringify({ amount: totalAmount }),
           });
 
           const { orderId, amount, key } = await res.json();
