@@ -54,8 +54,13 @@ const viewWishlist = async (req, res, next) => {
     if (!req.session.user) return res.redirect("/login")
 
     const user = await User.findById(req.session.user);
-    const wishlist = await Wishlist.findOne({ userId: user }).populate('items.productId')
-
+    const wishlist = await Wishlist.findOne({ userId: user }).populate({
+      path: 'items.productId',
+      populate: {
+        path: 'categoryId',
+        select: 'name offer'
+      }
+    })
 
     if (wishlist)
       return res.render("user/wishListPage", { wishlist: wishlist.items, user })
@@ -106,60 +111,85 @@ const addtoCart = async (req, res, next) => {
     const { productId, variantId } = req.body;
     const userId = req.session.user;
 
-    const product = await Product.findById(productId);
+    const product = await Product.findById(productId).populate('categoryId');
     if (!product || !product.isActive || !product.isExisting) {
       return res.status(400).json({ success: false, message: "Product not available" });
     }
 
-    const selectedVariant = product.variants.id(variantId);
-    if (!selectedVariant) {
-      return res.status(400).json({ success: false, message: "Variant not found" });
+    let selectedVariant = null;
+    let basePrice = product.salePrice;
+
+    if (variantId && product.variants && product.variants.length > 0) {
+      selectedVariant = product.variants.id(variantId);
+      if (!selectedVariant) {
+        return res.status(400).json({ success: false, message: "Variant not found" });
+      }
+
+      if (selectedVariant.stock <= 0) {
+        return res.status(400).json({ success: false, message: "Selected variant is out of stock" });
+      }
+
+      basePrice = product.salePrice + (selectedVariant.priceAdjustment || 0);
     }
 
-    if (selectedVariant.stock <= 0) {
-      return res.status(400).json({ success: false, message: "Selected variant is out of stock" });
-    }
-
-    const finalPrice = product.salePrice + (selectedVariant.priceAdjustment || 0);
+    const productOffer = product.offer || 0;
+    const categoryOffer = product.categoryId?.offer || 0;
+    const maxOffer = Math.max(productOffer, categoryOffer);
+    
+    const finalPrice = Math.round(basePrice * (1 - maxOffer / 100));
 
     let cart = await Cart.findOne({ userId });
 
     if (!cart) {
+      const cartItem = {
+        productId,
+        price: finalPrice,
+        quantity: 1
+      };
+
+      if (selectedVariant) {
+        cartItem.ram = selectedVariant.RAM;
+        cartItem.storage = selectedVariant.Storage;
+      }
+
       cart = new Cart({
         userId,
-        items: [{
-          productId,
-          ram: selectedVariant.RAM,
-          storage: selectedVariant.Storage,
-          price: finalPrice,
-          quantity: 1
-        }]
+        items: [cartItem]
       });
     } else {
-      // Check if variant already exists in cart
-      const existingItem = cart.items.find(item =>
-        item.productId.toString() === productId &&
-        item.ram === selectedVariant.RAM &&
-        item.storage === selectedVariant.Storage
-      );
+      const existingItem = cart.items.find(item => {
+        if (item.productId.toString() !== productId) return false;
+        
+        if (selectedVariant) {
+          return item.ram === selectedVariant.RAM && item.storage === selectedVariant.Storage;
+        }
+        
+        return !item.ram && !item.storage;
+      });
 
       if (existingItem) {
         if (existingItem.quantity >= 5) {
           return res.status(400).json({ success: false, message: "Cart limit reached" });
         }
-        if (selectedVariant.stock <= existingItem.quantity) {
+        
+        if (selectedVariant && selectedVariant.stock <= existingItem.quantity) {
           return res.status(400).json({ success: false, message: "Not enough stock" });
         }
 
         existingItem.quantity += 1;
       } else {
-        cart.items.push({
+        const cartItem = {
           productId,
-          ram: selectedVariant.RAM,
-          storage: selectedVariant.Storage,
           price: finalPrice,
           quantity: 1
-        });
+        };
+
+        if (selectedVariant) {
+          cartItem.ram = selectedVariant.RAM;
+          cartItem.storage = selectedVariant.Storage;
+        }
+
+        cart.items.push(cartItem);
       }
     }
 
