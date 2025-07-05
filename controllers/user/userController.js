@@ -302,6 +302,18 @@ const postLoginPage = async (req, res, next) => {
         if (user.isBlocked)
             return res.status(403).render("user/userLogin", { error: "your Account is  Temporarily BLOCKED" })
 
+        if (user.googleId && !user.password) {
+            return res.status(400).render("user/userLogin", { 
+                error: "This account was created with Google. Please use the 'Continue with Google' button to login." 
+            })
+        }
+
+        if (!user.password) {
+            return res.status(400).render("user/userLogin", { 
+                error: "No password set for this account. Please contact support or use alternative login method." 
+            })
+        }
+
         const passMatch = await bcrypt.compare(password, user.password)
         if (!passMatch)
             return res.status(401).render("user/userLogin", { error: "Invalid Credentials" })
@@ -354,6 +366,18 @@ const verifyEmail = async (req, res, next) => {
 
         if (!isuserexist)
             return res.render("user/verifyEmail", { error: "This email is not Registered" })
+
+        if (isuserexist.googleId && !isuserexist.password) {
+            return res.render("user/verifyEmail", { 
+                error: "This account was created with Google. Password reset is not available. Please use 'Sign in with Google' to login." 
+            })
+        }
+
+        if (!isuserexist.password) {
+            return res.render("user/verifyEmail", { 
+                error: "No password set for this account. Please contact support." 
+            })
+        }
 
         const otp = generateOtp()
         const emailsend = await sendverificationEmail(email, otp)

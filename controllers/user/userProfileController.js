@@ -318,10 +318,15 @@ const changePassword = async (req, res, next) => {
     try {
         if (!req.session.user) return res.redirect("/")
         const user = await User.findById(req.session.user);
+        const username = req.session.username || user.fullname
+        const isGoogleUser = user.googleId && !user.password;
 
-        const username = req.session.username || req.session.user.fullname
-
-        res.render("user/userChangePassword", { user, username, errors: null })
+        res.render("user/userChangePassword", { 
+            user, 
+            username, 
+            errors: null,
+            isGoogleUser: isGoogleUser
+        })
     } catch (error) {
         console.error('Error fetching profile page:', error);
         next(error);
@@ -340,13 +345,77 @@ const editPassword = async (req, res, next) => {
         const user = userData.fullname
         const username = req.session.fullname || user.fullname
 
+        const isGoogleUser = userData.googleId && !userData.password;
         const errors = {}
+
+        if (isGoogleUser) {
+            const required = ['newPassword', 'confirmPassword']
+            
+            required.forEach(field => {
+                if (!req.body[field] || req.body[field].trim() === '') {
+                    errors[field] = `${field} is required`
+                }
+            })
+
+            if (!/(?=.*[a-z])/.test(newPassword))
+                errors['newPassword'] = "Password should contain minimum 1 lower case letter";
+            if (!/(?=.*[A-Z])/.test(newPassword))
+                errors['newPassword'] = "Password contain minimum 1 Uppercase letter";
+            if (!/(?=.*\d)/.test(newPassword))
+                errors['newPassword'] = "Password contain minimum 1 Digit";
+            if (!/(?=.*[@$!%*?&])/.test(newPassword))
+                errors['newPassword'] = "Password contain minimum 1 special character";
+            if (!/^[A-Za-z\d@$!%*?&]{8,}$/.test(newPassword))
+                errors['newPassword'] = "Password should be minimum 8 character long";
+
+            if (newPassword !== confirmPassword)
+                errors['confirmPassword'] = "Passwords do not match"
+
+            if (Object.keys(errors).length > 0) {
+                return res.status(400).render("user/userChangePassword", { 
+                    user: userData, 
+                    username, 
+                    errors,
+                    isGoogleUser: true
+                })
+            }
+
+            const hashNewPassword = await bcrypt.hash(newPassword, 10);
+            await User.findByIdAndUpdate(userId, { $set: { password: hashNewPassword } }, { new: true })
+
+            return res.redirect("/profile")
+        }
 
         const required = ['currentPassword', 'newPassword', 'confirmPassword']
 
+        if (!userData.password) {
+            errors['currentPassword'] = 'No password set for this account. Please contact support.'
+            return res.status(400).render("user/userChangePassword", { 
+                user: userData, 
+                username, 
+                errors,
+                isGoogleUser: false
+            })
+        }
+
+        required.forEach(field => {
+            if (!req.body[field] || req.body[field].trim() === '') {
+                errors[field] = `${field} is required`
+            }
+        })
+
+        if (Object.keys(errors).length > 0) {
+            return res.status(400).render("user/userChangePassword", { 
+                user: userData, 
+                username, 
+                errors,
+                isGoogleUser: false
+            })
+        }
+
         const isCurrentPassword = await bcrypt.compare(currentPassword, userData.password)
         if (!isCurrentPassword)
-            errors['currentPassword'] = 'Old password Miss match'
+            errors['currentPassword'] = 'Old password does not match'
 
         if (!/(?=.*[a-z])/.test(newPassword))
             errors['newPassword'] = "Password should contain minimum 1 lower case letter";
@@ -359,19 +428,19 @@ const editPassword = async (req, res, next) => {
         if (!/^[A-Za-z\d@$!%*?&]{8,}$/.test(newPassword))
             errors['newPassword'] = "Password should be minimum 8 character long";
 
-        required.forEach(field => {
-            if (!req.body[field] || req.body[field].trim() === '') errors[field] = `${field} is required`
-        })
-
-
         if (newPassword !== confirmPassword)
-            errors['newPassword'] = "password Missmatch"
+            errors['confirmPassword'] = "Passwords do not match"
 
-        if (Object.keys(errors).length > 0)
-            return res.status(400).render("user/userChangePassword", { user, username, errors })
+        if (Object.keys(errors).length > 0) {
+            return res.status(400).render("user/userChangePassword", { 
+                user: userData, 
+                username, 
+                errors,
+                isGoogleUser: false
+            })
+        }
 
         const hashNewPassword = await bcrypt.hash(newPassword, 10);
-
         await User.findByIdAndUpdate(userId, { $set: { password: hashNewPassword } }, { new: true })
 
         return res.redirect("/profile")
