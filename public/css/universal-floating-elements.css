@@ -1,17 +1,13 @@
-/* Universal Floating Elements CSS */
-/* This file contains the floating background elements that can be applied to any page */
 
-/* Import Inter font for consistency */
+
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 
-/* Base body styles with floating background */
 body {
   font-family: "Inter", sans-serif;
   position: relative;
   min-height: 100vh;
 }
 
-/* Background gradient overlay */
 body::before {
   content: "";
   position: fixed;
@@ -27,13 +23,11 @@ body::before {
   z-index: -2;
 }
 
-/* Universal container for floating elements */
 .page-container {
   position: relative;
   z-index: 1;
 }
 
-/* Add floating elements for visual interest */
 .page-container::before,
 .page-container::after {
   content: "";
@@ -60,7 +54,6 @@ body::before {
   animation: float2 8s ease-in-out infinite reverse;
 }
 
-/* Floating animations */
 @keyframes float1 {
   0%, 100% { transform: translateY(0px) rotate(0deg); }
   50% { transform: translateY(-20px) rotate(180deg); }
@@ -71,9 +64,7 @@ body::before {
   50% { transform: translateY(-30px) rotate(-180deg); }
 }
 
-/* Additional floating elements for more visual interest */
 .page-container::after {
-  /* Override the existing ::after to add more complexity */
   width: 200px;
   height: 200px;
   bottom: 20%;
@@ -82,7 +73,6 @@ body::before {
   background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(118, 75, 162, 0.08));
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .page-container::before {
     width: 200px;
@@ -111,7 +101,6 @@ body::before {
   }
 }
 
-/* Floating Elements Disabled State */
 body.floating-disabled::before {
   display: none !important;
 }
@@ -121,7 +110,6 @@ body.floating-disabled .page-container::after {
   display: none !important;
 }
 
-/* Smooth transition when toggling */
 body {
   transition: background 0.3s ease;
 }
