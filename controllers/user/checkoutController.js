@@ -139,6 +139,18 @@ const orderplace = async (req, res, next) => {
     if (!req.session.user) return res.redirect("/");
 
     const userId = req.session.user;
+    
+    // Check if user already has a processing order to prevent duplicates
+    if (req.session.orderInProgress) {
+      return res.status(429).json({ 
+        success: false, 
+        message: "Order is already being processed. Please wait." 
+      });
+    }
+    
+    // Set flag to prevent duplicate orders
+    req.session.orderInProgress = true;
+
     const { shippingAddress, paymentMethod, appliedCoupon, razorpayDetails } = req.body;
 
     const couponCode = appliedCoupon?.couponCode || null;
@@ -150,12 +162,14 @@ const orderplace = async (req, res, next) => {
     });
 
     if (!cart || cart.items.length === 0) {
+      delete req.session.orderInProgress;
       return res.status(400).json({ success: false, message: "Cart is empty." });
     }
 
     for (const item of cart.items) {
       const product = item.productId;
       if (!product || !product.isActive || !product.isExisting) {
+        delete req.session.orderInProgress;
         return res.json({ success: false, message: `Product not available` });
       }
 
@@ -164,10 +178,12 @@ const orderplace = async (req, res, next) => {
       );
 
       if (!variant) {
+        delete req.session.orderInProgress;
         return res.json({ success: false, message: `Variant not found for ${product.name}` });
       }
 
       if (variant.stock < item.quantity) {
+        delete req.session.orderInProgress;
         return res.json({
           success: false,
           message: `Only ${variant.stock} left for ${product.name}`
@@ -234,6 +250,18 @@ const orderplace = async (req, res, next) => {
       await wallet.save();
     }
 
+    // Validate payment method BEFORE creating order
+    if (paymentMethod === 'Wallet') {
+      if (wallet.balance < totalAmount) {
+        delete req.session.orderInProgress;
+        return res.json({ success: false, message: "Insufficient wallet balance" });
+      }
+    } else if (paymentMethod === 'COD' && totalAmount > 1000) {
+      delete req.session.orderInProgress;
+      return res.json({ success: false, message: "COD not available for orders above ₹1000" });
+    }
+
+    // Create order only after payment validation passes
     const order = new Order({
       orderId,
       user: userId,
@@ -257,13 +285,9 @@ const orderplace = async (req, res, next) => {
         razorpayPaymentId: razorpayDetails.razorpay_payment_id
       })
     });
-      await order.save();
 
+    // Process payment after order creation
     if (paymentMethod === 'Wallet') {
-      if (wallet.balance < totalAmount) {
-        return res.json({ success: false, message: "Insufficient wallet balance" });
-      }
-
       wallet.balance -= totalAmount;
       wallet.transactions.push({
         type: 'debit',
@@ -276,11 +300,7 @@ const orderplace = async (req, res, next) => {
       paymentStatus = 'Completed';
     } else if (paymentMethod === 'Online') {
       paymentStatus = 'Completed';
-    } else if (paymentMethod === 'COD' && totalAmount > 1000) {
-      return res.json({ success: false, message: "COD not available for orders above ₹1000" });
-    }
-
-    if (paymentStatus !== 'Completed') {
+    } else if (paymentMethod === 'COD') {
       paymentStatus = 'Pending';
     }
 
@@ -296,6 +316,9 @@ const orderplace = async (req, res, next) => {
 
     await Cart.deleteOne({ userId });
 
+    // Clear the order processing flag
+    delete req.session.orderInProgress;
+
     if (paymentStatus === 'Completed') {
       res.json({ success: true, message: 'Order Placed', orderId });
     } else {
@@ -304,6 +327,10 @@ const orderplace = async (req, res, next) => {
 
   } catch (error) {
     console.error('Error placing order:', error);
+    
+    // Clear the order processing flag on error
+    delete req.session.orderInProgress;
+    
     next(error);
   }
 };
@@ -584,6 +611,18 @@ const createPendingOrder = async (req, res, next) => {
     if (!req.session.user) return res.redirect("/");
 
     const userId = req.session.user;
+    
+    // Check if user already has a processing order to prevent duplicates
+    if (req.session.pendingOrderInProgress) {
+      return res.status(429).json({ 
+        success: false, 
+        message: "Pending order is already being processed. Please wait." 
+      });
+    }
+    
+    // Set flag to prevent duplicate pending orders
+    req.session.pendingOrderInProgress = true;
+
     const { shippingAddress, appliedCoupon, razorpayOrderId } = req.body;
 
     const couponCode = appliedCoupon?.couponCode || null;
@@ -708,6 +747,9 @@ const createPendingOrder = async (req, res, next) => {
     // Clear cart
     await Cart.deleteOne({ userId });
 
+    // Clear the pending order processing flag
+    delete req.session.pendingOrderInProgress;
+
     res.json({ 
       success: true, 
       message: 'Order created with pending payment status', 
@@ -716,6 +758,10 @@ const createPendingOrder = async (req, res, next) => {
 
   } catch (error) {
     console.error('Error creating pending order:', error);
+    
+    // Clear the pending order processing flag on error
+    delete req.session.pendingOrderInProgress;
+    
     next(error);
   }
 };
