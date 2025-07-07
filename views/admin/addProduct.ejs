@@ -610,8 +610,8 @@
 
         const isMainPhoto = currentPreview.closest('.main-photo');
         const croppedCanvas = cropper.getCroppedCanvas({
-            width: isMainPhoto ? 400 : 150,
-            height: isMainPhoto ? 300 : 150,
+            width: 800,
+            height: 600,
         });
 
         currentPreview.src = croppedCanvas.toDataURL('image/jpeg');

@@ -500,13 +500,8 @@
 
             const isMainPhoto = currentPreview.closest('.main-photo');
             const croppedCanvas = cropper.getCroppedCanvas({
-                aspectRatio: 800 / 600 ,
-                viewMode: 0,
-                autoCropArea: 0.8,
-                responsive:true,
-                zoomWheel : true,
-                scalable : true,
-                zoomable:true,
+                width: 800,
+                height: 600,
             });
 
             currentPreview.src = croppedCanvas.toDataURL('image/jpeg');
