@@ -204,11 +204,20 @@ const addAddress = async (req, res, next) => {
             return res.render("user/addAddress", { errors, user, username: user.fullname, address: null })
         }
 
+        
+        const existingAddress = await Address.find({userId})
+
+        let makedefault = false
+
+        if(existingAddress.length === 0)
+            makedefault = true
+
         if (isdefault === "true" || isdefault === true) {
             await Address.updateMany(
                 { userId: userId, isdefault: true },
                 { $set: { isdefault: false } }
             );
+            makedefault = true
         }
 
         const addressData = {
@@ -222,7 +231,7 @@ const addAddress = async (req, res, next) => {
             pincode: pincode,
             landmark: landmark || '',
             addresstype: addressType,
-            isdefault: isdefault || false
+            isdefault: makedefault
         }
 
         const address = new Address(addressData)
@@ -233,7 +242,6 @@ const addAddress = async (req, res, next) => {
         console.error('Error fetching profile page:', error);
         next(error);
     }
-
 }
 
 const editAddressPage = async (req, res, next) => {

@@ -140,7 +140,6 @@ const orderplace = async (req, res, next) => {
 
     const userId = req.session.user;
     
-    // Check if user already has a processing order to prevent duplicates
     if (req.session.orderInProgress) {
       return res.status(429).json({ 
         success: false, 
@@ -148,7 +147,6 @@ const orderplace = async (req, res, next) => {
       });
     }
     
-    // Set flag to prevent duplicate orders
     req.session.orderInProgress = true;
 
     const { shippingAddress, paymentMethod, appliedCoupon, razorpayDetails } = req.body;
@@ -250,7 +248,6 @@ const orderplace = async (req, res, next) => {
       await wallet.save();
     }
 
-    // Validate payment method BEFORE creating order
     if (paymentMethod === 'Wallet') {
       if (wallet.balance < totalAmount) {
         delete req.session.orderInProgress;
@@ -261,7 +258,6 @@ const orderplace = async (req, res, next) => {
       return res.json({ success: false, message: "COD not available for orders above ₹1000" });
     }
 
-    // Create order only after payment validation passes
     const order = new Order({
       orderId,
       user: userId,
@@ -286,7 +282,6 @@ const orderplace = async (req, res, next) => {
       })
     });
 
-    // Process payment after order creation
     if (paymentMethod === 'Wallet') {
       wallet.balance -= totalAmount;
       wallet.transactions.push({
@@ -316,7 +311,6 @@ const orderplace = async (req, res, next) => {
 
     await Cart.deleteOne({ userId });
 
-    // Clear the order processing flag
     delete req.session.orderInProgress;
 
     if (paymentStatus === 'Completed') {
@@ -328,7 +322,6 @@ const orderplace = async (req, res, next) => {
   } catch (error) {
     console.error('Error placing order:', error);
     
-    // Clear the order processing flag on error
     delete req.session.orderInProgress;
     
     next(error);
@@ -469,19 +462,18 @@ const editAddress = async (req, res) => {
 
 const addAddress = async (req, res) => {
   try {
-
-    const isAjax = req.headers.accept && req.headers.accept.includes("application/json")
-    const userId = req.session.user
+    const isAjax = req.headers.accept && req.headers.accept.includes("application/json");
+    const userId = req.session.user;
 
     if (!req.body || Object.keys(req.body).length === 0) {
-      console.error("Request body is empty or undefined")
+      console.error("Request body is empty or undefined");
       if (isAjax) {
         return res.status(400).json({
           success: false,
           message: "No data received. Please check form submission.",
-        })
+        });
       }
-      return res.status(400).send("Bad Request: No data received")
+      return res.status(400).send("Bad Request: No data received");
     }
 
     const {
@@ -495,41 +487,44 @@ const addAddress = async (req, res) => {
       landmark = "",
       addressType = "Home",
       isDefault = false,
-    } = req.body
+    } = req.body;
 
-    const errors = {}
-    const fields = { fullname, mobile, addressLine, district, state, city, pincode }
+    const errors = {};
+    const fields = { fullname, mobile, addressLine, district, state, city, pincode };
 
     if (!fullname || !/^[A-Za-z\s]{3,20}$/.test(fullname)) {
-      errors.fullname = "Name must contain only letters and spaces (3-20 chars)"
+      errors.fullname = "Name must contain only letters and spaces (3-20 chars)";
     }
 
     if (!mobile || !/^\d{10}$/.test(mobile)) {
-      errors.mobile = "Mobile must be 10 digits"
+      errors.mobile = "Mobile must be 10 digits";
     }
 
     if (!pincode || pincode.length !== 6 || !/^\d+$/.test(pincode)) {
-      errors.pincode = "Pincode must be 6 digits"
+      errors.pincode = "Pincode must be 6 digits";
     }
-    ;["state", "district", "city"].forEach((field) => {
-      const value = req.body[field]
+
+    ["state", "district", "city"].forEach((field) => {
+      const value = req.body[field];
       if (!value || !/^[A-Za-z\s-]+$/.test(value)) {
-        errors[field] = `${field.charAt(0).toUpperCase() + field.slice(1)} must contain only letters`
+        errors[field] = `${field.charAt(0).toUpperCase() + field.slice(1)} must contain only letters`;
       }
-    })
+    });
 
     Object.entries(fields).forEach(([key, val]) => {
       if (!val || val.trim() === "") {
-        errors[key] = `${key} is required`
+        errors[key] = `${key} is required`;
       }
-    })
+    });
 
     if (Object.keys(errors).length > 0) {
       if (isAjax) {
-        return res.status(400).json({ success: false, errors })
+        return res.status(400).json({ success: false, errors });
       }
-      return res.render("user/checkoutPage", { errors })
+      return res.render("user/checkoutPage", { errors });
     }
+
+    const existingAddresses = await Address.find({ userId });
 
     const addressData = {
       userId,
@@ -542,38 +537,39 @@ const addAddress = async (req, res) => {
       pincode: pincode.trim(),
       landmark: landmark ? landmark.trim() : "",
       addresstype: addressType,
-      isdefault: isDefault === "on" || isDefault === true,
+      isdefault: false, 
+    };
+
+    if (existingAddresses.length === 0) {
+      addressData.isdefault = true;
+    } else if (isDefault === "on" || isDefault === true) {
+      await Address.updateMany({ userId, isdefault: true }, { $set: { isdefault: false } });
+      addressData.isdefault = true;
     }
 
-    if (addressData.isdefault) {
-      await Address.updateMany({ userId: userId, isdefault: true }, { $set: { isdefault: false } })
-    }
-
-    const newAddress = await Address.create(addressData)
+    const newAddress = await Address.create(addressData);
 
     if (isAjax) {
       return res.json({
         success: true,
         message: "Address added successfully",
         address: newAddress,
-      })
+      });
     }
 
-    res.redirect("/user/checkout")
+    res.redirect("/user/checkout");
   } catch (error) {
-    console.error("Error adding address:", error)
-
-    const isAjax = req.headers.accept && req.headers.accept.includes("application/json")
+    console.error("Error adding address:", error);
+    const isAjax = req.headers.accept && req.headers.accept.includes("application/json");
     if (isAjax) {
       return res.status(500).json({
         success: false,
         message: "Internal server error while adding address",
-      })
+      });
     }
-
-    res.status(500).send("Internal Server Error")
+    res.status(500).send("Internal Server Error");
   }
-}
+};
 
 const orderSuccessPage = async (req, res) => {
   try {
@@ -612,7 +608,6 @@ const createPendingOrder = async (req, res, next) => {
 
     const userId = req.session.user;
     
-    // Check if user already has a processing order to prevent duplicates
     if (req.session.pendingOrderInProgress) {
       return res.status(429).json({ 
         success: false, 
@@ -620,7 +615,6 @@ const createPendingOrder = async (req, res, next) => {
       });
     }
     
-    // Set flag to prevent duplicate pending orders
     req.session.pendingOrderInProgress = true;
 
     const { shippingAddress, appliedCoupon, razorpayOrderId } = req.body;
@@ -637,7 +631,6 @@ const createPendingOrder = async (req, res, next) => {
       return res.status(400).json({ success: false, message: "Cart is empty." });
     }
 
-    // Validate stock availability
     for (const item of cart.items) {
       const product = item.productId;
       if (!product || !product.isActive || !product.isExisting) {
@@ -712,7 +705,6 @@ const createPendingOrder = async (req, res, next) => {
     const tax = Math.round((subtotal - discountAmount) * 0.05);
     const totalAmount = subtotal + shippingFee + tax - discountAmount;
 
-    // Create order with pending payment status
     const order = new Order({
       orderId,
       user: userId,
@@ -736,7 +728,6 @@ const createPendingOrder = async (req, res, next) => {
 
     await order.save();
 
-    // Update product stock
     for (const item of cart.items) {
       await Product.updateOne(
         { _id: item.productId._id, "variants.RAM": item.ram, "variants.Storage": item.storage },
@@ -744,10 +735,8 @@ const createPendingOrder = async (req, res, next) => {
       );
     }
 
-    // Clear cart
     await Cart.deleteOne({ userId });
 
-    // Clear the pending order processing flag
     delete req.session.pendingOrderInProgress;
 
     res.json({ 
@@ -759,7 +748,6 @@ const createPendingOrder = async (req, res, next) => {
   } catch (error) {
     console.error('Error creating pending order:', error);
     
-    // Clear the pending order processing flag on error
     delete req.session.pendingOrderInProgress;
     
     next(error);
