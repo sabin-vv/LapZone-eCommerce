@@ -4,112 +4,237 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Verify OTP</title>
+    <title>Verify Email Change</title>
     <link rel="stylesheet" href="/css/mailverification.css" />
-    <link rel="stylesheet" href="sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 </head>
 
 <body>
-    <h2>Verify OTP</h2>
-    <p>
-        We’ve sent an email with an activation code to your mail :
-        <strong>
-            <%= data %>
-        </strong>
-    </p>
+    <div class="container">
+        <div class="icon-container"></div>
+        
+        <h2>Verify Email Change</h2>
+        <p class="description">
+            We've sent a 6-digit verification code to your new email address:
+            <br><span class="email-highlight"><%= data %></span>
+        </p>
 
-    <form onsubmit="return validateOtp(event)" action="" method="post">
-        <div class="otp-container">
-            <input type="text" name="otp" maxlength="6" id="otp-input" />
-        </div>
+        <form onsubmit="return validateOtp(event)" action="" method="post">
+            <div class="otp-container">
+                <input type="text" 
+                       name="otp" 
+                       maxlength="6" 
+                       id="otp-input" 
+                       placeholder="000000"
+                       autocomplete="one-time-code" />
+            </div>
 
-        <div class="resend-container">
-            <span><strong>Send code again</strong><span id="timer">00:20</span> </span><br /><br />
-            <span>I didn’t receive a code <span id="resend-btn" onclick="return resendOtp()"
-                    style="display:none"><strong>Resend</strong></span></span>
-        </div>
+            <div class="resend-container">
+                <div class="timer-section">
+                    <span>Resend code in</span>
+                    <span id="timer">00:20</span>
+                </div>
+                <div class="resend-section">
+                    Didn't receive the code? 
+                    <span id="resend-btn" onclick="return resendOtp()" style="display:none">
+                        Resend Code
+                    </span>
+                </div>
+            </div>
 
-        <button type="submit" class="verify-btn">Verify</button>
-    </form>
-
+            <button type="submit" class="verify-btn" id="verify-button">
+                Verify & Update Profile
+            </button>
+        </form>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
+        const TIMER_DURATION = 20; 
+        const EXPIRY_KEY = "profile_otp_timer_expiry";
 
-        let timeLeft = 20;
         const timerElement = document.getElementById("timer");
+        const resendBtn = document.getElementById("resend-btn");
+        const otpInput = document.getElementById("otp-input");
+        const verifyButton = document.getElementById("verify-button");
+        const container = document.querySelector(".container");
 
-        const countdown = setInterval(() => {
-            let minutes = Math.floor(timeLeft / 60);
-            let seconds = timeLeft % 60;
+        let countdownInterval;
 
+        otpInput.focus();
 
+        otpInput.addEventListener('input', function () {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        function startCountdown(expiryTime) {
+            clearInterval(countdownInterval);
+
+            const updateDisplay = () => {
+            const now = Date.now();
+            const remaining = Math.floor((expiryTime - now) / 1000);
+             if (remaining >= 0) {
+            const minutes = Math.floor(remaining / 60);
+            const seconds = remaining % 60;
             timerElement.textContent =
-                (minutes < 10 ? "0" + minutes : minutes) + ":" +
-                (seconds < 10 ? "0" + seconds : seconds);
+                (minutes < 10 ? "0" : "") + minutes + ":" +
+                (seconds < 10 ? "0" : "") + seconds;
+        }
 
-            timeLeft--;
+        if (remaining <= 0) {
+            clearInterval(countdownInterval);
+            timerElement.textContent = "00:00";
+            timerElement.style.background = "#e74c3c";
+            resendBtn.style.display = "inline";
+            localStorage.removeItem(EXPIRY_KEY);
+        }
+        }
+        updateDisplay(); 
+    countdownInterval = setInterval(updateDisplay, 1000);
+    }
 
-            if (timeLeft < 0) {
-                clearInterval(countdown);
-                timerElement.textContent = "00:00";
-                document.getElementById("resend-btn").style.display = "inline";
+        function initializeTimer() {
+            const now = Date.now();
+            let expiryTime = localStorage.getItem(EXPIRY_KEY);
+
+            if (!expiryTime || now >= parseInt(expiryTime)) {
+                expiryTime = now + TIMER_DURATION * 1000;
+                localStorage.setItem(EXPIRY_KEY, expiryTime);
+            } else {
+                expiryTime = parseInt(expiryTime);
             }
-        }, 1000);
+
+            timerElement.style.background = "linear-gradient(135deg, #667eea, #764ba2)";
+            resendBtn.style.display = "none";
+            startCountdown(expiryTime);
+        }
+
+        initializeTimer();
 
         function validateOtp(e) {
-            const inputOtp = document.getElementById('otp-input').value
-            console.log("OTP,InputOTP", inputOtp)
+            e.preventDefault();
+            const inputOtp = otpInput.value.trim();
+
+            if (inputOtp.length !== 6) {
+                container.classList.add('shake');
+                setTimeout(() => container.classList.remove('shake'), 500);
+
+                Swal.fire({
+                    icon: "warning",
+                    title: "Invalid Code",
+                    text: "Please enter a 6-digit verification code",
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+                return false;
+            }
+
+            container.classList.add('loading');
+            verifyButton.textContent = "Verifying...";
+
             $.ajax({
                 type: "POST",
                 url: "/profile/profile-update-verify-otp",
                 data: { otp: inputOtp },
                 success: function (response) {
+                    container.classList.remove('loading');
+                    verifyButton.textContent = "Verify & Update Profile";
+
                     if (response.success) {
                         Swal.fire({
-                            title: "OTP verification Successfull",
+                            title: "Profile Updated Successfully!",
+                            text: "Your email has been verified and profile updated",
                             icon: "success",
-                            timer: 1500
+                            timer: 2000,
+                            showConfirmButton: false
                         }).then(() => {
-                            window.location.href = '/profile'
-                        })
+                            localStorage.removeItem(EXPIRY_KEY);
+                            window.location.href = '/profile';
+                        });
+                    } else {
+                        container.classList.add('shake');
+                        setTimeout(() => container.classList.remove('shake'), 500);
+
+                        Swal.fire({
+                            icon: "error",
+                            title: "Verification Failed",
+                            text: response.message || "The code you entered is incorrect"
+                        });
                     }
                 },
                 error: function () {
+                    container.classList.remove('loading');
+                    verifyButton.textContent = "Verify & Update Profile";
+                    container.classList.add('shake');
+                    setTimeout(() => container.classList.remove('shake'), 500);
+
                     Swal.fire({
                         icon: "error",
-                        title: "Invalid OTP",
-                        timer: 1500
-                    })
+                        title: "Verification Failed",
+                        text: "The code you entered is incorrect. Please try again.",
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
                 }
-            })
-            return false
+            });
+            return false;
         }
 
-        function resendOtp(){
+        function resendOtp() {
+            resendBtn.style.display = "none";
+
+            Swal.fire({
+                title: "Sending...",
+                text: "Please wait while we send a new code",
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
             $.ajax({
-                type:"POST",
-                url:"/resend-otp",
-                success: function(response){
-                    if(response.success){
-                        Swal.fire({
-                            icon:"success",
-                            title:"OTP resend Successfully",
-                            timer:1500
-                        })
-                    }else{
-                        Swal.fire({
-                            icon:"error",
-                            title:"OTP resend Failed"
-                        })
-                    }
-                }
-            })
-            return false
-        }
+                type: "POST",
+                url: "/profile/resend-otp",
+                success: function (response) {
+                    Swal.close();
 
+                    if (response.success) {
+                        const newExpiryTime = Date.now() + TIMER_DURATION * 1000;
+                        localStorage.setItem(EXPIRY_KEY, newExpiryTime);
+                        timerElement.style.background = "linear-gradient(135deg, #667eea, #764ba2)";
+                        initializeTimer();
+
+                        Swal.fire({
+                            icon: "success",
+                            title: "Code Sent!",
+                            text: "A new verification code has been sent to your email",
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Failed to Send",
+                            text: "Unable to send verification code. Please try again."
+                        });
+                        resendBtn.style.display = "inline";
+                    }
+                },
+                error: function () {
+                    Swal.close();
+                    Swal.fire({
+                        icon: "error",
+                        title: "Network Error",
+                        text: "Please check your connection and try again."
+                    });
+                    resendBtn.style.display = "inline";
+                }
+            });
+            return false;
+        }
     </script>
 
 </body>

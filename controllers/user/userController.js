@@ -200,6 +200,7 @@ const postSignUp = async (req, res, next) => {
             res.json("Otp send error")
 
         req.session.otp = otp
+        req.session.otpCreatedAt = Date.now();
         req.session.userData = { fullname:fullname.trim(), email, mobile, password, refferedBy };
 
         res.render("user/mailverification", { data: email });
@@ -209,6 +210,7 @@ const postSignUp = async (req, res, next) => {
     }
 };
 
+const OTP_EXPIRY_MS = 10 * 60 * 1000;
 const verifyOtp = async (req, res, next) => {
     try {
         const { otp } = req.body
@@ -276,6 +278,8 @@ const resendOtp = async (req, res, next) => {
         else {
             const otp = generateOtp();
             req.session.otp = otp;
+            req.session.otpCreatedAt = Date.now();
+            
             const emailsend = await sendverificationEmail(email, otp)
             if (emailsend) {
                 console.log("OTP resend : ", otp)

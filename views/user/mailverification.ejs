@@ -5,8 +5,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Verify OTP</title>
-    <link rel="stylesheet" href="sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" href="/css/mailverification.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 </head>
 
 <body>
@@ -52,7 +53,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
-    const TIMER_DURATION = 20; // seconds
+    const TIMER_DURATION = 20; 
     const EXPIRY_KEY = "otp_timer_expiry";
 
     const timerElement = document.getElementById("timer");
@@ -70,17 +71,17 @@
     });
 
     function startCountdown(expiryTime) {
-        clearInterval(countdownInterval); 
+        clearInterval(countdownInterval);
 
-        countdownInterval = setInterval(() => {
+        const updateDisplay = () => {
             const now = Date.now();
             const remaining = Math.floor((expiryTime - now) / 1000);
 
             if (remaining >= 0) {
                 const minutes = Math.floor(remaining / 60);
                 const seconds = remaining % 60;
-                timerElement.textContent = 
-                    (minutes < 10 ? "0" : "") + minutes + ":" + 
+                timerElement.textContent =
+                    (minutes < 10 ? "0" : "") + minutes + ":" +
                     (seconds < 10 ? "0" : "") + seconds;
             }
 
@@ -89,9 +90,12 @@
                 timerElement.textContent = "00:00";
                 timerElement.style.background = "#e74c3c";
                 resendBtn.style.display = "inline";
-                localStorage.removeItem(EXPIRY_KEY); 
+                localStorage.removeItem(EXPIRY_KEY);
             }
-        }, 1000);
+        };
+
+        updateDisplay(); 
+        countdownInterval = setInterval(updateDisplay, 1000);
     }
 
     function initializeTimer() {

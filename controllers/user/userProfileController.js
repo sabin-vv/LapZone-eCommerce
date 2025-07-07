@@ -38,6 +38,7 @@ const editProfile = async (req, res, next) => {
         if (email !== user.email) {
             req.session.email = email
             const otp = await UserController.generateOtp();
+            req.session.otpCreatedAt = Date.now();
             console.log(otp)
 
             req.session.otp = otp
@@ -47,15 +48,10 @@ const editProfile = async (req, res, next) => {
             const verify = await UserController.sendverificationEmail(email, otp)
 
             if (verify) {
-
-                res.render("user/userProfileUpdate", { data: email, })
+                return res.render("user/userProfileUpdate", { data: email, })
             }
         }
 
-        await User.findByIdAndUpdate(req.session.user,
-            { $set: { fullname, email, mobile } },
-            { new: true }
-        )
         return res.redirect("/profile")
     } catch (error) {
         console.error('Error fetching profile page:', error);
@@ -63,11 +59,53 @@ const editProfile = async (req, res, next) => {
     }
 
 }
+const resendProfileOtp = async (req, res, next) => {
+    try {
+        const email = req.session.email;
 
+        if (!email) {
+            return res.json({
+                success: false,
+                message: "Session expired. Please try editing your profile again.",
+            });
+        }
+
+        const otp = await UserController.generateOtp();
+        console.log("OTP", otp)
+        req.session.otp = otp;
+        req.session.otpCreatedAt = Date.now();
+
+        const sent = await UserController.sendverificationEmail(email, otp);
+
+        if (sent) {
+            return res.json({ success: true });
+        } else {
+            return res.json({ success: false, message: "Failed to send OTP" });
+        }
+    } catch (error) {
+        console.error("Error resending OTP:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Something went wrong. Try again later.",
+        });
+    }
+}
+const OTP_EXPIRY_MS = 10 * 60 * 1000;
 const otpVerify = async (req, res, next) => {
     try {
         const { otp } = req.body
-        console.log("userid", req.session.otp, otp)
+        const createdAt = req.session.otpCreatedAt;
+        const now = Date.now();
+        
+        if (!otp || !createdAt || now - createdAt > OTP_EXPIRY_MS) {
+            delete req.session.otp;
+            delete req.session.otpCreatedAt;
+
+             return res.json({
+                success: false,
+                message: "OTP has expired. Please request a new one."
+            });
+        }
         if (otp == req.session.otp) {
 
             const user = await User.findByIdAndUpdate(req.session.userId, { $set: { email: req.session.email } }, { new: true })
@@ -165,7 +203,7 @@ const addAddress = async (req, res, next) => {
 
             return res.render("user/addAddress", { errors, user, username: user.fullname, address: null })
         }
-        
+
         if (isdefault === "true" || isdefault === true) {
             await Address.updateMany(
                 { userId: userId, isdefault: true },
@@ -321,9 +359,9 @@ const changePassword = async (req, res, next) => {
         const username = req.session.username || user.fullname
         const isGoogleUser = user.googleId && !user.password;
 
-        res.render("user/userChangePassword", { 
-            user, 
-            username, 
+        res.render("user/userChangePassword", {
+            user,
+            username,
             errors: null,
             isGoogleUser: isGoogleUser
         })
@@ -350,7 +388,7 @@ const editPassword = async (req, res, next) => {
 
         if (isGoogleUser) {
             const required = ['newPassword', 'confirmPassword']
-            
+
             required.forEach(field => {
                 if (!req.body[field] || req.body[field].trim() === '') {
                     errors[field] = `${field} is required`
@@ -372,9 +410,9 @@ const editPassword = async (req, res, next) => {
                 errors['confirmPassword'] = "Passwords do not match"
 
             if (Object.keys(errors).length > 0) {
-                return res.status(400).render("user/userChangePassword", { 
-                    user: userData, 
-                    username, 
+                return res.status(400).render("user/userChangePassword", {
+                    user: userData,
+                    username,
                     errors,
                     isGoogleUser: true
                 })
@@ -390,9 +428,9 @@ const editPassword = async (req, res, next) => {
 
         if (!userData.password) {
             errors['currentPassword'] = 'No password set for this account. Please contact support.'
-            return res.status(400).render("user/userChangePassword", { 
-                user: userData, 
-                username, 
+            return res.status(400).render("user/userChangePassword", {
+                user: userData,
+                username,
                 errors,
                 isGoogleUser: false
             })
@@ -405,9 +443,9 @@ const editPassword = async (req, res, next) => {
         })
 
         if (Object.keys(errors).length > 0) {
-            return res.status(400).render("user/userChangePassword", { 
-                user: userData, 
-                username, 
+            return res.status(400).render("user/userChangePassword", {
+                user: userData,
+                username,
                 errors,
                 isGoogleUser: false
             })
@@ -432,9 +470,9 @@ const editPassword = async (req, res, next) => {
             errors['confirmPassword'] = "Passwords do not match"
 
         if (Object.keys(errors).length > 0) {
-            return res.status(400).render("user/userChangePassword", { 
-                user: userData, 
-                username, 
+            return res.status(400).render("user/userChangePassword", {
+                user: userData,
+                username,
                 errors,
                 isGoogleUser: false
             })
@@ -486,4 +524,5 @@ module.exports = {
     changePassword,
     setDefaultAddress,
     editPassword,
+    resendProfileOtp
 }
