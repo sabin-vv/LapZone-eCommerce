@@ -172,7 +172,7 @@ const postSignUp = async (req, res, next) => {
             errors['password'] = "Password contain minimum 1 Digit";
         if (!/(?=.*[@$!%*?&])/.test(password))
             errors['password'] = "Password contain minimum 1 special character";
-        if (!/^[A-Za-z\d@$!%*?&]{8,}$/.test(password))
+        if (!/^[\S]{8,}$/.test(password))
             errors['password'] = "Password should be minimum 8 character long";
 
         fields.forEach(item => {
