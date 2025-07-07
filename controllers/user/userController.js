@@ -184,12 +184,12 @@ const postSignUp = async (req, res, next) => {
             errors['confpassword'] = "passwords Missmatch";
 
         if (Object.keys(errors).length > 0)
-            return res.render("user/userSignup", { errors, message: null, formData, error: null });
+            return res.render("user/userSignUp", { errors, message: null, formData, error: null });
 
         const existingUser = await User.findOne({ $or: [{ email: email }, { mobile: mobile }] });
 
         if (existingUser) {
-            return res.render("user/userSignup", { message: "User already exists", error: null });
+            return res.render("user/userSignUp", { message: "User already exists", error: null });
         }
 
         const otp = generateOtp()
