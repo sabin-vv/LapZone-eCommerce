@@ -6,117 +6,117 @@
     <title>Coupons - Dashboard</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/customerslist.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="/css/couponPage.css">
 </head>
 <body>
     <%- include("../partials/admin/header.ejs") %>
-   <div class="coupon-dashboard">
-    <%- include('../partials/admin/sidebar.ejs') %>
+    <div class="customer-dashboard">
+        <%- include('../partials/admin/sidebar.ejs') %>
 
-    <div class="main-content">
-        <div class="page-header">
-            <h1 class="page-title">Coupons</h1>
-            
-            <button class="add-coupon-btn" onclick="addCoupon()">
-            <i class="fas fa-plus"></i> Add Coupon
-        </button>
-        </div>
-        <div class="breadcrumb">
-                
+        <main class="main-content">
+            <div class="breadcrumb">
+                <a href="/admin/dashboard">Dashboard</a>
+                <span>›</span>
+                <span>Coupons</span>
             </div>
-        <div class="content-wrapper">           
+            <header class="header">
+                <h2><i class="fa-solid fa-ticket" style="color: #4f46e5;"></i> Coupons</h2>
+            </header>
 
-            <div class="section-title">
-                <h2>All Coupons</h2>
-                <div class="search-box">
-                    <input type="text" placeholder="Search coupon code..." id="searchInput">
-                    <i class="fas fa-search"></i>
+            <div class="container mx-auto p-6">
+                <div class="customers">
+                    <div class="products">
+                        <div class="action-bar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 1rem;">
+                            <button class="add-product-btn" onclick="addCoupon()" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background-color: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.875rem; font-weight: 500;">
+                                <i class="fas fa-plus"></i>
+                                Add Coupon
+                            </button>
+                        </div>
+
+                        <div class="search-container">
+                            <form class="search-form" style="justify-content: flex-end;">
+                                <input type="text" placeholder="Search coupon code..." id="searchInput">
+                                <button type="button" class="search-btn" style="background-color: #6b7280;">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="table-container">
+                            <table class="product-table" id="couponsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Min Purchase</th>
+                                        <th>Discount</th>
+                                        <th>Max Redeemable</th>
+                                        <th>Status</th>
+                                        <th>Expiry Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% if (coupons && coupons.length > 0) { %>
+                                        <% coupons.forEach(coupon => { %>
+                                            <tr>
+                                                <td style="font-weight: 600; color: #1f2937;"><%= coupon.code %></td>
+                                                <td>₹<%= coupon.minPurchaseAmount?.toLocaleString('en-IN') %></td>
+                                                <% if(coupon.discountType === 'percentage') {%>
+                                                    <td><%= coupon.discountValue?.toLocaleString('en-IN') %>%</td>
+                                                    <% if(coupon.maxDiscountAmount) { %>
+                                                        <td>₹<%= coupon.maxDiscountAmount?.toLocaleString('en-IN') %></td>
+                                                    <% } else { %>
+                                                        <td>N/A</td>
+                                                    <% } %>
+                                                <% } else { %>
+                                                    <td>₹<%= coupon.discountValue?.toLocaleString('en-IN') %></td>
+                                                    <td>N/A</td>
+                                                <% } %>
+                                                <td>
+                                                    <% if (coupon.isActive) { %>
+                                                        <label class="switch">
+                                                            <input type="checkbox" checked data-id="<%= coupon._id %>">
+                                                            <span class="slider"></span>
+                                                        </label>
+                                                    <% } else { %>
+                                                        <span style="background-color: #ef4444; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 500;">INACTIVE</span>
+                                                    <% } %>
+                                                </td>
+                                                <td><%= new Date(coupon.expiryDate).toLocaleDateString('en-IN') %></td>
+                                                <td>
+                                                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                                        <button onclick="editCoupon('<%= coupon._id %>')" style="display: flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: 6px; border: none; cursor: pointer; background-color: #3b82f6; color: white;">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                        <button onclick="deleteCoupon('<%= coupon._id %>')" style="display: flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: 6px; border: none; cursor: pointer; background-color: #ef4444; color: white;">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        <% }) %>
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="7" style="text-align: center; padding: 40px; color: #666;">
+                                                No coupons found
+                                            </td>
+                                        </tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
-            
-            <div class="table-container">
-                <table class="coupons-table">
-                    <thead>
-                        <tr>
-                            <th>Code</th>
-                            <th>Min purchase</th>
-                            <th>Discount</th>
-                            <th>Max redeemable</th>
-                            <th>Active</th>
-                            <th>Expiry Date</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% if (coupons && coupons.length > 0) { %>
-                            <% coupons.forEach(coupon => { %>
-                                <tr>
-                                    <td><strong><%= coupon.code %></strong></td>
-                                    <td> <%= coupon.minPurchaseAmount?.toLocaleString('en-IN') %></td>
-                                    <% if(coupon.discountType === 'percentage') {%>
-                                    <td><%= coupon.discountValue?.toLocaleString('en-IN') %>%</td>
-                                    <% if(coupon.maxDiscountAmount) { %>
-                                    <td>₹<%= coupon.maxDiscountAmount?.toLocaleString('en-IN') %></td>
-                                    <% }else{ %>
-                                        <td>N/A</td>
-                                        <% } %>
-                                    <% } else { %>
-                                    <td>₹<%= coupon.discountValue?.toLocaleString('en-IN') %></td>
-                                    <td>N/A</td>
-                                    <% } %>
-                                    <td>
-                                        <% if (coupon.isActive) { %>
-                                            <label class="status-toggle">
-                                                <input type="checkbox" checked data-id="<%= coupon._id %>">
-                                                <span class="slider"></span>
-                                            </label>
-                                        <% } else { %>
-                                            <span class="status-badge status-inactive">INACTIVE</span>
-                                        <% } %>
-                                    </td>
-                                    <td><%= new Date(coupon.expiryDate).toLocaleDateString('en-IN'); %></td>
-                                    <td>
-                                        <div class="action-buttons">
-                                            <button class="action-btn btn-edit" onclick="editCoupon('<%= coupon._id %>')">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="action-btn btn-delete" onclick="deleteCoupon('<%= coupon._id %>')">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <% }) %>
-                        <% } else { %>
-                            <tr>
-                                <td colspan="8" style="text-align: center; padding: 40px; color: #666;">
-                                    No coupons found
-                                </td>
-                            </tr>
-                        <% } %>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        </div>
-
+        </main>
     </div>
 
     <script>
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                
-                const filter = this.dataset.filter;
-                filterTable(filter);
-            });
-        });
-
         document.getElementById('searchInput').addEventListener('input', function() {
             const searchTerm = this.value.toLowerCase();
-            const rows = document.querySelectorAll('.coupons-table tbody tr');
+            const rows = document.querySelectorAll('.product-table tbody tr');
             
             rows.forEach(row => {
                 const code = row.querySelector('td:first-child').textContent.toLowerCase();
@@ -129,78 +129,52 @@
         });
 
         document.addEventListener('change', function(e) {
-    if (e.target.type === 'checkbox' && e.target.closest('.status-toggle')) {
-        const couponId = e.target.dataset.id;
-        const isActive = e.target.checked;
+            if (e.target.type === 'checkbox' && e.target.closest('.switch')) {
+                const couponId = e.target.dataset.id;
+                const isActive = e.target.checked;
 
-        Swal.showLoading();
+                Swal.showLoading();
 
-        fetch('/admin/coupons/toggle-status', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ id: couponId, isActive: isActive })
-        })
-        .then(response => response.json())
-        .then(data => {
-            Swal.close(); 
+                fetch('/admin/coupons/toggle-status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ id: couponId, isActive: isActive })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    Swal.close(); 
 
-            if (data.success) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Status Updated',
-                    text: data.message,
-                    timer: 1500,
-                    showConfirmButton: false
-                });
-            } else {
-                e.target.checked = !isActive; 
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Failed',
-                    text: data.message
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Status Updated',
+                            text: data.message,
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        e.target.checked = !isActive; 
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Failed',
+                            text: data.message
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    e.target.checked = !isActive;
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Something went wrong. Please try again.'
+                    });
                 });
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            e.target.checked = !isActive;
-
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Something went wrong. Please try again.'
-            });
         });
-    }
-});
-
-        function filterTable(filter) {
-            const rows = document.querySelectorAll('.coupons-table tbody tr');
-            
-            rows.forEach(row => {
-                const statusCell = row.querySelector('td:nth-child(6)');
-                const hasToggle = statusCell.querySelector('.status-toggle input');
-                const hasInactive = statusCell.querySelector('.status-inactive');
-                
-                if (filter === 'all') {
-                    row.style.display = '';
-                } else if (filter === 'active') {
-                    if (hasToggle && hasToggle.checked) {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
-                } else if (filter === 'inactive') {
-                    if (hasInactive || (hasToggle && !hasToggle.checked)) {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
-                }
-            });
-        }
 
         function editCoupon(id) {
             window.location.href = `/admin/coupons/edit/${id}`;

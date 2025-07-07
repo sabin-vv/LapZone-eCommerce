@@ -400,6 +400,7 @@ body {
         margin: 2rem;
     }
 }
+
 @media (max-width: 768px) {
     .coupon-container {
         padding: 1.5rem 0.75rem;

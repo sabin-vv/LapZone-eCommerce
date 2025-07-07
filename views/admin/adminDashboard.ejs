@@ -8,212 +8,220 @@
     <link rel="stylesheet" href="/css/admindashboard.css">
     <link rel="stylesheet" href="/css/sidebar.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
-     <%- include("../partials/admin/header.ejs") %>
-    <div class="dashboard">
-       
-        <%- include("../partials/admin/sidebar.ejs") %>
+    <%- include("../partials/admin/header.ejs") %>
+        <div class="dashboard">
 
-            <button class="hamburger-btn" id="hamburger-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="3" y1="12" x2="21" y2="12"></line>
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <line x1="3" y1="18" x2="21" y2="18"></line>
-                </svg>
-            </button>
+            <%- include("../partials/admin/sidebar.ejs") %>
 
-            <div class="main-content">
-                <div class="loading-overlay" id="loading-overlay">
-                    <div class="loading-spinner"></div>
-                    <p>Loading dashboard data...</p>
-                </div>
+                <button class="hamburger-btn" id="hamburger-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
 
-                <div class="dashboard-header">
-                    <h1>Admin Dashboard</h1>
-                    <div class="date-display" id="current-date"></div>
-                </div>
+                <div class="main-content">
+                    <div class="loading-overlay" id="loading-overlay">
+                        <div class="loading-spinner"></div>
+                        <p>Loading dashboard data...</p>
+                    </div>
+                    <div class="dashboard-container">
+                        <div class="breadcrumb">
+                            <a href="/admin/dashboard">Dashboard</a>
+                        </div>
+                        <div class="dashboard-header">
+                            <h1><i class="fa-solid fa-chart-bar" style="color: #0446e5;"></i> Admin Dashboard</h1>
+                            <div class="date-display" id="current-date"></div>
+                        </div>                        
 
-                <div class="stats-container">
-                    <div class="stat-card">
-                        <div class="stat-icon sales-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 128 128" fill="currentColor">
-                            <text x="64" y="82" font-size="100" font-family="Arial, 'Segoe UI', 'Noto Sans', sans-serif"  text-anchor="middle" dominant-baseline="middle"> ₹ </text>
-                            </svg>
-                        </div>
-                        <div class="stat-details">
-                            <h3>Total Sales</h3>
-                            <p class="stat-value" id="total-sales">Loading...</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon orders-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
-                                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                                <line x1="3" y1="6" x2="21" y2="6"></line>
-                                <path d="M16 10a4 4 0 0 1-8 0"></path>
-                            </svg>
-                        </div>
-                        <div class="stat-details">
-                            <h3>Total Orders</h3>
-                            <p class="stat-value" id="total-orders">Loading...</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon customers-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
-                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="9" cy="7" r="4"></circle>
-                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                            </svg>
-                        </div>
-                        <div class="stat-details">
-                            <h3>Total Customers</h3>
-                            <p class="stat-value" id="total-customers">Loading...</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon products-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
-                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                                <line x1="8" y1="21" x2="16" y2="21"></line>
-                                <line x1="12" y1="17" x2="12" y2="21"></line>
-                            </svg>
-                        </div>
-                        <div class="stat-details">
-                            <h3>Total Products</h3>
-                            <p class="stat-value" id="total-products">Loading...</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="chart-container">
-                    <div class="chart-header">
-                        <h2>Sales Overview</h2>
-                        <div class="chart-filters">
-                            <button class="filter-btn active" data-filter="yearly">Yearly</button>
-                            <button class="filter-btn" data-filter="monthly">Monthly</button>
-                            <button class="filter-btn" data-filter="weekly">Weekly</button>
-                            <button class="filter-btn" data-filter="daily">Daily</button>
-                        </div>
-                    </div>
-                    <div class="chart-wrapper">
-                        <canvas id="salesChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="top-items-container">
-                    <div class="top-items-card">
-                        <h2>Best Selling Products</h2>
-                        <div class="top-items-list" id="top-products">
-                            <div class="loading-placeholder">Loading products...</div>
-                        </div>
-                    </div>
-
-                    <div class="top-items-card">
-                        <h2>Best Selling Categories</h2>
-                        <div class="top-items-list" id="top-categories">
-                            <div class="loading-placeholder">Loading categories...</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="top-items-container">
-                    <div class="top-items-card">
-                        <h2>Best Selling Brands</h2>
-                        <div class="top-items-list" id="top-brands">
-                            <div class="loading-placeholder">Loading brands...</div>
-                        </div>
-                    </div>
-
-                    <div class="top-items-card">
-                        <h2>Ledger Book Generator</h2>
-                        <div class="ledger-generator">
-                            <div class="date-range-picker">
-                                <div class="date-input">
-                                    <label for="start-date">Start Date</label>
-                                    <input type="date" id="start-date" name="start-date">
+                        <div class="stats-container">
+                            <div class="stat-card">
+                                <div class="stat-icon sales-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 128 128"
+                                        fill="currentColor">
+                                        <text x="64" y="82" font-size="100"
+                                            font-family="Arial, 'Segoe UI', 'Noto Sans', sans-serif"
+                                            text-anchor="middle" dominant-baseline="middle"> ₹ </text>
+                                    </svg>
                                 </div>
-                                <div class="date-input">
-                                    <label for="end-date">End Date</label>
-                                    <input type="date" id="end-date" name="end-date">
+                                <div class="stat-details">
+                                    <h3>Total Sales</h3>
+                                    <p class="stat-value" id="total-sales">Loading...</p>
                                 </div>
                             </div>
-                            <button id="generate-ledger" class="generate-btn">Generate Ledger</button>
-                            <div class="ledger-actions" style="margin-top: 12px;">
-                                <button id="download-csv" class="action-btn">Download CSV</button>
-                                <button id="download-pdf" class="action-btn">Download PDF</button>
+                            <div class="stat-card">
+                                <div class="stat-icon orders-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                                        <path d="M16 10a4 4 0 0 1-8 0"></path>
+                                    </svg>
+                                </div>
+                                <div class="stat-details">
+                                    <h3>Total Orders</h3>
+                                    <p class="stat-value" id="total-orders">Loading...</p>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon customers-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="9" cy="7" r="4"></circle>
+                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                    </svg>
+                                </div>
+                                <div class="stat-details">
+                                    <h3>Total Customers</h3>
+                                    <p class="stat-value" id="total-customers">Loading...</p>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon products-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                        <line x1="8" y1="21" x2="16" y2="21"></line>
+                                        <line x1="12" y1="17" x2="12" y2="21"></line>
+                                    </svg>
+                                </div>
+                                <div class="stat-details">
+                                    <h3>Total Products</h3>
+                                    <p class="stat-value" id="total-products">Loading...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chart-container">
+                            <div class="chart-header">
+                                <h2>Sales Overview</h2>
+                                <div class="chart-filters">
+                                    <button class="filter-btn active" data-filter="yearly">Yearly</button>
+                                    <button class="filter-btn" data-filter="monthly">Monthly</button>
+                                    <button class="filter-btn" data-filter="weekly">Weekly</button>
+                                    <button class="filter-btn" data-filter="daily">Daily</button>
+                                </div>
+                            </div>
+                            <div class="chart-wrapper">
+                                <canvas id="salesChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="top-items-container">
+                            <div class="top-items-card">
+                                <h2>Best Selling Products</h2>
+                                <div class="top-items-list" id="top-products">
+                                    <div class="loading-placeholder">Loading products...</div>
+                                </div>
+                            </div>
+
+                            <div class="top-items-card">
+                                <h2>Best Selling Categories</h2>
+                                <div class="top-items-list" id="top-categories">
+                                    <div class="loading-placeholder">Loading categories...</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="top-items-container">
+                            <div class="top-items-card">
+                                <h2>Best Selling Brands</h2>
+                                <div class="top-items-list" id="top-brands">
+                                    <div class="loading-placeholder">Loading brands...</div>
+                                </div>
+                            </div>
+
+                            <div class="top-items-card">
+                                <h2>Ledger Book Generator</h2>
+                                <div class="ledger-generator">
+                                    <div class="date-range-picker">
+                                        <div class="date-input">
+                                            <label for="start-date">Start Date</label>
+                                            <input type="date" id="start-date" name="start-date">
+                                        </div>
+                                        <div class="date-input">
+                                            <label for="end-date">End Date</label>
+                                            <input type="date" id="end-date" name="end-date">
+                                        </div>
+                                    </div>
+                                    <button id="generate-ledger" class="generate-btn">Generate Ledger</button>
+                                    <div class="ledger-actions" style="margin-top: 12px;">
+                                        <button id="download-csv" class="action-btn">Download CSV</button>
+                                        <button id="download-pdf" class="action-btn">Download PDF</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="recent-orders-card">
+                            <h2>Recent Orders</h2>
+                            <div class="recent-orders-list" id="recent-orders">
+                                <div class="loading-placeholder">Loading recent orders...</div>
                             </div>
                         </div>
                     </div>
                 </div>
+        </div>
 
-                <div class="recent-orders-card">
-                    <h2>Recent Orders</h2>
-                    <div class="recent-orders-list" id="recent-orders">
-                        <div class="loading-placeholder">Loading recent orders...</div>
-                    </div>
-                </div>
-            </div>
-    </div>
+        <div class="floating-shapes"></div>
 
-    <div class="floating-shapes"></div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const currentDate = document.getElementById('current-date');
+                const now = new Date();
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                currentDate.textContent = now.toLocaleDateString('en-US', options);
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-    const currentDate = document.getElementById('current-date');
-    const now = new Date();
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    currentDate.textContent = now.toLocaleDateString('en-US', options);
+                const loadingOverlay = document.getElementById('loading-overlay');
 
-    const loadingOverlay = document.getElementById('loading-overlay');
+                function showNotification(message, type = 'info', duration = 5000) {
+                    const existingNotifications = document.querySelectorAll(`.toast-notification.toast-${type}`);
+                    existingNotifications.forEach(notification => {
+                        notification.style.animation = 'slideOut 0.3s ease forwards';
+                        setTimeout(() => notification.remove(), 300);
+                    });
 
-    function showNotification(message, type = 'info', duration = 5000) {
-        const existingNotifications = document.querySelectorAll(`.toast-notification.toast-${type}`);
-        existingNotifications.forEach(notification => {
-            notification.style.animation = 'slideOut 0.3s ease forwards';
-            setTimeout(() => notification.remove(), 300);
-        });
+                    let notificationContainer = document.getElementById('notification-container');
+                    if (!notificationContainer) {
+                        notificationContainer = document.createElement('div');
+                        notificationContainer.id = 'notification-container';
+                        notificationContainer.className = 'notification-container';
+                        document.body.appendChild(notificationContainer);
+                    }
 
-        let notificationContainer = document.getElementById('notification-container');
-        if (!notificationContainer) {
-            notificationContainer = document.createElement('div');
-            notificationContainer.id = 'notification-container';
-            notificationContainer.className = 'notification-container';
-            document.body.appendChild(notificationContainer);
-        }
+                    const notification = document.createElement('div');
+                    notification.className = `toast-notification toast-${type}`;
 
-        const notification = document.createElement('div');
-        notification.className = `toast-notification toast-${type}`;
-        
-        const icons = {
-            success: `<svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    const icons = {
+                        success: `<svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                         <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" fill="currentColor"/>
                       </svg>`,
-            error: `<svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        error: `<svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                       <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" fill="currentColor"/>
                     </svg>`,
-            warning: `<svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        warning: `<svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                         <path d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" fill="currentColor"/>
                       </svg>`,
-            info: `<svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        info: `<svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                      <path d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" fill="currentColor"/>
                    </svg>`
-        };
+                    };
 
-        notification.innerHTML = `
+                    notification.innerHTML = `
             <div class="toast-icon">
                 ${icons[type] || icons.info}
             </div>
@@ -227,127 +235,127 @@
             </button>
         `;
 
-        notificationContainer.appendChild(notification);
+                    notificationContainer.appendChild(notification);
 
-        setTimeout(() => {
-            notification.classList.add('show');
-        }, 10);
+                    setTimeout(() => {
+                        notification.classList.add('show');
+                    }, 10);
 
-        const autoRemoveTimer = setTimeout(() => {
-            removeNotification(notification);
-        }, duration);
+                    const autoRemoveTimer = setTimeout(() => {
+                        removeNotification(notification);
+                    }, duration);
 
-        const closeBtn = notification.querySelector('.toast-close');
-        closeBtn.addEventListener('click', () => {
-            clearTimeout(autoRemoveTimer);
-            removeNotification(notification);
-        });
+                    const closeBtn = notification.querySelector('.toast-close');
+                    closeBtn.addEventListener('click', () => {
+                        clearTimeout(autoRemoveTimer);
+                        removeNotification(notification);
+                    });
 
-        if (duration > 0) {
-            const progressBar = document.createElement('div');
-            progressBar.className = 'toast-progress';
-            notification.appendChild(progressBar);
-            
-            setTimeout(() => {
-                progressBar.style.animation = `progress ${duration}ms linear forwards`;
-            }, 10);
-        }
+                    if (duration > 0) {
+                        const progressBar = document.createElement('div');
+                        progressBar.className = 'toast-progress';
+                        notification.appendChild(progressBar);
 
-        return notification;
-    }
+                        setTimeout(() => {
+                            progressBar.style.animation = `progress ${duration}ms linear forwards`;
+                        }, 10);
+                    }
 
-    function removeNotification(notification) {
-        notification.style.animation = 'slideOut 0.3s ease forwards';
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.remove();
-            }
-        }, 300);
-    }
+                    return notification;
+                }
 
-    function showLoading(message = 'Loading...') {
-        loadingOverlay.classList.remove('hidden');
-        const loadingText = loadingOverlay.querySelector('p');
-        if (loadingText) {
-            loadingText.textContent = message;
-        }
-    }
+                function removeNotification(notification) {
+                    notification.style.animation = 'slideOut 0.3s ease forwards';
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.remove();
+                        }
+                    }, 300);
+                }
 
-    function hideLoading() {
-        loadingOverlay.classList.add('hidden');
-    }
+                function showLoading(message = 'Loading...') {
+                    loadingOverlay.classList.remove('hidden');
+                    const loadingText = loadingOverlay.querySelector('p');
+                    if (loadingText) {
+                        loadingText.textContent = message;
+                    }
+                }
 
-    function handleError(error, context) {
-        console.error(`Error in ${context}:`, error);
-        hideLoading();
-        
-        let errorMessage = 'An unexpected error occurred. Please try again.';
-        
-        switch (context) {
-            case 'fetchDashboardStats':
-                errorMessage = 'Failed to load dashboard statistics. Please refresh the page.';
-                break;
-            case 'fetchSalesData':
-                errorMessage = 'Unable to load sales data for the chart.';
-                break;
-            case 'fetchTopProducts':
-                errorMessage = 'Could not load top products data.';
-                break;
-            case 'fetchTopCategories':
-                errorMessage = 'Could not load top categories data.';
-                break;
-            case 'fetchTopBrands':
-                errorMessage = 'Could not load top brands data.';
-                break;
-            case 'fetchRecentOrders':
-                errorMessage = 'Could not load recent orders.';
-                break;
-            case 'generateLedger':
-                errorMessage = 'Failed to generate ledger report.';
-                break;
-            case 'downloadCsv':
-                errorMessage = 'Failed to download CSV file.';
-                break;
-            case 'downloadPdf':
-                errorMessage = 'Failed to download PDF file.';
-                break;
-        }
-        
-        showNotification(errorMessage, 'error', 7000);
-    }
+                function hideLoading() {
+                    loadingOverlay.classList.add('hidden');
+                }
 
-    function formatCurrency(amount) {
-        return new Intl.NumberFormat('en-IN', {
-            style: 'currency',
-            currency: 'INR'
-        }).format(amount);
-    }
+                function handleError(error, context) {
+                    console.error(`Error in ${context}:`, error);
+                    hideLoading();
 
-    function formatNumber(num) {
-        return new Intl.NumberFormat('en-IN').format(num);
-    }
+                    let errorMessage = 'An unexpected error occurred. Please try again.';
 
-    function calculatePercentageChange(current, previous) {
-        if (previous === 0) return 0;
-        return ((current - previous) / previous * 100).toFixed(1);
-    }
+                    switch (context) {
+                        case 'fetchDashboardStats':
+                            errorMessage = 'Failed to load dashboard statistics. Please refresh the page.';
+                            break;
+                        case 'fetchSalesData':
+                            errorMessage = 'Unable to load sales data for the chart.';
+                            break;
+                        case 'fetchTopProducts':
+                            errorMessage = 'Could not load top products data.';
+                            break;
+                        case 'fetchTopCategories':
+                            errorMessage = 'Could not load top categories data.';
+                            break;
+                        case 'fetchTopBrands':
+                            errorMessage = 'Could not load top brands data.';
+                            break;
+                        case 'fetchRecentOrders':
+                            errorMessage = 'Could not load recent orders.';
+                            break;
+                        case 'generateLedger':
+                            errorMessage = 'Failed to generate ledger report.';
+                            break;
+                        case 'downloadCsv':
+                            errorMessage = 'Failed to download CSV file.';
+                            break;
+                        case 'downloadPdf':
+                            errorMessage = 'Failed to download PDF file.';
+                            break;
+                    }
 
-    // Display ledger data function
-    function displayLedgerData(ledgerData) {
-        let ledgerDisplay = document.getElementById('ledger-display');
-        
-        if (!ledgerDisplay) {
-            ledgerDisplay = document.createElement('div');
-            ledgerDisplay.id = 'ledger-display';
-            ledgerDisplay.className = 'ledger-display';
-            
-            const ledgerCard = document.querySelector('.ledger-generator').parentNode;
-            ledgerCard.appendChild(ledgerDisplay);
-        }
+                    showNotification(errorMessage, 'error', 7000);
+                }
 
-        const totalRevenue = ledgerData.orders.reduce((sum, order) => sum + order.amount, 0);
+                function formatCurrency(amount) {
+                    return new Intl.NumberFormat('en-IN', {
+                        style: 'currency',
+                        currency: 'INR'
+                    }).format(amount);
+                }
 
-        ledgerDisplay.innerHTML = `
+                function formatNumber(num) {
+                    return new Intl.NumberFormat('en-IN').format(num);
+                }
+
+                function calculatePercentageChange(current, previous) {
+                    if (previous === 0) return 0;
+                    return ((current - previous) / previous * 100).toFixed(1);
+                }
+
+                // Display ledger data function
+                function displayLedgerData(ledgerData) {
+                    let ledgerDisplay = document.getElementById('ledger-display');
+
+                    if (!ledgerDisplay) {
+                        ledgerDisplay = document.createElement('div');
+                        ledgerDisplay.id = 'ledger-display';
+                        ledgerDisplay.className = 'ledger-display';
+
+                        const ledgerCard = document.querySelector('.ledger-generator').parentNode;
+                        ledgerCard.appendChild(ledgerDisplay);
+                    }
+
+                    const totalRevenue = ledgerData.orders.reduce((sum, order) => sum + order.amount, 0);
+
+                    ledgerDisplay.innerHTML = `
             <div class="ledger-header">
                 <h3>📊 Generated Ledger Report</h3>
                 <div class="ledger-actions-header">
@@ -413,158 +421,158 @@
             </div>
         `;
 
-        ledgerDisplay.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+                    ledgerDisplay.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
 
-    const hamburgerBtn = document.getElementById('hamburger-btn');
-    const sidebar = document.getElementById('sidebar');
+                const hamburgerBtn = document.getElementById('hamburger-btn');
+                const sidebar = document.getElementById('sidebar');
 
-    hamburgerBtn.addEventListener('click', function () {
-        sidebar.classList.toggle('open');
-    });
+                hamburgerBtn.addEventListener('click', function () {
+                    sidebar.classList.toggle('open');
+                });
 
-    document.addEventListener('click', function (event) {
-        const isClickInsideSidebar = sidebar.contains(event.target);
-        const isClickOnHamburger = hamburgerBtn.contains(event.target);
+                document.addEventListener('click', function (event) {
+                    const isClickInsideSidebar = sidebar.contains(event.target);
+                    const isClickOnHamburger = hamburgerBtn.contains(event.target);
 
-        if (!isClickInsideSidebar && !isClickOnHamburger && sidebar.classList.contains('open')) {
-            sidebar.classList.remove('open');
-        }
-    });
-
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    filterButtons.forEach(button => {
-        button.addEventListener('click', function () {
-            filterButtons.forEach(btn => btn.classList.remove('active'));
-            this.classList.add('active');
-            updateChart(this.getAttribute('data-filter'));
-        });
-    });
-
-    const salesChartCtx = document.getElementById('salesChart').getContext('2d');
-    let salesChart;
-
-    function initializeChart() {
-        salesChart = new Chart(salesChartCtx, {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [{
-                    label: 'Sales',
-                    data: [],
-                    borderColor: '#6366f1',
-                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                    borderWidth: 2,
-                    tension: 0.3,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false,
-                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                        titleColor: '#1e293b',
-                        bodyColor: '#64748b',
-                        borderColor: '#e2e8f0',
-                        borderWidth: 1,
-                        padding: 12,
-                        boxPadding: 6,
-                        usePointStyle: true,
-                        callbacks: {
-                            label: function (context) {
-                                let label = context.dataset.label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
-                                if (context.parsed.y !== null) {
-                                    label += formatCurrency(context.parsed.y);
-                                }
-                                return label;
-                            }
-                        }
+                    if (!isClickInsideSidebar && !isClickOnHamburger && sidebar.classList.contains('open')) {
+                        sidebar.classList.remove('open');
                     }
-                },
-                scales: {
-                    x: {
-                        grid: {
-                            display: false
+                });
+
+                const filterButtons = document.querySelectorAll('.filter-btn');
+                filterButtons.forEach(button => {
+                    button.addEventListener('click', function () {
+                        filterButtons.forEach(btn => btn.classList.remove('active'));
+                        this.classList.add('active');
+                        updateChart(this.getAttribute('data-filter'));
+                    });
+                });
+
+                const salesChartCtx = document.getElementById('salesChart').getContext('2d');
+                let salesChart;
+
+                function initializeChart() {
+                    salesChart = new Chart(salesChartCtx, {
+                        type: 'line',
+                        data: {
+                            labels: [],
+                            datasets: [{
+                                label: 'Sales',
+                                data: [],
+                                borderColor: '#6366f1',
+                                backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                                borderWidth: 2,
+                                tension: 0.3,
+                                fill: true
+                            }]
                         },
-                        ticks: {
-                            color: '#64748b'
-                        }
-                    },
-                    y: {
-                        grid: {
-                            color: 'rgba(226, 232, 240, 0.5)'
-                        },
-                        ticks: {
-                            color: '#64748b',
-                            callback: function (value) {
-                                return formatCurrency(value);
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                tooltip: {
+                                    mode: 'index',
+                                    intersect: false,
+                                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                                    titleColor: '#1e293b',
+                                    bodyColor: '#64748b',
+                                    borderColor: '#e2e8f0',
+                                    borderWidth: 1,
+                                    padding: 12,
+                                    boxPadding: 6,
+                                    usePointStyle: true,
+                                    callbacks: {
+                                        label: function (context) {
+                                            let label = context.dataset.label || '';
+                                            if (label) {
+                                                label += ': ';
+                                            }
+                                            if (context.parsed.y !== null) {
+                                                label += formatCurrency(context.parsed.y);
+                                            }
+                                            return label;
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    grid: {
+                                        display: false
+                                    },
+                                    ticks: {
+                                        color: '#64748b'
+                                    }
+                                },
+                                y: {
+                                    grid: {
+                                        color: 'rgba(226, 232, 240, 0.5)'
+                                    },
+                                    ticks: {
+                                        color: '#64748b',
+                                        callback: function (value) {
+                                            return formatCurrency(value);
+                                        }
+                                    }
+                                }
                             }
                         }
+                    });
+                }
+
+                async function fetchDashboardStats() {
+                    try {
+                        const response = await fetch('/admin/dashboard-stats');
+                        if (!response.ok) throw new Error('Failed to fetch dashboard stats');
+                        const data = await response.json();
+
+                        document.getElementById('total-sales').textContent = formatCurrency(data.totalSales);
+                        document.getElementById('total-orders').textContent = formatNumber(data.totalOrders);
+                        document.getElementById('total-customers').textContent = formatNumber(data.totalCustomers);
+                        document.getElementById('total-products').textContent = formatNumber(data.totalProducts);
+
+                    } catch (error) {
+                        handleError(error, 'fetchDashboardStats');
                     }
                 }
-            }
-        });
-    }
 
-    async function fetchDashboardStats() {
-        try {
-            const response = await fetch('/admin/dashboard-stats');
-            if (!response.ok) throw new Error('Failed to fetch dashboard stats');
-            const data = await response.json();
+                async function fetchSalesData(period) {
+                    try {
+                        const response = await fetch(`/admin/sales-data?period=${period}`);
+                        if (!response.ok) throw new Error('Failed to fetch sales data');
+                        return await response.json();
+                    } catch (error) {
+                        handleError(error, 'fetchSalesData');
+                        return null;
+                    }
+                }
 
-            document.getElementById('total-sales').textContent = formatCurrency(data.totalSales);
-            document.getElementById('total-orders').textContent = formatNumber(data.totalOrders);
-            document.getElementById('total-customers').textContent = formatNumber(data.totalCustomers);
-            document.getElementById('total-products').textContent = formatNumber(data.totalProducts);
+                async function updateChart(filter) {
+                    const salesData = await fetchSalesData(filter);
+                    if (!salesData) return;
 
-        } catch (error) {
-            handleError(error, 'fetchDashboardStats');
-        }
-    }
+                    salesChart.data.labels = salesData.labels;
+                    salesChart.data.datasets[0].data = salesData.data;
+                    salesChart.update();
+                }
 
-    async function fetchSalesData(period) {
-        try {
-            const response = await fetch(`/admin/sales-data?period=${period}`);
-            if (!response.ok) throw new Error('Failed to fetch sales data');
-            return await response.json();
-        } catch (error) {
-            handleError(error, 'fetchSalesData');
-            return null;
-        }
-    }
+                async function fetchTopProducts() {
+                    try {
+                        const response = await fetch('/admin/top-products');
+                        if (!response.ok) throw new Error('Failed to fetch top products');
+                        const products = await response.json();
 
-    async function updateChart(filter) {
-        const salesData = await fetchSalesData(filter);
-        if (!salesData) return;
+                        const container = document.getElementById('top-products');
+                        container.innerHTML = '';
 
-        salesChart.data.labels = salesData.labels;
-        salesChart.data.datasets[0].data = salesData.data;
-        salesChart.update();
-    }
-
-    async function fetchTopProducts() {
-        try {
-            const response = await fetch('/admin/top-products');
-            if (!response.ok) throw new Error('Failed to fetch top products');
-            const products = await response.json();
-
-            const container = document.getElementById('top-products');
-            container.innerHTML = '';
-
-            products.forEach((product, index) => {
-                const itemElement = document.createElement('div');
-                itemElement.className = 'top-item';
-                itemElement.innerHTML = `
+                        products.forEach((product, index) => {
+                            const itemElement = document.createElement('div');
+                            itemElement.className = 'top-item';
+                            itemElement.innerHTML = `
                     <div class="top-item-rank">${index + 1}</div>
                     <img src="${product.image || '/placeholder.svg?height=48&width=48'}" alt="${product.name}" class="top-item-image">
                     <div class="top-item-details">
@@ -573,26 +581,26 @@
                     </div>
                     <div class="top-item-value">${formatCurrency(product.totalRevenue)}</div>
                 `;
-                container.appendChild(itemElement);
-            });
-        } catch (error) {
-            handleError(error, 'fetchTopProducts');
-        }
-    }
+                            container.appendChild(itemElement);
+                        });
+                    } catch (error) {
+                        handleError(error, 'fetchTopProducts');
+                    }
+                }
 
-    async function fetchTopCategories() {
-        try {
-            const response = await fetch('/admin/top-categories');
-            if (!response.ok) throw new Error('Failed to fetch top categories');
-            const categories = await response.json();
+                async function fetchTopCategories() {
+                    try {
+                        const response = await fetch('/admin/top-categories');
+                        if (!response.ok) throw new Error('Failed to fetch top categories');
+                        const categories = await response.json();
 
-            const container = document.getElementById('top-categories');
-            container.innerHTML = '';
+                        const container = document.getElementById('top-categories');
+                        container.innerHTML = '';
 
-            categories.forEach((category, index) => {
-                const itemElement = document.createElement('div');
-                itemElement.className = 'top-item';
-                itemElement.innerHTML = `
+                        categories.forEach((category, index) => {
+                            const itemElement = document.createElement('div');
+                            itemElement.className = 'top-item';
+                            itemElement.innerHTML = `
                     <div class="top-item-rank">${index + 1}</div>
                     <div class="top-item-details">
                         <div class="top-item-name">${category.name}</div>
@@ -600,26 +608,26 @@
                     </div>
                     <div class="top-item-value">${formatCurrency(category.totalRevenue)}</div>
                 `;
-                container.appendChild(itemElement);
-            });
-        } catch (error) {
-            handleError(error, 'fetchTopCategories');
-        }
-    }
+                            container.appendChild(itemElement);
+                        });
+                    } catch (error) {
+                        handleError(error, 'fetchTopCategories');
+                    }
+                }
 
-    async function fetchTopBrands() {
-        try {
-            const response = await fetch('/admin/top-brands');
-            if (!response.ok) throw new Error('Failed to fetch top brands');
-            const brands = await response.json();
+                async function fetchTopBrands() {
+                    try {
+                        const response = await fetch('/admin/top-brands');
+                        if (!response.ok) throw new Error('Failed to fetch top brands');
+                        const brands = await response.json();
 
-            const container = document.getElementById('top-brands');
-            container.innerHTML = '';
+                        const container = document.getElementById('top-brands');
+                        container.innerHTML = '';
 
-            brands.forEach((brand, index) => {
-                const itemElement = document.createElement('div');
-                itemElement.className = 'top-item';
-                itemElement.innerHTML = `
+                        brands.forEach((brand, index) => {
+                            const itemElement = document.createElement('div');
+                            itemElement.className = 'top-item';
+                            itemElement.innerHTML = `
                     <div class="top-item-rank">${index + 1}</div>
                     <div class="top-item-details">
                         <div class="top-item-name">${brand.name}</div>
@@ -627,30 +635,30 @@
                     </div>
                     <div class="top-item-value">${formatCurrency(brand.totalRevenue)}</div>
                 `;
-                container.appendChild(itemElement);
-            });
-        } catch (error) {
-            handleError(error, 'fetchTopBrands');
-        }
-    }
+                            container.appendChild(itemElement);
+                        });
+                    } catch (error) {
+                        handleError(error, 'fetchTopBrands');
+                    }
+                }
 
-    async function fetchRecentOrders() {
-        try {
-            const response = await fetch('/admin/recent-orders');
-            if (!response.ok) throw new Error('Failed to fetch recent orders');
-            const orders = await response.json();
+                async function fetchRecentOrders() {
+                    try {
+                        const response = await fetch('/admin/recent-orders');
+                        if (!response.ok) throw new Error('Failed to fetch recent orders');
+                        const orders = await response.json();
 
-            const container = document.getElementById('recent-orders');
-            container.innerHTML = '';
+                        const container = document.getElementById('recent-orders');
+                        container.innerHTML = '';
 
-            orders.forEach(order => {
-                const orderElement = document.createElement('div');
-                orderElement.className = 'recent-order';
+                        orders.forEach(order => {
+                            const orderElement = document.createElement('div');
+                            orderElement.className = 'recent-order';
 
-                const statusClass = `status-${order.orderStatus.toLowerCase()}`;
-                const orderDate = new Date(order.orderDate).toLocaleDateString('en-IN');
+                            const statusClass = `status-${order.orderStatus.toLowerCase()}`;
+                            const orderDate = new Date(order.orderDate).toLocaleDateString('en-IN');
 
-                orderElement.innerHTML = `
+                            orderElement.innerHTML = `
                     <div class="order-info">
                         <div class="order-id">#${order.orderId}</div>
                         <div class="order-customer">${order.customerName}</div>
@@ -659,44 +667,44 @@
                     <div class="order-amount">${formatCurrency(order.totalAmount)}</div>
                     <div class="order-status ${statusClass}">${order.orderStatus}</div>
                 `;
-                container.appendChild(orderElement);
-            });
-        } catch (error) {
-            handleError(error, 'fetchRecentOrders');
-        }
-    }
+                            container.appendChild(orderElement);
+                        });
+                    } catch (error) {
+                        handleError(error, 'fetchRecentOrders');
+                    }
+                }
 
-    const generateLedgerBtn = document.getElementById('generate-ledger');
-    const downloadCsvBtn = document.getElementById('download-csv');
-    const downloadPdfBtn = document.getElementById('download-pdf');
-    const startDateInput = document.getElementById('start-date');
-    const endDateInput = document.getElementById('end-date');
+                const generateLedgerBtn = document.getElementById('generate-ledger');
+                const downloadCsvBtn = document.getElementById('download-csv');
+                const downloadPdfBtn = document.getElementById('download-pdf');
+                const startDateInput = document.getElementById('start-date');
+                const endDateInput = document.getElementById('end-date');
 
-    const today = new Date();
-    const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    const todayString = today.toISOString().split('T')[0]; 
+                const today = new Date();
+                const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+                const todayString = today.toISOString().split('T')[0];
 
-    startDateInput.valueAsDate = firstDayOfMonth;
-    endDateInput.valueAsDate = today;
+                startDateInput.valueAsDate = firstDayOfMonth;
+                endDateInput.valueAsDate = today;
 
-    startDateInput.setAttribute('max', todayString);
-    endDateInput.setAttribute('max', todayString);
+                startDateInput.setAttribute('max', todayString);
+                endDateInput.setAttribute('max', todayString);
 
-    generateLedgerBtn.addEventListener('click', async function() {
-        const startDate = startDateInput.value;
-        const endDate = endDateInput.value;
-        
-        if (!startDate || !endDate) {
-            showNotification('📅 Please select both start and end dates', 'warning');
-            return;
-        }
+                generateLedgerBtn.addEventListener('click', async function () {
+                    const startDate = startDateInput.value;
+                    const endDate = endDateInput.value;
 
-        if (new Date(startDate) > new Date(endDate)) {
-            showNotification(' Start date cannot be after end date', 'error');
-            return;
-        }
+                    if (!startDate || !endDate) {
+                        showNotification('📅 Please select both start and end dates', 'warning');
+                        return;
+                    }
 
-        generateLedgerBtn.innerHTML = `
+                    if (new Date(startDate) > new Date(endDate)) {
+                        showNotification(' Start date cannot be after end date', 'error');
+                        return;
+                    }
+
+                    generateLedgerBtn.innerHTML = `
             <svg class="animate-spin" width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2" stroke-dasharray="37.7" stroke-dashoffset="37.7">
                     <animateTransform attributeName="transform" type="rotate" values="0 8 8;360 8 8" dur="1s" repeatCount="indefinite"/>
@@ -704,43 +712,43 @@
             </svg>
             Generating...
         `;
-        generateLedgerBtn.disabled = true;
+                    generateLedgerBtn.disabled = true;
 
-        try {
-            const response = await fetch('/admin/generate-ledger', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ startDate, endDate })
-            });
+                    try {
+                        const response = await fetch('/admin/generate-ledger', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ startDate, endDate })
+                        });
 
-            if (!response.ok) throw new Error('Failed to generate ledger');
-            
-            const result = await response.json();
-            
-            displayLedgerData(result.data);
-            showNotification(`✅ Ledger generated successfully for ${startDate} to ${endDate}`, 'success');
-            
-        } catch (error) {
-            handleError(error, 'generateLedger');
-        } finally {
-            generateLedgerBtn.innerHTML = 'Generate Ledger';
-            generateLedgerBtn.disabled = false;
-        }
-    });
+                        if (!response.ok) throw new Error('Failed to generate ledger');
 
-    downloadCsvBtn.addEventListener('click', async function () {
-        const startDate = startDateInput.value;
-        const endDate = endDateInput.value;
+                        const result = await response.json();
 
-        if (!startDate || !endDate) {
-            showNotification('📅 Please select both start and end dates before downloading', 'warning');
-            return;
-        }
+                        displayLedgerData(result.data);
+                        showNotification(`✅ Ledger generated successfully for ${startDate} to ${endDate}`, 'success');
 
-        const originalText = downloadCsvBtn.textContent;
-        downloadCsvBtn.innerHTML = `
+                    } catch (error) {
+                        handleError(error, 'generateLedger');
+                    } finally {
+                        generateLedgerBtn.innerHTML = 'Generate Ledger';
+                        generateLedgerBtn.disabled = false;
+                    }
+                });
+
+                downloadCsvBtn.addEventListener('click', async function () {
+                    const startDate = startDateInput.value;
+                    const endDate = endDateInput.value;
+
+                    if (!startDate || !endDate) {
+                        showNotification('📅 Please select both start and end dates before downloading', 'warning');
+                        return;
+                    }
+
+                    const originalText = downloadCsvBtn.textContent;
+                    downloadCsvBtn.innerHTML = `
             <svg class="animate-spin" width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2" stroke-dasharray="37.7" stroke-dashoffset="37.7">
                     <animateTransform attributeName="transform" type="rotate" values="0 8 8;360 8 8" dur="1s" repeatCount="indefinite"/>
@@ -748,43 +756,43 @@
             </svg>
             Downloading...
         `;
-        downloadCsvBtn.disabled = true;
+                    downloadCsvBtn.disabled = true;
 
-        try {
-            const response = await fetch(`/admin/download-ledger-csv?startDate=${startDate}&endDate=${endDate}`);
-            if (!response.ok) throw new Error('Failed to download CSV');
+                    try {
+                        const response = await fetch(`/admin/download-ledger-csv?startDate=${startDate}&endDate=${endDate}`);
+                        if (!response.ok) throw new Error('Failed to download CSV');
 
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `ledger_${startDate}_to_${endDate}.csv`;
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `ledger_${startDate}_to_${endDate}.csv`;
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
 
-            showNotification('📊 CSV file downloaded successfully!', 'success');
+                        showNotification('📊 CSV file downloaded successfully!', 'success');
 
-        } catch (error) {
-            handleError(error, 'downloadCsv');
-        } finally {
-            downloadCsvBtn.textContent = originalText;
-            downloadCsvBtn.disabled = false;
-        }
-    });
+                    } catch (error) {
+                        handleError(error, 'downloadCsv');
+                    } finally {
+                        downloadCsvBtn.textContent = originalText;
+                        downloadCsvBtn.disabled = false;
+                    }
+                });
 
-    downloadPdfBtn.addEventListener('click', async function () {
-        const startDate = startDateInput.value;
-        const endDate = endDateInput.value;
+                downloadPdfBtn.addEventListener('click', async function () {
+                    const startDate = startDateInput.value;
+                    const endDate = endDateInput.value;
 
-        if (!startDate || !endDate) {
-            showNotification('📅 Please select both start and end dates before downloading', 'warning');
-            return;
-        }
+                    if (!startDate || !endDate) {
+                        showNotification('📅 Please select both start and end dates before downloading', 'warning');
+                        return;
+                    }
 
-        const originalText = downloadPdfBtn.textContent;
-        downloadPdfBtn.innerHTML = `
+                    const originalText = downloadPdfBtn.textContent;
+                    downloadPdfBtn.innerHTML = `
             <svg class="animate-spin" width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2" stroke-dasharray="37.7" stroke-dashoffset="37.7">
                     <animateTransform attributeName="transform" type="rotate" values="0 8 8;360 8 8" dur="1s" repeatCount="indefinite"/>
@@ -792,57 +800,57 @@
             </svg>
             Generating PDF...
         `;
-        downloadPdfBtn.disabled = true;
+                    downloadPdfBtn.disabled = true;
 
-        try {
-            const response = await fetch(`/admin/download-ledger-pdf?startDate=${startDate}&endDate=${endDate}`);
-            if (!response.ok) throw new Error('Failed to download PDF');
+                    try {
+                        const response = await fetch(`/admin/download-ledger-pdf?startDate=${startDate}&endDate=${endDate}`);
+                        if (!response.ok) throw new Error('Failed to download PDF');
 
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            
-            window.open(url, '_blank');
-            
-            showNotification('📄 PDF report opened in new tab. You can print it as PDF from there.', 'info', 8000);
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
 
-        } catch (error) {
-            handleError(error, 'downloadPdf');
-        } finally {
-            downloadPdfBtn.textContent = originalText;
-            downloadPdfBtn.disabled = false;
-        }
-    });
+                        window.open(url, '_blank');
 
-    async function initializeDashboard() {
-        showLoading('Loading dashboard data...');
+                        showNotification('📄 PDF report opened in new tab. You can print it as PDF from there.', 'info', 8000);
 
-        try {
-            initializeChart();
+                    } catch (error) {
+                        handleError(error, 'downloadPdf');
+                    } finally {
+                        downloadPdfBtn.textContent = originalText;
+                        downloadPdfBtn.disabled = false;
+                    }
+                });
 
-            await Promise.all([
-                fetchDashboardStats(),
-                updateChart('yearly'),
-                fetchTopProducts(),
-                fetchTopCategories(),
-                fetchTopBrands(),
-                fetchRecentOrders()
-            ]);  
-        } catch (error) {
-            handleError(error, 'initializeDashboard');
-        } finally {
-            hideLoading();
-        }
-    }
+                async function initializeDashboard() {
+                    showLoading('Loading dashboard data...');
 
-    setInterval(() => {
-        fetchDashboardStats();
-        fetchRecentOrders();
-        showNotification('🔄 Dashboard data refreshed', 'info', 2000);
-    }, 5 * 60 * 1000);
+                    try {
+                        initializeChart();
 
-    initializeDashboard();
-});
-    </script>
+                        await Promise.all([
+                            fetchDashboardStats(),
+                            updateChart('yearly'),
+                            fetchTopProducts(),
+                            fetchTopCategories(),
+                            fetchTopBrands(),
+                            fetchRecentOrders()
+                        ]);
+                    } catch (error) {
+                        handleError(error, 'initializeDashboard');
+                    } finally {
+                        hideLoading();
+                    }
+                }
+
+                setInterval(() => {
+                    fetchDashboardStats();
+                    fetchRecentOrders();
+                    showNotification('🔄 Dashboard data refreshed', 'info', 2000);
+                }, 5 * 60 * 1000);
+
+                initializeDashboard();
+            });
+        </script>
 </body>
 
 </html>

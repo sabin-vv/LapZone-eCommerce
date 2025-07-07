@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Orders | LapZone</title>
     <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/customerslist.css">
     <link rel="stylesheet" href="/css/orderList.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -15,157 +16,158 @@
 
 <body>
     <%- include('../partials/admin/header.ejs') %>
-    <div class="dashboard">
+    <div class="customer-dashboard">
         <%- include("../partials/admin/sidebar.ejs") %>
 
-    <main class="main-content">
-        <div class="page-header">
-            <h1 class="page-title">Orders</h1>
-        </div>
-
-        <div class="filters">
-            
-            <form class="filters" method="GET" action="/admin/orders">
-            <div class="filter-container">
-                <select name="status" class="filter-select">
-                    <option value="" <%= !filters?.status ? "selected" : "" %>>All Status</option>
-                    <option value="Processing" <%= filters?.status === "Processing" ? "selected" : "" %>>Processing</option>
-                    <option value="Shipped" <%= filters?.status === "Shipped" ? "selected" : "" %>>Shipped</option>
-                    <option value="Delivered" <%= filters?.status === "Delivered" ? "selected" : "" %>>Delivered</option>
-                    <option value="Cancelled" <%= filters?.status === "Cancelled" ? "selected" : "" %>>Cancelled</option>
-                    <option value="Returned" <%= filters?.status === "Returned" ? "selected" : "" %>>Returned</option>
-                </select>
-                <select name="payment" class="filter-select">
-                    <option value="">All Payment Methods</option>
-                    <option value="Online" <%= filters?.payment === "Online" ? "selected" : "" %>>Online</option>
-                    <option value="COD" <%= filters?.payment === "COD" ? "selected" : "" %>>COD</option>
-                    <option value="Wallet" <%= filters?.payment === "Wallet" ? "selected" : "" %>>Wallet</option>
-                </select>
-                <select name="date" class="filter-select">
-                    <option value="" <%= !filters?.date ? 'selected' : '' %>>Date Range</option>
-                    <option value="today" <%= filters?.date === 'today' ? 'selected' : '' %>>Today</option>
-                    <option value="yesterday" <%= filters?.date === 'yesterday' ? 'selected' : '' %>>Yesterday</option>
-                    <option value="last7days" <%= filters?.date === 'last7days' ? 'selected' : '' %>>Last 7 Days</option>
-                    <option value="last30days" <%= filters?.date === 'last30days' ? 'selected' : '' %>>Last 30 Days</option>
-                </select>
+        <main class="main-content">
+            <div class="breadcrumb">
+                <a href="/admin/dashboard">Dashboard</a>
+                <span>›</span>
+                <span>Orders</span>
             </div>
-            </form>
-            <div >
-                <button type="button" class="btn btn-danger" onclick="window.location.href= '/admin/orders/cancel-return-request' "> Cancel/Return Requests</button>
-            </div>
-        </div>
+            <header class="header">
+                <h2><i class="fa-solid fa-clipboard-list" style="color: #4f46e5;"></i> Orders</h2>
+            </header>
 
-        <div class="orders-table-container">
-            <table class="orders-table">
-                <thead>
-                    <tr>
-                        <th>Order ID</th>
-                        <th class="sortable">Date</th>
-                        <th>Customer</th>
-                        <th class="sortable">Total</th>
-                        <th>Payment</th>
-                        <th class="sortable">Status</th>
-                        <th>Action</th>
-                        <th>View</th>
-                    </tr>
-                </thead>
-                <tbody id="orders-table-body">
-                    <% orders.forEach(order => {
-                        const firstItem = order.items?.[0];
-                        const mainImage = firstItem?.productId?.images?.find(img => img.isMain === true); %>
-                        <tr>
-                            <td class="order-id">
-                                <%= order.orderId %>
-                            </td>
-                            
-                            <td>
-                                <%= order.orderDate.toLocaleDateString() %>
-                            </td>
-                            <td class="customer-details">
-                                <span class="customer-name">
-                                    <%= order.user.fullname || "N/A" %>
-                                </span>
-                                <span class="customer-email">
-                                    <%= order.user.email %>
-                                </span>
-                            </td>
-                            <td>₹<%= order.totalAmount.toLocaleString('en-IN') %></td>
-                            <td>
-                                <%= order.paymentMethod %>
-                            </td>
-                            <td>
-                                <% if(order.items.every(item => item.status === 'Cancelled')){ %>
-                                    <span class="status-badge status-<%= order.orderStatus.toLowerCase() %>" >
-                                        Cancelled
-                                        </span>
-                                <% }else{ %>
-                                    <span class="status-badge status-<%= order.orderStatus.toLowerCase() %>">
-                                        <%= order.orderStatus %>
-                                    </span>
-                               <% } %>
-                                
-                            </td>
-                           <td>
-                                <% const currentStatus = order.orderStatus.trim(); %>
-                                <%  const isDisabled = 
-                                        currentStatus === 'Cancelled' || 
-                                        currentStatus === 'Delivered' || 
-                                        currentStatus === 'Returned' || 
-                                        (order.paymentMethod === 'Online' && order.paymentStatus === 'Pending'); %>
-                                <% const statuses = ['Processing', 'Shipped', 'Delivered', 'Cancelled','Returned']; %>
-                                <% const lastStatus = order.statusHistory?.[order.statusHistory.length - 1]; %>
+            <div class="container mx-auto p-6">
+                <div class="customers">
+                    <div class="products">
+                        <div class="filters" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 1rem;">
+                            <form class="filters" method="GET" action="/admin/orders" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                <div class="filter-container" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                    <select name="status" class="filter-select" style="padding: 0.5rem 1rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem;">
+                                        <option value="" <%= !filters?.status ? "selected" : "" %>>All Status</option>
+                                        <option value="Processing" <%= filters?.status === "Processing" ? "selected" : "" %>>Processing</option>
+                                        <option value="Shipped" <%= filters?.status === "Shipped" ? "selected" : "" %>>Shipped</option>
+                                        <option value="Delivered" <%= filters?.status === "Delivered" ? "selected" : "" %>>Delivered</option>
+                                        <option value="Cancelled" <%= filters?.status === "Cancelled" ? "selected" : "" %>>Cancelled</option>
+                                        <option value="Returned" <%= filters?.status === "Returned" ? "selected" : "" %>>Returned</option>
+                                    </select>
+                                    <select name="payment" class="filter-select" style="padding: 0.5rem 1rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem;">
+                                        <option value="">All Payment Methods</option>
+                                        <option value="Online" <%= filters?.payment === "Online" ? "selected" : "" %>>Online</option>
+                                        <option value="COD" <%= filters?.payment === "COD" ? "selected" : "" %>>COD</option>
+                                        <option value="Wallet" <%= filters?.payment === "Wallet" ? "selected" : "" %>>Wallet</option>
+                                    </select>
+                                    <select name="date" class="filter-select" style="padding: 0.5rem 1rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem;">
+                                        <option value="" <%= !filters?.date ? 'selected' : '' %>>Date Range</option>
+                                        <option value="today" <%= filters?.date === 'today' ? 'selected' : '' %>>Today</option>
+                                        <option value="yesterday" <%= filters?.date === 'yesterday' ? 'selected' : '' %>>Yesterday</option>
+                                        <option value="last7days" <%= filters?.date === 'last7days' ? 'selected' : '' %>>Last 7 Days</option>
+                                        <option value="last30days" <%= filters?.date === 'last30days' ? 'selected' : '' %>>Last 30 Days</option>
+                                    </select>
+                                </div>
+                            </form>
+                            <div>
+                                <button type="button" class="btn btn-danger" onclick="window.location.href= '/admin/orders/cancel-return-request'" style="padding: 0.5rem 1rem; background-color: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.875rem; font-weight: 500;">Cancel/Return Requests</button>
+                            </div>
+                        </div>
 
-                                <select 
-                                    name="orderStatus" 
-                                    class="form-select order-status-select" 
-                                    data-order-id="<%= order.orderId %>" 
-                                    <%= isDisabled ? 'disabled' : '' %>>
-                                    
-                                    <% statuses.forEach(status => { %>
-                                        <option value="<%= status %>" <%= currentStatus === status ? 'selected' : '' %>>
-                                            <%= status %>
-                                        </option>
+                        <div class="table-container">
+                            <table class="product-table" id="ordersTable">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Date</th>
+                                        <th>Customer</th>
+                                        <th>Total</th>
+                                        <th>Payment</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                        <th>View</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="orders-table-body">
+                                    <% orders.forEach(order => {
+                                        const firstItem = order.items?.[0];
+                                        const mainImage = firstItem?.productId?.images?.find(img => img.isMain === true); %>
+                                        <tr>
+                                            <td class="order-id">
+                                                <%= order.orderId %>
+                                            </td>
+                                            
+                                            <td>
+                                                <%= order.orderDate.toLocaleDateString() %>
+                                            </td>
+                                            <td class="customer-details">
+                                                <div>
+                                                    <div style="font-weight: 500;"><%= order.user.fullname || "N/A" %></div>
+                                                    <div style="font-size: 0.875rem; color: #6b7280;"><%= order.user.email %></div>
+                                                </div>
+                                            </td>
+                                            <td>₹<%= order.totalAmount.toLocaleString('en-IN') %></td>
+                                            <td>
+                                                <%= order.paymentMethod %>
+                                            </td>
+                                            <td>
+                                                <% if(order.items.every(item => item.status === 'Cancelled')){ %>
+                                                    <span class="status-badge status-cancelled">
+                                                        Cancelled
+                                                    </span>
+                                                <% }else{ %>
+                                                    <span class="status-badge status-<%= order.orderStatus.toLowerCase() %>">
+                                                        <%= order.orderStatus %>
+                                                    </span>
+                                               <% } %>
+                                                
+                                            </td>
+                                           <td>
+                                                <% const currentStatus = order.orderStatus.trim(); %>
+                                                <%  const isDisabled = 
+                                                        currentStatus === 'Cancelled' || 
+                                                        currentStatus === 'Delivered' || 
+                                                        currentStatus === 'Returned' || 
+                                                        (order.paymentMethod === 'Online' && order.paymentStatus === 'Pending'); %>
+                                                <% const statuses = ['Processing', 'Shipped', 'Delivered', 'Cancelled','Returned']; %>
+                                                <% const lastStatus = order.statusHistory?.[order.statusHistory.length - 1]; %>
+
+                                                <select 
+                                                    name="orderStatus" 
+                                                    class="form-select order-status-select" 
+                                                    data-order-id="<%= order.orderId %>" 
+                                                    <%= isDisabled ? 'disabled' : '' %>
+                                                    style="padding: 0.375rem 0.75rem; border: 1px solid #d1d5db; border-radius: 4px; font-size: 0.875rem;">
+                                                    
+                                                    <% statuses.forEach(status => { %>
+                                                        <option value="<%= status %>" <%= currentStatus === status ? 'selected' : '' %>>
+                                                            <%= status %>
+                                                        </option>
+                                                    <% }) %>
+                                                    <% if (lastStatus === 'Return Requested') { %>
+                                                        <option value="Return" <%= currentStatus === 'Return' ? 'selected' : '' %>>Return</option>
+                                                    <% } %>
+                                                    
+                                                </select>
+                                            </td>
+                                            <td class="action-cell">
+                                                <a href="/admin/view-order/<%= order._id %>" class="action-btn" title="View" style="display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: 6px; background-color: #3b82f6; color: white; text-decoration: none;">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
                                     <% }) %>
-                                    <% if (lastStatus === 'Return Requested') { %>
-                                        <option value="Return" <%= currentStatus === 'Return' ? 'selected' : '' %>>Return</option>
-                                    <% } %>
-                                    
-                                </select>
-                            </td>
-                            <td class="action-cell">
-                                <a href="/admin/view-order/<%= order._id %>" class="action-btn" title="View">
-                                    <i class="bi bi-eye"></i>
-                                </a>
-                            </td>
-                        </tr>
-                    <% }) %>
-                </tbody>
-            </table>
-        </div>
-        
+                                </tbody>
+                            </table>
+                        </div>
+                        
 
-        <div class="pagination-container">
-            <div class="pagination-info">
-                Showing <%= (currentPage - 1) * 10 + 1 %> - <%= Math.min(currentPage * 10, totalPages) %> of <%= totalPages %>
-            </div>
-            <div class="pagination-wrapper">
-                <div class="pagination">
-                    <% if (currentPage > 1) { %>
-                        <a href="?page=<%= currentPage - 1 %>" class="pagination-btn">Previous</a>
-                    <% } %>
-                    <% for (let i = 1; i <= totalPages; i++) { %>
-                        <a href="?page=<%= i %>" class="pagination-btn <%= currentPage === i ? 'active' : '' %>">
-                            <%= i %>
-                        </a>
-                    <% } %>
-                    <% if (currentPage < totalPages) { %>
-                        <a href="?page=<%= currentPage + 1 %>" class="pagination-btn">Next</a>
-                    <% } %>
+                        <div class="pagination">
+                            <% if (currentPage > 1) { %>
+                                <a href="?page=<%= currentPage - 1 %>" class="border rounded px-3 py-2">Previous</a>
+                            <% } %>
+                            <% for (let i = 1; i <= totalPages; i++) { %>
+                                <a href="?page=<%= i %>" class="border rounded px-3 py-2 <%= currentPage === i ? 'active' : '' %>">
+                                    <%= i %>
+                                </a>
+                            <% } %>
+                            <% if (currentPage < totalPages) { %>
+                                <a href="?page=<%= currentPage + 1 %>" class="border rounded px-3 py-2">Next</a>
+                            <% } %>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        
-    </main>
+        </main>
     </div>
     
 

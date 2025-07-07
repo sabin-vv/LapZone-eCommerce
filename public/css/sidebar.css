@@ -12,7 +12,6 @@ body {
   overflow-x: hidden;
 }
 
-/* Overlay for mobile */
 .sidebar-overlay {
   display: none;
   position: fixed;
@@ -34,22 +33,36 @@ body {
   opacity: 1;
 }
 
-/* Sidebar Styles */
 .sidebar {
-  margin: 2rem 0;
+  margin: 2rem 0 2rem 2rem;
   width: 280px;
   background: linear-gradient(145deg, #ffffff 0%, #f8fafc 50%, #ffffff 100%);
   top: 0;
   left: 0;
-  height: 100vh; 
-  position: relative; 
+  height: fit-content;
+  position: relative;
   z-index: 1000;
   transform: translateX(0);
-  transition: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border-right: 1px solid #e2e8f0;
-  border-radius: 15px;
-  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15), 0 2px 10px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  border-radius: 20px;
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.25),
+    0 10px 25px -5px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(20px);
+}
+
+.sidebar:hover {
+  box-shadow: 
+    0 32px 64px -12px rgba(0, 0, 0, 0.3),
+    0 15px 35px -5px rgba(0, 0, 0, 0.15),
+    0 8px 15px -3px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
 }
 
 .sidebar::before {
@@ -63,7 +76,6 @@ body {
   pointer-events: auto;
 }
 
-/* Logo Container */
 .logo-container {
   display: flex;
   align-items: center;
@@ -73,6 +85,7 @@ body {
   border-bottom: 1px solid rgba(226, 232, 240, 0.6);
   position: relative;
   background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(236, 72, 153, 0.05) 100%);
+  border-radius: 20px 20px 0 0;
 }
 
 .logo-container::after {
@@ -93,7 +106,21 @@ body {
   border-radius: 12px;
   padding: 8px;
   background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
-  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+  box-shadow: 
+    0 8px 25px rgba(99, 102, 241, 0.4),
+    0 4px 12px rgba(139, 92, 246, 0.3),
+    0 2px 6px rgba(236, 72, 153, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.logo-container img:hover {
+  transform: scale(1.05) rotate(5deg);
+  box-shadow: 
+    0 12px 35px rgba(99, 102, 241, 0.5),
+    0 6px 18px rgba(139, 92, 246, 0.4),
+    0 3px 9px rgba(236, 72, 153, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .sidebar-logo {
@@ -107,7 +134,6 @@ body {
   margin-bottom: 0;
 }
 
-/* Navigation */
 .sidebar nav {
   padding: 0 20px;
 }
@@ -183,7 +209,6 @@ body {
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
 }
 
-/* Icon Styling */
 .sidebar a i {
   margin-right: 16px;
   font-size: 20px;
@@ -191,7 +216,6 @@ body {
   text-align: center;
 }
 
-/* Button Styles */
 .sidebar button {
   background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
   color: #475569;
@@ -239,7 +263,6 @@ body {
   transform: translateY(-1px) scale(1.01);
 }
 
-/* Logout Button Special Styling */
 form button.logout-btn {
   background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
   color: #dc2626;
@@ -253,7 +276,6 @@ form button.logout-btn:hover {
   border-color: #ef4444;
 }
 
-/* Hamburger Button */
 .hamburger-btn {
   display: none;
   position: fixed;
@@ -323,7 +345,6 @@ form button.logout-btn:hover {
   bottom: 0;
 }
 
-/* Scrollbar Styling */
 .sidebar::-webkit-scrollbar {
   width: 6px;
 }
@@ -341,7 +362,6 @@ form button.logout-btn:hover {
   background: linear-gradient(180deg, #4f46e5, #db2777);
 }
 
-/* Demo Content Styling */
 .demo-content {
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(20px);
@@ -378,7 +398,6 @@ form button.logout-btn:hover {
   margin-bottom: 8px;
 }
 
-/* Floating Elements */
 .floating-shapes {
   position: fixed;
   top: 0;
@@ -414,22 +433,20 @@ form button.logout-btn:hover {
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0px) rotate(0deg);
   }
+
   50% {
     transform: translateY(-20px) rotate(180deg);
   }
 }
 
-/* Responsive Design */
 @media (max-width: 1024px) {
   .sidebar {
     width: 260px;
-  }
-  
-  .main-content {
-    margin-left: 260px;
   }
 }
 
@@ -439,27 +456,39 @@ form button.logout-btn:hover {
   }
 
   .sidebar {
-    position: fixed; 
+    position: fixed;
     top: 0;
     left: 0;
-    height: 100vh;
+    height: fit-content;
+    margin: 0;
+    border-radius: 0 20px 20px 0;
     transform: translateX(-100%);
-    transition: transform 0.4s ease;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
     z-index: 1000;
     pointer-events: none;
+    box-shadow: 
+      0 25px 50px -12px rgba(0, 0, 0, 0.25),
+      0 10px 25px -5px rgba(0, 0, 0, 0.1),
+      0 4px 6px -2px rgba(0, 0, 0, 0.05),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
   }
 
   .sidebar.open {
     transform: translateX(0);
     pointer-events: auto;
-  }
-  .sidebar-overlay {
-    display: block;
+    box-shadow: 
+      0 32px 64px -12px rgba(0, 0, 0, 0.4),
+      0 20px 40px -5px rgba(0, 0, 0, 0.2),
+      0 10px 20px -3px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
   }
 
-  .main-content {
-    margin-left: 0;
-    padding: 80px 24px 24px;
+  .sidebar:hover {
+    transform: translateY(0);
+  }
+
+  .sidebar-overlay {
+    display: block;
   }
 
   .sidebar-logo {
@@ -499,9 +528,6 @@ form button.logout-btn:hover {
     height: 40px;
   }
 
-  .main-content {
-    padding: 80px 16px 16px;
-  }
 
   .demo-content {
     padding: 20px;
@@ -516,20 +542,19 @@ form button.logout-btn:hover {
   }
 }
 
-/* Extra Small Screens */
 @media (max-width: 360px) {
   .sidebar {
     width: 240px;
   }
-  
+
   .sidebar-logo {
     font-size: 20px;
   }
-  
+
   .logo-container {
     padding: 20px 16px;
   }
-  
+
   .sidebar nav {
     padding: 0 16px;
   }

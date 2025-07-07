@@ -5,134 +5,141 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LapZone Dashboard - Products</title>
     <link rel="stylesheet" href="/css/sidebar.css">
-    <link rel="stylesheet" href="/css/productlisting.css">
-    <!-- Add SweetAlert2 CDN -->
+    <link rel="stylesheet" href="/css/customerslist.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <%- include("../partials/admin/header.ejs") %>
-    <div class="dashboard">
+    <div class="customer-dashboard">
         <%- include("../partials/admin/sidebar.ejs") %>
         <main class="main-content">
-            <div class="page-header">
-                <h2>Products</h2>
+            <div class="breadcrumb">
+                <a href="/admin/dashboard">Dashboard</a>
+                <span>›</span>
+                <span>Products</span>
             </div>
+            <header class="header">
+                <h2><i class="fa-solid fa-box" style="color: #0446e5;"></i> Products</h2>
+            </header>
             
-            <div class="action-bar">
-                <button class="add-product-btn" onclick="window.location.href='/admin/product/add'">
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-                    </svg>
-                    Add Product
-                </button>
-                <div class="search-container">
-                    <form action="/admin/products" method="get" class="search-form">
-                        <input type="text" name="search" placeholder="Search by name, email, or mobile..."
-                            value="<%= searchQuery || '' %>">
-                        <button type="submit" class="search-btn">Search</button>
-                        <button type="button" class="clear-btn"
-                            onclick="window.location.href='/admin/products'">Clear</button>
-                    </form>
-                </div>
-            </div>
-            <div class="container">
-                <div class="filter-sort">
-                    <div class="filter">
-                        <select name="category">
-                            <option value="">Category</option>
-                            <% categories.forEach(category => { %>
-                                <option value="<%= category.name %>" <%= category.name === (query.category || '') ? 'selected' : '' %>><%= category.name %></option>
-                            <% }) %>
-                        </select>
-                        <select name="price">
-                            <option value="">Price</option>
-                            <option value="0-50000" <%= query.price === '0-50000' ? 'selected' : '' %>>₹0 - ₹50000</option>
-                            <option value="50000-100000" <%= query.price === '50000-100000' ? 'selected' : '' %>>₹50000 - ₹100000</option>
-                            <option value="100000+" <%= query.price === '100000+' ? 'selected' : '' %>>₹100000+</option>
-                        </select>
-                    </div>
-                    <div class="sort">
-                        <select name="sort">
-                            <option value="price-desc" <%= query.sort === 'price-desc' ? 'selected' : '' %>>Price High-Low</option>
-                            <option value="price-asc" <%= query.sort === 'price-asc' ? 'selected' : '' %>>Price Low-High</option>
-                            <option value="added-desc" <%= query.sort === 'added-desc' ? 'selected' : '' %>>Last added first</option>
-                        </select>
-                    </div>
-                </div>
+            <div class="container mx-auto p-6">
+                <div class="customers">
+                    <div class="products">
+                        <div class="action-bar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 1rem;">
+                            <button class="add-product-btn" onclick="window.location.href='/admin/product/add'" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background-color: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.875rem; font-weight: 500;">
+                                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                                </svg>
+                                Add Product
+                            </button>
+                        </div>
 
-                <table class="products-table">
-                    <thead>
-                        <tr>
-                            <th>Image</th>
-                            <th>Product Name</th>
-                            <th>Category</th>
-                            <th>Price</th>
-                            <th>Stock</th>
-                            <th>List</th>
-                            <th>Action</th>
-                            <th>Offer</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% products.forEach(product => { %>
-                            <tr>
-                                <td><img src="<%= product.images.find(image => image.isMain)?.url || '/images/placeholder.jpg' %>" alt="<%= product.name %>"></td>
-                                <td><%= product.name %></td>
-                                <td><%= product.categoryId.name %></td>
-                                <td>₹<%= product.salePrice.toLocaleString('en-IN') %></td>
-                                <td><%= product.variants && product.variants.length > 0
-                                    ? product.variants.reduce((sum, v) => sum + (v.stock || 0), 0)
-                                    : 0 %></td>
-                                <td>
-                                    <label class="switch">
-                                        <input type="checkbox" <%= product.isActive ? "checked" : "" %> onchange="toggleProduct('<%= product._id %>', this)">
-                                        <span class="slider <%= product.isActive ? 'listed' : 'unlisted' %>">
-                                            <%= product.isActive ? "LIST" : "UNLIST" %>
-                                        </span>
-                                    </label>
-                                </td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="edit" onclick="editProduct('<%= product._id %>')">
-                                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                                <path d="M12.146 0.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
-                                            </svg>
-                                        </button>
-                                        <button class="delete" onclick="deleteProduct('<%= product._id %>')">
-                                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11a1 1 0 0 1 0 2H2.5z"/>
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </td>
-                                <td class="offer">
-                                    <span><%= product.offer ? `${product.offer}% OFF` : '' %></span>
-                                    
-                                    <% if (product.offer) { %>
-                                        <button class="remove" onclick="removeOffer('<%= product._id %>')">Remove Offer</button>
-                                    <% } else { %>
-                                        <button class="add" onclick="addOffer('<%= product._id %>')">Add Offer</button>
-                                    <% } %>
-                                </td>
-                            </tr>
-                        <% }) %>
-                    </tbody>
-                </table>
+                        <div class="search-container">
+                            <form action="/admin/products" method="get" class="search-form">
+                                <input type="text" name="search" placeholder="Search by name, category, or brand..." value="<%= searchQuery || '' %>">
+                                <button type="submit" class="search-btn">Search</button>
+                                <button type="button" class="clear-btn" onclick="window.location.href='/admin/products'">Clear</button>
+                            </form>
+                        </div>
 
-                <div class="pagination">
-                    <% if (currentPage > 1) { %>
-                        <a href="?page=<%= currentPage - 1 %>&category=<%= query.category || '' %>&price=<%= query.price || '' %>&sort=<%= query.sort || '' %>" class="border rounded px-3 py-2">Previous</a>
-                    <% } %>
-                    <% for (let i = 1; i <= totalPages; i++) { %>
-                        <a href="?page=<%= i %>&category=<%= query.category || '' %>&price=<%= query.price || '' %>&sort=<%= query.sort || '' %>" class="border rounded px-3 py-2 <%= currentPage === i ? 'active' : '' %>"><%= i %></a>
-                    <% } %>
-                    <% if (currentPage < totalPages) { %>
-                        <a href="?page=<%= currentPage + 1 %>&category=<%= query.category || '' %>&price=<%= query.price || '' %>&sort=<%= query.sort || '' %>" class="border rounded px-3 py-2">Next</a>
-                    <% } %>
+                        <div class="filter-sort" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; padding: 1rem; margin-bottom: 1rem;">
+                            <div class="filter" style="display: flex; gap: 0.5rem; flex: 1; max-width: 300px;">
+                                <select name="category" style="width: 100%; padding: 0.5rem 1rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem;">
+                                    <option value="">Category</option>
+                                    <% categories.forEach(category => { %>
+                                        <option value="<%= category.name %>" <%= category.name === (query.category || '') ? 'selected' : '' %>><%= category.name %></option>
+                                    <% }) %>
+                                </select>
+                                <select name="price" style="width: 100%; padding: 0.5rem 1rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem;">
+                                    <option value="">Price</option>
+                                    <option value="0-50000" <%= query.price === '0-50000' ? 'selected' : '' %>>₹0 - ₹50000</option>
+                                    <option value="50000-100000" <%= query.price === '50000-100000' ? 'selected' : '' %>>₹50000 - ₹100000</option>
+                                    <option value="100000+" <%= query.price === '100000+' ? 'selected' : '' %>>₹100000+</option>
+                                </select>
+                            </div>
+                            <div class="sort" style="display: flex; gap: 0.5rem; flex: 1; max-width: 300px;">
+                                <select name="sort" style="width: 100%; padding: 0.5rem 1rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem;">
+                                    <option value="price-desc" <%= query.sort === 'price-desc' ? 'selected' : '' %>>Price High-Low</option>
+                                    <option value="price-asc" <%= query.sort === 'price-asc' ? 'selected' : '' %>>Price Low-High</option>
+                                    <option value="added-desc" <%= query.sort === 'added-desc' ? 'selected' : '' %>>Last added first</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="table-container">
+                            <table class="product-table" id="productTable">
+                                <thead>
+                                    <tr>
+                                        <th>Image</th>
+                                        <th>Product Name</th>
+                                        <th>Category</th>
+                                        <th>Price</th>
+                                        <th>Stock</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                        <th>Offer</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="productList">
+                                    <% products.forEach(product => { %>
+                                        <tr>
+                                            <td><img src="<%= product.images.find(image => image.isMain)?.url || '/images/placeholder.jpg' %>" alt="<%= product.name %>" style="width: 3rem; height: 3rem; object-fit: cover; border-radius: 4px;"></td>
+                                            <td style="max-width: 200px; word-wrap: break-word;"><%= product.name %></td>
+                                            <td><%= product.categoryId.name %></td>
+                                            <td>₹<%= product.salePrice.toLocaleString('en-IN') %></td>
+                                            <td><%= product.variants && product.variants.length > 0
+                                                ? product.variants.reduce((sum, v) => sum + (v.stock || 0), 0)
+                                                : 0 %></td>
+                                            <td>
+                                                <label class="switch">
+                                                    <input type="checkbox" <%= product.isActive ? "checked" : "" %> onchange="toggleProduct('<%= product._id %>', this)">
+                                                    <span class="slider"></span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                                    <button onclick="editProduct('<%= product._id %>')" style="display: flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: 6px; border: none; cursor: pointer; background-color: #3b82f6; color: white;">
+                                                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                            <path d="M12.146 0.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                                                        </svg>
+                                                    </button>
+                                                    <button onclick="deleteProduct('<%= product._id %>')" style="display: flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: 6px; border: none; cursor: pointer; background-color: #ef4444; color: white;">
+                                                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11a1 1 0 0 1 0 2H2.5z"/>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                    <span style="color: #ef4444; font-weight: 500; font-size: 0.875rem;"><%= product.offer ? `${product.offer}% OFF` : '' %></span>
+                                                    <% if (product.offer) { %>
+                                                        <button onclick="removeOffer('<%= product._id %>')" style="background-color: #aa3737; color: #fff; border: none; padding: 0.375rem 0.75rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer;">Remove</button>
+                                                    <% } else { %>
+                                                        <button onclick="addOffer('<%= product._id %>')" style="background-color: #6adb1f; color: black; border: none; padding: 0.375rem 0.75rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer;">Add</button>
+                                                    <% } %>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="pagination">
+                            <% if (currentPage > 1) { %>
+                                <a href="?page=<%= currentPage - 1 %>&category=<%= query.category || '' %>&price=<%= query.price || '' %>&sort=<%= query.sort || '' %>" class="border rounded px-3 py-2">Previous</a>
+                            <% } %>
+                            <% for (let i = 1; i <= totalPages; i++) { %>
+                                <a href="?page=<%= i %>&category=<%= query.category || '' %>&price=<%= query.price || '' %>&sort=<%= query.sort || '' %>" class="border rounded px-3 py-2 <%= currentPage === i ? 'active' : '' %>"><%= i %></a>
+                            <% } %>
+                            <% if (currentPage < totalPages) { %>
+                                <a href="?page=<%= currentPage + 1 %>&category=<%= query.category || '' %>&price=<%= query.price || '' %>&sort=<%= query.sort || '' %>" class="border rounded px-3 py-2">Next</a>
+                            <% } %>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>
@@ -319,11 +326,7 @@
                                 'Success!',
                                 `Product has been ${actionText}ed.`,
                                 'success'
-                            ).then(() => {
-                                const slider = checkbox.nextElementSibling;
-                                slider.textContent = isActive ? 'LIST' : 'UNLIST';
-                                slider.className = `slider ${isActive ? 'listed' : 'unlisted'}`;
-                            });
+                            );
                         } else {
                             checkbox.checked = !isActive;
                             Swal.fire(

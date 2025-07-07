@@ -16,209 +16,217 @@
 
 <body>
     <%- include('../partials/admin/header.ejs') %>
-    <aside class="dashboard"  id="sidebar">
+    <div class="dashboard">
         <%- include("../partials/admin/sidebar.ejs") %>
 
-    <main class="main-content">
-        <div class="page-header">
-            <div class="header-left">
-                <h1 class="page-title">Return & Cancel Requests</h1>
-            </div> 
-        </div>
-
-        <div class="filter-tabs">
-            <button class="tab-btn active" data-tab="all">
-                <i class="bi bi-list-ul"></i>
-                All Requests (<%= returnRequests.length + cancelRequests.length %>)
-            </button>
-            <button class="tab-btn" data-tab="return">
-                <i class="bi bi-arrow-return-left"></i>
-                Return Requests (<%= returnRequests.length %>)
-            </button>
-            <button class="tab-btn" data-tab="cancel">
-                <i class="bi bi-x-circle"></i>
-                Cancel Requests (<%= cancelRequests.length %>)
-            </button>
-        </div>
-
-        <div class="table-container">
-            <table class="requests-table">
-                <thead>
-                    <tr>
-                        <th style="width: 120px;">Order ID</th>
-                        <th style="width: 120px;">Type</th>
-                        <th style="width: 250px;">Product</th>
-                        <th style="width: 120px;">Customer</th>
-                        <th style="width: 180px;">Reason</th>
-                        <th style="width: 100px;">Date</th>
-                        <th style="width: 180px;">Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="requestsTableBody">
-                    <% if (returnRequests.length > 0) { %>
-                        <% returnRequests.forEach(order => { %>
-                            <% order.items.filter(item => item.status === 'Return Requested').forEach(item => { %>
-                                <tr class="request-row" data-type="return">
-                                    
-                                    <td>
-                                        <span class="order-id-cell"><%= order.orderId %></span>
-                                    </td>
-                                    <td>
-                                        <div class="request-type-cell return-type-cell">
-                                            <i class="bi bi-arrow-return-left"></i>
-                                            Return
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="product-info">
-                                            <div class="product-image-small">
-                                                <% const mainImage = item.productId?.images?.find(img => img.isMain === true); %>
-                                                <% if (mainImage) { %>
-                                                    <img src="<%= mainImage.url %>" alt="<%= item.productName %>">
-                                                <% } else { %>
-                                                    <div class="no-image-small">
-                                                        <i class="bi bi-image"></i>
-                                                    </div>
-                                                <% } %>
-                                            </div>
-                                            <div class="product-details-small">
-                                                <div class="product-name-small"><%= item.productName %></div>
-                                                <div class="product-meta-small">
-                                                    <span class="meta-tag">Qty: <%= item.quantity %></span>
-                                                    <span class="meta-tag price-tag">₹<%= item.price.toLocaleString('en-IN') %></span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="customer-cell">
-                                            <i class="bi bi-person-circle"></i>
-                                            <%= order.user.fullname || order.user.email %>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="reason-cell">
-                                            <div class="reason-tag-small"><%= item.returnReason || 'Not specified' %></div>
-                                            <% if (item.returnComment) { %>
-                                                <div class="reason-comment-small">"<%= item.returnComment %>"</div>
-                                            <% } %>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="date-cell">
-                                            <%= item.returnRequestDate ? item.returnRequestDate.toLocaleDateString() : 'N/A' %>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="actions-cell">
-                                            <button class="action-btn-small approve-btn-small" 
-                                                    data-order-id="<%= order._id %>" 
-                                                    data-item-id="<%= item._id %>"
-                                                    data-type="return">
-                                                <i class="bi bi-check-circle"></i>
-                                                Approve
-                                            </button>
-                                            <button class="action-btn-small reject-btn-small" 
-                                                    data-order-id="<%= order._id %>" 
-                                                    data-item-id="<%= item._id %>"
-                                                    data-type="return">
-                                                <i class="bi bi-x-circle"></i>
-                                                Reject
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <% }) %>
-                        <% }) %>
-                    <% } %>
-
-                    <% if (cancelRequests.length > 0) { %>
-                        <% cancelRequests.forEach(order => { %>
-                            <% order.items.filter(item => item.status === 'Cancel Requested').forEach(item => { %>
-                                <tr class="request-row" data-type="cancel">
-                                    <td>
-                                        <span class="order-id-cell"><%= order.orderId %></span>
-                                    </td>
-                                    <td>
-                                        <div class="request-type-cell cancel-type-cell">
-                                            <i class="bi bi-x-circle"></i>
-                                            Cancel
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="product-info">
-                                            <div class="product-image-small">
-                                                <% const mainImage = item.productId?.images?.find(img => img.isMain === true); %>
-                                                <% if (mainImage) { %>
-                                                    <img src="<%= mainImage.url %>" alt="<%= item.productName %>">
-                                                <% } else { %>
-                                                    <div class="no-image-small">
-                                                        <i class="bi bi-image"></i>
-                                                    </div>
-                                                <% } %>
-                                            </div>
-                                            <div class="product-details-small">
-                                                <div class="product-name-small"><%= item.productName %></div>
-                                                <div class="product-meta-small">
-                                                    <span class="meta-tag">Qty: <%= item.quantity %></span>
-                                                    <span class="meta-tag price-tag">₹<%= item.price.toLocaleString('en-IN') %></span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="customer-cell">
-                                            <i class="bi bi-person-circle"></i>
-                                            <%= order.user.fullname || order.user.email %>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="reason-cell">
-                                            <div class="reason-tag-small"><%= item.cancelReason || 'Not specified' %></div>
-                                            <% if (item.cancelComment) { %>
-                                                <div class="reason-comment-small">"<%= item.cancelComment %>"</div>
-                                            <% } %>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="date-cell">
-                                            <%= item.cancelDate ? item.cancelDate.toLocaleDateString() : 'N/A' %>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="actions-cell">
-                                            <button class="action-btn-small approve-btn-small" 
-                                                    data-order-id="<%= order._id %>" 
-                                                    data-item-id="<%= item._id %>"
-                                                    data-type="cancel">
-                                                <i class="bi bi-check-circle"></i>
-                                                Approve
-                                            </button>
-                                            <button class="action-btn-small reject-btn-small" 
-                                                    data-order-id="<%= order._id %>" 
-                                                    data-item-id="<%= item._id %>"
-                                                    data-type="cancel">
-                                                <i class="bi bi-x-circle"></i>
-                                                Reject
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <% }) %>
-                        <% }) %>
-                    <% } %>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="empty-state-table" id="emptyState" style="display: none;">
-            <div class="empty-icon">
-                <i class="bi bi-inbox"></i>
+        <main class="main-content">
+            <div class="content-container">
+            <div class="breadcrumb">
+                <a href="/admin/dashboard">Dashboard</a>
+                <span>›</span>
+                <a href="/admin/orders">Orders</a>
+                <span>›</span>
+                <span>Return & Cancel Requests</span>
             </div>
-            <h3>No requests found</h3>
-            <p>There are no return or cancel requests at the moment.</p>
+            <div class="page-totle-container">
+                    <h1 class="page-title"><i class="fa-solid fa-arrow-rotate-left"></i> Return & Cancel Requests</h1>
+            </div>
+
+            <div class="filter-tabs">
+                <button class="tab-btn active" data-tab="all">
+                    <i class="bi bi-list-ul"></i>
+                    All Requests (<%= returnRequests.length + cancelRequests.length %>)
+                </button>
+                <button class="tab-btn" data-tab="return">
+                    <i class="bi bi-arrow-return-left"></i>
+                    Return Requests (<%= returnRequests.length %>)
+                </button>
+                <button class="tab-btn" data-tab="cancel">
+                    <i class="bi bi-x-circle"></i>
+                    Cancel Requests (<%= cancelRequests.length %>)
+                </button>
+            </div>
+
+            <div class="table-container">
+                <table class="requests-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 120px;">Order ID</th>
+                            <th style="width: 120px;">Type</th>
+                            <th style="width: 250px;">Product</th>
+                            <th style="width: 120px;">Customer</th>
+                            <th style="width: 180px;">Reason</th>
+                            <th style="width: 100px;">Date</th>
+                            <th style="width: 180px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="requestsTableBody">
+                        <% if (returnRequests.length > 0) { %>
+                            <% returnRequests.forEach(order => { %>
+                                <% order.items.filter(item => item.status === 'Return Requested').forEach(item => { %>
+                                    <tr class="request-row" data-type="return">
+                                        
+                                        <td>
+                                            <span class="order-id-cell"><%= order.orderId %></span>
+                                        </td>
+                                        <td>
+                                            <div class="request-type-cell return-type-cell">
+                                                <i class="bi bi-arrow-return-left"></i>
+                                                Return
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="product-info">
+                                                <div class="product-image-small">
+                                                    <% const mainImage = item.productId?.images?.find(img => img.isMain === true); %>
+                                                    <% if (mainImage) { %>
+                                                        <img src="<%= mainImage.url %>" alt="<%= item.productName %>">
+                                                    <% } else { %>
+                                                        <div class="no-image-small">
+                                                            <i class="bi bi-image"></i>
+                                                        </div>
+                                                    <% } %>
+                                                </div>
+                                                <div class="product-details-small">
+                                                    <div class="product-name-small"><%= item.productName %></div>
+                                                    <div class="product-meta-small">
+                                                        <span class="meta-tag">Qty: <%= item.quantity %></span>
+                                                        <span class="meta-tag price-tag">₹<%= item.price.toLocaleString('en-IN') %></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="customer-cell">
+                                                <i class="bi bi-person-circle"></i>
+                                                <%= order.user.fullname || order.user.email %>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="reason-cell">
+                                                <div class="reason-tag-small"><%= item.returnReason || 'Not specified' %></div>
+                                                <% if (item.returnComment) { %>
+                                                    <div class="reason-comment-small">"<%= item.returnComment %>"</div>
+                                                <% } %>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="date-cell">
+                                                <%= item.returnRequestDate ? item.returnRequestDate.toLocaleDateString() : 'N/A' %>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="actions-cell">
+                                                <button class="action-btn-small approve-btn-small" 
+                                                        data-order-id="<%= order._id %>" 
+                                                        data-item-id="<%= item._id %>"
+                                                        data-type="return">
+                                                    <i class="bi bi-check-circle"></i>
+                                                    Approve
+                                                </button>
+                                                <button class="action-btn-small reject-btn-small" 
+                                                        data-order-id="<%= order._id %>" 
+                                                        data-item-id="<%= item._id %>"
+                                                        data-type="return">
+                                                    <i class="bi bi-x-circle"></i>
+                                                    Reject
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            <% }) %>
+                        <% } %>
+
+                        <% if (cancelRequests.length > 0) { %>
+                            <% cancelRequests.forEach(order => { %>
+                                <% order.items.filter(item => item.status === 'Cancel Requested').forEach(item => { %>
+                                    <tr class="request-row" data-type="cancel">
+                                        <td>
+                                            <span class="order-id-cell"><%= order.orderId %></span>
+                                        </td>
+                                        <td>
+                                            <div class="request-type-cell cancel-type-cell">
+                                                <i class="bi bi-x-circle"></i>
+                                                Cancel
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="product-info">
+                                                <div class="product-image-small">
+                                                    <% const mainImage = item.productId?.images?.find(img => img.isMain === true); %>
+                                                    <% if (mainImage) { %>
+                                                        <img src="<%= mainImage.url %>" alt="<%= item.productName %>">
+                                                    <% } else { %>
+                                                        <div class="no-image-small">
+                                                            <i class="bi bi-image"></i>
+                                                        </div>
+                                                    <% } %>
+                                                </div>
+                                                <div class="product-details-small">
+                                                    <div class="product-name-small"><%= item.productName %></div>
+                                                    <div class="product-meta-small">
+                                                        <span class="meta-tag">Qty: <%= item.quantity %></span>
+                                                        <span class="meta-tag price-tag">₹<%= item.price.toLocaleString('en-IN') %></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="customer-cell">
+                                                <i class="bi bi-person-circle"></i>
+                                                <%= order.user.fullname || order.user.email %>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="reason-cell">
+                                                <div class="reason-tag-small"><%= item.cancelReason || 'Not specified' %></div>
+                                                <% if (item.cancelComment) { %>
+                                                    <div class="reason-comment-small">"<%= item.cancelComment %>"</div>
+                                                <% } %>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="date-cell">
+                                                <%= item.cancelDate ? item.cancelDate.toLocaleDateString() : 'N/A' %>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="actions-cell">
+                                                <button class="action-btn-small approve-btn-small" 
+                                                        data-order-id="<%= order._id %>" 
+                                                        data-item-id="<%= item._id %>"
+                                                        data-type="cancel">
+                                                    <i class="bi bi-check-circle"></i>
+                                                    Approve
+                                                </button>
+                                                <button class="action-btn-small reject-btn-small" 
+                                                        data-order-id="<%= order._id %>" 
+                                                        data-item-id="<%= item._id %>"
+                                                        data-type="cancel">
+                                                    <i class="bi bi-x-circle"></i>
+                                                    Reject
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            <% }) %>
+                        <% } %>
+                    </tbody>
+                </table>
+                
+            </div>
+            <div class="empty-state-table" id="emptyState" style="display: none;">
+                <div class="empty-icon">
+                    <i class="bi bi-inbox"></i>
+                </div>
+                <h3>No requests found</h3>
+                <p>There are no return or cancel requests at the moment.</p>
+            </div>
         </div>
-    </main>
+        </main>
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {

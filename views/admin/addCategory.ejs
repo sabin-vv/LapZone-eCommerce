@@ -17,8 +17,15 @@
   <%- include("../partials/admin/sidebar.ejs") %>
 
   <div class="main-content">
+    <div class="breadcrumb">
+      <a href="/admin/dashboard">Dashboard</a>
+      <span>›</span>
+      <a href="/admin/category">Categories</a>
+      <span>›</span>
+      <span>Add New</span>
+    </div>
     <div class="header-section">
-      <h2>Add Category</h2>
+      <h2><i class="fa-solid fa-circle-plus"></i> Add Category</h2>
     </div>
 
     <form action="/admin/add-category" method="POST" id="addForm">

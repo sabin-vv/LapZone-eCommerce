@@ -12,11 +12,11 @@
     </div>
     <nav>
         <ul>
-            <li><a href="/admin/admindashboard" class="sidebar-link" data-page="admindashboard"><i class="fas fa-chart-line"></i>Dashboard</a></li>
+            <li><a href="/admin/dashboard" class="sidebar-link" data-page="dashboard"><i class="fas fa-chart-bar"></i>Dashboard</a></li>
             <li><a href="/admin/products" class="sidebar-link" data-page="products"><i class="fas fa-box"></i>Products</a></li>
             <li><a href="/admin/orders" class="sidebar-link" data-page="orderlist"><i class="fas fa-clipboard-list"></i>Order List</a></li>
             <li><a href="/admin/customers" class="sidebar-link" data-page="customers"><i class="fas fa-users"></i>Customers</a></li>
-            <li><a href="/admin/sales-report" class="sidebar-link" data-page="sales"><i class="fas fa-chart-bar"></i>Sales</a></li>
+            <li><a href="/admin/sales-report" class="sidebar-link" data-page="sales"><i class="fas fa-chart-line"></i>Sales</a></li>
             <li><a href="/admin/category" class="sidebar-link" data-page="category"><i class="fas fa-tags"></i>Category</a></li>
             <li><a href="/admin/coupons" class="sidebar-link" data-page="coupons"><i class="fas fa-ticket-alt"></i>Coupons</a></li>
         </ul>
@@ -31,17 +31,55 @@
     function setActiveSidebarLink() {
         const currentPath = window.location.pathname;
         const sidebarLinks = document.querySelectorAll('.sidebar-link');
-        const pathSegments = currentPath.split('/').filter(segment => segment);
-        const normalizedPath = pathSegments[pathSegments.length - 1] || 'admindashboard';
-
+        
         sidebarLinks.forEach(link => {
             const href = link.getAttribute('href');
             const page = link.getAttribute('data-page');
-
-            if (currentPath === href || normalizedPath === page || href.includes(normalizedPath)) {
-                link.classList.add('active');
-            } else {
-                link.classList.remove('active');
+            
+            if (page === 'dashboard') {
+                if (currentPath === '/admin' || currentPath === '/admin/' || 
+                    currentPath === '/admin/dashboard' || currentPath === '/admin/admindashboard') {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            }
+            else if (page === 'products') {
+                if (currentPath.startsWith('/admin/products') || 
+                    currentPath.startsWith('/admin/product/')) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            }
+            else if (page === 'orderlist') {
+                if (currentPath.startsWith('/admin/orders') || 
+                    currentPath.startsWith('/admin/view-order/')) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            }
+            else if (page === 'category') {
+                if (currentPath.startsWith('/admin/category')) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            }
+            else if (page === 'coupons') {
+                if (currentPath.startsWith('/admin/coupons')) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            }
+            else {
+                if (currentPath === href || currentPath.includes(href)) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
             }
         });
     }
@@ -53,7 +91,6 @@
         const hamburgerBtn = document.getElementById('hamburgerBtn');
         const sidebarOverlay = document.getElementById('sidebarOverlay');
 
-        // Toggle sidebar function
         function toggleSidebar() {
             const isOpen = sidebar.classList.contains('open');
             
@@ -70,12 +107,10 @@
             }
         }
 
-        // Hamburger button click
         if (hamburgerBtn) {
             hamburgerBtn.addEventListener('click', toggleSidebar);
         }
 
-        // Overlay click to close sidebar
         if (sidebarOverlay) {
             sidebarOverlay.addEventListener('click', () => {
                 if (sidebar.classList.contains('open')) {
@@ -84,11 +119,9 @@
             });
         }
 
-        // Close sidebar when clicking on links (mobile)
         const sidebarLinks = document.querySelectorAll('.sidebar-link');
         sidebarLinks.forEach(link => {
             link.addEventListener('click', function (e) {
-                // Close sidebar on mobile when clicking a link
                 if (window.innerWidth <= 768) {
                     setTimeout(() => {
                         toggleSidebar();
@@ -100,7 +133,6 @@
             });
         });
 
-        // Handle window resize
         window.addEventListener('resize', () => {
             if (window.innerWidth > 768) {
                 sidebar.classList.remove('open');
@@ -110,7 +142,6 @@
             }
         });
 
-        // Prevent body scroll when sidebar is open on mobile
         sidebar.addEventListener('touchmove', (e) => {
             if (sidebar.classList.contains('open')) {
                 e.stopPropagation();

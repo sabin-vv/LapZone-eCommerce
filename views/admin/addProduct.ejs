@@ -14,13 +14,21 @@
 
 <body class="bg-gray-100 font-sans">
     <%- include("../partials/admin/header.ejs") %>
-    <div class="flex min-h-screen">
+    <div class="page-container">
         <%- include("../partials/admin/sidebar.ejs") %>
              
-            <main class="main-content flex-1 p-6 md:ml-10">
-                <h1 class="text-2xl font-bold mb-6">Add New Product</h1>
-                <form class="bg-white p-6 rounded-lg shadow-md" enctype="multipart/form-data"
+            <main class="main-content">
+                <form class="product-form p-6 shadow-md" enctype="multipart/form-data"
                     action="/admin/product/add" method="POST">
+                <div class="breadcrumb">
+                    <a href="/admin/dashboard">Dashboard</a>
+                    <span>›</span>
+                    <a href="/admin/products">Products</a>
+                    <span>›</span>
+                    <span>Add New</span>
+                </div>
+                <h1 class="text-2xl font-bold mb-6"><i class="fa-solid fa-circle-plus" style="color: #4f46e5;"></i> Add New Product</h1>
+                
                         <div class="form-field-grid">
                             <div>
                                 <label for="name" class="block text-sm font-medium text-gray-700">Product Name</label>

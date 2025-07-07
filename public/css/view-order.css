@@ -6,6 +6,7 @@ body {
     min-height: 100vh;
     color: #333;
 }
+
 .dashboard {
     display: flex;
     gap: 30px;
@@ -22,15 +23,14 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 25px;
-    padding-bottom: 15px;
     border-bottom: 1px solid #e9ecef;
 }
 
 .page-title {
-    font-size: 28px;
-    color: #2c3e50;
-    font-weight: 600;
-    margin: 0;
+    font-size: 32px;
+    font-weight: 700;
+    -webkit-text-fill-color: transparent;
+    background: linear-gradient(135deg, rgb(99, 102, 241) 0%, rgb(139, 92, 246) 50%, rgb(236, 72, 153) 100%) text;
 }
 
 .action-buttons .btn {
@@ -89,7 +89,6 @@ body {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
-/* Order Summary Styles */
 .order-summary h2 {
     margin: 0 0 15px;
     font-size: 24px;
@@ -113,7 +112,6 @@ body {
     font-size: 16px;
 }
 
-/* Order Status Update */
 .order-status-update-card h3 {
     display: flex;
     align-items: center;
@@ -144,7 +142,6 @@ body {
     flex-grow: 1;
 }
 
-/* Customer and Shipping Styles */
 .customer-info h3,
 .shipping-info h3 {
     display: flex;
@@ -162,7 +159,6 @@ body {
     line-height: 1.5;
 }
 
-/* Items Table Styles */
 .items-table-container h3 {
     display: flex;
     align-items: center;
@@ -201,39 +197,44 @@ body {
     text-align: center;
 }
 
-/* Table column widths */
-.th-image, .td-image {
+.th-image,
+.td-image {
     width: 80px;
 }
 
-.th-product, .td-product {
+.th-product,
+.td-product {
     width: auto;
     text-align: left;
 }
 
-.th-quantity, .td-quantity {
+.th-quantity,
+.td-quantity {
     width: 80px;
 }
 
-.th-price, .td-price {
+.th-price,
+.td-price {
     width: 100px;
     text-align: right;
 }
 
-.th-status, .td-status {
+.th-status,
+.td-status {
     width: 120px;
 }
 
-.th-status-update, .td-status-update {
+.th-status-update,
+.td-status-update {
     width: 200px;
 }
 
-.th-total, .td-total {
+.th-total,
+.td-total {
     width: 100px;
     text-align: right;
 }
 
-/* Item status update form */
 .item-status-form {
     display: flex;
     align-items: center;
@@ -289,14 +290,12 @@ body {
     font-size: 24px;
 }
 
-/* Bottom Section Layout */
 .bottom-section {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 20px;
 }
 
-/* Order Totals Styles */
 .order-totals h3 {
     display: flex;
     align-items: center;
@@ -329,7 +328,6 @@ body {
     border-bottom: none;
 }
 
-/* Status History Styles */
 .status-history h3 {
     display: flex;
     align-items: center;
@@ -400,7 +398,6 @@ body {
     margin-left: 8px;
 }
 
-/* Status Badges */
 .status-badge {
     display: inline-block;
     padding: 4px 10px;
@@ -466,17 +463,16 @@ body {
     color: #c62828;
 }
 
-/* Responsive */
 @media (max-width: 992px) {
     .main-content {
         margin-left: 0;
     }
-    
+
     .summary-header {
         flex-direction: column;
         align-items: flex-start;
     }
-    
+
     .order-status-update {
         width: 100%;
     }
@@ -486,7 +482,7 @@ body {
     .order-meta {
         grid-template-columns: 1fr;
     }
-    
+
     .bottom-section {
         grid-template-columns: 1fr;
     }

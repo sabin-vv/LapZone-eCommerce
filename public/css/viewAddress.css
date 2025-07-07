@@ -275,10 +275,11 @@ body {
   margin: 0;
   line-height: 1.5;
 }
-@media(max-width :1200px){
-    .main-body {
-        padding: 30px;
-    }
+
+@media(max-width :1200px) {
+  .main-body {
+    padding: 30px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -362,11 +363,13 @@ body {
     margin-bottom: 15px;
   }
 }
+
 @keyframes slideUp {
   from {
     transform: translateY(30px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
