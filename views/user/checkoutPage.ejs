@@ -952,11 +952,40 @@
           if (result.success) {
             window.location.href = `/user/order-page/${result.orderId}`;
           } else {
-            Swal.fire({
-              icon: "error",
-              title: "Order Failed",
-              text: result.message || "Error occurred",
-            });
+            if (result.refunded && result.refundAmount) {
+              Swal.fire({
+                icon: "info",
+                title: "Order Failed - Refund Processed",
+                html: `
+                  <div class="text-center">
+                    <p class="mb-3">${result.message}</p>
+                    <div class="alert alert-success">
+                      <i class="bi bi-check-circle-fill me-2"></i>
+                      <strong>₹${result.refundAmount.toLocaleString('en-IN')}</strong> has been added to your wallet
+                    </div>
+                    <p class="text-muted small">You can use this amount for future purchases</p>
+                  </div>
+                `,
+                confirmButtonText: "Go to Wallet",
+                showCancelButton: true,
+                cancelButtonText: "Continue Shopping",
+                confirmButtonColor: "#28a745",
+                cancelButtonColor: "#6c757d"
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  window.location.href = "/profile/wallet";
+                } else {
+                  window.location.href = "/";
+                }
+              });
+            } else {
+              Swal.fire({
+                icon: "error",
+                title: "Order Failed",
+                text: result.message || "Error occurred",
+                confirmButtonText: "Try Again"
+              });
+            }
           }
         } catch (error) {
           console.error('Error in completeOrder:', error);

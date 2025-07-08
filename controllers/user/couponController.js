@@ -132,7 +132,7 @@ const viewCouponPage = async (req, res, next) => {
         if (!req.session.user) return res.redirect("/login")
         const user = await User.findById(req.session.user)
 
-        const coupons = await Coupon.find({ isActive: true })
+        const coupons = await Coupon.find({ isActive: true }).sort({createdAt: -1})
 
         return res.render("user/viewCouponPage", { coupons, user })
     } catch (error) {

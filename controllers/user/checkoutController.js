@@ -164,11 +164,12 @@ const orderplace = async (req, res, next) => {
       return res.status(400).json({ success: false, message: "Cart is empty." });
     }
 
+    const stockIssues = [];
     for (const item of cart.items) {
       const product = item.productId;
       if (!product || !product.isActive || !product.isExisting) {
-        delete req.session.orderInProgress;
-        return res.json({ success: false, message: `Product not available` });
+        stockIssues.push(`${product?.name || "A product"} is not available`);
+        continue;
       }
 
       const variant = product.variants.find(v =>
@@ -176,16 +177,12 @@ const orderplace = async (req, res, next) => {
       );
 
       if (!variant) {
-        delete req.session.orderInProgress;
-        return res.json({ success: false, message: `Variant not found for ${product.name}` });
+        stockIssues.push(`Variant not found for ${product.name}`);
+        continue;
       }
 
       if (variant.stock < item.quantity) {
-        delete req.session.orderInProgress;
-        return res.json({
-          success: false,
-          message: `Only ${variant.stock} left for ${product.name}`
-        });
+        stockIssues.push(`Only ${variant.stock} left for ${product.name}`);
       }
     }
 
@@ -241,11 +238,35 @@ const orderplace = async (req, res, next) => {
     const tax = Math.round((subtotal - discountAmount) * 0.05);
     const totalAmount = subtotal + shippingFee + tax - discountAmount;
 
-    let paymentStatus = 'Pending';
     let wallet = await Wallet.findOne({ userId });
     if (!wallet) {
       wallet = new Wallet({ userId, balance: 0 });
       await wallet.save();
+    }
+
+    if (stockIssues.length > 0) {
+      delete req.session.orderInProgress;
+      
+      if (paymentMethod === 'Online' && razorpayDetails) {
+        console.log('Stock insufficient after successful payment, refunding to wallet...');
+        
+        wallet.balance += totalAmount;
+        wallet.transactions.push({
+          type: 'credit',
+          amount: totalAmount,
+          description: `Refund for failed order due to insufficient stock`,
+          date: new Date(),
+          createdAt: new Date()
+        });
+        await wallet.save();
+        
+        console.log(`Refunded ₹${totalAmount} to wallet for user ${userId}`);
+      }
+      
+      return res.json({
+        success: false,
+        message: stockIssues[0]
+      });
     }
 
     if (paymentMethod === 'Wallet') {
@@ -256,6 +277,15 @@ const orderplace = async (req, res, next) => {
     } else if (paymentMethod === 'COD' && totalAmount > 1000) {
       delete req.session.orderInProgress;
       return res.json({ success: false, message: "COD not available for orders above ₹1000" });
+    }
+
+    let paymentStatus = 'Pending';
+    if (paymentMethod === 'Wallet') {
+      paymentStatus = 'Completed';
+    } else if (paymentMethod === 'Online') {
+      paymentStatus = 'Completed';
+    } else if (paymentMethod === 'COD') {
+      paymentStatus = 'Pending';
     }
 
     const order = new Order({
@@ -292,14 +322,8 @@ const orderplace = async (req, res, next) => {
         createdAt: new Date()
       });
       await wallet.save();
-      paymentStatus = 'Completed';
-    } else if (paymentMethod === 'Online') {
-      paymentStatus = 'Completed';
-    } else if (paymentMethod === 'COD') {
-      paymentStatus = 'Pending';
     }
 
-    order.paymentStatus = paymentStatus;
     await order.save();
 
     for (const item of cart.items) {
@@ -628,13 +652,16 @@ const createPendingOrder = async (req, res, next) => {
     });
 
     if (!cart || cart.items.length === 0) {
+      delete req.session.pendingOrderInProgress;
       return res.status(400).json({ success: false, message: "Cart is empty." });
     }
 
+    const stockIssues = [];
     for (const item of cart.items) {
       const product = item.productId;
       if (!product || !product.isActive || !product.isExisting) {
-        return res.json({ success: false, message: `Product not available` });
+        stockIssues.push(`${product?.name || "A product"} is not available`);
+        continue;
       }
 
       const variant = product.variants.find(v =>
@@ -642,14 +669,12 @@ const createPendingOrder = async (req, res, next) => {
       );
 
       if (!variant) {
-        return res.json({ success: false, message: `Variant not found for ${product.name}` });
+        stockIssues.push(`Variant not found for ${product.name}`);
+        continue;
       }
 
       if (variant.stock < item.quantity) {
-        return res.json({
-          success: false,
-          message: `Only ${variant.stock} left for ${product.name}`
-        });
+        stockIssues.push(`Only ${variant.stock} left for ${product.name}`);
       }
     }
 
@@ -704,6 +729,16 @@ const createPendingOrder = async (req, res, next) => {
 
     const tax = Math.round((subtotal - discountAmount) * 0.05);
     const totalAmount = subtotal + shippingFee + tax - discountAmount;
+
+    if (stockIssues.length > 0) {
+      await Cart.deleteOne({ userId });
+      delete req.session.pendingOrderInProgress;
+
+      return res.json({ 
+        success: false, 
+        message: stockIssues[0]
+      });
+    }
 
     const order = new Order({
       orderId,
