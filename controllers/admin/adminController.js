@@ -417,7 +417,7 @@ const getTopBrands = async (req, res, next) => {
 
 const getRecentOrders = async (req, res, next) => {
     try {
-        const recentOrders = await Order.find({ 
+        const recentOrders = await Order.find({
             orderStatus: { $nin: ['Cancelled', 'Returned'] },
             paymentStatus: 'Completed'
         })
@@ -578,7 +578,10 @@ const downloadLedgerPdf = async (req, res, next) => {
         </html>
         `;
 
-        const browser = await puppeteer.launch();
+        const browser = await puppeteer.launch({
+            headless: true,
+            args: ['--no-sandbox', '--disable-setuid-sandbox']
+        });
         const page = await browser.newPage();
         await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
 
