@@ -22,6 +22,8 @@ const editProfile = async (req, res, next) => {
         const userId = req.params.id || req.body.userId;
         req.session.userId = userId
         const { fullname, email, mobile } = req.body
+        const trimmedMobile = mobile.trim();
+        const trimmedEmail = email.trim();
         let formData = req.body
         formData.id = req.session.user
 
@@ -32,6 +34,22 @@ const editProfile = async (req, res, next) => {
         } else if ((!/^[A-Za-z\s]+$/.test(fullname))) {
             error['name'] = 'Only letters are allowed'
             return res.render("user/userProfile", { error, formData, userId })
+        }
+
+        if (!trimmedMobile) {
+            error.mobile = "Mobile number cannot be empty";
+            return res.render("user/userProfile", { error, formData, userId });
+        } else if (!/^[6-9]\d{9}$/.test(trimmedMobile)) {
+            error.mobile = "Enter a valid 10-digit mobile number starting with 6–9";
+            return res.render("user/userProfile", { error, formData, userId });
+        }
+
+        if (!trimmedEmail) {
+            error.email = "Email cannot be empty";
+            return res.render("user/userProfile", { error, formData, userId });
+        } else if (!/^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/.test(trimmedEmail)) {
+            error.email = "Enter a valid email address";
+            return res.render("user/userProfile", { error, formData, userId });
         }
 
         const user = await User.findById(userId)
@@ -50,6 +68,13 @@ const editProfile = async (req, res, next) => {
             if (verify) {
                 return res.render("user/userProfileUpdate", { data: email, })
             }
+        }
+
+        if (fullname !== user.fullname || mobile !== user.mobile) {
+            await User.findByIdAndUpdate(userId, {
+                fullname,
+                mobile,
+            });
         }
 
         return res.redirect("/profile")
@@ -96,12 +121,12 @@ const otpVerify = async (req, res, next) => {
         const { otp } = req.body
         const createdAt = req.session.otpCreatedAt;
         const now = Date.now();
-        
+
         if (!otp || !createdAt || now - createdAt > OTP_EXPIRY_MS) {
             delete req.session.otp;
             delete req.session.otpCreatedAt;
 
-             return res.json({
+            return res.json({
                 success: false,
                 message: "OTP has expired. Please request a new one."
             });
@@ -204,12 +229,12 @@ const addAddress = async (req, res, next) => {
             return res.render("user/addAddress", { errors, user, username: user.fullname, address: null })
         }
 
-        
-        const existingAddress = await Address.find({userId})
+
+        const existingAddress = await Address.find({ userId })
 
         let makedefault = false
 
-        if(existingAddress.length === 0)
+        if (existingAddress.length === 0)
             makedefault = true
 
         if (isdefault === "true" || isdefault === true) {

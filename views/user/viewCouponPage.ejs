@@ -122,14 +122,6 @@
                                         <span class="status-expired">Expired</span>
                                     <% } %>
                                 </div>
-                                
-                                <div class="coupon-usage">
-                                    <% if (coupon.usedByUser && coupon.usedByUser > 0) { %>
-                                        Used <%= coupon.usedByUser %> time<%= coupon.usedByUser !== 1 ? 's' : '' %>
-                                    <% } else { %>
-                                        Not used yet
-                                    <% } %>
-                                </div>
                             </div>
                         </div>
                     <% }); %>

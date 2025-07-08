@@ -305,6 +305,10 @@ async function generateInvoicePDF(order) {
                     <div>Tax</div>
                     <div id="tax">₹${order.tax.toLocaleString('en-IN')}</div>
                 </div>
+                ${order.discountAmount>0 ?`<div class="price-row">
+                    <div>Discount</div>
+                    <div id="discount">- ₹${order.discountAmount.toLocaleString('en-IN')}</div>
+                </div>`:''}
                 <div class="total-row">
                     <div>Total</div>
                     <div id="total">₹${order.totalAmount.toLocaleString('en-IN')}</div>
