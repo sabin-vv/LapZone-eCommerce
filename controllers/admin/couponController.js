@@ -76,7 +76,7 @@ const addCoupon = async (req, res, next) => {
 
         if (coupon) {
             errorfield['code'] = 'Coupon Already Exist'
-            return res.render("admin/addCoupon", { errorfield })
+            return res.render("admin/addCoupon", { errorfield, formData })
         }
 
         const couponData = new Coupon({
@@ -132,7 +132,6 @@ const editCoupon = async (req, res, next) => {
         if (!coupon)
             return res.render("admin/couponPage", { error: "Coupon Not Found" })
 
-        // Format dates properly for datetime-local input (local timezone)
         const formatDateTimeLocal = (date) => {
             if (!date) return '';
             const year = date.getFullYear();
@@ -148,7 +147,7 @@ const editCoupon = async (req, res, next) => {
                 ...coupon.toObject(),
                 startDateISO: formatDateTimeLocal(coupon.startDate),
                 expiryDateISO: formatDateTimeLocal(coupon.expiryDate),
-            }, errorfield : null
+            }, errorfield: null
         })
     } catch (error) {
         console.error('Error fetching coupons:', error);
@@ -193,7 +192,6 @@ const updateCoupon = async (req, res, next) => {
         const dateNow = new Date();
         dateNow.setSeconds(0, 0)
 
-        // No start date validation when updating - allow any start date
         if (new Date(expiryDate) < dateNow)
             errorfield['expiryDate'] = 'Expiry Date cannot be in tha past'
 
@@ -206,8 +204,8 @@ const updateCoupon = async (req, res, next) => {
         });
 
         if (existingCoupon)
-            return req.render({
-                errorfield: { code: "this coupon is Already Exist" }, ...req.body
+            return res.render("admin/editCoupon", {
+                errorfield: { code: "This coupon is Already Exist" }, formData: req.body, coupon
             })
 
         const couponData = {
